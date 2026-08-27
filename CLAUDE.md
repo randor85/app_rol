@@ -2,7 +2,7 @@
 
 Plataforma de administración de fichas de rol para un grupo de juego. Es un sitio estático (sin build, sin framework, sin `package.json`) desplegado en **Firebase Hosting**, con **Firebase Realtime Database** como backend de datos y autenticación. Cada personaje es un archivo HTML autocontenido (HTML+CSS+JS en un solo archivo) que lee/escribe directamente en Firebase.
 
-No hay repositorio git inicializado todavía en esta carpeta (hay `.gitignore` pero no `.git/`). Si vas a versionar esto, confirmá con el usuario antes de correr `git init` — hasta ahora todo el control de versiones se hizo a mano, ver "Respaldos" más abajo.
+Desde el 27 ago 2026 hay repositorio git en `https://github.com/randor85/app_rol` (rama `main`), pero **git es solo respaldo/historial de código — no reemplaza el flujo de respaldos manuales en `legacy estable/` ni hace deploy**. Publicar el sitio real sigue siendo `firebase deploy` (ver advertencia de `db_rules.txt` más abajo). Cuidado si trabajás en esta carpeta con git: vive dentro de Google Drive ("Mi unidad"), que puede volcar `desktop.ini` dentro de `.git/` (incluso en `.git/objects/*/`) y corromper refs — si un `git fetch`/`status` falla con `bad object` o similar, correr `find .git -iname "desktop.ini" -delete` antes de reintentar.
 
 ## Estructura del proyecto
 
@@ -99,7 +99,9 @@ Estas piezas de CSS/HTML se repiten idénticas en Eldur, Hannoghar, Myrklogi, Ul
 - `campanas/{campanaId}/bitacora`, `/tiradas` — bitácora de sesión y log de tiradas, lectura/escritura abierta a cualquier autenticado.
 - `lista_campanas/{campanaId}/sistema` — `'dnd'` o `'coc'`, usado por `index.html` y por `SISTEMA_PERSONAJE_PROPIO` en cada ficha para no mezclar personajes de sistemas distintos en la misma campaña.
 
-**⚠️ `db_rules.txt` no se publica solo.** No hay ningún deploy de Firebase conectado a este entorno — cambiar `public/db_rules.txt` no alcanza. Las reglas nuevas hay que pegarlas a mano en Firebase Console → Realtime Database → Reglas → Publicar. Esto ya causó un bug real (ver `log.md`, versión 14.1): las reglas se cambiaron en el archivo pero nunca se publicaron, así que el fix parecía no funcionar. Si tenés `firebase-tools` y credenciales configuradas localmente, `firebase deploy --only database` desde `pjs/app/` debería reemplazar el paso manual — confirmalo con el usuario antes de asumirlo.
+**⚠️ `db_rules.txt` no se publica solo — cambiar el archivo no alcanza, hay que desplegarlo.** Esto ya causó un bug real (ver `log.md`, versión 14.1): las reglas se cambiaron en el archivo pero nunca se publicaron, así que el fix parecía no funcionar.
+
+Desde el 27 ago 2026 el entorno de Claude Code tiene `firebase-tools` instalado y autenticado con acceso confirmado al proyecto `personajes-rol` — `firebase deploy --only database` desde `pjs/app/` funciona y reemplaza el paso manual de pegar las reglas en Firebase Console. Mismo mecanismo para el resto del sitio: `firebase deploy --only hosting` publica `public/` (el sitio real que ven los jugadores) — esto es un paso aparte de subir a git/GitHub, que solo versiona el código y no toca el sitio en vivo. El usuario prefiere pedir el deploy explícitamente en cada caso en vez de que se corra automático tras cada edición.
 
 ## Cómo se hacen los cambios en este proyecto (convención establecida)
 
