@@ -960,7 +960,7 @@
 <div class="sticky-combat-bar">
 <div class="scb-name">🔮 Ulreek</div>
 <div class="scb-stats">
-<div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">50/50</div></div>
+<div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">51/51</div></div>
 <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value" id="scb-ac">12</div></div>
 <div class="scb-stat"><div class="scb-label">✨ SpAtk</div><div class="scb-value" id="scb-spatk">+8</div></div>
 </div>
@@ -1018,7 +1018,7 @@
 <div class="grid-identity">
 <div class="stat-badge">
 <label>❤️ Puntos Golpe (HP)</label>
-<span id="hp-summary">50 / 50</span>
+<span id="hp-summary">51 / 51</span>
 </div>
 <div class="stat-badge">
 <label>🛡️ AC (Clase de Armadura)</label>
@@ -1184,7 +1184,7 @@
 <div class="counter-controls" style="justify-content: space-between; margin-bottom: 8px;">
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', -5)">-5</button>
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', -1)">-1</button>
-<input type="number" id="hp-cur" class="editable-cnt-val" value="50" min="0" style="font-size: 1.8rem; color: var(--accent-gold); text-align:center;">
+<input type="number" id="hp-cur" class="editable-cnt-val" value="51" min="0" style="font-size: 1.8rem; color: var(--accent-gold); text-align:center;">
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', 1)">+1</button>
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', 5)">+5</button>
 </div>
@@ -1200,7 +1200,7 @@
 <span class="cnt-max">Máx: 7</span>
 </div>
 <div class="counter-controls" style="justify-content: center; gap: 15px; margin-top: 15px;">
-<button class="btn-cnt" onclick="changeVal('sorc-pts', -1)">-1</button>
+<button class="btn-cnt" onclick="changeVal('sorc-pts', -1); registrarUsoRecurso('Punto de Sorcery')">-1</button>
 <span class="cnt-val" id="sorc-pts" style="font-size: 2rem; color: var(--accent-light);">7</span>
 <button class="btn-cnt" onclick="changeVal('sorc-pts', 1)">+1</button>
 </div>
@@ -2000,7 +2000,7 @@
 
   function updateHPDisplay() {
     const cur = document.getElementById('hp-cur').value;
-    document.getElementById('hp-summary').innerText = `${cur} / 50`;
+    document.getElementById('hp-summary').innerText = `${cur} / 51`;
     syncStickyBar();
   }
 
@@ -2008,7 +2008,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     let val = Math.max(0, (parseInt(el.value) || 0) + delta);
-    if (id === 'hp-cur') val = Math.min(val, 50);
+    if (id === 'hp-cur') val = Math.min(val, 51);
     el.value = val;
     if (id === 'hp-cur') updateHPDisplay();
     guardarCampo(id, val);
@@ -2018,7 +2018,7 @@
   document.getElementById('hp-cur')?.addEventListener('change', e => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) val = 0;
-    val = Math.max(0, Math.min(50, val));
+    val = Math.max(0, Math.min(51, val));
     e.target.value = val;
     updateHPDisplay();
     guardarCampo('hp-cur', val);
@@ -2046,9 +2046,9 @@
 
   function restLong() {
     if (confirm("¿Efectuar Descanso Largo? Se restablecerá HP, Sorcery Points, Spell Slots y recursos de clase.")) {
-      document.getElementById('hp-cur').value = 50;
+      document.getElementById('hp-cur').value = 51;
       updateHPDisplay();
-      guardarCampo('hp-cur', 50);
+      guardarCampo('hp-cur', 51);
       changeVal('sorc-pts', 7 - (parseInt(document.getElementById('sorc-pts').innerText) || 0));
       changeVal('slot-1-cur', 4 - (parseInt(document.getElementById('slot-1-cur').innerText) || 0));
       changeVal('slot-pact-cur', 1 - (parseInt(document.getElementById('slot-pact-cur').innerText) || 0));
@@ -2163,7 +2163,7 @@
     cb.checked = true;
     cb.dispatchEvent(new Event('change', { bubbles: true }));
     const hpEl = document.getElementById('hp-cur');
-    const nuevo = Math.min(50, (parseInt(hpEl.value) || 0) + total);
+    const nuevo = Math.min(51, (parseInt(hpEl.value) || 0) + total);
     hpEl.value = nuevo;
     updateHPDisplay();
     guardarCampo('hp-cur', nuevo);
@@ -2177,7 +2177,7 @@
     cb.checked = true;
     cb.dispatchEvent(new Event('change', { bubbles: true }));
     const hpEl = document.getElementById('hp-cur');
-    const nuevo = Math.min(50, (parseInt(hpEl.value) || 0) + total);
+    const nuevo = Math.min(51, (parseInt(hpEl.value) || 0) + total);
     hpEl.value = nuevo;
     updateHPDisplay();
     guardarCampo('hp-cur', nuevo);
