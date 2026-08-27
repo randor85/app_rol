@@ -1,0 +1,48 @@
+{
+  "rules": {
+    "lista_campanas": {
+      ".read": "auth != null"
+    },
+    "campanas": {
+      "$campanaId": {
+        "gm": {
+          ".read": "auth != null",
+          ".write": "auth != null && (!data.exists() || data.val() == auth.uid)"
+        },
+        "gm_password": {
+          ".read": "auth != null",
+".write": "auth != null && (!data.exists() || !root.child('campanas').child($campanaId).child('gm').exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"        },
+        "bitacora": {
+          // Permite leer y escribir logs a los usuarios autenticados
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "tiradas": {
+          // Permite registrar y ver los dados en tiempo real
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "personajes": {
+          // NOTA: la lectura sigue abierta a cualquier miembro autenticado de la campaña.
+          // RTDB no permite filtrar por 'publico' dentro de una consulta amplia como la que usa
+          // index.html para listar todos los personajes de la campaña de una sola vez: si el nodo
+          // padre no concede lectura, la consulta entera es rechazada aunque algunos hijos serían
+          // legibles. Restringir esto de verdad requeriría separar los datos en una lista pública
+          // liviana y los datos completos por personaje, consultados uno por uno — fuera del
+          // alcance de este arreglo (que se enfoca en el bug de escritura reportado).
+          ".read": "auth != null",
+          "$personajeId": {
+            // Escritura permitida solo si:
+            //  a) ya sos el dueño registrado del personaje, o
+            //  b) sos el GM de la campaña, o
+            //  c) el personaje todavía no tiene dueño Y tu propia escritura lo asigna a vos mismo
+            //     (esto es lo único que permite el flujo de "reclamar personaje" en index.html;
+            //     ya NO alcanza con que el campo 'owner' esté vacío para poder editar datos ajenos,
+            //     como pasaba antes).
+            ".write": "auth != null && ( (data.child('owner').exists() && data.child('owner').val() == auth.uid) || root.child('campanas').child($campanaId).child('gm').val() == auth.uid || (!data.child('owner').exists() && newData.child('owner').val() == auth.uid) )"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "rules": {
+    "lista_campanas": {
+      ".read": "auth != null"
+    },
+    "campanas": {
+      "$campanaId": {
+        "gm": {
+          ".read": "auth != null",
+          ".write": "auth != null && (!data.exists() || data.val() == auth.uid)"
+        },
+        "gm_password": {
+          ".read": "auth != null",
+".write": "auth != null && (!data.exists() || !root.child('campanas').child($campanaId).child('gm').exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"        },
+        "bitacora": {
+          // Permite leer y escribir logs a los usuarios autenticados
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "tiradas": {
+          // Permite registrar y ver los dados en tiempo real
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "personajes": {
+          ".read": "auth != null", 
+          "$personajeId": {
+            ".write": "auth != null && (!data.exists() || !data.child('owner').exists() || data.child('owner').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"
+          }
+        }
+      }
+    }
+  }
+}

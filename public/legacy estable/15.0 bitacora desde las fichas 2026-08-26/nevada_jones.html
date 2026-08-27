@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Ficha Interactiva - Nevada Jones (Call of Cthulhu 7e)</title>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+ <style>
+ :root {
+   --bg-primary: #14100e;
+   --bg-card: #241b16;
+   --bg-card-header: #362720;
+   --accent-maroon: #4a1515;
+   --accent-gold: #d4af37;
+   --accent-light: #8a3838;
+   --accent-hover: #6b2121;
+   --text-light: #f0e6d8;
+   --text-muted: #b3a08c;
+   --border-color: #4a3c30;
+   --danger-color: #c94a4a;
+   --shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+   --surface-soft: rgba(0,0,0,0.2);
+   --surface-mid: rgba(0,0,0,0.3);
+   --surface-strong: rgba(0,0,0,0.45);
+   --text-on-surface: #fff;
+   --font-mono: 'Courier New', Courier, monospace;
+ }
+ body.light-mode {
+   --bg-primary: #f4ecd8;
+   --bg-card: #fdfbf7;
+   --bg-card-header: #ecdfc0;
+   --text-light: #2b2118;
+   --text-muted: #7a6248;
+   --border-color: #d9c9a3;
+   --shadow: 0 4px 15px rgba(120,100,70,0.18);
+   --surface-soft: rgba(43,33,24,0.05);
+   --surface-mid: rgba(43,33,24,0.08);
+   --surface-strong: rgba(43,33,24,0.13);
+   --text-on-surface: #2b2118;
+ }
+
+ * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+
+ body {
+   background-color: var(--bg-primary);
+   color: var(--text-light);
+   padding: 20px;
+   line-height: 1.4;
+   transition: background-color .3s, color .3s;
+ }
+
+ h1, h2, h3, h4 { font-family: 'Cinzel', serif; letter-spacing: 0.5px; }
+
+ .sheet.container {
+   max-width: 1100px;
+   margin: 0 auto;
+ }
+
+ header {
+   background: var(--bg-card);
+   border: 2px solid var(--accent-gold);
+   border-radius: 12px;
+   padding: 20px 24px;
+   margin-bottom: 20px;
+   box-shadow: var(--shadow);
+ }
+
+ .title-banner {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   flex-wrap: wrap;
+   gap: 10px;
+   border-bottom: 1px solid var(--border-color);
+   padding-bottom: 10px;
+   margin-bottom: 15px;
+ }
+
+ h1 {
+   margin: 0;
+   font-size: 2.1rem;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+   color: var(--accent-gold);
+   text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+ }
+ body.light-mode h1 { text-shadow: none; }
+
+ .subtitle {
+   font-style: italic;
+   font-size: 0.9rem;
+   color: var(--accent-light);
+   font-weight: 600;
+ }
+
+ h2 {
+   font-size: 1.15rem;
+   text-transform: uppercase;
+   background-color: var(--accent-maroon);
+   color: #fff;
+   padding: 8px 14px;
+   margin-top: 28px;
+   margin-bottom: 15px;
+   letter-spacing: 1px;
+   border-radius: 6px;
+   border-left: 4px solid var(--accent-gold);
+ }
+
+ input[type="text"], input[type="number"], textarea {
+   font-family: inherit;
+   font-size: inherit;
+   border: 1px solid var(--border-color);
+   background: var(--surface-mid);
+   color: var(--text-light);
+   padding: 3px 5px;
+   border-radius: 3px;
+   outline: none;
+ }
+ input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+   border-color: var(--accent-gold);
+ }
+
+ input[type="number"] { text-align: center; }
+
+ .grid { display: grid; gap: 10px; }
+ .grid-2 { grid-template-columns: repeat(2, 1fr); }
+ .grid-3 { grid-template-columns: repeat(3, 1fr); }
+ .grid-4 { grid-template-columns: repeat(4, 1fr); }
+ .grid-5 { grid-template-columns: repeat(5, 1fr); }
+
+ .field-box {
+   border: 1px solid var(--border-color);
+   border-radius: 6px;
+   padding: 8px 10px;
+   background: var(--bg-card);
+ }
+
+ .field-label {
+   font-size: 0.7rem;
+   text-transform: uppercase;
+   font-weight: bold;
+   color: var(--text-muted);
+   display: block;
+   letter-spacing: 0.3px;
+ }
+
+ .field-value-input {
+   font-size: 0.95rem;
+   font-weight: bold;
+   width: 100%;
+   border: none;
+   border-bottom: 1px solid var(--border-color);
+   outline: none;
+   background: transparent;
+   color: var(--text-light);
+   border-radius: 0;
+ }
+ .field-value-input:focus { border-bottom: 1px solid var(--accent-gold); }
+
+ /* Stat Cards */
+ .stat-card {
+   border: 1px solid var(--border-color);
+   border-radius: 8px;
+   padding: 8px;
+   text-align: center;
+   background: var(--surface-strong);
+   box-shadow: var(--shadow);
+ }
+
+ .stat-card input[type="number"] {
+   font-size: 1.2rem;
+   font-weight: bold;
+   color: var(--accent-gold);
+   width: 60px;
+   background: var(--surface-mid);
+   border: 1px solid var(--border-color);
+ }
+
+ .stat-card .stat-sub {
+   font-size: 0.75rem;
+   color: var(--text-muted);
+   font-family: var(--font-mono);
+   margin-top: 4px;
+ }
+
+ .stat-card .stat-value {
+   color: var(--accent-gold);
+   font-weight: 800;
+ }
+
+ /* Tables */
+ table {
+   width: 100%;
+   border-collapse: collapse;
+   margin-bottom: 10px;
+   font-size: 0.9rem;
+ }
+
+ th, td {
+   border: 1px solid var(--border-color);
+   padding: 8px 10px;
+   text-align: left;
+ }
+
+ th {
+   background-color: var(--surface-strong);
+   color: var(--accent-gold);
+   font-size: 0.8rem;
+   text-transform: uppercase;
+   font-family: 'Cinzel', serif;
+   letter-spacing: 0.5px;
+ }
+
+ tr:hover { background: rgba(212, 175, 55, 0.08); }
+
+ td.center, th.center { text-align: center; }
+
+ /* Skills Grid */
+ .skills-container {
+   display: grid;
+   grid-template-columns: repeat(2, 1fr);
+   gap: 8px 20px;
+ }
+
+ .skill-row {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   border-bottom: 1px dotted var(--border-color);
+   padding: 4px 2px;
+   font-size: 0.85rem;
+   border-radius: 4px;
+ }
+ .skill-row:hover { background: var(--surface-soft); }
+
+ .skill-left {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+   flex: 1;
+ }
+
+ .skill-name { font-weight: 600; color: var(--text-light); }
+
+ .skill-right {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+   font-family: var(--font-mono);
+ }
+
+ .skill-input {
+   width: 45px;
+   text-align: center;
+   font-weight: bold;
+   color: var(--accent-gold);
+   background: var(--surface-mid);
+   border: 1px solid var(--border-color);
+ }
+
+ .skill-calc {
+   font-size: 0.75rem;
+   color: var(--text-muted);
+   min-width: 50px;
+   text-align: right;
+ }
+
+ .btn-roll {
+   background: linear-gradient(135deg, var(--accent-maroon), #2a0d0d);
+   color: #fff;
+   border: 1px solid var(--accent-light);
+   border-radius: 5px;
+   padding: 3px 8px;
+   font-size: 0.75rem;
+   cursor: pointer;
+   font-weight: 700;
+   transition: all 0.2s;
+ }
+ body.light-mode .btn-roll { background: linear-gradient(135deg, #b96a6a, #8a3838); }
+
+ .btn-roll:hover {
+   background: var(--accent-hover);
+   box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+   transform: scale(1.03);
+ }
+
+ /* Roller Widget */
+ .roller-panel {
+   border: 2px solid var(--accent-gold);
+   background: var(--bg-card);
+   padding: 15px;
+   margin-bottom: 20px;
+   border-radius: 10px;
+   box-shadow: var(--shadow);
+ }
+
+ .roller-panel .field-label { color: var(--accent-gold); font-size: 0.9rem; margin-bottom: 8px; }
+
+ .roller-controls {
+   display: flex;
+   gap: 8px;
+   flex-wrap: wrap;
+   align-items: center;
+   margin-bottom: 10px;
+ }
+
+ .roller-history {
+   max-height: 120px;
+   overflow-y: auto;
+   border: 1px solid var(--border-color);
+   background: var(--surface-strong);
+   padding: 8px;
+   font-family: var(--font-mono);
+   font-size: 0.82rem;
+   border-radius: 6px;
+   color: var(--text-light);
+ }
+
+ .log-entry {
+   margin-bottom: 4px;
+   border-bottom: 1px dashed var(--border-color);
+   padding-bottom: 2px;
+ }
+
+ .log-success { color: #4caf50; font-weight: bold; }
+ .log-hard { color: #64b5f6; font-weight: bold; }
+ .log-extreme { color: #ce93d8; font-weight: bold; }
+ .log-critical { color: #ffb3b3; font-weight: bold; background: rgba(183,28,28,0.25); }
+ .log-fail { color: #ef9a9a; }
+ .log-fumble { color: #f48fb1; font-weight: bold; background: rgba(136,14,79,0.25); }
+
+ /* Special Abilities & Spells */
+ .ability-card {
+   border: 1px solid var(--border-color);
+   border-left: 4px solid var(--accent-gold);
+   border-radius: 6px;
+   padding: 12px 14px;
+   margin-bottom: 12px;
+   background: var(--surface-mid);
+ }
+
+ .ability-header {
+   display: flex;
+   justify-content: space-between;
+   flex-wrap: wrap;
+   gap: 6px;
+   border-bottom: 1px solid var(--accent-maroon);
+   padding-bottom: 4px;
+   margin-bottom: 8px;
+ }
+
+ .ability-title {
+   font-weight: bold;
+   color: var(--accent-gold);
+   font-size: 1rem;
+   font-family: 'Cinzel', serif;
+ }
+
+ .ability-meta {
+   font-size: 0.8rem;
+   background: var(--surface-strong);
+   color: var(--text-muted);
+   padding: 2px 8px;
+   border-radius: 3px;
+   font-family: var(--font-mono);
+ }
+
+ .ability-card p, .ability-card ul { color: var(--text-light); }
+ .ability-card em { color: var(--text-muted); }
+
+ .notes-box {
+   background-color: var(--surface-mid);
+   border-left: 4px solid var(--accent-maroon);
+   border-radius: 6px;
+   padding: 10px 15px;
+   font-style: italic;
+   margin-bottom: 15px;
+   color: var(--text-light);
+ }
+
+ ul { margin: 5px 0; padding-left: 20px; }
+
+ /* THEME TOGGLE */
+ .theme-toggle-btn { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all .2s; }
+ .theme-toggle-btn:hover { background: var(--accent-gold); color: var(--bg-primary); }
+
+ .btn-volver {
+   display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header); color: var(--accent-gold);
+   text-decoration: none; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold;
+   font-size: 0.9rem; cursor: pointer; transition: all .2s;
+ }
+ .btn-volver:hover { background: var(--accent-gold); color: var(--bg-primary); }
+
+ /* BARRA STICKY */
+ .sticky-combat-bar { position: sticky; top: 0; z-index: 50; background: linear-gradient(145deg, rgba(36,27,22,.98), rgba(20,16,14,.98)); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+ body.light-mode .sticky-combat-bar { background: linear-gradient(145deg, rgba(253,251,247,.98), rgba(244,236,216,.98)); }
+ .sticky-combat-bar .scb-name { font-family: 'Cinzel', serif; color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+ .sticky-combat-bar .scb-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+ .scb-stat { text-align: center; min-width: 50px; }
+ .scb-stat .scb-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+ .scb-stat .scb-value { font-size: 1rem; font-weight: 800; color: var(--accent-gold); }
+ .sticky-combat-bar .scb-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+ @media (max-width: 700px) { .sticky-combat-bar { justify-content: center; } .sticky-combat-bar .scb-actions { margin-left: 0; width: 100%; justify-content: center; } }
+
+ .btn-rest { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; font-size: 0.8rem; }
+ .btn-rest:hover { background: var(--accent-gold); color: var(--bg-primary); box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
+
+ @media (max-width: 768px) {
+   .skills-container { grid-template-columns: 1fr; }
+   .grid-5, .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+   .title-banner { flex-direction: column; align-items: flex-start; }
+ }
+
+ @media print {
+   body { background: #fff; padding: 0; color: #1a1a1a; }
+   .sheet.container { box-shadow: none; border: none; padding: 0; width: 100%; max-width: 100%; }
+   .btn-roll, .roller-panel, .sticky-combat-bar, .theme-toggle-btn { display: none; }
+   h2 { background-color: #333 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+ }
+
+ /* MODO SOLO LECTURA (unificado con el resto de fichas) */
+ .readonly-banner {
+     background: #3182ce;
+     color: #fff;
+     text-align: center;
+     padding: 10px;
+     border-radius: 8px;
+     margin-bottom: 15px;
+     font-weight: bold;
+     font-size: 0.9rem;
+     display: none;
+ }
+ .readonly-mode input,
+ .readonly-mode textarea,
+ .readonly-mode select {
+     pointer-events: none !important;
+     opacity: 0.65;
+ }
+ .readonly-mode button:not(#btn-compartir):not(.btn-volver):not(.theme-toggle-btn) {
+     pointer-events: none !important;
+     opacity: 0.5;
+ }
+
+ /* === SECCIONES COLAPSABLES (bugfix 26 ago) === */
+ details.v2-section {
+   background: var(--bg-card);
+   border: 1px solid var(--border-color);
+   border-radius: 10px;
+   margin-bottom: 16px;
+   box-shadow: var(--shadow);
+   overflow: hidden;
+   transition: border-color 0.2s;
+ }
+ details.v2-section[open] { border-color: var(--accent-gold); }
+ details.v2-section > summary {
+   padding: 10px 16px;
+   font-family: 'Cinzel', serif;
+   font-size: 1.05rem;
+   text-transform: uppercase;
+   font-weight: 700;
+   color: #fff;
+   background-color: var(--accent-maroon);
+   border-left: 4px solid var(--accent-gold);
+   cursor: pointer;
+   user-select: none;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   list-style: none;
+   letter-spacing: 1px;
+   transition: background 0.2s;
+ }
+ details.v2-section > summary::-webkit-details-marker { display: none; }
+ details.v2-section > summary::after {
+   content: "►";
+   font-size: 0.85rem;
+   transition: transform 0.2s;
+   color: var(--text-light);
+ }
+ details.v2-section[open] > summary::after { transform: rotate(90deg); }
+ details.v2-section > summary:hover { background: var(--accent-hover); }
+ details.v2-section > .section-content { padding: 16px 18px; }
+
+ /* === LANZADOR DE DADOS FIJO (bugfix 26 ago) === */
+ .roller-panel {
+   position: fixed;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   z-index: 200;
+   max-width: 1100px;
+   margin: 0 auto;
+   border-radius: 12px 12px 0 0;
+   box-shadow: 0 -6px 18px rgba(0,0,0,0.55);
+ }
+ body { padding-bottom: 230px; }
+ @media (max-width: 768px) { body { padding-bottom: 300px; } }
+ @media print { .roller-panel { display: none; } }
+
+ /* === BOTÓN Y FORMULARIO "USAR HABILIDAD" (bugfix 26 ago) === */
+ .btn-usar {
+   background: linear-gradient(135deg, var(--accent-gold), #a9841f);
+   color: #1a1207;
+   border: 1px solid var(--accent-gold);
+   border-radius: 5px;
+   padding: 3px 8px;
+   font-size: 0.75rem;
+   cursor: pointer;
+   font-weight: 700;
+ }
+ .btn-usar:hover { filter: brightness(1.1); }
+ .usar-form {
+   background: var(--surface-strong);
+   border: 1px dashed var(--accent-gold);
+   border-radius: 6px;
+   padding: 10px 12px;
+   margin: 8px 0;
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+ }
+ .usar-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+ .usar-form-row label {
+   font-size: 0.68rem;
+   color: var(--text-muted);
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+   flex: 1;
+   min-width: 90px;
+ }
+ .usar-form-row input {
+   background: var(--surface-mid);
+   border: 1px solid var(--border-color);
+   color: var(--text-light);
+   border-radius: 4px;
+   padding: 4px 6px;
+   font-size: 0.8rem;
+ }
+ .usar-form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+ .usar-form-actions button {
+   background: var(--surface-soft);
+   border: 1px solid var(--border-color);
+   color: var(--text-light);
+   border-radius: 4px;
+   padding: 5px 12px;
+   font-size: 0.78rem;
+   cursor: pointer;
+ }
+ .usar-form-actions button:last-child { background: var(--accent-gold); color: #1a1207; font-weight: bold; border: none; }
+ </style>
+</head>
+<body>
+
+<div class="sheet container">
+  <div id="readonly-banner" class="readonly-banner">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
+
+  <!-- boton volver al menu, tema y compartir -->
+  <div style="width: 100%; margin: 0 auto 15px auto; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <a href="index.html" class="btn-volver">
+          ⬅ Volver al Menú
+      </a>
+      <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
+          <button id="btn-compartir" style="display: none; padding: 8px 16px; background-color: #3a7d44; color: white; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;"></button>
+      </div>
+  </div>
+  <!-- ⬆️ FIN DEL BOTÓN ⬆️ -->
+
+  <!-- BARRA STICKY -->
+  <div class="sticky-combat-bar">
+    <div class="scb-name">🕵️ Nevada Jones</div>
+    <div class="scb-stats">
+      <div class="scb-stat"><div class="scb-label">❤️ PV</div><div class="scb-value" id="scb-hp">10/10</div></div>
+      <div class="scb-stat"><div class="scb-label">🧠 Cordura</div><div class="scb-value" id="scb-san">57/57</div></div>
+      <div class="scb-stat"><div class="scb-label">🍀 Suerte</div><div class="scb-value" id="scb-luck">50</div></div>
+      <div class="scb-stat"><div class="scb-label">✨ Magia</div><div class="scb-value" id="scb-mp">50/68</div></div>
+    </div>
+    <div class="scb-actions">
+      <button class="btn-rest" onclick="descansoCompleto()" title="Restaura PV, PM y Cordura al máximo">🌙 Descanso</button>
+      <button class="btn-rest" onclick="rollGeneric(100)" title="Tirada Rápida D100">🎲 D100</button>
+    </div>
+  </div>
+
+<header>
+ <div class="title-banner">
+ <div>
+ <h1>Nevada Jones</h1>
+ <div class="subtitle">Call of Cthulhu 7th Edition — Investigator Sheet</div>
+ </div>
+ <div style="text-align: right;">
+ <span class="field-label">Jugador</span>
+ <input type="text" id="info-jugador" class="field-value-input" value="RANDOR" style="text-align: right;">
+ </div>
+ </div>
+
+ <div class="grid grid-4">
+ <div class="field-box"><span class="field-label">Ocupación</span><input type="text" id="info-ocupacion" class="field-value-input" value="Profesor de Arqueología"></div>
+ <div class="field-box"><span class="field-label">Edad</span><input type="text" id="info-edad" class="field-value-input" value="35 años"></div>
+ <div class="field-box"><span class="field-label">Residencia</span><input type="text" id="info-residencia" class="field-value-input" value="Arkham"></div>
+ <div class="field-box"><span class="field-label">Lugar de Nacimiento</span><input type="text" id="info-nacimiento" class="field-value-input" value="Winnipeg, Canadá"></div>
+ <div class="field-box"><span class="field-label">Género</span><input type="text" id="info-genero" class="field-value-input" value="Masculino"></div>
+ <div class="field-box"><span class="field-label">Tasa de Movimiento</span><input type="text" id="info-movimiento" class="field-value-input" value="9"></div>
+ <div class="field-box"><span class="field-label">Nivel de Crédito</span><input type="text" id="info-credito" class="field-value-input" value="Promedio (CR 40)"></div>
+ <div class="field-box"><span class="field-label">Sintonía Cósmica</span><input type="text" id="info-sintonia" class="field-value-input" value="Yog-Sothoth / Xylt’hora"></div>
+ </div>
+
+ <div class="field-box" style="margin-top: 10px;">
+ <span class="field-label">Descripción Física</span>
+ <input type="text" id="info-descripcion" class="field-value-input" value="Atractivo pero un poco tosco/desaliñado. Estatura por debajo del promedio. Viste traje cuando es strictly necesario, pero prefiere ropa más casual.">
+ </div>
+ </header>
+
+ <!-- LANZADOR DE DADOS CON HISTORIAL -->
+ <div class="roller-panel">
+ <span class="field-label" style="font-size: 0.9rem; margin-bottom: 8px;">Lanzador de Dados Manual e Historial</span>
+ <div class="roller-controls">
+ <button class="btn-roll" onclick="rollGeneric(100)">Lanzar D100</button>
+ <button class="btn-roll" onclick="rollGeneric(20)">D20</button>
+ <button class="btn-roll" onclick="rollGeneric(10)">D10</button>
+ <button class="btn-roll" onclick="rollGeneric(8)">D8</button>
+ <button class="btn-roll" onclick="rollGeneric(6)">D6</button>
+ <button class="btn-roll" onclick="rollGeneric(4)">D4</button>
+ <button class="btn-roll" style="background:#555;" onclick="clearHistory()">Limpiar Historial</button>
+ </div>
+ <div class="roller-history" id="diceHistory">
+ <div class="log-entry" style="color:var(--text-muted);"><em>El historial de tiradas aparecerá aquí...</em></div>
+ </div>
+ </div>
+
+ <!-- CARACTERÍSTICAS -->
+<details class="v2-section" open>
+<summary>1. Características y Atributos</summary>
+<div class="section-content">
+<div class="grid grid-5" style="margin-bottom: 10px;">
+ <div class="stat-card">
+   <span class="field-label">FUERZA (STR)</span>
+   <input type="number" id="str" value="60" oninput="updateStats()">
+   <div class="stat-sub" id="str-calc">30 / 12</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Fuerza (STR)', 'str')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">CONSTITUCIÓN (CON)</span>
+   <input type="number" id="con" value="58" oninput="updateStats()">
+   <div class="stat-sub" id="con-calc">29 / 11</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Constitución (CON)', 'con')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">TAMAÑO (SIZ)</span>
+   <input type="number" id="siz" value="40" oninput="updateStats()">
+   <div class="stat-sub" id="siz-calc">20 / 8</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Tamaño (SIZ)', 'siz')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">DESTREZA (DEX)</span>
+   <input type="number" id="dex" value="70" oninput="updateStats()">
+   <div class="stat-sub" id="dex-calc">35 / 14</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Destreza (DEX)', 'dex')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">ASPECTO (APP)</span>
+   <input type="number" id="app" value="50" oninput="updateStats()">
+   <div class="stat-sub" id="app-calc">25 / 10</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Aspecto (APP)', 'app')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">INTELIGENCIA (INT)</span>
+   <input type="number" id="int" value="59" oninput="updateStats()">
+   <div class="stat-sub" id="int-calc">29 / 11</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Inteligencia (INT)', 'int')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">PODER (POW)</span>
+   <input type="number" id="pow" value="68" oninput="updateStats()">
+   <div class="stat-sub" id="pow-calc">34 / 13</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Poder (POW)', 'pow')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">EDUCACIÓN (EDU)</span>
+   <input type="number" id="edu" value="80" oninput="updateStats()">
+   <div class="stat-sub" id="edu-calc">40 / 16</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Educación (EDU)', 'edu')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">SUERTE (LUCK)</span>
+   <input type="number" id="luck-curr" value="50" oninput="syncStickyBar()"> / <input type="number" id="luck-max" value="50" oninput="syncStickyBar()">
+   <div class="stat-sub">Actual</div>
+   <button class="btn-roll" style="margin-top: 5px; width: 100%; font-size: 0.7rem;" onclick="rollStat('Suerte (LUCK)', 'luck-curr')">🎲 Tirar</button>
+ </div>
+ <div class="stat-card">
+   <span class="field-label">Bono Daño / Corp.</span>
+   <div class="stat-value" id="db-val" style="font-size: 0.95rem; margin-top: 5px;">Ninguno</div>
+   <div class="stat-sub" id="build-val">Corpulencia: 0</div>
+ </div>
+</div>
+
+ <div class="grid grid-3">
+ <div class="stat-card" style="border-color: var(--accent-gold);">
+ <span class="field-label">PUNTOS DE VIDA (HP)</span>
+ <div style="display:flex; justify-content:center; align-items:center; gap:4px; margin-top:3px;">
+ <input type="number" id="hp-curr" value="10" style="width:45px;" oninput="syncStickyBar()"> / <input type="number" id="hp-max" value="10" style="width:45px;" oninput="syncStickyBar()">
+ </div>
+ </div>
+ <div class="stat-card" style="border-color: var(--accent-light);">
+ <span class="field-label">PUNTOS DE MAGIA (MP)</span>
+ <div style="display:flex; justify-content:center; align-items:center; gap:4px; margin-top:3px;">
+ <input type="number" id="mp-curr" value="50" style="width:45px;" oninput="syncStickyBar()"> / <input type="number" id="mp-max" value="68" style="width:45px;" oninput="syncStickyBar()">
+ </div>
+ </div>
+ <div class="stat-card" style="border-color: var(--accent-maroon);">
+ <span class="field-label">CORDURA (SAN)</span>
+ <div style="display:flex; justify-content:center; align-items:center; gap:4px; margin-top:3px;">
+ <input type="number" id="san-curr" value="57" style="width:45px;" oninput="syncStickyBar()"> / <input type="number" id="san-max" value="57" style="width:45px;" oninput="syncStickyBar()">
+ </div>
+ </div>
+ </div>
+</div>
+</details>
+
+<!-- HABILIDADES -->
+<details class="v2-section" open>
+<summary>2. Habilidades</summary>
+<div class="section-content">
+<div class="skills-container" id="skillsContainer">
+ <!-- Generado dinámicamente mediante JS para mantener reactividad total -->
+ </div>
+</div>
+</details>
+
+<!-- COMBATE Y EQUIPAMIENTO -->
+<details class="v2-section" open>
+<summary>3. Combate y Pertenencias</summary>
+<div class="section-content">
+<table>
+ <thead>
+ <tr>
+ <th>Arma / Ataque</th>
+ <th>Habilidad Requerida</th>
+ <th class="center">Daño</th>
+ <th class="center">Alcance</th>
+ <th>Munición / Notas</th>
+ <th class="center">Lanzar</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><input type="text" id="arma-1-nombre" class="field-value-input" value="Pistola .38"></td>
+ <td><input type="text" id="arma-1-habilidad" class="field-value-input" value="Armas de Fuego (Pistola) 40%"></td>
+ <td class="center"><input type="text" id="arma-1-dano" class="field-value-input center" value="1D10 (Empalamiento)"></td>
+ <td class="center"><input type="text" id="arma-1-alcance" class="field-value-input center" value="15 yardas"></td>
+ <td><input type="text" id="arma-1-notas" class="field-value-input" value="8 balas (4 sal negra, 2 resonancia, 1 plata fría, 1 runas fuego)"></td>
+ <td class="center"><button class="btn-roll" onclick="rollWeaponAttack('arma-1', 'arma-1-habilidad')">🎲 Atacar</button></td>
+ </tr>
+ <tr>
+ <td><input type="text" id="arma-2-nombre" class="field-value-input" value="Látigo (Bullwhip)"></td>
+ <td><input type="text" id="arma-2-habilidad" class="field-value-input" value="Lucha (Pelea) 87%"></td>
+ <td class="center"><input type="text" id="arma-2-dano" class="field-value-input center" value="1D3 (Contundente)"></td>
+ <td class="center"><input type="text" id="arma-2-alcance" class="field-value-input center" value="15 pies"></td>
+ <td><input type="text" id="arma-2-notas" class="field-value-input" value="1 ataque; medio bono de daño"></td>
+ <td class="center"><button class="btn-roll" onclick="rollWeaponAttack('arma-2', 'arma-2-habilidad')">🎲 Atacar</button></td>
+ </tr>
+ <tr>
+ <td><input type="text" id="arma-3-nombre" class="field-value-input" value="Pelea (Sin armas)"></td>
+ <td><input type="text" id="arma-3-habilidad" class="field-value-input" value="Lucha (Pelea) 58%"></td>
+ <td class="center"><input type="text" id="arma-3-dano" class="field-value-input center" value="1D3"></td>
+ <td class="center"><input type="text" id="arma-3-alcance" class="field-value-input center" value="Cuerpo a Cuerpo"></td>
+ <td><input type="text" id="arma-3-notas" class="field-value-input" value="Ataque desarmado estándar"></td>
+ <td class="center"><button class="btn-roll" onclick="rollWeaponAttack('arma-3', 'arma-3-habilidad')">🎲 Atacar</button></td>
+ </tr>
+ </tbody>
+</table>
+
+
+ <div class="grid grid-2" style="margin-top: 10px;">
+ <div class="field-box">
+ <span class="field-label">Equipamiento y Objetos Personales</span>
+ <textarea id="equipamiento" style="width:100%; height:80px; border:none; resize:vertical; background:transparent;">Equipo de viaje en bandolera/bolso, pistola .38, 4 balas de sal negra, 2 balas de resonancia, 1 bala de plata fría, 1 bala con runas de fuego mal escritas por Johnny "Lucky Shot" O'Reilly, vial vacío (para fuego alquímico), lápices y bloc de notas, peine para el pelo, medalla de San Cristóbal, Fetiche, anillo con brújula.</textarea>
+ </div>
+ <div class="field-box">
+ <span class="field-label">Finanzas y Economía</span>
+ <textarea id="finanzas" style="width:100%; height:80px; border:none; resize:vertical; background:transparent;">Efectivo: $80 USD
+Nivel de Gasto: $10 USD
+Bienes/Activos: $2,000 USD</textarea>
+ </div>
+ </div>
+</div>
+</details>
+
+<!-- TRASFONDO -->
+<details class="v2-section" open>
+<summary>4. Trasfondo e Historial</summary>
+<div class="section-content">
+<div class="grid grid-2">
+ <div class="field-box">
+ <span class="field-label">Ideología / Creencias</span>
+ <textarea id="trasfondo-ideologia" style="width:100%; height:50px; border:none; resize:vertical; background:transparent;">Profundo amor por la historia y las culturas antiguas. Ansía hacerse un nombre propio descubriendo tesoros perdidos.</textarea>
+ </div>
+ <div class="field-box">
+ <span class="field-label">Personas Importantes y Contactos</span>
+ <textarea id="trasfondo-personas" style="width:100%; height:50px; border:none; resize:vertical; background:transparent;">Su padre, Frank Jones, cuyos famosos descubrimientos lo hacen sentir eclipsado constante y profesionalmente. Posee además contactos pendientes que debe retomar con Kormac.</textarea>
+ </div>
+ <div class="field-box">
+ <span class="field-label">Lugar Significativo</span>
+ <textarea id="trasfondo-lugar" style="width:100%; height:50px; border:none; resize:vertical; background:transparent;">Un bar donde sirvan tragos fuertes y donde pueda ahogar sus penas y olvidar sus problemas.</textarea>
+ </div>
+ <div class="field-box">
+ <span class="field-label">Pertenencia Preciada</span>
+ <textarea id="trasfondo-pertenencia" style="width:100%; height:50px; border:none; resize:vertical; background:transparent;">Su medalla de San Cristóbal, la cual considera su amuleto personal de buena suerte.</textarea>
+ </div>
+ </div>
+ <div class="field-box" style="margin-top: 10px;">
+ <span class="field-label">Rasgos y Manías</span>
+ <textarea id="trasfondo-rasgos" style="width:100%; height:40px; border:none; resize:vertical; background:transparent;">Imprudente. Tiende a saltar de cabeza a las situaciones antes de detenerse a pensar en las consecuencias.</textarea>
+ </div>
+</div>
+</details>
+
+<!-- NOTAS DEL GUARDIÁN -->
+<details class="v2-section" open>
+<summary>5. Notas de Investigación y Perfil de Campaña (Guardián)</summary>
+<div class="section-content">
+<div class="notes-box">
+ <p style="margin-top: 0;"><strong>Análisis del Personaje:</strong> Nevada empezó como un arqueólogo aventurero en crisis de mediana edad, pero actualmente se encuentra profundamente conectado con Yog-Sothoth, Xylt’hora, el Cráneo del Primer Sacrificado y la erosión constante de su humanidad.</p>
+ <p style="margin-bottom: 0;"><strong>Recomendación Narrativa:</strong> Encaja perfectamente con la campaña del Grial Oscuro. Funciona mejor cuando el horror cósmico y la tentación del poder divino se mezclan con su ancla terrenal: la nostalgia, el miedo a ser irrelevante, la vergüenza académica y el cansancio físico.</p>
+ </div>
+</div>
+</details>
+
+<!-- HABILIDADES ESPECIALES, HECHIZOS Y RECURSOS CÓSMICOS -->
+<details class="v2-section" open>
+<summary>6. Habilidades Especiales, Hechizos y Reliquias</summary>
+<div class="section-content">
+<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-bottom: 12px;">Nevada comenzó como un arqueólogo movido por una curiosidad difícil de contener. Con el tiempo, esa curiosidad llamó la atención de fuerzas que podían mostrarle cosas que ningún ser humano debería comprender. Sus poderes más antiguos son también aquellos que mejor domina; las capacidades más recientes y profundas suelen exigir precios considerablemente mayores. <strong>Puntos de Magia máximos: 68.</strong></p>
+
+ <!-- I. CAPACIDADES PROPIAS -->
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Curious — Restless Eye</span>
+ <span class="ability-meta">Pasiva mundana / 1 por sesión</span>
+ <button class="btn-usar" onclick="usarHabilidadSimple('Curious — Restless Eye')">🔹 Usar</button>
+ </div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;">Nevada siempre ha sentido una necesidad casi compulsiva de comprender aquello que despierta su interés.</p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Curious:</strong> Cuando una situación despierta genuinamente su curiosidad, obtiene <strong>+10% a una tirada apropiada</strong> de investigación, percepción o conocimiento (Arqueología, Historia, Ocultismo, Mitos de Cthulhu, Uso de Biblioteca, Ciencia, Descubrir, u otra apropiada). Solo aplica cuando Nevada está genuinamente interesado en descubrir algo, no por conveniencia.</li>
+ <li><strong>Restless Eye</strong> <em>(1 vez por sesión):</em> Tras fallar una tirada de investigación o conocimiento, puede realizar una <strong>Tirada Difícil de INT</strong>. Con éxito, recuerda, conecta o deduce una pista indirecta relacionada con lo investigado. No obtiene automáticamente la respuesta.</li>
+ </ul>
+ </div>
+
+ <!-- II. MAGIA APRENDIDA -->
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Combustión</span>
+ <span class="ability-meta">Coste: 2 PM por objetivo</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(1)">⚡ Usar</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-1"></div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;">Una de las primeras técnicas sobrenaturales aprendidas por Nevada y una de las que domina con mayor precisión.</p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Combustión concentrada:</strong> Coste 2 PM, Objetivo 1, Daño 1D6 fuego. Provoca una ignición directamente sobre un objetivo.</li>
+ <li><strong>Combustión múltiple:</strong> Coste 2 PM por objetivo, Daño 1D4+1 fuego por objetivo. Divide la energía de la técnica para múltiples puntos de ignición simultáneos.</li>
+ <li><strong>Fuego real:</strong> Las llamas son reales: pueden prender ropa, incendiar madera, encender combustibles y propagarse normalmente. Prende materiales ligeramente mejor que una llama convencional.</li>
+ </ul>
+ </div>
+
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Fuego Alquímico</span>
+ <span class="ability-meta">Preparación: 1 HP</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(2)">⚡ Usar</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-2"></div>
+ <p style="margin: 0; font-size: 0.85rem;">Nevada descubrió que toda combustión necesita solo tres elementos —combustible, comburente, calor— y comprendió que puede proporcionar los tres: su propia sangre como combustible, el oxígeno ambiental como comburente y su magia como calor. <em>Preparación: se realiza voluntariamente un corte (coste 1 HP). Puede usar libremente su sangre como combustible hasta que termine la sesión, transcurra un día de juego o la herida sea curada; si la herida desaparece, debe volver a cortarse para continuar usándola.</em></p>
+ </div>
+
+ <!-- III. RUNAS -->
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Tatuador de Runas</span>
+ <span class="ability-meta">Repertorio conocido</span>
+ <button class="btn-usar" onclick="usarHabilidadSimple('Tatuador de Runas')">🔹 Usar</button>
+ </div>
+ <p style="margin: 0; font-size: 0.85rem;">Nevada conoce un repertorio concreto de runas sobrenaturales: algunas requieren días de preparación, otras pueden trazarse rápidamente durante combate. Puede investigar y aprender runas adicionales en el futuro, pero actualmente solo dispone de las que conoce.</p>
+ </div>
+
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Rune of the Accusing Eye</span>
+ <span class="ability-meta">Reacción / Coste: 1D4 PM + 3 SAN</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(4)">⚡ Usar</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-4"></div>
+ <p style="margin: 0; font-size: 0.85rem;">
+ Cuando Nevada es atacado por un hechizo o efecto sobrenatural, puede dibujar rápidamente el símbolo de la runa en el aire, devolviendo parte de la energía hacia quien intentó afectarlo. El atacante realiza una tirada de <strong>POW</strong>: con fallo pierde 1D8 PM; con éxito resiste el retorno; con Éxito Difícil o mejor, rompe la runa y Nevada pierde 1D8 PM.
+ <em>La runa desaparece después de activarse, pero Nevada puede volver a trazarla cuando sea necesario.</em>
+ </p>
+ </div>
+
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Runa de la Segunda Mirada</span>
+ <span class="ability-meta">Runa preparada / Pecho / 2 usos</span>
+ <button class="btn-usar" onclick="usarHabilidadSimple('Runa de la Segunda Mirada')">🔹 Usar</button>
+ </div>
+ <p style="margin: 0; font-size: 0.85rem;">
+ Una compleja runa tatuada sobre el pecho de Nevada altera brevemente aquello que acaba de ocurrir. Después de cualquier tirada, puede gastar un uso para <strong>repetir la tirada y conservar el mejor de ambos resultados</strong>. Posee 2 usos; después del segundo, desaparece.
+ <em>Reaplicación: recrear el tatuaje requiere aproximadamente 5 días de preparación. Solo beneficia a la persona sobre cuya piel está tatuada.</em>
+ </p>
+ </div>
+
+ <!-- IV. BENDICIONES DE YOG-SOTHOTH -->
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Eye of the Still Portal</span>
+ <span class="ability-meta">Amuleto / Bendición de Yog-Sothoth</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(6)">⚡ Usar (activación consciente)</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-6"></div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;">El amuleto no entrega respuestas. Le indica a Nevada dónde debería mirar.</p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Reacción espontánea</strong> <em>(sin coste):</em> Ante algo especialmente relevante, el amuleto puede reaccionar por sí solo: una sensación difícil de explicar, un impulso de mirar hacia determinado lugar, una percepción agudizada o la impresión de que cierto detalle merece atención. No explica por qué es importante.</li>
+ <li><strong>Activación consciente</strong> <em>(Coste: 4 PM, usos ilimitados):</em> Nevada se concentra voluntariamente en el amuleto para percibir detalles ocultos, reconocer ilusiones, advertir alteraciones perceptivas, percibir si alguien miente o identificar sobre qué debería concentrar su investigación. Sigue sin dar la respuesta: <strong>muestra dónde buscarla.</strong></li>
+ </ul>
+ </div>
+
+ <!-- V. PUERTAS DE YOG-SOTHOTH -->
+ <div class="ability-card" style="border-left-color: var(--accent-maroon);">
+ <div class="ability-header">
+ <span class="ability-title">Puertas de Yog-Sothoth</span>
+ <span class="ability-meta">Coste: 2 PM cada 5m | Concentración | 1 conexión</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(7)">⚡ Usar (por tramo de 5m)</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-7"></div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;">Nevada comprende que dos puntos separados del espacio pueden estar mucho más cerca de lo que aparentan. Crea una entrada y una salida conectadas entre sí.</p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Uso convencional:</strong> Abrir una Puerta en configuración razonable no requiere tirada; puede hacerlo corriendo, cayendo, combatiendo, conduciendo o en movimiento. Bajo presión extrema puede requerirse una tirada.</li>
+ <li><strong>Conservación del impulso:</strong> Todo lo que atraviesa una Puerta mantiene su velocidad e impulso (criaturas, proyectiles, objetos, vehículos). Una caída puede redirigirse, un disparo puede cambiar de dirección, una carga puede terminar en otro lugar.</li>
+ <li><strong>Una puerta abierta:</strong> Las Puertas no distinguen aliados de enemigos; mientras permanezcan abiertas cualquiera puede utilizarlas. Nevada puede cerrarlas voluntariamente.</li>
+ <li><strong>Cierre:</strong> No puede usarse para cortar a alguien por la mitad. Si se cierra mientras algo la atraviesa, es expulsado por el extremo más cercano.</li>
+ <li><strong>Geometría poco convencional:</strong> Configuraciones extrañas (suelo hacia techo, ángulos extremos, bucles, acumulación de velocidad) pueden requerir una tirada de POW, frecuentemente Difícil según su complejidad. Son posibles; no necesariamente fáciles.</li>
+ <li><strong>Eye of the Still Portal + Puertas:</strong> Si el amuleto revela un espacio válido al otro lado de una barrera, Nevada puede colocar allí una salida sin visión directa, pagando el coste de ambas habilidades.</li>
+ <li><strong>Ataques a través de Puertas:</strong> Aplica <strong>-20% a la tirada de ataque</strong> (-10% si apunta y prepara el ángulo). Si el enemigo no sabe que Nevada puede atacar mediante portales, <strong>no puede Esquivar el primer ataque</strong> desde ese ángulo imposible.</li>
+ </ul>
+ </div>
+
+ <!-- VI. EL OJO -->
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">El Ojo</span>
+ <span class="ability-meta">Coste: 1D6 SAN + 6 PM | ~1 minuto</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(8)">⚡ Usar</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-8"></div>
+ <p style="margin: 0; font-size: 0.85rem;">
+ Nevada ya no necesita un espejo ennegrecido: los cánticos son suficientes. El Ojo permite contemplar la realidad de las cosas, no necesariamente aquello que aparentan ser: seres invisibles, ilusiones, estados etéreos, realidades superpuestas, disfraces sobrenaturales, alteraciones mágicas o aspectos ocultos de anomalías. <strong>El Ojo muestra; Nevada debe interpretar.</strong> Ver algo no garantiza comprenderlo.
+ <em>Mirar demasiado: cada activación tiene 10% de probabilidad de mostrar algo que Nevada no pretendía observar, con pérdida adicional de SAN y una consecuencia narrativa relacionada.</em>
+ </p>
+ </div>
+
+ <!-- VII. CRÁNEO DEL PRIMER SACRIFICADO -->
+ <div class="ability-card" style="border-left-color: var(--text-muted); background-color: var(--surface-strong);">
+ <div class="ability-header">
+ <span class="ability-title">Cráneo del Primer Sacrificado</span>
+ <span class="ability-meta">Fragmento del Grial Oscuro / Sintonía profunda</span>
+ <button class="btn-usar" onclick="usarEcoDelNoSer()">🌑 Inicio de Sesión (-SAN)</button>
+ <button class="btn-usar" onclick="abrirFormularioUsar(9)">⚡ Usar (Atisbo del Vacío)</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-9"></div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;"><em>El Cráneo se encuentra completamente vinculado a Nevada. Su presencia ya no se siente enteramente física; parece estar siempre disponible cuando la necesita.</em></p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Eco del No-Ser</strong> <em>(Pasiva permanente):</em> +10% Ocultismo, +10% Mitos de Cthulhu, +10 POW (ya reflejado en sus estadísticas actuales). <em>Precio: al comienzo de cada sesión pierde automáticamente 1D6 SAN, sin poder resistirse.</em></li>
+ <li><strong>Consulta Irrestricta:</strong> Nevada puede preguntarle al Cráneo cuanto quiera. Nunca miente, pero puede responder con metáforas, de forma incompleta, críptica, sarcástica, burlona, o simplemente guardar silencio. Habla directamente dentro de su mente y también puede mostrarle imágenes.</li>
+ <li><strong>Atisbo del Vacío</strong> <em>(Coste: 1D4 SAN + 3 PM, 1 vez por escena):</em> escoge un efecto — <strong>Claridad Antinatural</strong> (repite una tirada de percepción, investigación, Ocultismo o comprensión sobrenatural), <strong>Lectura de Fisuras</strong> (percibe rastros de portales, fisuras, Puertas o tránsito dimensional) o <strong>Sincronía Breve</strong> (+20% a una tirada de POW o acción mental). <em>Una pifia permite que algo del Vacío afecte momentáneamente su mente.</em></li>
+ </ul>
+ </div>
+
+ <!-- VIII. XYLT'HORA -->
+ <div class="ability-card" style="border-left-color: var(--accent-maroon);">
+ <div class="ability-header">
+ <span class="ability-title">Ojo del Vacío Ascendente</span>
+ <span class="ability-meta">Coste: 1D10 PM + 2 SAN | Contacto visual</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(10)">⚡ Usar</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-10"></div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;">Nevada establece contacto visual con otra criatura y obliga a su mente a contemplar una fracción del Vacío Absoluto. Contienda: <strong>POW de Nevada vs SAN del objetivo</strong> (o POW si no posee SAN). Puede afectar a cualquier criatura cuya mente sea capaz de sufrir ante la revelación del Vacío.</p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Éxito Normal:</strong> el objetivo pierde 1D6 SAN y queda aturdido 1 asalto; si resiste, pierde 1D4 SAN y evita el aturdimiento.</li>
+ <li><strong>Éxito Difícil:</strong> pierde 1D8 SAN y queda fuertemente desorientado (penalizadores apropiados); si resiste, pierde 1D6 SAN.</li>
+ <li><strong>Éxito Extremo:</strong> pierde 1D10 SAN y corre riesgo inmediato de fobia, obsesión o alteración mental; si resiste, pierde 1D8 SAN.</li>
+ <li><strong>Fallo o pifia:</strong> <em>"Si miras al Vacío, el Vacío te mira de vuelta."</em> Puede provocar pérdida de SAN, visiones no deseadas o llamar la atención de algo que observaba desde el otro lado.</li>
+ </ul>
+ </div>
+
+ <!-- IX. SINCRONÍA DEL TODO Y LA NADA -->
+ <div class="ability-card" style="border-left-color: var(--accent-maroon);">
+ <div class="ability-header">
+ <span class="ability-title">Ojo del Todo y la Nada</span>
+ <span class="ability-meta">Coste: 1D12 PM + 1D12 SAN</span>
+ <button class="btn-usar" onclick="abrirFormularioUsar(11)">⚡ Usar</button>
+ </div>
+ <div class="usar-form-container" id="usar-form-11"></div>
+ <p style="margin: 0 0 5px 0; font-size: 0.85rem;">Técnica máxima actual (origen Yog-Sothoth / Xylt'hora). Nevada combina dos conceptos incompatibles: Yog-Sothoth le permite comprender cómo un ser percibe la realidad, y Xylt'hora le permite eliminar temporalmente una parte de esa percepción. No destruye físicamente un sentido: durante unos instantes, <strong>simplemente deja de existir para la víctima.</strong> No necesita contacto visual, solo poder percibir claramente al objetivo.</p>
+ <ul style="font-size: 0.85rem;">
+ <li><strong>Canales afectados:</strong> Éxito Normal = 1 canal (1D4 turnos); Éxito Difícil = 2 canales (1D4+1 turnos); Éxito Extremo = 3 canales (1D4+2 turnos). Los canales se determinan al azar y nunca se repite el mismo durante una activación. Si el objetivo supera su tirada de SAN, reduce en 1 la cantidad de canales afectados (mínimo 1).</li>
+ <li><strong>1 — Vista:</strong> queda completamente ciego; las acciones que dependan de visión reciben penalizaciones severas o resultan imposibles.</li>
+ <li><strong>2 — Oído:</strong> queda completamente sordo; no reacciona a órdenes, advertencias o información que dependan exclusivamente del sonido.</li>
+ <li><strong>3 — Tacto:</strong> deja de recibir información táctil de su cuerpo. <strong>-20% a manipulación fina</strong> y acciones que dependan directamente del tacto.</li>
+ <li><strong>4 — Equilibrio:</strong> el cerebro deja de comprender su orientación. <strong>MOV reducido a la mitad</strong>, dado de penalización a Esquivar y a movimientos físicos complejos.</li>
+ <li><strong>5 — Dolor:</strong> deja de percibir dolor; no sabe cuánto daño ha recibido ni puede reaccionar apropiadamente ante sus propias heridas hasta que termina el efecto.</li>
+ <li><strong>6 — Propiocepción:</strong> deja de saber dónde están las distintas partes de su cuerpo. Dado de penalización a acciones físicas; los movimientos complejos requieren superar una tirada de DEX para no perder el equilibrio o caer.</li>
+ <li><strong>Uso Masivo:</strong> extiende la técnica a múltiples objetivos. Cada objetivo adicional después del primero aumenta el coste total en <strong>+5 PM y +5 SAN</strong> (1 objetivo: 1D12 PM + 1D12 SAN; 2 objetivos: 1D12+5 / 1D12+5; 3 objetivos: 1D12+10 / 1D12+10; y así sucesivamente).</li>
+ </ul>
+ </div>
+
+ <!-- X. RECURSO ESPECIAL -->
+ <div class="ability-card">
+ <div class="ability-header">
+ <span class="ability-title">Are You Feeling Lucky?</span>
+ <span class="ability-meta">Sin coste | 1 por escena | Tirada: Suerte</span>
+ <button class="btn-usar" onclick="rollStat('Suerte — Are You Feeling Lucky?', 'luck-curr')">🍀 Usar (Tirada de Suerte)</button>
+ </div>
+ <p style="margin: 0; font-size: 0.85rem;">
+ Nevada ha descubierto recientemente que puede producir una clase de flash metafísico. No sabe realmente cómo funciona; solo ha comprendido una cosa: <strong>John puede verlo.</strong> El flash existe únicamente durante un instante y luego desaparece.
+ <em>01 natural: John en su mejor versión. Éxito: John logra seguir la señal y aparece para ayudar dentro de sus capacidades normales (no garantiza ganar el combate, resolver el problema ni escapar). Fallo: John no llega. 100 natural: John en un mal día.</em>
+ </p>
+ </div>
+
+ <div class="notes-box">
+ <p style="margin: 0;">"Nevada siempre ha querido saber qué existe detrás de la siguiente puerta. El problema es que, últimamente, las puertas han empezado a abrirse."</p>
+ </div>
+</div>
+</details>
+
+<!-- 📝 NOTAS DE AVENTURA (ESTILO NEVADA) -->
+<details class="v2-section" open>
+<summary>📝 Notas de Aventura y Diario de Campaña</summary>
+<div class="section-content">
+<p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 8px; font-style: italic;">Utiliza este espacio para apuntar tus pistas, notas del Guardián y descubrimientos arcanos. Se guardan solas en la nube:</p>
+           <textarea id="notas-personaje" style="width: 100%; height: 160px; background: var(--surface-strong); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-light); padding: 12px; font-size: 0.9rem; outline: none; resize: vertical;" placeholder="Escribe aquí tu bitácora de juego..."></textarea>
+</div>
+</details>
+
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+  // Configuración de tu proyecto en Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+
+  const PERSONAJE_ID = "nevada_jones";
+  const SISTEMA_PERSONAJE_PROPIO = 'coc'; // Sistema de juego de esta ficha (ver index.html)
+  let charRef = null;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+
+  // Botón "Volver" con memoria de campaña [1, 2]
+  const btnVolver = document.querySelector('a[href="index.html"]');
+  if (btnVolver && codigoCampana) {
+    btnVolver.href = `index.html?campana=${codigoCampana}`;
+  }
+
+  let modoLectura = false; // Guardia en cliente (defensa en profundidad, además de las reglas de Firebase)
+  let ownerReparado = false; // Evita repetir el auto-reclamo de owner en cada snapshot
+
+  function aplicarModoLectura(soloLectura) {
+    const sheet = document.querySelector('.sheet');
+    const banner = document.getElementById('readonly-banner');
+    if (!sheet) return;
+    modoLectura = soloLectura;
+    sheet.classList.toggle('readonly-mode', soloLectura);
+    if (banner) banner.style.display = soloLectura ? 'block' : 'none';
+    sheet.querySelectorAll('input, select, textarea').forEach(el => {
+      el.disabled = soloLectura;
+    });
+  }
+
+  // --- MODO DÍA/NOCHE (replicado del mismo mecanismo que usa Eldur) ---
+  function applyTheme(isDark) {
+    document.body.classList.toggle('light-mode', !isDark);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.innerText = isDark ? '☀️ Modo Día' : '🌙 Modo Noche';
+  }
+  function toggleTheme() {
+    const isDark = document.body.classList.contains('light-mode');
+    applyTheme(isDark);
+    localStorage.setItem(`${PERSONAJE_ID}_theme`, isDark ? 'dark' : 'light');
+  }
+  function initTheme() {
+    const saved = localStorage.getItem(`${PERSONAJE_ID}_theme`);
+    if (saved) {
+      applyTheme(saved === 'dark');
+    } else {
+      const hour = new Date().getHours();
+      applyTheme(!(hour >= 7 && hour < 19)); // de día (7-19h) arranca en modo día
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initTheme);
+
+  // --- BARRA STICKY: PV / CORDURA / SUERTE ---
+  function syncStickyBar() {
+    const hpCur = document.getElementById('hp-curr');
+    const hpMax = document.getElementById('hp-max');
+    const sanCur = document.getElementById('san-curr');
+    const sanMax = document.getElementById('san-max');
+    const luckCur = document.getElementById('luck-curr');
+    const mpCur = document.getElementById('mp-curr');
+    const mpMax = document.getElementById('mp-max');
+    const scbHp = document.getElementById('scb-hp');
+    const scbSan = document.getElementById('scb-san');
+    const scbLuck = document.getElementById('scb-luck');
+    const scbMp = document.getElementById('scb-mp');
+    if (scbHp && hpCur && hpMax) scbHp.innerText = `${hpCur.value}/${hpMax.value}`;
+    if (scbSan && sanCur && sanMax) scbSan.innerText = `${sanCur.value}/${sanMax.value}`;
+    if (scbLuck && luckCur) scbLuck.innerText = luckCur.value;
+    if (scbMp && mpCur && mpMax) scbMp.innerText = `${mpCur.value}/${mpMax.value}`;
+  }
+
+  // AUTENTICACIÓN: gatea el acceso y determina el charRef según sesión real
+  function bloquearPorSistemaIncorrecto(sistemaCampana) {
+    document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
+      <div style="font-size:3rem;">⚠️</div>
+      <h1 style="font-size:1.3rem;color:#e0b84a;">Ficha fuera de sistema</h1>
+      <p style="max-width:420px;color:#94a3b8;">Esta ficha es de <strong>${SISTEMA_PERSONAJE_PROPIO === 'coc' ? 'Call of Cthulhu' : 'D&D'}</strong> y la campaña seleccionada es de <strong>${sistemaCampana === 'coc' ? 'Call of Cthulhu' : 'D&D'}</strong>. No se puede abrir esta ficha desde esa campaña.</p>
+      <a href="index.html?campana=${codigoCampana}" style="color:#e0b84a;text-decoration:underline;">← Volver al selector de personajes</a>
+    </div>`;
+  }
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      console.log("Sesión activa detectada en la ficha de Nevada Jones:", user.uid);
+
+      if (codigoCampana) {
+        const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
+        const sistemaCampana = sistemaSnap.val();
+        if (sistemaCampana && sistemaCampana !== SISTEMA_PERSONAJE_PROPIO) {
+          bloquearPorSistemaIncorrecto(sistemaCampana);
+          return;
+        }
+      }
+
+      if (codigoCampana) {
+        charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+      } else {
+        charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+      }
+
+      sincronizarDatosDesdeNube();
+
+      const gmRefPromise = codigoCampana
+        ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+        : Promise.resolve(true);
+
+      // Control del botón de compartir y del modo de solo lectura
+      gmRefPromise.then(soyElGM => {
+        charRef.on('value', snap => {
+          const p = snap.val();
+          if (!p) return;
+
+          // Auto-reparación: personaje activo sin owner (dato legacy) -> quien lo abre lo reclama.
+          // Este es justamente el caso de Nevada Jones en la campaña "society" hoy.
+          if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+            ownerReparado = true;
+            charRef.child('owner').set(user.uid);
+            return;
+          }
+
+          const esMio = codigoCampana ? (p.owner === user.uid) : true;
+          const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+          aplicarModoLectura(soloLectura);
+
+          const btnCompartir = document.getElementById('btn-compartir');
+
+          if (btnCompartir && esMio) {
+            btnCompartir.style.display = 'inline-block';
+            btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+            btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+
+            btnCompartir.onclick = () => {
+              charRef.child('publico').set(!p.publico);
+            };
+          } else if (btnCompartir) {
+            btnCompartir.style.display = 'none';
+          }
+        });
+      });
+    } else {
+      console.warn("Ficha sin sesión activa. Redirigiendo...");
+      window.location.href = "index.html";
+    }
+  });
+
+  // 1. ESCUCHAR CAMBIOS Y GUARDAR EN LA NUBE AL EDITAR
+  document.addEventListener('input', (e) => {
+    if (modoLectura) return;
+    if (e.target.matches('input, select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId && charRef) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        charRef.child('datos/' + fieldId).set(val);
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (modoLectura) return;
+    if (e.target.matches('input[type="checkbox"], select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId && charRef) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        charRef.child('datos/' + fieldId).set(val);
+      }
+    }
+  });
+
+  // 2. SINCRONIZAR EN TIEMPO REAL DESDE LA NUBE A LA PANTALLA
+  function sincronizarDatosDesdeNube() {
+    if (!charRef) return;
+    charRef.child('datos').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') {
+            if (el.checked !== data[id]) el.checked = data[id];
+          } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+            if (el.innerText !== String(data[id])) el.innerText = data[id];
+          } else {
+            if (el.value !== String(data[id]) && document.activeElement !== el) {
+              el.value = data[id];
+            }
+          }
+        }
+      });
+      if (typeof updateStats === 'function') updateStats();
+      syncStickyBar();
+    });
+  }
+
+// Lista inicial de Habilidades
+const initialSkills = [
+ { name: "Contabilidad (Accounting)", val: 5 },
+ { name: "Antropología (Anthropology)", val: 1 },
+ { name: "Tasar (Appraise)", val: 5 },
+ { name: "Arqueología (Archaeology)", val: 70 },
+ { name: "Encanto (Charm)", val: 61 },
+ { name: "Nivel de Crédito (Credit Rating)", val: 40 },
+ { name: "Mitos de Cthulhu (Cthulhu Mythos)", val: 53 },
+ { name: "Esquivar (Dodge)", val: 44 },
+ { name: "Lucha: Pelea (Fighting: Brawl)", val: 58 },
+ { name: "Armas de Fuego: Pistola", val: 40 },
+ { name: "Primeros Auxilios (First Aid)", val: 50 },
+ { name: "Historia (History)", val: 60 },
+ { name: "Idioma: Latín", val: 40 },
+ { name: "Idioma: Inglés (Nativo)", val: 80 },
+ { name: "Buscar en Biblioteca (Library Use)", val: 40 },
+ { name: "Escuchar (Listen)", val: 30 },
+ { name: "Mundo Natural (Natural World)", val: 30 },
+ { name: "Ocultismo (Occult)", val: 67 },
+ { name: "Psicología (Psychology)", val: 40 },
+ { name: "Descubrir (Spot Hidden)", val: 57 },
+ { name: "Sigilo (Stealth)", val: 20 },
+ { name: "Supervivencia (Survival)", val: 16 }
+];
+
+// --- NUEVO: TIRAR CHEQUEOS DE CARACTERÍSTICA (D100) ---
+function rollStat(name, statId) {
+  const target = parseInt(document.getElementById(statId).value) || 0;
+  const roll = Math.floor(Math.random() * 100) + 1;
+  const half = Math.floor(target / 2);
+  const fifth = Math.floor(target / 5);
+
+  let outcome = "";
+  let cssClass = "";
+
+  if (roll === 1) {
+    outcome = "¡ÉXITO CRÍTICO!";
+    cssClass = "log-critical";
+  } else if (roll === 100 || (target < 50 && roll >= 96)) {
+    outcome = "¡PIFIA / FALLO CRÍTICO!";
+    cssClass = "log-fumble";
+  } else if (roll <= fifth) {
+    outcome = "ÉXITO EXTREMO";
+    cssClass = "log-extreme";
+  } else if (roll <= half) {
+    outcome = "ÉXITO DIFÍCIL";
+    cssClass = "log-hard";
+  } else if (roll <= target) {
+    outcome = "ÉXITO REGULAR";
+    cssClass = "log-success";
+  } else {
+    outcome = "FALLO";
+    cssClass = "log-fail";
+  }
+
+  const msg = `Chequeo de Atributo <strong>${name}</strong> (${target}%): Resultado = <strong>${roll}</strong> ➔ <span class="${cssClass}">${outcome}</span>`;
+  logRoll(msg, cssClass, roll, name, outcome); // 👈 ACTUALIZADO
+}
+
+// --- NUEVO (bugfix 26 ago): parsea una notación de dados tipo "1D10", "2D6+1", "1d3" ---
+function tirarDadoNotacion(notacion) {
+  if (!notacion) return { total: 0, detalle: '' };
+  const m = String(notacion).trim().match(/(\d*)[dD](\d+)\s*([+-]\s*\d+)?/);
+  if (!m) return { total: 0, detalle: '' };
+  const cant = parseInt(m[1]) || 1;
+  const caras = parseInt(m[2]);
+  const mod = m[3] ? parseInt(m[3].replace(/\s+/g, '')) : 0;
+  let tiradas = [];
+  for (let i = 0; i < cant; i++) tiradas.push(Math.floor(Math.random() * caras) + 1);
+  const suma = tiradas.reduce((a, b) => a + b, 0) + mod;
+  return { total: suma, detalle: `${cant}d${caras}=[${tiradas.join(',')}]${mod ? (mod > 0 ? '+' + mod : mod) : ''}` };
+}
+
+// --- NUEVO: TIRAR ATAQUES DE ARMAS (bugfix 26 ago: ahora también tira el daño en el mismo click si el ataque conecta) ---
+function rollWeaponAttack(weaponId, skillInputId) {
+  const weaponName = document.getElementById(`${weaponId}-nombre`).value;
+  const skillText = document.getElementById(skillInputId).value;
+  const danoElem = document.getElementById(`${weaponId}-dano`);
+  const danoText = danoElem ? danoElem.value : '';
+
+  // Extrae de forma inteligente el porcentaje (número) escrito en el input
+  const match = skillText.match(/\d+/);
+  const target = match ? parseInt(match[0]) : 50;
+
+  const roll = Math.floor(Math.random() * 100) + 1;
+  const half = Math.floor(target / 2);
+  const fifth = Math.floor(target / 5);
+
+  let outcome = "";
+  let cssClass = "";
+
+  if (roll === 1) {
+    outcome = "¡ÉXITO CRÍTICO!";
+    cssClass = "log-critical";
+  } else if (roll === 100 || (target < 50 && roll >= 96)) {
+    outcome = "¡PIFIA / FALLO CRÍTICO!";
+    cssClass = "log-fumble";
+  } else if (roll <= fifth) {
+    outcome = "ÉXITO EXTREMO";
+    cssClass = "log-extreme";
+  } else if (roll <= half) {
+    outcome = "ÉXITO DIFÍCIL";
+    cssClass = "log-hard";
+  } else if (roll <= target) {
+    outcome = "ÉXITO REGULAR";
+    cssClass = "log-success";
+  } else {
+    outcome = "FALLO";
+    cssClass = "log-fail";
+  }
+
+  let msg = `Ataque con <strong>${weaponName}</strong> (${target}%): Resultado = <strong>${roll}</strong> ➔ <span class="${cssClass}">${outcome}</span>`;
+
+  // Si el ataque conecta (cualquier grado de éxito), tira también el daño del arma
+  const conecta = outcome !== "FALLO" && outcome !== "¡PIFIA / FALLO CRÍTICO!";
+  if (conecta && danoText) {
+    const dano = tirarDadoNotacion(danoText);
+    if (dano.detalle) {
+      msg += ` | 💥 Daño: <strong>${dano.total}</strong> (${dano.detalle})`;
+    }
+  }
+
+  logRoll(msg, cssClass, roll, `Atk: ${weaponName}`, outcome); // 👈 ACTUALIZADO
+}
+
+// Inicializar Habilidades
+function renderSkills() {
+ const container = document.getElementById('skillsContainer');
+ container.innerHTML = '';
+
+ initialSkills.forEach((skill, idx) => {
+ const half = Math.floor(skill.val / 2);
+ const fifth = Math.floor(skill.val / 5);
+
+ const div = document.createElement('div');
+ div.className = 'skill-row';
+ div.innerHTML = `
+ <div class="skill-left">
+ <button class="btn-roll" onclick="rollSkill('${skill.name}', ${idx})">🎲</button>
+ <span class="skill-name">${skill.name}</span>
+ </div>
+ <div class="skill-right">
+ <input type="number" class="skill-input" id="skill-val-${idx}" value="${skill.val}" oninput="updateSkillCalc(${idx})">
+ <span class="skill-calc" id="skill-calc-${idx}">(${half}/${fifth})</span>
+ </div>
+ `;
+ container.appendChild(div);
+ });
+}
+
+function updateSkillCalc(idx) {
+ const inputElem = document.getElementById(`skill-val-${idx}`);
+ if (!inputElem) return;
+ const val = parseInt(inputElem.value) || 0;
+ initialSkills[idx].val = val;
+ const half = Math.floor(val / 2);
+ const fifth = Math.floor(val / 5);
+ document.getElementById(`skill-calc-${idx}`).textContent = `(${half}/${fifth})`;
+}
+
+function updateStats() {
+ const stats = ['str', 'con', 'siz', 'dex', 'app', 'int', 'pow', 'edu'];
+ stats.forEach(st => {
+ const statElem = document.getElementById(st);
+ if (statElem) {
+ const val = parseInt(statElem.value) || 0;
+ const half = Math.floor(val / 2);
+ const fifth = Math.floor(val / 5);
+ const calcElem = document.getElementById(`${st}-calc`);
+ if (calcElem) calcElem.textContent = `${half} / ${fifth}`;
+ }
+ });
+
+ // NOTA (bugfix 26 ago): hp-max YA NO se recalcula ni se sobreescribe automáticamente
+ // desde CON+SIZ. Antes esta función pisaba el valor manual cada vez que se llamaba
+ // (al cargar, al tocar cualquier stat, y en cada sync de Firebase), reseteándolo a 9.
+ // Ahora hp-max es un campo 100% editable a mano, igual que cualquier otro dato de la ficha.
+
+ const str = parseInt(document.getElementById('str').value) || 0;
+ const sum = str + siz;
+
+ let db = "0";
+ let build = "0";
+
+ if (sum <= 64) { db = "-2"; build = "-2"; }
+ else if (sum <= 84) { db = "-1"; build = "-1"; }
+ else if (sum <= 124) { db = "0"; build = "0"; }
+ else if (sum <= 164) { db = "+1D4"; build = "+1"; }
+ else if (sum <= 204) { db = "+1D6"; build = "+2"; }
+ else { db = "+2D6"; build = "+3"; }
+
+ const dbElem = document.getElementById('db-val');
+ const buildElem = document.getElementById('build-val');
+ if (dbElem) dbElem.textContent = db;
+ if (buildElem) buildElem.textContent = `Corpulencia: ${build}`;
+
+ initialSkills.forEach((_, idx) => updateSkillCalc(idx));
+ syncStickyBar();
+}
+
+// Historial y Dado General con envío a Firebase
+function logRoll(msg, cssClass = '', resultado = 0, tipo = 'D100', outcome = '') {
+ const history = document.getElementById('diceHistory');
+ if (history.children.length === 1 && history.children[0].tagName === 'EM') {
+ history.innerHTML = '';
+ }
+ const entry = document.createElement('div');
+ entry.className = `log-entry ${cssClass}`;
+ const now = new Date().toLocaleTimeString();
+ entry.innerHTML = `[${now}] ${msg}`;
+ history.prepend(entry);
+
+
+ // 👇 NUEVO: Envía la tirada al GM en tiempo real con su tipo y nombre correctos
+ if (typeof codigoCampana !== 'undefined' && codigoCampana) {
+   db.ref(`campanas/${codigoCampana}/tiradas`).push({
+     personaje: "Nevada Jones",
+     tipo: outcome ? `${tipo} [${outcome}]` : tipo, // Ej: "Arqueología [ÉXITO DIFÍCIL]"
+     resultado: resultado,
+     fecha: firebase.database.ServerValue.TIMESTAMP
+   });
+ }
+}
+
+
+function clearHistory() {
+ document.getElementById('diceHistory').innerHTML = '<div class="log-entry" style="color:#777;"><em>Historial limpiado.</em></div>';
+}
+
+function rollGeneric(sides) {
+ const result = Math.floor(Math.random() * sides) + 1;
+ logRoll(`Lanzamiento D${sides}: <strong>${result}</strong>`, '', result, `D${sides}`);
+}
+
+function rollSkill(name, idx) {
+ const target = parseInt(document.getElementById(`skill-val-${idx}`).value) || 0;
+ const roll = Math.floor(Math.random() * 100) + 1;
+
+ const half = Math.floor(target / 2);
+ const fifth = Math.floor(target / 5);
+
+ let outcome = "";
+ let cssClass = "";
+
+ if (roll === 1) {
+ outcome = "¡ÉXITO CRÍTICO!";
+ cssClass = "log-critical";
+ } else if (roll === 100 || (target < 50 && roll >= 96)) {
+ outcome = "¡PIFIA / FALLO CRÍTICO!";
+ cssClass = "log-fumble";
+ } else if (roll <= fifth) {
+ outcome = "ÉXITO EXTREMO";
+ cssClass = "log-extreme";
+ } else if (roll <= half) {
+ outcome = "ÉXITO DIFÍCIL";
+ cssClass = "log-hard";
+ } else if (roll <= target) {
+ outcome = "ÉXITO REGULAR";
+ cssClass = "log-success";
+ } else {
+ outcome = "FALLO";
+ cssClass = "log-fail";
+ }
+
+  const msg = `Prueba de <strong>${name}</strong> (${target}%): Resultado = <strong>${roll}</strong> ➔ <span class="${cssClass}">${outcome}</span>`;
+  logRoll(msg, cssClass, roll, name, outcome); // 👈 ACTUALIZADO
+}
+
+// ============================================
+// "USAR HABILIDAD" (bugfix 26 ago): descuenta PM/SAN/HP y tira dados, con registro en el historial.
+// Motor genérico: cada entrada trae valores por defecto (según la descripción de esa habilidad)
+// que el jugador puede ajustar antes de confirmar el uso — cubre variantes (ej. "Combustión
+// múltiple" con más de un objetivo) sin tener que codificar cada caso a mano.
+// ============================================
+const HABILIDADES_ACTIVABLES = {
+  1: { nombre: 'Combustión', pmFijo: 2, pmDado: '', sanFijo: 0, sanDado: '', hpFijo: 0, dadoEfecto: '1d6', pmPorObjetivo: 0, sanPorObjetivo: 0,
+       nota: 'Concentrada: 2 PM, 1d6 fuego a 1 objetivo. Múltiple: 2 PM por objetivo, 1d4+1 fuego c/u — ajustá el costo, el dado de efecto y "objetivos adicionales" según la variante.' },
+  2: { nombre: 'Fuego Alquímico', pmFijo: 0, sanFijo: 0, hpFijo: 1, dadoEfecto: '',
+       nota: 'Preparación: corte voluntario, 1 HP. La sangre queda utilizable hasta fin de sesión, un día de juego, o que la herida sane.' },
+  4: { nombre: 'Rune of the Accusing Eye', pmFijo: 0, pmDado: '1d4', sanFijo: 3, sanDado: '', hpFijo: 0, dadoEfecto: '',
+       nota: 'Reacción ante un ataque sobrenatural. El atacante tira POW aparte (no se registra acá).' },
+  6: { nombre: 'Eye of the Still Portal', pmFijo: 4, sanFijo: 0, hpFijo: 0, dadoEfecto: '',
+       nota: 'Activación consciente (usos ilimitados). La reacción espontánea no tiene coste, no hace falta este formulario para esa.' },
+  7: { nombre: 'Puertas de Yog-Sothoth', pmFijo: 2, sanFijo: 0, hpFijo: 0, dadoEfecto: '',
+       nota: '2 PM cada 5 minutos de mantenimiento — usá este botón una vez por cada tramo de 5 min que la Puerta siga abierta.' },
+  8: { nombre: 'El Ojo', pmFijo: 6, sanDado: '1d6', hpFijo: 0, dadoEfecto: '',
+       nota: '~1 minuto de uso. 10% de probabilidad narrativa de ver algo no deseado (a criterio del Guardián).' },
+  9: { nombre: 'Atisbo del Vacío', pmFijo: 3, sanDado: '1d4', hpFijo: 0, dadoEfecto: '',
+       nota: '1 vez por escena (Cráneo del Primer Sacrificado). El Eco del No-Ser (inicio de sesión) tiene su propio botón aparte.' },
+  10: { nombre: 'Ojo del Vacío Ascendente', pmDado: '1d10', sanFijo: 2, hpFijo: 0, dadoEfecto: '',
+        nota: 'Este es solo el costo propio de Nevada. La pérdida de SAN del objetivo (Contienda POW vs SAN) se resuelve aparte, en la ficha del objetivo.' },
+  11: { nombre: 'Ojo del Todo y la Nada', pmDado: '1d12', sanDado: '1d12', hpFijo: 0, pmPorObjetivo: 5, sanPorObjetivo: 5, dadoEfecto: '',
+        nota: 'Uso Masivo: +5 PM y +5 SAN por cada objetivo adicional — cargalo en "Objetivos adicionales".' },
+};
+
+let usarHabilidadAbierta = null;
+
+function abrirFormularioUsar(idx) {
+  const cfg = HABILIDADES_ACTIVABLES[idx];
+  if (!cfg) return;
+  document.querySelectorAll('.usar-form-container').forEach(c => {
+    if (c.id !== `usar-form-${idx}`) c.innerHTML = '';
+  });
+  const cont = document.getElementById(`usar-form-${idx}`);
+  if (!cont) return;
+  if (cont.innerHTML) { cont.innerHTML = ''; usarHabilidadAbierta = null; return; }
+  usarHabilidadAbierta = idx;
+  const mostrarObjetivos = !!(cfg.pmPorObjetivo || cfg.sanPorObjetivo);
+  cont.innerHTML = `
+    <div class="usar-form">
+      <div class="usar-form-row">
+        <label>PM fijo<input type="number" id="usar-pmfijo-${idx}" value="${cfg.pmFijo || 0}" min="0"></label>
+        <label>PM dado<input type="text" id="usar-pmdado-${idx}" value="${cfg.pmDado || ''}" placeholder="ej: 1d4"></label>
+        <label>SAN fijo<input type="number" id="usar-sanfijo-${idx}" value="${cfg.sanFijo || 0}" min="0"></label>
+        <label>SAN dado<input type="text" id="usar-sandado-${idx}" value="${cfg.sanDado || ''}" placeholder="ej: 1d6"></label>
+      </div>
+      <div class="usar-form-row">
+        <label>HP fijo<input type="number" id="usar-hpfijo-${idx}" value="${cfg.hpFijo || 0}" min="0"></label>
+        <label>Dado de efecto<input type="text" id="usar-dadoefecto-${idx}" value="${cfg.dadoEfecto || ''}" placeholder="ej: 1d6"></label>
+        ${mostrarObjetivos ? `<label>Objetivos adicionales<input type="number" id="usar-objetivos-${idx}" value="0" min="0"></label>` : ''}
+      </div>
+      ${cfg.nota ? `<p style="font-size:0.72rem; color:var(--text-muted); margin:0;">${cfg.nota}</p>` : ''}
+      <div class="usar-form-actions">
+        <button type="button" onclick="document.getElementById('usar-form-${idx}').innerHTML=''">Cancelar</button>
+        <button type="button" onclick="confirmarUsoHabilidad(${idx})">⚡ Confirmar Uso</button>
+      </div>
+    </div>
+  `;
+}
+
+function confirmarUsoHabilidad(idx) {
+  const cfg = HABILIDADES_ACTIVABLES[idx];
+  if (!cfg) return;
+  const g = (id) => document.getElementById(id);
+  const pmFijo = parseInt(g(`usar-pmfijo-${idx}`)?.value) || 0;
+  const pmDadoTxt = g(`usar-pmdado-${idx}`)?.value || '';
+  const sanFijo = parseInt(g(`usar-sanfijo-${idx}`)?.value) || 0;
+  const sanDadoTxt = g(`usar-sandado-${idx}`)?.value || '';
+  const hpFijo = parseInt(g(`usar-hpfijo-${idx}`)?.value) || 0;
+  const dadoEfectoTxt = g(`usar-dadoefecto-${idx}`)?.value || '';
+  const objetivosEl = g(`usar-objetivos-${idx}`);
+  const objetivosExtra = objetivosEl ? (parseInt(objetivosEl.value) || 0) : 0;
+
+  const pmDado = tirarDadoNotacion(pmDadoTxt);
+  const sanDado = tirarDadoNotacion(sanDadoTxt);
+  const efecto = tirarDadoNotacion(dadoEfectoTxt);
+
+  const pmTotal = pmFijo + pmDado.total + (objetivosExtra * (cfg.pmPorObjetivo || 0));
+  const sanTotal = sanFijo + sanDado.total + (objetivosExtra * (cfg.sanPorObjetivo || 0));
+  const hpTotal = hpFijo;
+
+  aplicarCosto('mp-curr', pmTotal);
+  aplicarCosto('san-curr', sanTotal);
+  aplicarCosto('hp-curr', hpTotal);
+
+  const partes = [];
+  if (pmTotal) partes.push(`-${pmTotal} PM${pmDado.detalle ? ' (' + pmDado.detalle + ')' : ''}`);
+  if (sanTotal) partes.push(`-${sanTotal} SAN${sanDado.detalle ? ' (' + sanDado.detalle + ')' : ''}`);
+  if (hpTotal) partes.push(`-${hpTotal} HP`);
+  if (efecto.total) partes.push(`Efecto: ${efecto.total} (${efecto.detalle})`);
+
+  const msg = `⚡ Usa <strong>${cfg.nombre}</strong>${partes.length ? ': ' + partes.join(' | ') : ' (sin coste registrado)'}`;
+  logRoll(msg, '', efecto.total || 0, `Usar: ${cfg.nombre}`, '');
+
+  const cont = g(`usar-form-${idx}`);
+  if (cont) cont.innerHTML = '';
+  usarHabilidadAbierta = null;
+}
+
+function aplicarCosto(fieldId, cantidad) {
+  if (!cantidad) return;
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  const actual = parseInt(el.value) || 0;
+  const nuevo = Math.max(0, actual - cantidad);
+  el.value = nuevo;
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+// Eco del No-Ser: pérdida automática de 1D6 SAN al inicio de cada sesión (Cráneo del Primer Sacrificado)
+function usarEcoDelNoSer() {
+  const efecto = tirarDadoNotacion('1d6');
+  aplicarCosto('san-curr', efecto.total);
+  logRoll(`🌑 Eco del No-Ser (inicio de sesión): -${efecto.total} SAN (${efecto.detalle})`, '', efecto.total, 'Eco del No-Ser', '');
+}
+
+// --- NUEVO (bugs.md 26 ago): "usar" simple para habilidades sin costo de PM/SAN — solo deja constancia en el historial ---
+function usarHabilidadSimple(nombre) {
+  logRoll(`🔹 Usa <strong>${nombre}</strong>`, '', 0, `Usar: ${nombre}`, '');
+}
+
+// --- NUEVO (bugs.md 26 ago): botón de descanso — restaura PV, PM y Cordura al máximo ---
+function descansoCompleto() {
+  const hpMax = parseInt(document.getElementById('hp-max')?.value) || 0;
+  const sanMax = parseInt(document.getElementById('san-max')?.value) || 0;
+  const mpMax = parseInt(document.getElementById('mp-max')?.value) || 0;
+
+  const hpEl = document.getElementById('hp-curr');
+  const sanEl = document.getElementById('san-curr');
+  const mpEl = document.getElementById('mp-curr');
+
+  if (hpEl) { hpEl.value = hpMax; hpEl.dispatchEvent(new Event('input', { bubbles: true })); }
+  if (sanEl) { sanEl.value = sanMax; sanEl.dispatchEvent(new Event('input', { bubbles: true })); }
+  if (mpEl) { mpEl.value = mpMax; mpEl.dispatchEvent(new Event('input', { bubbles: true })); }
+
+  logRoll(`🌙 Descanso completo: PV (${hpMax}), PM (${mpMax}) y Cordura (${sanMax}) restaurados al máximo.`, '', 0, 'Descanso', '');
+}
+
+// Inicialización directa (Previene conflictos de carga con Firebase)
+renderSkills();
+updateStats();
+syncStickyBar();
+</script>
+
+
+</body>
+</html>

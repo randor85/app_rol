@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ulreek Pico Maldito — Character Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&amp;family=Metamorphous&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+
+<style>
+ :root {
+ --bg-primary: #121018;
+ --bg-card: #1d1827;
+ --bg-card-header: #2a2238;
+ --accent-purple: #7b42bc;
+ --accent-gold: #e5b842;
+ --accent-light: #b388ff;
+ --accent-hover: #9c51e0;
+ --text-light: #f3f0f7;
+ --text-muted: #a89cb5;
+ --border-color: #3b2d52;
+ --danger-color: #d94343;
+ --heal-color: #38a169;
+ --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+ --surface-soft: rgba(0,0,0,0.2);
+ --surface-mid: rgba(0,0,0,0.3);
+ --surface-strong: rgba(0,0,0,0.45);
+ --text-on-surface: #fff;
+ }
+
+ body.light-mode {
+ --bg-primary: #f3edfa;
+ --bg-card: #fffdfb;
+ --bg-card-header: #e9def6;
+ --text-light: #241c33;
+ --text-muted: #6f6084;
+ --border-color: #d7c7ec;
+ --shadow: 0 4px 15px rgba(90,60,120,0.18);
+ --surface-soft: rgba(36,28,51,0.05);
+ --surface-mid: rgba(36,28,51,0.08);
+ --surface-strong: rgba(36,28,51,0.13);
+ --text-on-surface: #241c33;
+ --accent-light: #6a3aa8;
+ }
+
+ * {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ font-family: 'Nunito', sans-serif;
+ }
+
+ body {
+ background-color: var(--bg-primary);
+ color: var(--text-light);
+ padding: 20px;
+ padding-bottom: 280px;
+ line-height: 1.5;
+ }
+
+ .container {
+ max-width: 1200px;
+ margin: 0 auto;
+ }
+
+ /* HEADER & IDENTITY */
+ header {
+ background: linear-gradient(135deg, #241936 0%, #110a1c 100%);
+ border: 2px solid var(--accent-gold);
+ border-radius: 12px;
+ padding: 24px;
+ margin-bottom: 20px;
+ box-shadow: var(--shadow);
+ position: relative;
+ overflow: hidden;
+ }
+
+ header::before {
+ content: "🔮";
+ position: absolute;
+ right: 20px;
+ top: 10px;
+ font-size: 8rem;
+ opacity: 0.05;
+ pointer-events: none;
+ }
+
+ h1, h2, h3, h4 {
+ font-family: 'Cinzel', serif;
+ color: var(--accent-gold);
+ letter-spacing: 0.5px;
+ }
+
+ /* BARRA STICKY DE COMBATE */
+ .sticky-combat-bar { position: sticky; top: 0; z-index: 50; background: linear-gradient(145deg, rgba(29,24,39,.98), rgba(18,16,24,.98)); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+ body.light-mode .sticky-combat-bar { background: linear-gradient(145deg, rgba(255,253,251,.98), rgba(243,237,250,.98)); }
+ .sticky-combat-bar .scb-name { font-family: 'Cinzel', serif; color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+ .sticky-combat-bar .scb-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+ .scb-stat { text-align: center; min-width: 46px; }
+ .scb-stat .scb-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+ .scb-stat .scb-value { font-size: 1rem; font-weight: 800; color: var(--accent-gold); }
+ .sticky-combat-bar .scb-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+ .sticky-combat-bar .scb-actions .btn-rest, .sticky-combat-bar .scb-actions .btn-roll { font-size: 0.75rem; padding: 5px 9px; }
+ @media (max-width: 700px) { .sticky-combat-bar { justify-content: center; } .sticky-combat-bar .scb-actions { margin-left: 0; width: 100%; justify-content: center; } }
+
+ .theme-toggle-btn { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all .2s; }
+ .theme-toggle-btn:hover { background: var(--accent-gold); color: var(--bg-primary); }
+
+ .character-title {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 12px;
+ margin-bottom: 16px;
+ }
+
+ .char-name h1 {
+ font-size: 2.4rem;
+ color: var(--accent-gold);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+ }
+
+ .char-sub {
+ font-size: 1.1rem;
+ color: var(--accent-light);
+ font-weight: 600;
+ }
+
+ .btn-rest {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-gold);
+ color: var(--accent-gold);
+ padding: 8px 16px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-weight: 700;
+ transition: all 0.2s;
+ font-size: 0.9rem;
+ }
+
+ .btn-rest:hover {
+ background: var(--accent-gold);
+ color: var(--bg-primary);
+ box-shadow: 0 0 10px rgba(229, 184, 66, 0.4);
+ }
+
+ /* GRID LAYOUTS */
+ .grid-identity {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+ gap: 8px;
+ }
+
+ .stat-badge {
+ background: var(--surface-strong);
+ border: 1px solid var(--border-color);
+ padding: 8px;
+ border-radius: 8px;
+ text-align: center;
+ }
+
+ .xp-popover-wrap { position: relative; display: inline-block; }
+ .xp-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+ .xp-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 10px; z-index: 60; min-width: 170px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+ .xp-popover-panel.open { display: flex; flex-direction: column; gap: 6px; }
+
+ .nivel-popover-wrap { position: relative; display: inline-block; }
+ .nivel-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+ .nivel-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 12px; z-index: 60; min-width: 280px; max-width: 340px; max-height: 400px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+ .nivel-popover-panel.open { display: block; }
+ .nivel-hab-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .nivel-hab-item:last-child { border-bottom: none; }
+ .nivel-hab-item h5 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 3px; }
+ .nivel-hab-item p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+ .nivel-hab-item button { background: var(--accent-gold); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-weight: 700; }
+ .nivel-hab-item.agregada { opacity: 0.5; }
+ .nivel-hab-item.agregada button { display: none; }
+
+ .stat-badge label {
+ display: block;
+ font-size: 0.68rem;
+ text-transform: uppercase;
+ color: var(--text-muted);
+ letter-spacing: 0.3px;
+ font-weight: 700;
+ line-height: 1.15;
+ }
+
+ .stat-badge span {
+ font-size: 0.9rem;
+ font-weight: 700;
+ color: var(--text-light);
+ display: block;
+ margin-top: 3px;
+ }
+
+ .stat-badge .stat-base {
+ font-size: 0.64rem;
+ font-weight: 600;
+ color: var(--text-muted);
+ display: block;
+ margin-top: 1px;
+ line-height: 1.2;
+ }
+
+ .stat-badge .buff-row {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 4px;
+ margin-top: 3px;
+ }
+
+ .stat-badge .stat-total {
+ font-size: 1.05rem;
+ color: var(--accent-gold);
+ font-weight: 800;
+ }
+
+ .stat-badge input[type="number"] {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ color: var(--accent-light);
+ font-size: 0.85rem;
+ font-weight: 700;
+ text-align: center;
+ width: 100%;
+ outline: none;
+ }
+
+ .stat-badge .buff-row input[type="number"] {
+ width: 38px;
+ padding: 1px;
+ }
+
+ .stat-badge input:focus {
+ border-color: var(--accent-gold);
+ }
+
+ /* ADVANTAGE & CONDITION TRACKER BAR */
+ .advantage-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ background: var(--bg-card);
+ border: 1px solid var(--accent-gold);
+ border-radius: 10px;
+ padding: 14px;
+ box-shadow: var(--shadow);
+ }
+
+ .adv-card {
+ background: var(--surface-mid);
+ padding: 8px 12px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ text-align: center;
+ position: relative;
+ }
+
+ .adv-card label {
+ display: block;
+ font-size: 0.8rem;
+ font-weight: 700;
+ color: var(--accent-light);
+ text-transform: uppercase;
+ margin-bottom: 4px;
+ }
+
+ .adv-card select {
+ width: 100%;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-purple);
+ color: var(--text-light);
+ font-weight: 700;
+ padding: 6px;
+ border-radius: 6px;
+ outline: none;
+ cursor: pointer;
+ }
+
+ .multiselect-container {
+ position: relative;
+ width: 100%;
+ }
+
+ .select-box {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-purple);
+ color: var(--text-light);
+ font-weight: 700;
+ padding: 6px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.85rem;
+ text-align: left;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ }
+
+ .checkboxes-dropdown {
+ display: none;
+ position: absolute;
+ top: 100%;
+ left: 0;
+ right: 0;
+ background: var(--bg-card);
+ border: 1px solid var(--accent-gold);
+ border-radius: 6px;
+ max-height: 220px;
+ overflow-y: auto;
+ z-index: 100;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+ padding: 6px;
+ margin-top: 4px;
+ text-align: left;
+ }
+
+ .checkboxes-dropdown label {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ padding: 4px 6px;
+ font-size: 0.8rem;
+ text-transform: none;
+ color: var(--text-light);
+ cursor: pointer;
+ font-weight: normal;
+ border-radius: 4px;
+ }
+
+ .checkboxes-dropdown label:hover {
+ background: rgba(229, 184, 66, 0.15);
+ }
+
+ .checkboxes-dropdown input[type="checkbox"] {
+ accent-color: var(--accent-gold);
+ width: 14px;
+ height: 14px;
+ }
+
+ .active-conditions-tags {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 4px;
+ margin-top: 6px;
+ min-height: 20px;
+ }
+
+ .cond-tag {
+ background: var(--accent-purple);
+ color: #fff;
+ font-size: 0.7rem;
+ padding: 2px 6px;
+ border-radius: 4px;
+ font-weight: bold;
+ }
+
+ .cond-tag.buff { background: #2b6cb0; }
+ .cond-tag.debuff { background: #c53030; }
+
+ /* STATS & ABILITIES */
+ .abilities-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ }
+
+ .ability-box {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 12px;
+ text-align: center;
+ box-shadow: var(--shadow);
+ position: relative;
+ transition: transform 0.2s, border-color 0.2s;
+ }
+
+ .ability-box:hover {
+ border-color: var(--accent-light);
+ transform: translateY(-2px);
+ }
+
+ .ability-name {
+ font-size: 0.85rem;
+ font-weight: 800;
+ color: var(--accent-gold);
+ text-transform: uppercase;
+ }
+
+ .ability-score {
+ font-size: 1.8rem;
+ font-weight: 800;
+ margin: 4px 0;
+ color: var(--text-on-surface);
+ }
+
+ .ability-mod {
+ display: inline-block;
+ background: var(--accent-purple);
+ color: #fff;
+ padding: 2px 10px;
+ border-radius: 12px;
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ .ability-save {
+ margin-top: 6px;
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ }
+
+ /* HP & RESOURCE TRACKERS */
+ .resources-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 16px;
+ margin-bottom: 20px;
+ }
+
+ .tracker-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ padding: 16px;
+ box-shadow: var(--shadow);
+ }
+
+ .tracker-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 10px;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 6px;
+ }
+
+ .tracker-header h3 {
+ font-size: 1.1rem;
+ }
+
+ .counter-controls {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .btn-cnt {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-light);
+ color: var(--text-light);
+ width: 32px;
+ height: 32px;
+ border-radius: 6px;
+ font-size: 1.2rem;
+ font-weight: bold;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
+ }
+
+ .btn-cnt:hover {
+ background: var(--accent-purple);
+ color: #fff;
+ }
+
+ .cnt-val {
+ font-size: 1.4rem;
+ font-weight: 800;
+ width: 50px;
+ text-align: center;
+ }
+
+ .cnt-max {
+ font-size: 0.9rem;
+ color: var(--text-muted);
+ }
+
+ .editable-cnt-val {
+ background: transparent;
+ border: 1px dashed var(--accent-gold);
+ border-radius: 4px;
+ color: var(--accent-gold);
+ font-size: 1.3rem;
+ font-weight: 800;
+ width: 60px;
+ text-align: center;
+ outline: none;
+ }
+
+ .checkbox-group {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 8px;
+ }
+
+ .check-box-item {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ background: var(--surface-soft);
+ padding: 6px 10px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ font-size: 0.85rem;
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .check-box-item input[type="checkbox"] {
+ accent-color: var(--accent-gold);
+ width: 16px;
+ height: 16px;
+ cursor: pointer;
+ }
+
+ /* SECTIONS & COLLAPSIBLES */
+ details {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ margin-bottom: 16px;
+ box-shadow: var(--shadow);
+ overflow: hidden;
+ transition: border-color 0.2s;
+ }
+
+ details[open] {
+ border-color: var(--accent-purple);
+ }
+
+ summary {
+ padding: 16px 20px;
+ font-family: 'Cinzel', serif;
+ font-size: 1.2rem;
+ font-weight: 700;
+ color: var(--accent-gold);
+ background: var(--bg-card-header);
+ cursor: pointer;
+ user-select: none;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ list-style: none;
+ transition: background 0.2s;
+ }
+
+ summary::-webkit-details-marker {
+ display: none;
+ }
+
+ summary::after {
+ content: "►";
+ font-size: 0.9rem;
+ transition: transform 0.2s;
+ color: var(--accent-light);
+ }
+
+ details[open] summary::after {
+ transform: rotate(90deg);
+ }
+
+ summary:hover {
+ background: #352b47;
+ }
+
+ .section-content {
+ padding: 20px;
+ }
+
+ /* TABLES & EDITABLE INVENTORY */
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ font-size: 0.92rem;
+ }
+
+ th, td {
+ padding: 10px 12px;
+ text-align: left;
+ border-bottom: 1px solid var(--border-color);
+ }
+
+ th {
+ background: var(--surface-strong);
+ color: var(--accent-gold);
+ font-family: 'Cinzel', serif;
+ font-size: 0.85rem;
+ letter-spacing: 0.5px;
+ }
+
+ tr:nth-child(even) {
+ background: rgba(255, 255, 255, 0.02);
+ }
+
+ tr:hover {
+ background: rgba(179, 136, 255, 0.08);
+ }
+
+ .input-qty {
+ background: var(--surface-strong);
+ border: 1px solid var(--border-color);
+ color: var(--accent-gold);
+ font-weight: bold;
+ text-align: center;
+ width: 60px;
+ padding: 4px;
+ border-radius: 4px;
+ outline: none;
+ }
+
+ .input-qty:focus {
+ border-color: var(--accent-gold);
+ background: var(--surface-strong);
+ }
+
+ .btn-roll {
+ background: linear-gradient(135deg, #4a287a, #281545);
+ border: 1px solid var(--accent-light);
+ color: var(--text-light);
+ padding: 4px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.8rem;
+ font-weight: 700;
+ transition: all 0.2s;
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ }
+
+ .btn-roll:hover {
+ background: var(--accent-purple);
+ box-shadow: 0 0 8px rgba(179, 136, 255, 0.5);
+ transform: scale(1.03);
+ }
+
+ .btn-clear {
+ background: rgba(217, 67, 67, 0.2);
+ border: 1px solid var(--danger-color);
+ color: #ff9999;
+ padding: 2px 8px;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 0.7rem;
+ font-weight: bold;
+ transition: all 0.2s;
+ }
+
+ .btn-clear:hover {
+ background: var(--danger-color);
+ color: #fff;
+ }
+
+ /* FEATURE CARDS */
+ .feature-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+ gap: 16px;
+ }
+
+ .feature-card {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-left: 4px solid var(--accent-gold);
+ padding: 14px;
+ border-radius: 6px;
+ }
+
+ .feature-card h4 {
+ font-size: 1rem;
+ margin-bottom: 6px;
+ color: var(--accent-light);
+ }
+
+ .feature-card p, .feature-card ul {
+ font-size: 0.9rem;
+ color: var(--text-light);
+ line-height: 1.4;
+ }
+
+ .feature-card ul {
+ padding-left: 18px;
+ margin-top: 6px;
+ }
+
+ .tag {
+ display: inline-block;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-purple);
+ color: var(--accent-light);
+ font-size: 0.75rem;
+ padding: 2px 8px;
+ border-radius: 4px;
+ margin-right: 6px;
+ font-weight: 700;
+ }
+
+ /* FLOATING DICE ROLLER */
+ .dice-roller-panel {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ background: var(--bg-card-header);
+ border-top: 3px solid var(--accent-gold);
+ box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
+ padding: 12px 20px;
+ z-index: 1000;
+ }
+
+ .dice-container {
+ max-width: 1200px;
+ margin: 0 auto;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 15px;
+ align-items: center;
+ justify-content: space-between;
+ }
+
+ .dice-btns {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ align-items: center;
+ }
+
+ .btn-dice {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: var(--accent-gold);
+ font-family: 'Cinzel', serif;
+ font-weight: 800;
+ font-size: 0.95rem;
+ padding: 8px 14px;
+ border-radius: 8px;
+ cursor: pointer;
+ transition: all 0.2s;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ }
+
+ .btn-dice:hover {
+ background: var(--accent-purple);
+ color: #fff;
+ border-color: var(--accent-gold);
+ transform: translateY(-2px);
+ }
+
+ .dice-mod-input {
+ width: 60px;
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: var(--text-on-surface);
+ padding: 6px;
+ border-radius: 6px;
+ text-align: center;
+ font-size: 1rem;
+ font-weight: bold;
+ }
+
+ .dice-result-box {
+ background: var(--surface-strong);
+ border: 1px solid var(--accent-gold);
+ border-radius: 8px;
+ padding: 8px 16px;
+ min-width: 220px;
+ text-align: center;
+ }
+
+ .dice-result-val {
+ font-size: 1.8rem;
+ font-weight: 800;
+ color: var(--accent-gold);
+ line-height: 1;
+ }
+
+ .dice-result-details {
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ margin-top: 4px;
+ }
+
+ .dice-history {
+ font-size: 0.75rem;
+ color: var(--accent-light);
+ max-height: 40px;
+ overflow-y: auto;
+ margin-top: 4px;
+ }
+
+ .currency-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+ gap: 10px;
+ margin-bottom: 16px;
+ }
+
+ .currency-box {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 8px;
+ text-align: center;
+ }
+
+ .currency-box label {
+ display: block;
+ font-size: 0.75rem;
+ font-weight: bold;
+ color: var(--accent-gold);
+ }
+
+ .currency-box input {
+ width: 100%;
+ background: transparent;
+ border: none;
+ color: var(--text-on-surface);
+ font-size: 1.2rem;
+ font-weight: bold;
+ text-align: center;
+ outline: none;
+ }
+
+ .mini-detail {
+ margin-top: 9px;
+ border: 1px solid var(--border-color);
+ border-radius: 7px;
+ background: var(--surface-soft);
+ overflow: hidden;
+ }
+ .mini-detail > summary {
+ padding: 7px 10px;
+ font-family: 'Nunito', sans-serif;
+ font-size: .78rem;
+ letter-spacing: 0;
+ color: var(--accent-light);
+ background: rgba(42,34,56,.55);
+ }
+ .mini-detail > summary::after { font-size: .7rem; }
+ .mini-detail-content {
+ padding: 9px 11px;
+ font-size: .78rem;
+ line-height: 1.45;
+ color: var(--text-light);
+ }
+ .mini-detail-content strong { color: var(--accent-gold); }
+
+ @media (max-width: 768px) {
+ body { padding-bottom: 340px; }
+ .dice-container { flex-direction: column; align-items: stretch; }
+ .dice-btns { justify-content: center; }
+ .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+ }
+
+ /* MODO SOLO LECTURA (unificado con el resto de fichas) */
+ .readonly-banner {
+     background: #3182ce;
+     color: #fff;
+     text-align: center;
+     padding: 10px;
+     border-radius: 8px;
+     margin-bottom: 15px;
+     font-weight: bold;
+     font-size: 0.9rem;
+ }
+ .readonly-mode input,
+ .readonly-mode textarea,
+ .readonly-mode select {
+     pointer-events: none !important;
+     opacity: 0.65;
+ }
+ .readonly-mode button:not(#btn-compartir):not(.btn-volver):not(.theme-toggle-btn) {
+     pointer-events: none !important;
+     opacity: 0.5;
+ }
+</style>
+</head>
+
+<body>
+<div class="container">
+<div id="readonly-banner" class="readonly-banner" style="display:none;">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
+<div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <a href="index.html" class="btn-volver" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header); color: var(--accent-gold); text-decoration: none; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">
+        ⬅ Volver al Menú
+    </a>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
+        <button id="btn-compartir" style="display:none; padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; color: #fff; cursor: pointer;">👁️ Compartir Ficha</button>
+    </div>
+</div>
+
+<!-- BARRA STICKY DE COMBATE -->
+<div class="sticky-combat-bar">
+<div class="scb-name">🔮 Ulreek</div>
+<div class="scb-stats">
+<div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">50/50</div></div>
+<div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value" id="scb-ac">12</div></div>
+<div class="scb-stat"><div class="scb-label">✨ SpAtk</div><div class="scb-value" id="scb-spatk">+8</div></div>
+</div>
+<div class="scb-actions">
+<button class="btn-rest" onclick="restShort()" title="Descanso Corto">☕</button>
+<button class="btn-rest" onclick="restLong()" title="Descanso Largo">🌙</button>
+</div>
+</div>
+
+<header>
+<div class="character-title">
+<div class="char-name">
+<h1>Ulreek Pico Maldito</h1>
+<div class="char-sub">Sorcerer 7 / Warlock 1 | Wild Dwarf</div>
+</div>
+<div class="xp-popover-wrap">
+<button class="xp-popover-btn" onclick="toggleXpPopover()" type="button">⭐ XP</button>
+<div class="xp-popover-panel" id="xp-popover-panel">
+<div class="stat-badge">
+<label>XP Actual</label>
+<input type="number" id="xp-val" value="41000" step="100">
+</div>
+<div class="stat-badge">
+<label>XP Próximo Lvl</label>
+<input type="number" id="xp-next" value="48000" step="500">
+</div>
+</div>
+</div>
+<div class="nivel-popover-wrap">
+<button class="nivel-popover-btn" onclick="toggleNivelPopover()" type="button">📖 Nivel <span id="nivel-actual-display">—</span></button>
+<div class="nivel-popover-panel" id="nivel-popover-panel">
+<div id="nivel-hab-lista"></div>
+</div>
+</div>
+</div>
+<input type="hidden" id="habilidades-agregadas-nivel" value="">
+<div class="grid-identity">
+<div class="stat-badge">
+<label>❤️ Puntos Golpe (HP)</label>
+<span id="hp-summary">50 / 50</span>
+</div>
+<div class="stat-badge">
+<label>🛡️ AC (Clase de Armadura)</label>
+<span class="stat-base">Base: 12</span>
+<div class="buff-row">
+<input id="ac-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
+<div class="stat-total" id="ac-total">12</div>
+</div>
+</div>
+<div class="stat-badge">
+<label>⚔️ Bono Ataque Melee</label>
+<span class="stat-base">Base: +3 (STR + Prof)</span>
+<div class="buff-row">
+<input id="atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
+<div class="stat-total" id="atk-total">+3</div>
+</div>
+</div>
+<div class="stat-badge">
+<label>✨ Spell Atk Bonus</label>
+<span class="stat-base">Base: +8 (CHA + Prof)</span>
+<div class="buff-row">
+<input id="spell-atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
+<div class="stat-total" id="spell-atk-total">+8</div>
+</div>
+</div>
+<div class="stat-badge">
+<label>📜 Spell Save DC</label>
+<span class="stat-base">Base: 16 (8+CHA+Prof)</span>
+<div class="buff-row">
+<input id="spell-dc-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
+<div class="stat-total" id="spell-dc-total">16</div>
+</div>
+</div>
+<div class="stat-badge">
+<label>🎲 Iniciativa</label>
+<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Iniciativa', 'check')" style="margin-top:4px; padding:3px 8px; font-size:0.8rem;">🎲 +2</button>
+</div>
+<div class="stat-badge">
+<label>🏃 Velocidad</label>
+<span>30 ft</span>
+</div>
+<div class="stat-badge">
+<label>📘 Prof. Bonus</label>
+<span>+3</span>
+</div>
+<div class="stat-badge">
+<label>👁️ Percepción Pasiva</label>
+<span>10</span>
+</div>
+</div>
+</header>
+
+<div class="advantage-bar">
+<div class="adv-card">
+<label>🎲 Próximo Ataque</label>
+<select id="adv-attack">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+</div>
+<div class="adv-card">
+<label>🛡️ Próxima Salvación</label>
+<select id="adv-save">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+</div>
+<div class="adv-card" style="border-color: var(--accent-light);">
+<label>🧘 Save Concentración</label>
+<select id="adv-conc" style="margin-bottom:6px;">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+<button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (+5)</button>
+</div>
+<div class="adv-card">
+<label>✨ Condiciones y Efectos</label>
+<div class="multiselect-container">
+<div class="select-box" onclick="toggleConditionsDropdown()">
+<span id="cond-select-text">0 seleccionadas</span>
+<span>▼</span>
+</div>
+<div class="checkboxes-dropdown" id="conditions-dropdown">
+<label><input onchange="updateConditions()" type="checkbox" value="Cegado"/> Cegado (Blinded)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Encantado"/> Encantado (Charmed)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Sordo"/> Sordo (Deafened)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Asustado"/> Asustado (Frightened)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Apresado"/> Apresado (Grappled)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Incapacitado"/> Incapacitado (Incapacitated)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Inviable"/> Invisible (Invisible)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Paralizado"/> Paralizado (Paralyzed)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Petrificado"/> Petrificado (Petrified)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Envenenado"/> Envenenado (Poisoned)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Derribado"/> Derribado (Prone)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Restringido"/> Restringido (Restrained)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Aturdido"/> Aturdido (Stunned)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Inconsciente"/> Inconsciente (Unconscious)</label>
+<label><input onchange="updateConditions()" type="checkbox" value="Agotamiento"/> Agotamiento (Exhaustion)</label>
+</div>
+</div>
+<div class="active-conditions-tags" id="active-conditions-list"></div>
+</div>
+</div>
+
+<div class="abilities-grid">
+<div class="ability-box">
+<div class="ability-name">Fuerza (STR)</div>
+<div class="ability-score">10</div>
+<div class="ability-mod">+0</div>
+<div class="ability-save">Save: +0</div>
+<button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Fuerza Check', 'check')" style="margin-top:6px; width:100%; justify-content:center;">Check</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Fuerza Save', 'save')" style="margin-top:4px; width:100%; justify-content:center;">Save</button>
+</div>
+<div class="ability-box">
+<div class="ability-name">Destreza (DEX)</div>
+<div class="ability-score">14</div>
+<div class="ability-mod">+2</div>
+<div class="ability-save">Save: +2</div>
+<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Destreza Check', 'check')" style="margin-top:6px; width:100%; justify-content:center;">Check</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Destreza Save', 'save')" style="margin-top:4px; width:100%; justify-content:center;">Save</button>
+</div>
+<div class="ability-box">
+<div class="ability-name">Constitución (CON)</div>
+<div class="ability-score">14</div>
+<div class="ability-mod">+2</div>
+<div class="ability-save" style="color:var(--accent-gold); font-weight:bold;">Save: +5 ★</div>
+<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Constitución Check', 'check')" style="margin-top:6px; width:100%; justify-content:center;">Check</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Constitución Save', 'save')" style="margin-top:4px; width:100%; justify-content:center;">Save ★</button>
+</div>
+<div class="ability-box">
+<div class="ability-name">Inteligencia (INT)</div>
+<div class="ability-score">10</div>
+<div class="ability-mod">+0</div>
+<div class="ability-save">Save: +0</div>
+<button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Inteligencia Check', 'check')" style="margin-top:6px; width:100%; justify-content:center;">Check</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Inteligencia Save', 'save')" style="margin-top:4px; width:100%; justify-content:center;">Save</button>
+</div>
+<div class="ability-box">
+<div class="ability-name">Sabiduría (WIS)</div>
+<div class="ability-score">10</div>
+<div class="ability-mod">+0</div>
+<div class="ability-save">Save: +0</div>
+<button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Sabiduría Check', 'check')" style="margin-top:6px; width:100%; justify-content:center;">Check</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Sabiduría Save', 'save')" style="margin-top:4px; width:100%; justify-content:center;">Save</button>
+</div>
+<div class="ability-box">
+<div class="ability-name">Carisma (CHA)</div>
+<div class="ability-score">20</div>
+<div class="ability-mod">+5</div>
+<div class="ability-save" style="color:var(--accent-gold); font-weight:bold;">Save: +8 ★</div>
+<button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Carisma Check', 'check')" style="margin-top:6px; width:100%; justify-content:center;">Check</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Carisma Save', 'save')" style="margin-top:4px; width:100%; justify-content:center;">Save ★</button>
+</div>
+</div>
+
+<div class="resources-bar">
+<div class="tracker-card">
+<div class="tracker-header">
+<h3>❤️ Puntos de Golpe (HP)</h3>
+<span class="cnt-max">Máx: 50</span>
+</div>
+<div class="counter-controls" style="justify-content: space-between; margin-bottom: 8px;">
+<button class="btn-cnt" onclick="changeVal('hp-cur', -5)">-5</button>
+<button class="btn-cnt" onclick="changeVal('hp-cur', -1)">-1</button>
+<span class="cnt-val" id="hp-cur" style="font-size: 1.8rem; color: var(--accent-gold);">50</span>
+<button class="btn-cnt" onclick="changeVal('hp-cur', 1)">+1</button>
+<button class="btn-cnt" onclick="changeVal('hp-cur', 5)">+5</button>
+</div>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+<label style="font-size:0.85rem; color:var(--text-muted);">HP Temporal:</label>
+<input class="editable-cnt-val" id="hp-temp" type="number" value="0"/>
+</div>
+</div>
+
+<div class="tracker-card">
+<div class="tracker-header">
+<h3>✨ Puntos de Sorcery</h3>
+<span class="cnt-max">Máx: 7</span>
+</div>
+<div class="counter-controls" style="justify-content: center; gap: 15px; margin-top: 15px;">
+<button class="btn-cnt" onclick="changeVal('sorc-pts', -1)">-1</button>
+<span class="cnt-val" id="sorc-pts" style="font-size: 2rem; color: var(--accent-light);">7</span>
+<button class="btn-cnt" onclick="changeVal('sorc-pts', 1)">+1</button>
+</div>
+</div>
+
+<div class="tracker-card">
+<div class="tracker-header">
+<h3>💀 Salvaciones de Muerte</h3>
+</div>
+<div style="margin-top: 5px;">
+<label style="font-size:0.8rem; color:var(--heal-color); font-weight:bold; display:block;">ÉXITOS</label>
+<div class="checkbox-group">
+<label class="check-box-item"><input id="ds-s1" type="checkbox"/> 1</label>
+<label class="check-box-item"><input id="ds-s2" type="checkbox"/> 2</label>
+<label class="check-box-item"><input id="ds-s3" type="checkbox"/> 3</label>
+</div>
+<label style="font-size:0.8rem; color:var(--danger-color); font-weight:bold; display:block; margin-top:8px;">FALLOS</label>
+<div class="checkbox-group">
+<label class="check-box-item"><input id="ds-f1" type="checkbox"/> 1</label>
+<label class="check-box-item"><input id="ds-f2" type="checkbox"/> 2</label>
+<label class="check-box-item"><input id="ds-f3" type="checkbox"/> 3</label>
+</div>
+</div>
+</div>
+</div>
+
+<details open>
+<summary>🎯 Habilidades y Competencias (Skills)</summary>
+<div class="section-content">
+<table>
+<thead>
+<tr>
+<th>Competente</th>
+<th>Habilidad</th>
+<th>Atributo Base</th>
+<th>Bono Total</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>❌</td><td>Acrobacias (Acrobatics)</td><td>DEX</td><td>+2</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobacias', 'skill')">🎲 Tirar (+2)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Trato con Animales (Animal Handling)</td><td>WIS</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Trato con Animales', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Arcana</td><td>INT</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Arcana', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Atletismo (Athletics)</td><td>STR</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Atletismo', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>⭐ Proficiente</td><td>Engaño (Deception)</td><td>CHA</td><td>+8</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Engaño', 'skill')">🎲 Tirar (+8)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Historia (History)</td><td>INT</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Historia', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Perspicacia (Insight)</td><td>WIS</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Perspicacia', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>⭐ Proficiente</td><td>Intimidación (Intimidation)</td><td>CHA</td><td>+8</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Intimidación', 'skill')">🎲 Tirar (+8)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Investigación (Investigation)</td><td>INT</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Investigación', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Medicina (Medicine)</td><td>WIS</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Medicina', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Naturaleza (Nature)</td><td>INT</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Naturaleza', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Percepción (Perception)</td><td>WIS</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Percepción', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Interpretación (Performance)</td><td>CHA</td><td>+5</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Interpretación', 'skill')">🎲 Tirar (+5)</button></td>
+</tr>
+<tr>
+<td>⭐ Proficiente</td><td>Persuasión (Persuasion)</td><td>CHA</td><td>+8</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Persuasión', 'skill')">🎲 Tirar (+8)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Religión (Religion)</td><td>INT</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Religión', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Juego de Manos (Sleight of Hand)</td><td>DEX</td><td>+2</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Juego de Manos', 'skill')">🎲 Tirar (+2)</button></td>
+</tr>
+<tr>
+<td>⭐ Proficiente</td><td>Sigilo (Stealth)</td><td>DEX</td><td>+5</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Sigilo', 'skill')">🎲 Tirar (+5)</button></td>
+</tr>
+<tr>
+<td>❌</td><td>Supervivencia (Survival)</td><td>WIS</td><td>+0</td>
+<td><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Supervivencia', 'skill')">🎲 Tirar (+0)</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+
+<details open>
+<summary>📖 Conjuros y Espacios de Magia (Spell Slots)</summary>
+<div class="section-content">
+<div class="resources-bar" style="margin-bottom: 15px;">
+<div class="tracker-card">
+<h4>Nivel 1 (Sorcerer + Warlock)</h4>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+<button class="btn-cnt" onclick="changeVal('slot-1-cur', -1)">-1</button>
+<span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">4</span> / 4
+<button class="btn-cnt" onclick="changeVal('slot-1-cur', 1)">+1</button>
+</div>
+</div>
+<div class="tracker-card">
+<h4>Nivel 2</h4>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+<button class="btn-cnt" onclick="changeVal('slot-2-cur', -1)">-1</button>
+<span id="slot-2-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
+<button class="btn-cnt" onclick="changeVal('slot-2-cur', 1)">+1</button>
+</div>
+</div>
+<div class="tracker-card">
+<h4>Nivel 3</h4>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+<button class="btn-cnt" onclick="changeVal('slot-3-cur', -1)">-1</button>
+<span id="slot-3-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
+<button class="btn-cnt" onclick="changeVal('slot-3-cur', 1)">+1</button>
+</div>
+</div>
+<div class="tracker-card">
+<h4>Nivel 4</h4>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+<button class="btn-cnt" onclick="changeVal('slot-4-cur', -1)">-1</button>
+<span id="slot-4-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">1</span> / 1
+<button class="btn-cnt" onclick="changeVal('slot-4-cur', 1)">+1</button>
+</div>
+</div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Conjuro</th>
+<th>Nivel</th>
+<th>Tiempo de Caneo</th>
+<th>Rango / Detalles</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Guidance</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td>Tacto, V/S, Conc.</td>
+<td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance')">🎲 1d4</button></td>
+</tr>
+<tr>
+<td><strong>Unarmed Strike</strong></td><td>Ataque Melee</td><td>1 Acción</td><td>Melee (1d1 + STR)</td>
+<td><button class="btn-roll" onclick="rollAttack(3, 'Ataque Unarmed')">⚔️ Atk (+3)</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+
+<details>
+<summary>🎒 Inventario, Monedas y Objetos Mágicos</summary>
+<div class="section-content">
+<div class="currency-grid">
+<div class="currency-box">
+<label>Piezas de Oro (GP)</label>
+<input id="gp-val" type="number" value="2000"/>
+</div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Objeto</th>
+<th>Cantidad</th>
+<th>Tipo</th>
+<th>Propiedades / Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Poción "shoes"</strong></td>
+<td><input class="input-qty" id="item-qty-1" type="number" value="1"/></td>
+<td><span class="tag">Mágico / Poción</span></td>
+<td>Permite adquirir cualquier apariencia como disfraz. Investigaciones y checks de percepción tienen desventaja contra ti. Dura hasta medianoche.</td>
+</tr>
+<tr>
+<td><strong>Potion of Wild</strong></td>
+<td><input class="input-qty" id="item-qty-2" type="number" value="1"/></td>
+<td><span class="tag">Mágico / Poción</span></td>
+<td>Efecto inmediato: Tiras en la tabla de Wild Magic Surge.</td>
+</tr>
+<tr>
+<td><strong>Horn of the Brave</strong></td>
+<td><input class="input-qty" id="item-qty-3" type="number" value="1"/></td>
+<td><span class="tag">Mágico / Objeto</span></td>
+<td>Contiene hidromiel sin fin. Concede inmunidad al miedo y ventaja en salvaciones de Sabiduría por 1 hora. Se recarga en descanso corto.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+
+<details>
+<summary>📜 Trasfondo, Idiomas y Competencias Especiales</summary>
+<div class="section-content">
+<div class="feature-grid">
+<div class="feature-card">
+<h4>Detalles del Personaje</h4>
+<p><strong>Raza:</strong> Wild Dwarf</p>
+<p><strong>Edad:</strong> 300 años</p>
+<p><strong>Altura:</strong> 1.32 m</p>
+<p><strong>Ojos:</strong> Gris | <strong>Pelo:</strong> Blanco | <strong>Piel:</strong> Ocre</p>
+</div>
+<div class="feature-card">
+<h4>Competencias con Armas y Armaduras</h4>
+<p><strong>Armas:</strong> Dagger, Dart, Light Crossbow, Quarterstaff, Sling.</p>
+<p><strong>Armaduras:</strong> Light Armor, Medium Armor, Shields.</p>
+<p><strong>Herramientas:</strong> Jeweler's Tools.</p>
+</div>
+<div class="feature-card">
+<h4>Idiomas Sabidos</h4>
+<p>Common, Elvish, Dwarvish, Halfling.</p>
+</div>
+</div>
+</div>
+</details>
+
+</div>
+
+<div class="dice-roller-panel">
+<div class="dice-container">
+<div class="dice-btns">
+<button class="btn-dice" onclick="rollDice(4)">d4</button>
+<button class="btn-dice" onclick="rollDice(6)">d6</button>
+<button class="btn-dice" onclick="rollDice(8)">d8</button>
+<button class="btn-dice" onclick="rollDice(10)">d10</button>
+<button class="btn-dice" onclick="rollDice(12)">d12</button>
+<button class="btn-dice" onclick="rollDice(20)">d20</button>
+<button class="btn-dice" onclick="rollDice(100)">d100</button>
+<div style="display:flex; flex-direction:column; align-items:center; margin-left:10px;">
+<label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">MODIFICADOR</label>
+<input class="dice-mod-input" id="dice-mod" type="number" value="0"/>
+</div>
+</div>
+<div class="dice-result-box">
+<div class="dice-result-val" id="dice-result-val">-</div>
+<div class="dice-result-details" id="dice-result-details">Haz clic en un dado para tirar</div>
+<div class="dice-history" id="dice-history"></div>
+</div>
+</div>
+</div>
+
+<!-- Firebase SDKs (Compat v9) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+  // ==========================================
+  // 1. CONFIGURACIÓN E INSTANCIAS DE FIREBASE
+  // ==========================================
+  // ⚠️ Antes apuntaba a la base de datos equivocada ("fiona-faraway-default-rtdb")
+  // y usaba el SDK viejo (v8) sin autenticación. Ahora usa el mismo proyecto y
+  // el mismo esquema de campañas/personajes que el resto de las fichas.
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.database();
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+  const PERSONAJE_ID = "ulreek";
+  let charRef = null;
+
+  const btnVolver = document.querySelector('a[href="index.html"]');
+  if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
+
+  let modoLectura = false; // Guardia en cliente (defensa en profundidad, además de las reglas de Firebase)
+  let ownerReparado = false; // Evita repetir el auto-reclamo de owner en cada snapshot
+
+  function aplicarModoLectura(soloLectura) {
+    const container = document.querySelector('.container');
+    const banner = document.getElementById('readonly-banner');
+    if (!container) return;
+    modoLectura = soloLectura;
+    container.classList.toggle('readonly-mode', soloLectura);
+    if (banner) banner.style.display = soloLectura ? 'block' : 'none';
+    container.querySelectorAll('input, select, textarea').forEach(el => {
+      el.disabled = soloLectura;
+    });
+  }
+
+  // Antes la ficha no exigía sesión y cualquiera podía editarla; ahora exige
+  // login y respeta el mismo modo de solo lectura que el resto de las fichas.
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      console.log("Sesión activa detectada en la ficha de Ulreek:", user.uid);
+
+      if (codigoCampana) {
+        charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+      } else {
+        charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+      }
+
+      sincronizarDatosDesdeNube();
+
+      const gmRefPromise = codigoCampana
+        ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+        : Promise.resolve(true);
+
+      gmRefPromise.then(soyElGM => {
+        charRef.on('value', snap => {
+          const p = snap.val();
+          if (!p) return;
+
+          // Auto-reparación: personaje activo sin owner (dato legacy) -> quien lo abre lo reclama.
+          // (el GM no reclama fichas ajenas solo por abrirlas a mirar)
+          if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+            ownerReparado = true;
+            charRef.child('owner').set(user.uid);
+            return;
+          }
+
+          const esMio = codigoCampana ? (p.owner === user.uid) : true;
+
+          // Sincroniza el HP máximo real (hardcodeado en esta ficha) a Firebase, para que
+          // la pantalla del GM en index.html muestre el valor correcto en vez de un default.
+          const HP_MAX_ULREEK = 50;
+          if ((esMio || soyElGM) && p.datos?.['hp-max'] !== HP_MAX_ULREEK) {
+            charRef.child('datos/hp-max').set(HP_MAX_ULREEK);
+          }
+
+          const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+          aplicarModoLectura(soloLectura);
+
+          const btnCompartir = document.getElementById('btn-compartir');
+          if (btnCompartir) {
+            if (esMio) {
+              btnCompartir.style.display = 'inline-block';
+              btnCompartir.innerText = p.publico ? "🔒 Dejar de Compartir" : "👁️ Compartir Ficha";
+              btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+              btnCompartir.onclick = () => charRef.child('publico').set(!p.publico);
+            } else {
+              btnCompartir.style.display = 'none';
+            }
+          }
+        });
+      });
+    } else {
+      console.warn("No hay una sesión activa. Redirigiendo al menú...");
+      window.location.href = "index.html";
+    }
+  });
+
+  function guardarCampo(fieldId, value) {
+    if (modoLectura) return;
+    if (charRef) charRef.child('datos/' + fieldId).set(value);
+  }
+
+  // ==========================================
+  // 2. SINCRONIZACIÓN FIREBASE (INPUTS & RECUPERACIÓN)
+  // ==========================================
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input, textarea, select')) {
+      const fieldId = e.target.id;
+      if (fieldId) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        guardarCampo(fieldId, val);
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="checkbox"], select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        guardarCampo(fieldId, val);
+      }
+    }
+  });
+
+  function sincronizarDatosDesdeNube() {
+    if (!charRef) return;
+    charRef.child('datos').on('value', snapshot => {
+      const data = snapshot.val();
+      if (!data) return;
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') {
+            if (el.checked !== data[id]) el.checked = data[id];
+          } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+            if (el.innerText !== String(data[id])) {
+              el.innerText = data[id];
+              if (id === 'hp-cur') {
+                const s = document.getElementById('hp-summary');
+                if (s) s.innerText = data[id] + ' / 50';
+              }
+            }
+          } else {
+            if (el.value !== String(data[id])) el.value = data[id];
+          }
+        }
+      });
+      if (typeof recalcStats === 'function') recalcStats();
+      if (typeof updateConditions === 'function') updateConditions();
+    });
+  }
+
+  // ==========================================
+  // 3. LÓGICA DE INTERFAZ, RECURSOS Y DADOS
+  // ==========================================
+  function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
+
+  // --- POPOVER DE XP ---
+  function toggleXpPopover() {
+    const p = document.getElementById('xp-popover-panel');
+    if (p) p.classList.toggle('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.xp-popover-wrap')) {
+      const p = document.getElementById('xp-popover-panel');
+      if (p) p.classList.remove('open');
+    }
+  });
+
+  // ============================================
+  // SISTEMA DE SUBIDA DE NIVEL (oculto) — tabla de XP homebrew de la campaña
+  // ============================================
+  const TABLA_XP_NIVELES = [
+    {nivel:1, xp:0}, {nivel:2, xp:1500}, {nivel:3, xp:4500}, {nivel:4, xp:9500},
+    {nivel:5, xp:16500}, {nivel:6, xp:25500}, {nivel:7, xp:36500}, {nivel:8, xp:49500},
+    {nivel:9, xp:64500}, {nivel:10, xp:81500}, {nivel:11, xp:100500}, {nivel:12, xp:121500},
+    {nivel:13, xp:144500}, {nivel:14, xp:169500}, {nivel:15, xp:196500}, {nivel:16, xp:225500},
+    {nivel:17, xp:256500}, {nivel:18, xp:289500}, {nivel:19, xp:324500}, {nivel:20, xp:361500}
+  ];
+
+  // Rasgos restantes de Ulreek (Sorcerer Wild Magic 7 → 20, y Warlock 1 → 20).
+  // clase indica a qué progresión de clase pertenece el rasgo (multiclase: el jugador
+  // puede subir en Sorcerer o en Warlock, en cualquier orden).
+  // ⚠️ = no 100% seguro / depende de una elección del jugador (patrón de Warlock no definido en la ficha) — revisar con el PHB 2024.
+  const PROXIMAS_HABILIDADES = [
+    // --- SORCERER (Wild Magic) ---
+    {nivel: 8, clase: "Sorcerer", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "Aumentás una puntuación de característica en +2, o dos puntuaciones en +1 cada una (máx. 20), o tomás un Talento (Feat) en su lugar."},
+    {nivel: 10, clase: "Sorcerer", nombre: "Metamagic Adicional", descripcion: "Aprendés una opción de Metamagic adicional de la lista de Sorcerer, que se suma a las que ya conocés."},
+    {nivel: 12, clase: "Sorcerer", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "Igual que en nivel 8: +2 a una característica, +1 a dos, o un Talento."},
+    {nivel: 14, clase: "Sorcerer", nombre: "Controlled Chaos (Wild Magic)", descripcion: "Cuando tirás en la Tabla de Wild Magic Surge, podés tirar dos veces y elegir cuál de los dos resultados aplicar. ⚠️"},
+    {nivel: 16, clase: "Sorcerer", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "Igual que en nivel 8/12: +2 a una característica, +1 a dos, o un Talento."},
+    {nivel: 17, clase: "Sorcerer", nombre: "Metamagic Adicional", descripcion: "Aprendés otra opción de Metamagic más, sumándose a las anteriores."},
+    {nivel: 18, clase: "Sorcerer", nombre: "Bombardment (Wild Magic)", descripcion: "Cuando tirás daño para un hechizo de Sorcerer y sacás el número máximo posible en un dado de daño, podés tirar ese dado de nuevo y sumar el resultado (una vez por tirada de daño). ⚠️"},
+    {nivel: 19, clase: "Sorcerer", nombre: "Epic Boon (Don Épico)", descripcion: "En lugar de la mejora habitual, elegís un Don Épico (Epic Boon feat) de las reglas 2024, que otorga un beneficio mágico poderoso. ⚠️ Regla nueva del PHB 2024, confirmar con el manual/DM."},
+    {nivel: 20, clase: "Sorcerer", nombre: "Sorcerous Restoration", descripcion: "Al terminar un descanso corto, recuperás 4 Puntos de Hechicería (Sorcery Points) si tenés menos de 4. ⚠️ Confirmar nombre/mecánica exacta en el PHB 2024 (podría figurar con otro nombre, ej. 'Arcane Apotheosis')."},
+    // --- WARLOCK ---
+    {nivel: 2, clase: "Warlock", nombre: "Magical Cunning", descripcion: "Como acción bonus, recuperás espacios de conjuro gastados (hasta un total combinado igual a la mitad de tu nivel de Warlock, redondeado hacia abajo); no podés volver a usarlo hasta terminar un descanso largo. ⚠️ Rasgo del PHB 2024, confirmar nivel/mecánica exacta en el manual."},
+    {nivel: 3, clase: "Warlock", nombre: "Pact Boon y Otherworldly Patron", descripcion: "Elegís tu Patrón Sobrenatural (Otherworldly Patron) y un don de Pacto: Pact of the Blade, Pact of the Chain, Pact of the Tome o Pact of the Talisman. ⚠️ Depende del patrón que el jugador no especificó en la ficha — confirmar."},
+    {nivel: 4, clase: "Warlock", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "+2 a una característica, +1 a dos, o un Talento."},
+    {nivel: 5, clase: "Warlock", nombre: "Invocación Eldritch Adicional", descripcion: "Podés elegir 1 Eldritch Invocation nueva, sumándose a las que ya conocés. ⚠️ Cantidad exacta según la tabla de Warlock del PHB 2024, confirmar."},
+    {nivel: 6, clase: "Warlock", nombre: "Rasgo de Otherworldly Patron (nivel 6)", descripcion: "Ganás un rasgo otorgado por tu Patrón Sobrenatural a este nivel. ⚠️ Depende del patrón que el jugador no especificó en la ficha — confirmar."},
+    {nivel: 7, clase: "Warlock", nombre: "Invocación Eldritch Adicional", descripcion: "Podés elegir 1 Eldritch Invocation nueva. ⚠️ Cantidad exacta según la tabla, confirmar."},
+    {nivel: 8, clase: "Warlock", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "+2 a una característica, +1 a dos, o un Talento."},
+    {nivel: 9, clase: "Warlock", nombre: "Invocación Eldritch Adicional", descripcion: "Podés elegir 1 Eldritch Invocation nueva. ⚠️ Cantidad exacta según la tabla, confirmar."},
+    {nivel: 9, clase: "Warlock", nombre: "Contact Patron", descripcion: "Podés lanzar Contact Other Plane sin gastar espacio de conjuro, una vez por descanso largo, para consultar a tu patrón. ⚠️ Rasgo del PHB 2024, confirmar nivel/mecánica exacta en el manual."},
+    {nivel: 10, clase: "Warlock", nombre: "Rasgo de Otherworldly Patron (nivel 10)", descripcion: "Ganás otro rasgo otorgado por tu Patrón Sobrenatural. ⚠️ Depende del patrón que el jugador no especificó en la ficha — confirmar."},
+    {nivel: 11, clase: "Warlock", nombre: "Mystic Arcanum (nivel de hechizo 6)", descripcion: "Elegís un hechizo de nivel 6 de la lista de Warlock; podés lanzarlo una vez sin gastar espacio de conjuro, recuperándolo tras un descanso largo."},
+    {nivel: 12, clase: "Warlock", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "+2 a una característica, +1 a dos, o un Talento."},
+    {nivel: 12, clase: "Warlock", nombre: "Invocación Eldritch Adicional", descripcion: "Podés elegir 1 Eldritch Invocation nueva. ⚠️ Cantidad exacta según la tabla, confirmar."},
+    {nivel: 13, clase: "Warlock", nombre: "Mystic Arcanum (nivel de hechizo 7)", descripcion: "Elegís un hechizo de nivel 7 de la lista de Warlock; lanzalo una vez por descanso largo sin gastar espacio de conjuro."},
+    {nivel: 14, clase: "Warlock", nombre: "Rasgo de Otherworldly Patron (nivel 14)", descripcion: "Ganás otro rasgo otorgado por tu Patrón Sobrenatural, generalmente el más poderoso de la progresión. ⚠️ Depende del patrón que el jugador no especificó en la ficha — confirmar."},
+    {nivel: 15, clase: "Warlock", nombre: "Mystic Arcanum (nivel de hechizo 8)", descripcion: "Elegís un hechizo de nivel 8 de la lista de Warlock; lanzalo una vez por descanso largo sin gastar espacio de conjuro."},
+    {nivel: 15, clase: "Warlock", nombre: "Invocación Eldritch Adicional", descripcion: "Podés elegir 1 Eldritch Invocation nueva. ⚠️ Cantidad exacta según la tabla, confirmar."},
+    {nivel: 16, clase: "Warlock", nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "+2 a una característica, +1 a dos, o un Talento."},
+    {nivel: 17, clase: "Warlock", nombre: "Mystic Arcanum (nivel de hechizo 9)", descripcion: "Elegís un hechizo de nivel 9 de la lista de Warlock; lanzalo una vez por descanso largo sin gastar espacio de conjuro."},
+    {nivel: 18, clase: "Warlock", nombre: "Invocación Eldritch Adicional", descripcion: "Podés elegir 1 Eldritch Invocation nueva, alcanzando el máximo de invocaciones conocidas. ⚠️ Cantidad exacta, confirmar en el manual."},
+    {nivel: 19, clase: "Warlock", nombre: "Epic Boon (Don Épico)", descripcion: "En lugar de la mejora habitual, elegís un Don Épico (Epic Boon feat) de las reglas 2024. ⚠️ Regla nueva, confirmar con el DM/manual."},
+    {nivel: 20, clase: "Warlock", nombre: "Eldritch Master", descripcion: "Gastás 1 minuto implorando a tu patrón para recuperar todos tus espacios de Pact Magic gastados, una vez por descanso largo."}
+  ];
+
+  function nivelPorXP(xpTotal) {
+    let nivel = 1;
+    for (const fila of TABLA_XP_NIVELES) if (xpTotal >= fila.xp) nivel = fila.nivel;
+    return nivel;
+  }
+  function proximoUmbralXP(xpTotal) {
+    return TABLA_XP_NIVELES.find(f => f.xp > xpTotal) || null;
+  }
+
+  function actualizarNivelYProximaXP() {
+    const xpInput = document.getElementById('xp-val');
+    if (!xpInput) return;
+    const xpActual = parseInt(xpInput.value) || 0;
+    const nivel = nivelPorXP(xpActual);
+    document.querySelectorAll('#nivel-actual-display').forEach(el => el.innerText = nivel);
+    const umbral = proximoUmbralXP(xpActual);
+    const nextInput = document.getElementById('xp-next');
+    if (nextInput) {
+      nextInput.value = umbral ? umbral.xp : xpActual;
+      nextInput.readOnly = true;
+      nextInput.style.opacity = '0.7';
+    }
+    renderizarProximasHabilidades(nivel);
+  }
+
+  function insertarFeatureCard(h) {
+    const grid = document.querySelector('.feature-grid');
+    if (!grid) return;
+    const yaExiste = Array.from(grid.querySelectorAll('.feature-card h4')).some(el => el.innerText.includes(h.nombre));
+    if (yaExiste) return;
+    const card = document.createElement('div');
+    card.className = 'feature-card';
+    card.innerHTML = `<h4>🆕 ${h.nombre} <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400;">(Nvl ${h.nivel}${h.clase ? ' — ' + h.clase : ''})</span></h4><p>${h.descripcion}</p>`;
+    grid.appendChild(card);
+  }
+
+  function obtenerHabilidadesAgregadas() {
+    try {
+      const raw = document.getElementById('habilidades-agregadas-nivel')?.value || '[]';
+      return JSON.parse(raw);
+    } catch(e) { return []; }
+  }
+
+  function restaurarHabilidadesAgregadas() {
+    const nombres = obtenerHabilidadesAgregadas();
+    if (!nombres.length || typeof PROXIMAS_HABILIDADES === 'undefined') return;
+    nombres.forEach(n => {
+      const h = PROXIMAS_HABILIDADES.find(x => x.nombre === n);
+      if (h) insertarFeatureCard(h);
+    });
+  }
+
+  function renderizarProximasHabilidades(nivelActual) {
+    const cont = document.getElementById('nivel-hab-lista');
+    if (!cont || typeof PROXIMAS_HABILIDADES === 'undefined') return;
+    const agregadas = obtenerHabilidadesAgregadas();
+    cont.innerHTML = '';
+    if (!PROXIMAS_HABILIDADES.length) {
+      cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">No hay más habilidades registradas.</p>';
+      return;
+    }
+    PROXIMAS_HABILIDADES.forEach((h, idx) => {
+      const item = document.createElement('div');
+      const agregada = agregadas.includes(h.nombre);
+      item.className = 'nivel-hab-item' + (agregada ? ' agregada' : '');
+      item.innerHTML = `
+        <h5>${agregada ? '✅' : '🔒'} Nvl ${h.nivel}${h.clase ? ' (' + h.clase + ')' : ''} — ${h.nombre}</h5>
+        <p>${h.descripcion}</p>
+        ${!agregada ? `<button type="button" data-idx="${idx}">➕ Agregar a la ficha</button>` : ''}
+      `;
+      cont.appendChild(item);
+    });
+    cont.querySelectorAll('button[data-idx]').forEach(btn => {
+      btn.onclick = () => agregarHabilidadANivel(parseInt(btn.dataset.idx));
+    });
+  }
+
+  function agregarHabilidadANivel(idx) {
+    const h = PROXIMAS_HABILIDADES[idx];
+    if (!h) return;
+    insertarFeatureCard(h);
+    const actuales = obtenerHabilidadesAgregadas();
+    if (!actuales.includes(h.nombre)) {
+      actuales.push(h.nombre);
+      const hiddenInput = document.getElementById('habilidades-agregadas-nivel');
+      if (hiddenInput) hiddenInput.value = JSON.stringify(actuales);
+      if (typeof guardarCampo === 'function') guardarCampo('habilidades-agregadas-nivel', JSON.stringify(actuales));
+    }
+    renderizarProximasHabilidades(nivelPorXP(parseInt(document.getElementById('xp-val')?.value) || 0));
+  }
+
+  function toggleNivelPopover() {
+    const p = document.getElementById('nivel-popover-panel');
+    if (p) p.classList.toggle('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nivel-popover-wrap')) {
+      const p = document.getElementById('nivel-popover-panel');
+      if (p) p.classList.remove('open');
+    }
+  });
+  document.getElementById('xp-val')?.addEventListener('input', actualizarNivelYProximaXP);
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); }, 800);
+  });
+
+  // --- MODO DÍA/NOCHE (replicado del mismo mecanismo que usa Eldur) ---
+  function applyTheme(isDark) {
+    document.body.classList.toggle('light-mode', !isDark);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.innerText = isDark ? '☀️ Modo Día' : '🌙 Modo Noche';
+  }
+  function toggleTheme() {
+    const isDark = document.body.classList.contains('light-mode');
+    applyTheme(isDark);
+    localStorage.setItem(`${PERSONAJE_ID}_theme`, isDark ? 'dark' : 'light');
+  }
+  function initTheme() {
+    const saved = localStorage.getItem(`${PERSONAJE_ID}_theme`);
+    if (saved) {
+      applyTheme(saved === 'dark');
+    } else {
+      const hour = new Date().getHours();
+      applyTheme(!(hour >= 7 && hour < 19)); // de día (7-19h) arranca en modo día
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initTheme);
+
+  // --- BARRA STICKY DE COMBATE ---
+  function syncStickyBar() {
+    const hp = document.getElementById('hp-summary');
+    const ac = document.getElementById('ac-total');
+    const spAtk = document.getElementById('spell-atk-total');
+    const scbHp = document.getElementById('scb-hp');
+    const scbAc = document.getElementById('scb-ac');
+    const scbSpAtk = document.getElementById('scb-spatk');
+    if (scbHp && hp) scbHp.innerText = hp.innerText;
+    if (scbAc && ac) scbAc.innerText = ac.innerText;
+    if (scbSpAtk && spAtk) scbSpAtk.innerText = spAtk.innerText;
+  }
+
+  function changeVal(id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let val = Math.max(0, (parseInt(el.innerText) || 0) + delta);
+    el.innerText = val;
+    if (id === 'hp-cur') {
+      const summary = document.getElementById('hp-summary');
+      if (summary) summary.innerText = val + ' / 50';
+      syncStickyBar();
+    }
+    guardarCampo(id, val);
+  }
+
+  function recalcStats() {
+    const acBuff = parseInt(document.getElementById('ac-buff')?.value) || 0;
+    const atkBuff = parseInt(document.getElementById('atk-buff')?.value) || 0;
+    const spellAtkBuff = parseInt(document.getElementById('spell-atk-buff')?.value) || 0;
+    const spellDcBuff = parseInt(document.getElementById('spell-dc-buff')?.value) || 0;
+
+    document.getElementById('ac-total').innerText = 12 + acBuff;
+    document.getElementById('atk-total').innerText = (3 + atkBuff >= 0 ? '+' : '') + (3 + atkBuff);
+    document.getElementById('spell-atk-total').innerText = (8 + spellAtkBuff >= 0 ? '+' : '') + (8 + spellAtkBuff);
+    document.getElementById('spell-dc-total').innerText = 16 + spellDcBuff;
+    syncStickyBar();
+  }
+
+  function restShort() {
+    if (confirm("¿Efectuar Descanso Corto? Se restablecerán habilidades asociadas.")) {
+      alert("☕ Descanso corto completado.");
+    }
+  }
+
+  function restLong() {
+    if (confirm("¿Efectuar Descanso Largo? Se restablecerá HP, Sorcery Points y Spell Slots.")) {
+      changeVal('hp-cur', 50 - (parseInt(document.getElementById('hp-cur').innerText) || 0));
+      changeVal('sorc-pts', 7 - (parseInt(document.getElementById('sorc-pts').innerText) || 0));
+      changeVal('slot-1-cur', 4 - (parseInt(document.getElementById('slot-1-cur').innerText) || 0));
+      changeVal('slot-2-cur', 3 - (parseInt(document.getElementById('slot-2-cur').innerText) || 0));
+      changeVal('slot-3-cur', 3 - (parseInt(document.getElementById('slot-3-cur').innerText) || 0));
+      changeVal('slot-4-cur', 1 - (parseInt(document.getElementById('slot-4-cur').innerText) || 0));
+      alert("🌙 Descanso largo completado. Recursos restablecidos.");
+    }
+  }
+
+  function toggleConditionsDropdown() {
+    const drop = document.getElementById('conditions-dropdown');
+    drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
+  }
+  window.addEventListener('click', e => {
+    if (!e.target.closest('.multiselect-container')) {
+      const d = document.getElementById('conditions-dropdown');
+      if (d) d.style.display = 'none';
+    }
+  });
+
+  function updateConditions() {
+    const drop = document.getElementById('conditions-dropdown');
+    const checked = drop.querySelectorAll('input[type="checkbox"]:checked');
+    const list = document.getElementById('active-conditions-list');
+    const text = document.getElementById('cond-select-text');
+
+    list.innerHTML = '';
+    text.innerText = checked.length + ' seleccionadas';
+
+    checked.forEach(cb => {
+      const tag = document.createElement('span');
+      tag.className = 'cond-tag debuff';
+      tag.innerText = cb.value;
+      list.appendChild(tag);
+    });
+  }
+
+  var rollHistory = [];
+  function displayRollResult(total, label, breakdownStr) {
+    document.getElementById('dice-result-val').innerText = total;
+    document.getElementById('dice-result-details').innerText = `${label}: ${breakdownStr}`;
+
+    rollHistory.unshift(`${label}: ${breakdownStr} = <strong>${total}</strong>`);
+    if (rollHistory.length > 4) rollHistory.pop();
+    document.getElementById('dice-history').innerHTML = rollHistory.join(' | ');
+
+    if (codigoCampana) {
+      db.ref(`campanas/${codigoCampana}/tiradas`).push({
+        personaje: "Ulreek",
+        tipo: label,
+        resultado: total,
+        fecha: firebase.database.ServerValue.TIMESTAMP
+      });
+    }
+  }
+
+  function rollManualDice(num, sides, mod, label) {
+    let rolls = []; let total = 0;
+    for (let i = 0; i < num; i++) {
+      let r = Math.floor(Math.random() * sides) + 1;
+      rolls.push(r); total += r;
+    }
+    total += mod;
+    displayRollResult(total, label || `${num}d${sides}`, `[${rolls.join(', ')}] ${mod >= 0 ? '+' : ''}${mod}`);
+  }
+
+  function rollGenericDamage(num, sides, mod, label) { rollManualDice(num, sides, mod, label); }
+
+  function rollDice(sides) {
+    rollManualDice(1, sides, getMod(), `d${sides}`);
+  }
+
+  function rollAttack(bonus, label) {
+    const adv = document.getElementById('adv-attack').value;
+    rollD20WithMechanics(bonus, label, adv, true);
+  }
+
+  function rollCheckSave(diceStr, mod, label, type) {
+    const adv = document.getElementById('adv-save').value;
+    rollD20WithMechanics(mod, label, adv, type === 'save');
+  }
+
+  function rollConcentrationSave() {
+    rollD20WithMechanics(5, 'Concentración CON Save', document.getElementById('adv-conc').value, true);
+  }
+
+  function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
+    let r1 = Math.floor(Math.random() * 20) + 1;
+    let r2 = Math.floor(Math.random() * 20) + 1;
+    let chosen = advState === 'advantage' ? Math.max(r1, r2) : (advState === 'disadvantage' ? Math.min(r1, r2) : r1);
+    let detailStr = advState === 'advantage' ? `Ventaja: [${r1}, ${r2}] ➔ ${chosen}` : (advState === 'disadvantage' ? `Desventaja: [${r1}, ${r2}] ➔ ${chosen}` : `(${r1})`);
+    const total = chosen + flatMod;
+    displayRollResult(total, label, `${detailStr} ${flatMod >= 0 ? '+' : ''}${flatMod}`);
+  }
+</script>
+</body>
+</html>

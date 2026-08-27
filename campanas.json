@@ -1,0 +1,22 @@
+{
+  "etreum": {
+    "nombre": "Etreum",
+    "gm": "XT6x87BzxkaJoBFJHFG79Z13gpU2",
+    "personajes": {
+      "fiona_faraway": {
+        "nombre": "Fiona Faraway",
+        "clase": "Druida Shepherd"
+      }
+    }
+  },
+  "society": {
+    "nombre": "The Society",
+    "gm": "XT6x87BzxkaJoBFJHFG79Z13gpU2",
+    "personajes": {
+      "nevada_jones": {
+        "nombre": "Nevada Jones",
+        "clase": "Profesor de Arqueología"
+      }
+    }
+  }
+}

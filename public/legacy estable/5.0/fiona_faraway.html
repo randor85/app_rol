@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Fiona Faraway — Druid Shepherd Sheet</title>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Metamorphous&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+ <style>
+ :root {
+ --bg-primary: #121915;
+ --bg-card: #1c2620;
+ --bg-card-header: #27362d;
+ --accent-green: #3a7d44;
+ --accent-gold: #d4af37;
+ --accent-light: #8fc1a3;
+ --accent-hover: #4e9b5a;
+ --text-light: #f0f4f1;
+ --text-muted: #a3b899;
+ --border-color: #2e4336;
+ --danger-color: #c94a4a;
+ --heal-color: #38a169;
+ --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+ }
+
+ * {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ font-family: 'Nunito', sans-serif;
+ }
+
+ body {
+ background-color: var(--bg-primary);
+ color: var(--text-light);
+ padding: 20px;
+ padding-bottom: 280px;
+ line-height: 1.5;
+ }
+
+ .container {
+ max-width: 1200px;
+ margin: 0 auto;
+ }
+
+ /* HEADER & IDENTITY */
+ header {
+ background: linear-gradient(135deg, #1c2d22 0%, #0d1712 100%);
+ border: 2px solid var(--accent-gold);
+ border-radius: 12px;
+ padding: 24px;
+ margin-bottom: 20px;
+ box-shadow: var(--shadow);
+ position: relative;
+ overflow: hidden;
+ }
+
+ header::before {
+ content: "🌿";
+ position: absolute;
+ right: 20px;
+ top: 10px;
+ font-size: 8rem;
+ opacity: 0.05;
+ pointer-events: none;
+ }
+
+ h1, h2, h3, h4 {
+ font-family: 'Cinzel', serif;
+ color: var(--accent-gold);
+ letter-spacing: 0.5px;
+ }
+
+ .character-title {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 12px;
+ margin-bottom: 16px;
+ }
+
+ .char-name h1 {
+ font-size: 2.4rem;
+ color: var(--accent-gold);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+ }
+
+ .char-sub {
+ font-size: 1.1rem;
+ color: var(--accent-light);
+ font-weight: 600;
+ }
+
+ .quick-rest-btns {
+ display: flex;
+ gap: 10px;
+ margin-top: 10px;
+ }
+
+ .btn-rest {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-gold);
+ color: var(--accent-gold);
+ padding: 8px 16px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-weight: 700;
+ transition: all 0.2s;
+ font-size: 0.9rem;
+ }
+
+ .btn-rest:hover {
+ background: var(--accent-gold);
+ color: #121915;
+ box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+ }
+
+ /* GRID LAYOUTS */
+ .grid-identity {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+ gap: 12px;
+ }
+
+ .stat-badge {
+ background: rgba(0, 0, 0, 0.3);
+ border: 1px solid var(--border-color);
+ padding: 10px;
+ border-radius: 8px;
+ text-align: center;
+ }
+
+ .stat-badge label {
+ display: block;
+ font-size: 0.75rem;
+ text-transform: uppercase;
+ color: var(--text-muted);
+ letter-spacing: 0.5px;
+ font-weight: 700;
+ }
+
+ .stat-badge span {
+ font-size: 1.1rem;
+ font-weight: 800;
+ color: var(--text-light);
+ display: block;
+ }
+
+ .stat-badge .stat-total {
+ font-size: 1.3rem;
+ color: var(--accent-gold);
+ font-weight: 800;
+ margin-top: 2px;
+ }
+
+ .stat-badge input[type="number"] {
+ background: rgba(0,0,0,0.2);
+ border: 1px solid var(--border-color);
+ border-radius: 4px;
+ color: var(--accent-light);
+ font-size: 1rem;
+ font-weight: 700;
+ text-align: center;
+ width: 100%;
+ outline: none;
+ margin-top: 2px;
+ }
+
+ .stat-badge input:focus {
+ border-color: var(--accent-gold);
+ }
+
+ /* ADVANTAGE & CONDITION TRACKER BAR */
+ .advantage-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ background: var(--bg-card);
+ border: 1px solid var(--accent-gold);
+ border-radius: 10px;
+ padding: 14px;
+ box-shadow: var(--shadow);
+ }
+
+ .adv-card {
+ background: rgba(0, 0, 0, 0.25);
+ padding: 8px 12px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ text-align: center;
+ position: relative;
+ }
+
+ .adv-card label {
+ display: block;
+ font-size: 0.8rem;
+ font-weight: 700;
+ color: var(--accent-light);
+ text-transform: uppercase;
+ margin-bottom: 4px;
+ }
+
+ .adv-card select {
+ width: 100%;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-green);
+ color: var(--text-light);
+ font-weight: 700;
+ padding: 6px;
+ border-radius: 6px;
+ outline: none;
+ cursor: pointer;
+ }
+
+ .multiselect-container {
+ position: relative;
+ width: 100%;
+ }
+
+ .select-box {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-green);
+ color: var(--text-light);
+ font-weight: 700;
+ padding: 6px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.85rem;
+ text-align: left;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ }
+
+ .checkboxes-dropdown {
+ display: none;
+ position: absolute;
+ top: 100%;
+ left: 0;
+ right: 0;
+ background: var(--bg-card);
+ border: 1px solid var(--accent-gold);
+ border-radius: 6px;
+ max-height: 220px;
+ overflow-y: auto;
+ z-index: 100;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+ padding: 6px;
+ margin-top: 4px;
+ text-align: left;
+ }
+
+ .checkboxes-dropdown label {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ padding: 4px 6px;
+ font-size: 0.8rem;
+ text-transform: none;
+ color: var(--text-light);
+ cursor: pointer;
+ font-weight: normal;
+ border-radius: 4px;
+ }
+
+ .checkboxes-dropdown label:hover {
+ background: rgba(212, 175, 55, 0.15);
+ }
+
+ .checkboxes-dropdown input[type="checkbox"] {
+ accent-color: var(--accent-gold);
+ width: 14px;
+ height: 14px;
+ }
+
+ .active-conditions-tags {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 4px;
+ margin-top: 6px;
+ min-height: 20px;
+ }
+
+ .cond-tag {
+ background: var(--accent-green);
+ color: #fff;
+ font-size: 0.7rem;
+ padding: 2px 6px;
+ border-radius: 4px;
+ font-weight: bold;
+ }
+
+ .cond-tag.buff { background: #2b6cb0; }
+ .cond-tag.debuff { background: #c53030; }
+
+ /* STATS & ABILITIES */
+ .abilities-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ }
+
+ .ability-box {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 12px;
+ text-align: center;
+ box-shadow: var(--shadow);
+ position: relative;
+ transition: transform 0.2s, border-color 0.2s;
+ }
+
+ .ability-box:hover {
+ border-color: var(--accent-light);
+ transform: translateY(-2px);
+ }
+
+ .ability-name {
+ font-size: 0.85rem;
+ font-weight: 800;
+ color: var(--accent-gold);
+ text-transform: uppercase;
+ }
+
+ .ability-score {
+ font-size: 1.8rem;
+ font-weight: 800;
+ margin: 4px 0;
+ color: #fff;
+ }
+
+ .ability-mod {
+ display: inline-block;
+ background: var(--accent-green);
+ color: #fff;
+ padding: 2px 10px;
+ border-radius: 12px;
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ .ability-save {
+ margin-top: 6px;
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ }
+
+ /* HP & RESOURCE TRACKERS */
+ .resources-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 16px;
+ margin-bottom: 20px;
+ }
+
+ .tracker-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ padding: 16px;
+ box-shadow: var(--shadow);
+ }
+
+ .tracker-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 10px;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 6px;
+ }
+
+ .tracker-header h3 {
+ font-size: 1.1rem;
+ }
+
+ .counter-controls {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .btn-cnt {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-light);
+ color: var(--text-light);
+ width: 32px;
+ height: 32px;
+ border-radius: 6px;
+ font-size: 1.2rem;
+ font-weight: bold;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
+ }
+
+ .btn-cnt:hover {
+ background: var(--accent-green);
+ color: #fff;
+ }
+
+ .cnt-val {
+ font-size: 1.4rem;
+ font-weight: 800;
+ width: 50px;
+ text-align: center;
+ }
+
+ .cnt-max {
+ font-size: 0.9rem;
+ color: var(--text-muted);
+ }
+
+ .editable-cnt-val {
+ background: transparent;
+ border: 1px dashed var(--accent-gold);
+ border-radius: 4px;
+ color: var(--accent-gold);
+ font-size: 1.3rem;
+ font-weight: 800;
+ width: 60px;
+ text-align: center;
+ outline: none;
+ }
+
+ .checkbox-group {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 8px;
+ }
+
+ .check-box-item {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ background: rgba(0,0,0,0.2);
+ padding: 6px 10px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ font-size: 0.85rem;
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .check-box-item input[type="checkbox"] {
+ accent-color: var(--accent-gold);
+ width: 16px;
+ height: 16px;
+ cursor: pointer;
+ }
+
+ /* SECTIONS & COLLAPSIBLES */
+ details {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ margin-bottom: 16px;
+ box-shadow: var(--shadow);
+ overflow: hidden;
+ transition: border-color 0.2s;
+ }
+
+ details[open] {
+ border-color: var(--accent-green);
+ }
+
+ summary {
+ padding: 16px 20px;
+ font-family: 'Cinzel', serif;
+ font-size: 1.2rem;
+ font-weight: 700;
+ color: var(--accent-gold);
+ background: var(--bg-card-header);
+ cursor: pointer;
+ user-select: none;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ list-style: none;
+ transition: background 0.2s;
+ }
+
+ summary::-webkit-details-marker {
+ display: none;
+ }
+
+ summary::after {
+ content: "►";
+ font-size: 0.9rem;
+ transition: transform 0.2s;
+ color: var(--accent-light);
+ }
+
+ details[open] summary::after {
+ transform: rotate(90deg);
+ }
+
+ summary:hover {
+ background: #2e4035;
+ }
+
+ .section-content {
+ padding: 20px;
+ }
+
+ /* TABLES & EDITABLE INVENTORY */
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ font-size: 0.92rem;
+ }
+
+ th, td {
+ padding: 10px 12px;
+ text-align: left;
+ border-bottom: 1px solid var(--border-color);
+ }
+
+ th {
+ background: rgba(0, 0, 0, 0.4);
+ color: var(--accent-gold);
+ font-family: 'Cinzel', serif;
+ font-size: 0.85rem;
+ letter-spacing: 0.5px;
+ }
+
+ tr:nth-child(even) {
+ background: rgba(255, 255, 255, 0.02);
+ }
+
+ tr:hover {
+ background: rgba(143, 193, 163, 0.08);
+ }
+
+ .input-qty {
+ background: rgba(0, 0, 0, 0.4);
+ border: 1px solid var(--border-color);
+ color: var(--accent-gold);
+ font-weight: bold;
+ text-align: center;
+ width: 60px;
+ padding: 4px;
+ border-radius: 4px;
+ outline: none;
+ }
+
+ .input-qty:focus {
+ border-color: var(--accent-gold);
+ background: rgba(0, 0, 0, 0.7);
+ }
+
+ .btn-roll {
+ background: linear-gradient(135deg, #2b4c38, #1c3325);
+ border: 1px solid var(--accent-light);
+ color: var(--text-light);
+ padding: 4px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.8rem;
+ font-weight: 700;
+ transition: all 0.2s;
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ }
+
+ .btn-roll:hover {
+ background: var(--accent-green);
+ box-shadow: 0 0 8px rgba(143, 193, 163, 0.5);
+ transform: scale(1.03);
+ }
+
+ .btn-clear {
+ background: rgba(201, 74, 74, 0.2);
+ border: 1px solid var(--danger-color);
+ color: #ff9999;
+ padding: 2px 8px;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 0.7rem;
+ font-weight: bold;
+ transition: all 0.2s;
+ }
+
+ .btn-clear:hover {
+ background: var(--danger-color);
+ color: #fff;
+ }
+
+ /* FEATURE CARDS */
+ .feature-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+ gap: 16px;
+ }
+
+ .feature-card {
+ background: rgba(0, 0, 0, 0.25);
+ border: 1px solid var(--border-color);
+ border-left: 4px solid var(--accent-gold);
+ padding: 14px;
+ border-radius: 6px;
+ }
+
+ .feature-card h4 {
+ font-size: 1rem;
+ margin-bottom: 6px;
+ color: var(--accent-light);
+ }
+
+ .feature-card p, .feature-card ul {
+ font-size: 0.9rem;
+ color: var(--text-light);
+ line-height: 1.4;
+ }
+
+ .feature-card ul {
+ padding-left: 18px;
+ margin-top: 6px;
+ }
+
+ .tag {
+ display: inline-block;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-green);
+ color: var(--accent-light);
+ font-size: 0.75rem;
+ padding: 2px 8px;
+ border-radius: 4px;
+ margin-right: 6px;
+ font-weight: 700;
+ }
+
+ .stat-block {
+ background: rgba(0, 0, 0, 0.35);
+ border: 1px solid var(--accent-gold);
+ border-radius: 8px;
+ padding: 14px;
+ margin-bottom: 16px;
+ }
+
+ .stat-block-header {
+ border-bottom: 2px solid var(--accent-gold);
+ padding-bottom: 6px;
+ margin-bottom: 8px;
+ }
+
+ .stat-block-header h4 {
+ font-size: 1.15rem;
+ color: var(--accent-gold);
+ }
+
+ .stat-block-sub {
+ font-size: 0.8rem;
+ color: var(--accent-light);
+ font-style: italic;
+ }
+
+ .stat-block-line {
+ font-size: 0.88rem;
+ margin-bottom: 4px;
+ }
+
+ .stat-block-line strong {
+ color: var(--accent-light);
+ }
+
+ .spell-details-box {
+ background: rgba(0, 0, 0, 0.2);
+ border-left: 3px solid var(--accent-light);
+ padding: 8px 12px;
+ margin-top: 8px;
+ border-radius: 0 6px 6px 0;
+ font-size: 0.85rem;
+ }
+
+ .spell-details-box h5 {
+ color: var(--accent-gold);
+ font-size: 0.88rem;
+ margin-bottom: 4px;
+ }
+
+ /* FLOATING DICE ROLLER */
+ .dice-roller-panel {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ background: #141b17;
+ border-top: 3px solid var(--accent-gold);
+ box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
+ padding: 12px 20px;
+ z-index: 1000;
+ }
+
+ .dice-container {
+ max-width: 1200px;
+ margin: 0 auto;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 15px;
+ align-items: center;
+ justify-content: space-between;
+ }
+
+ .dice-btns {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ align-items: center;
+ }
+
+ .btn-dice {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: var(--accent-gold);
+ font-family: 'Cinzel', serif;
+ font-weight: 800;
+ font-size: 0.95rem;
+ padding: 8px 14px;
+ border-radius: 8px;
+ cursor: pointer;
+ transition: all 0.2s;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ }
+
+ .btn-dice:hover {
+ background: var(--accent-green);
+ color: #fff;
+ border-color: var(--accent-gold);
+ transform: translateY(-2px);
+ }
+
+ .dice-mod-input {
+ width: 60px;
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: #fff;
+ padding: 6px;
+ border-radius: 6px;
+ text-align: center;
+ font-size: 1rem;
+ font-weight: bold;
+ }
+
+ .dice-result-box {
+ background: rgba(0, 0, 0, 0.5);
+ border: 1px solid var(--accent-gold);
+ border-radius: 8px;
+ padding: 8px 16px;
+ min-width: 220px;
+ text-align: center;
+ }
+
+ .dice-result-val {
+ font-size: 1.8rem;
+ font-weight: 800;
+ color: var(--accent-gold);
+ line-height: 1;
+ }
+
+ .dice-result-details {
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ margin-top: 4px;
+ }
+
+ .dice-history {
+ font-size: 0.75rem;
+ color: var(--accent-light);
+ max-height: 40px;
+ overflow-y: auto;
+ margin-top: 4px;
+ }
+
+ .highlight-box {
+ background: rgba(212, 175, 55, 0.08);
+ border: 1px dashed var(--accent-gold);
+ padding: 12px;
+ border-radius: 8px;
+ margin: 10px 0;
+ font-size: 0.9rem;
+ }
+
+ .currency-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+ gap: 10px;
+ margin-bottom: 16px;
+ }
+
+ .currency-box {
+ background: rgba(0,0,0,0.3);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 8px;
+ text-align: center;
+ }
+
+ .currency-box label {
+ display: block;
+ font-size: 0.75rem;
+ font-weight: bold;
+ color: var(--accent-gold);
+ }
+
+ .currency-box input {
+ width: 100%;
+ background: transparent;
+ border: none;
+ color: #fff;
+ font-size: 1.2rem;
+ font-weight: bold;
+ text-align: center;
+ outline: none;
+ }
+
+ @media (max-width: 768px) {
+ body { padding-bottom: 340px; }
+ .dice-container { flex-direction: column; align-items: stretch; }
+ .dice-btns { justify-content: center; }
+ .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+ }
+ </style>
+</head>
+<body>
+
+<div class="container">
+  <div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; text-align: left;">
+    <a href="index.html" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header, #27362d); color: var(--accent-gold, #d4af37); text-decoration: none; border: 1px solid var(--accent-gold, #d4af37); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">
+        ⬅ Volver al Menú
+    </a>
+</div>
+
+
+ <!-- HEADER / IDENTIDAD -->
+ <header>
+ <div class="character-title">
+ <div class="char-name">
+ <h1>Fiona Faraway</h1>
+ <div class="char-sub">Druid 8 — Circle of the Shepherd | Orc (Neutral Buena)</div>
+ </div>
+ <div class="quick-rest-btns">
+ <button class="btn-rest" onclick="restShort()">☕ Descanso Corto</button>
+ <button class="btn-rest" onclick="restLong()">🌙 Descanso Largo</button>
+ </div>
+ </div>
+
+ <div class="grid-identity">
+ <div class="stat-badge">
+ <label>XP Actual</label>
+ <input type="number" id="xp-val" value="34000" step="100">
+ </div>
+ <div class="stat-badge">
+ <label>XP Próximo Lvl</label>
+ <input type="number" id="xp-next" value="48000" step="500">
+ </div>
+ <div class="stat-badge">
+ <label>Puntos Golpe (HP)</label>
+ <span id="hp-summary" style="font-size:1.2rem; margin-top:4px;">59 / 59</span>
+ </div>
+
+ <!-- STATS SEPARADOS EN BASE Y BUFFS -->
+ <div class="stat-badge">
+ <label>AC (Clase de Armadura)</label>
+ <span>Base: 17 (Half-Plate+Shield)</span>
+ <label style="margin-top:2px;">Bono Buffs:</label>
+ <input type="number" id="ac-buff" value="0" onchange="recalcStats()">
+ <div class="stat-total" id="ac-total">17</div>
+ </div>
+
+ <div class="stat-badge">
+ <label>Bono Ataque (Atk Mod)</label>
+ <span>Base: +4 (STR + Prof)</span>
+ <label style="margin-top:2px;">Bono Buffs:</label>
+ <input type="number" id="atk-buff" value="0" onchange="recalcStats()">
+ <div class="stat-total" id="atk-total">+4</div>
+ </div>
+
+ <div class="stat-badge">
+ <label>Spell Atk Bonus</label>
+ <span>Base: +8 (WIS + Prof)</span>
+ <label style="margin-top:2px;">Bono Buffs:</label>
+ <input type="number" id="spell-atk-buff" value="0" onchange="recalcStats()">
+ <div class="stat-total" id="spell-atk-total">+8</div>
+ </div>
+
+ <div class="stat-badge">
+ <label>Spell Save DC</label>
+ <span>Base: 16 (8+WIS+Prof)</span>
+ <label style="margin-top:2px;">Bono Buffs:</label>
+ <input type="number" id="spell-dc-buff" value="0" onchange="recalcStats()">
+ <div class="stat-total" id="spell-dc-total">16</div>
+ </div>
+
+ <div class="stat-badge">
+ <label>Iniciativa</label>
+ <button class="btn-roll" style="margin-top:10px;" onclick="rollCheckSave('d20', 2, 'Iniciativa', 'save')">🎲 +2</button>
+ </div>
+ <div class="stat-badge">
+ <label>Velocidad</label>
+ <span style="font-size:1.2rem; margin-top:8px;">30 ft</span>
+ </div>
+ <div class="stat-badge">
+ <label>Prof. Bonus</label>
+ <span style="font-size:1.2rem; margin-top:8px;">+3</span>
+ </div>
+ <div class="stat-badge">
+ <label>Percepción Pasiva</label>
+ <span style="font-size:1.2rem; margin-top:8px;">18</span>
+ </div>
+ </div>
+ </header>
+
+ <!-- BARRA DE SELECTORES DE VENTAJAS Y CONDICIONES MÚLTIPLES -->
+ <div class="advantage-bar">
+ <div class="adv-card">
+ <label>🎲 Próximo Ataque</label>
+ <select id="adv-attack">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+ <div class="adv-card">
+ <label>🛡️ Próxima Salvación</label>
+ <select id="adv-save">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+
+ <!-- MÓDULO DE SALVACIÓN DE CONCENTRACIÓN -->
+ <div class="adv-card" style="border-color: var(--accent-light);">
+ <label>🧘 Save Concentración</label>
+ <select id="adv-conc" style="margin-bottom:6px;">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja (Warcaster/Totem)</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ <button class="btn-roll" style="width:100%; justify-content:center;" onclick="rollConcentrationSave()">🧘 Tirar CON Save (+2)</button>
+ </div>
+
+ <!-- SELECTOR MÚLTIPLE DE CONDICIONES Y BUFFS/DEBUFFS -->
+ <div class="adv-card">
+ <label>✨ Condiciones y Efectos</label>
+ <div class="multiselect-container">
+ <div class="select-box" onclick="toggleConditionsDropdown()">
+ <span>Seleccionar...</span>
+ <span>▼</span>
+ </div>
+ <div class="checkboxes-dropdown" id="conditions-dropdown">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS / BUFFS & DEBUFFS</strong>
+ <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="buff-guidance" value="Guidance" data-type="buff" onchange="updateConditions()"> 📜 Guidance (+1d4 Check)</label>
+ <label><input type="checkbox" id="buff-haste" value="Haste" data-type="buff" onchange="updateConditions()"> ⚡ Haste (+2 AC, Doble Vel.)</label>
+ <hr style="border-color:var(--border-color); margin:4px 0;">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
+ <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded (Cegado)</label>
+ <label><input type="checkbox" id="cond-charmed" value="Charmed" data-type="debuff" onchange="updateConditions()"> ❤️ Charmed (Encantado)</label>
+ <label><input type="checkbox" id="cond-deafened" value="Deafened" data-type="debuff" onchange="updateConditions()"> 👂 Deafened (Ensordecido)</label>
+ <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened (Asustado)</label>
+ <label><input type="checkbox" id="cond-grappled" value="Grappled" data-type="debuff" onchange="updateConditions()"> 🤼 Grappled (Agarrado)</label>
+ <label><input type="checkbox" id="cond-incapacitated" value="Incapacitated" data-type="debuff" onchange="updateConditions()"> 😵 Incapacitated</label>
+ <label><input type="checkbox" id="cond-invisible" value="Invisible" data-type="buff" onchange="updateConditions()"> 👻 Invisible</label>
+ <label><input type="checkbox" id="cond-paralyzed" value="Paralyzed" data-type="debuff" onchange="updateConditions()"> ⚡ Paralyzed (Paralizado)</label>
+ <label><input type="checkbox" id="cond-petrified" value="Petrified" data-type="debuff" onchange="updateConditions()"> 🗿 Petrified (Petrificado)</label>
+ <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned (Envenenado)</label>
+ <label><input type="checkbox" id="cond-prone" value="Prone" data-type="debuff" onchange="updateConditions()"> 🛌 Prone (Derribado)</label>
+ <label><input type="checkbox" id="cond-restrained" value="Restrained" data-type="debuff" onchange="updateConditions()"> 🕸️ Restrained (Apresado)</label>
+ <label><input type="checkbox" id="cond-stunned" value="Stunned" data-type="debuff" onchange="updateConditions()"> 💫 Stunned (Aturdido)</label>
+ </div>
+ </div>
+ <div class="active-conditions-tags" id="active-conditions-list"></div>
+ </div>
+ </div>
+
+ <!-- CARACTERÍSTICAS Y SALVAGUARDAS -->
+ <div class="abilities-grid">
+ <div class="ability-box">
+ <div class="ability-name">Fuerza (STR)</div>
+ <div class="ability-score">13</div>
+ <div class="ability-mod">+1</div>
+ <div class="ability-save">Save: +1</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 1, 'STR Check / Save', 'save')">🎲 +1</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Destreza (DEX)</div>
+ <div class="ability-score">14</div>
+ <div class="ability-mod">+2</div>
+ <div class="ability-save">Save: +2</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 2, 'DEX Check / Save', 'save')">🎲 +2</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Constitución (CON)</div>
+ <div class="ability-score">14</div>
+ <div class="ability-mod">+2</div>
+ <div class="ability-save">Save: +2</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 2, 'CON Check / Save', 'save')">🎲 +2</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Inteligencia (INT)</div>
+ <div class="ability-score">12</div>
+ <div class="ability-mod">+1</div>
+ <div class="ability-save" style="color:var(--accent-gold); font-weight:bold;">Save: +4 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 4, 'INT Save', 'save')">🎲 +4</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Sabiduría (WIS)</div>
+ <div class="ability-score">20</div>
+ <div class="ability-mod">+5</div>
+ <div class="ability-save" style="color:var(--accent-gold); font-weight:bold;">Save: +8 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 8, 'WIS Save', 'save')">🎲 +8</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Carisma (CHA)</div>
+ <div class="ability-score">12</div>
+ <div class="ability-mod">+1</div>
+ <div class="ability-save">Save: +1</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 1, 'CHA Check / Save', 'save')">🎲 +1</button>
+ </div>
+ </div>
+
+ <!-- RECURSOS Y CONTADORES TOGGLEABLES -->
+ <div class="resources-bar">
+ <!-- HP TRACKER -->
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>❤️ Puntos de Golpe (HP)</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('hp-cur', -1)">-</button>
+ <span id="hp-cur" class="cnt-val">59</span>
+ <span class="cnt-max">/ 59</span>
+ <button class="btn-cnt" onclick="changeVal('hp-cur', 1)">+</button>
+ </div>
+ </div>
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+ <span style="font-size:0.9rem; color:var(--text-muted);">HP Temporal (Editable):</span>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeInputVal('hp-temp-input', -1)">-</button>
+ <input type="number" id="hp-temp-input" class="editable-cnt-val" value="0" min="0">
+ <button class="btn-cnt" onclick="changeInputVal('hp-temp-input', 1)">+</button>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size: 0.8rem; color: var(--text-muted);">Dado de Golpe (Hit Dice): 8d8</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="hd-1"> HD 1</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-2"> HD 2</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-3"> HD 3</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-4"> HD 4</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-5"> HD 5</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-6"> HD 6</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-7"> HD 7</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-8"> HD 8</label>
+ </div>
+ </div>
+ </div>
+
+ <!-- RECURSOS DE CLASE, EQUIPO Y RAZA -->
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>🐾 Recursos Principales</h3>
+ </div>
+ <div style="margin-top: 6px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Wild Shape (2 / descanso):</label>
+ <div class="checkbox-group" id="group-wildshape">
+ <label class="check-box-item"><input type="checkbox" id="ws-use-1"> Uso 1</label>
+ <label class="check-box-item"><input type="checkbox" id="ws-use-2"> Uso 2</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Spirit Totem (1 / descanso):</label>
+ <div class="checkbox-group" id="group-totem">
+ <label class="check-box-item"><input type="checkbox" id="totem-use-1"> Uso Totem</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <div style="display: flex; justify-content: space-between; align-items: center;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Healer's Kit (Usos restantes):</label>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('healer-kit-cur', -1)">-</button>
+ <span id="healer-kit-cur" class="cnt-val">10</span>
+ <span class="cnt-max">/ 10</span>
+ <button class="btn-cnt" onclick="changeVal('healer-kit-cur', 1)">+</button>
+ </div>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Adrenaline Rush (Orc - 3 / descanso largo):</label>
+ <div class="checkbox-group" id="group-adrenaline">
+ <label class="check-box-item"><input type="checkbox" id="adr-use-1"> Uso 1</label>
+ <label class="check-box-item"><input type="checkbox" id="adr-use-2"> Uso 2</label>
+ <label class="check-box-item"><input type="checkbox" id="adr-use-3"> Uso 3</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Relentless Endurance (Orc - 1 / d. largo):</label>
+ <div class="checkbox-group" id="group-relentless">
+ <label class="check-box-item"><input type="checkbox" id="relentless-use-1"> Disponible / Usado</label>
+ </div>
+ </div>
+ </div>
+
+ <!-- SPELL SLOTS & FEY-TOUCHED -->
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>✨ Ranuras de Conjuro (Spell Slots)</h3>
+ </div>
+ <div style="margin-top: 4px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 1 (4 Slots):</label>
+ <div class="checkbox-group" id="slots-lvl1">
+ <label class="check-box-item"><input type="checkbox" id="slot-1-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-3"> S3</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-4"> S4</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 2 (3 Slots):</label>
+ <div class="checkbox-group" id="slots-lvl2">
+ <label class="check-box-item"><input type="checkbox" id="slot-2-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-2-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-2-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 3 (3 Slots):</label>
+ <div class="checkbox-group" id="slots-lvl3">
+ <label class="check-box-item"><input type="checkbox" id="slot-3-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-3-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-3-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 4 (2 Slots):</label>
+ <div class="checkbox-group" id="slots-lvl4">
+ <label class="check-box-item"><input type="checkbox" id="slot-4-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-4-2"> S2</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 6px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-light);">Fey-Touched Free Casts:</label>
+ <div class="checkbox-group" id="group-feytouched">
+ <label class="check-box-item"><input type="checkbox" id="fey-misty"> Misty Step</label>
+ <label class="check-box-item"><input type="checkbox" id="fey-command"> Command</label>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- SECCIÓN 1: HOJA DE PERSONAJE Y ATAQUES -->
+ <details open>
+ <summary>⚔️ 1. Ataques y Competencias de Habilidades</summary>
+ <div class="section-content">
+ <h3>Ataques y Acciones Directas</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Ataque / Arma</th>
+ <th>Bono Base</th>
+ <th>Daño / Efecto</th>
+ <th>Propiedades & Notas</th>
+ <th>Lanzar Dados</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Quarterstaff</strong></td>
+ <td>+4</td>
+ <td>1d6 + 1 B</td>
+ <td>Melee, Versátil (1d8)</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Ataque Quarterstaff')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 1, 'Daño Quarterstaff 1H')">💥 1d6+1</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Shillelagh</strong> (Bastón Mágico)</td>
+ <td>+8</td>
+ <td>1d8 + 5 B (+1d6 Fire/Cold)</td>
+ <td>Bonus Action; usa WIS. +1d6 elemental por Elemental Fury 1/turno</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(8, 'Ataque Shillelagh')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 5, 'Daño Shillelagh')">💥 1d8+5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Elemental Fury (+1d6)')">🔥 1d6 Extra</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Light Crossbow</strong></td>
+ <td>+5</td>
+ <td>1d8 + 2 P</td>
+ <td>Rango 80/320 ft, Cargando, 2H</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(5, 'Ataque Light Crossbow')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 2, 'Daño Light Crossbow')">💥 1d8+2</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Heavy Crossbow</strong></td>
+ <td>+5</td>
+ <td>1d10 + 2 P</td>
+ <td>Rango 100/400 ft, Cargando, Pesada, 2H</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(5, 'Ataque Heavy Crossbow')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 10, 2, 'Daño Heavy Crossbow')">💥 1d10+2</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Splinter Arrows</strong></td>
+ <td>+5</td>
+ <td>1d6 + 5 P (1d6 + Prof + DEX)</td>
+ <td>Cono 60ft, elige hasta 4 criaturas y realiza ataques a distancia. Poco común.</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(5, 'Ataque Splinter Arrow')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 5, 'Daño Splinter Arrow')">💥 1d6+5</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Spell Attack</strong></td>
+ <td>+8</td>
+ <td>Según conjuro</td>
+ <td>WIS Mod (+5) + Prof (+3)</td>
+ <td>
+ <button class="btn-roll" onclick="rollSpellAttack('Ataque de Conjuro')">🎯 Atk Conjuro</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Habilidades (Skills)</h3>
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 10px;">
+ <div class="feature-card"><strong>Acrobatics:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobatics', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Animal Handling ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Animal Handling', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Arcana:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Arcana', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Athletics:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Athletics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Deception:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Deception', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>History:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'History', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Insight ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Insight', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Intimidation:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Intimidation', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Investigation:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Investigation', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Medicine ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Medicine', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Nature ★:</strong> +4 <button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Nature', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Perception ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Perception', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Performance:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Performance', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Persuasion:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Persuasion', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Religion ★:</strong> +4 <button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Religion', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Sleight of Hand:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Sleight of Hand', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Stealth:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Stealth', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-green);"><strong>Survival ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Survival', 'check')">🎲</button></div>
+ </div>
+
+ <div class="highlight-box" style="margin-top:15px;">
+ <strong>Competencias & Idiomas:</strong><br>
+ • <strong>Armaduras:</strong> Ligera, Media, Escudos.<br>
+ • <strong>Armas:</strong> Armas Simples, Armas Marciales.<br>
+ • <strong>Herramientas:</strong> Herbalism Kit, Healer's Kit.<br>
+ • <strong>Idiomas:</strong> Common, Druidic, Goblin, Orc.
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 2: INVENTARIO EDITABLE Y EQUIPO -->
+ <details open>
+ <summary>🎒 2. Inventario, Monedas y Reputación</summary>
+ <div class="section-content">
+ <h3>💰 Monedas y Riqueza</h3>
+ <div class="currency-grid">
+ <div class="currency-box">
+ <label>CP (Cobre)</label>
+ <input type="number" id="cp-val" value="0">
+ </div>
+ <div class="currency-box">
+ <label>SP (Plata)</label>
+ <input type="number" id="sp-val" value="0">
+ </div>
+ <div class="currency-box">
+ <label>EP (Electrum)</label>
+ <input type="number" id="ep-val" value="0">
+ </div>
+ <div class="currency-box">
+ <label>GP (Oro)</label>
+ <input type="number" id="gp-val" value="150">
+ </div>
+ <div class="currency-box">
+ <label>PP (Platino)</label>
+ <input type="number" id="pp-val" value="0">
+ </div>
+ </div>
+
+ <h3>🏅 Puntos de Honor y Reputación</h3>
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>🎖️ Honor</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('honor-cur', -1)">-</button>
+ <span id="honor-cur" class="cnt-val">0</span>
+ <button class="btn-cnt" onclick="changeVal('honor-cur', 1)">+</button>
+ </div>
+ </div>
+ </div>
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>🌟 Reputación</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('rep-cur', -1)">-</button>
+ <span id="rep-cur" class="cnt-val">0</span>
+ <button class="btn-cnt" onclick="changeVal('rep-cur', 1)">+</button>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <div class="highlight-box" style="margin-bottom: 12px;">
+ <strong>Carga total estimada:</strong> 176 lb
+ </div>
+
+ <h3>🎒 Objetos e Inventario (Cantidades Editables)</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Ítem</th>
+ <th>Cantidad</th>
+ <th>Peso (lb)</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><td>Backpack</td><td><input type="number" id="inv-backpack" class="input-qty" value="1" min="0"></td><td>5</td></tr>
+ <tr><td>Bedroll</td><td><input type="number" id="inv-bedroll" class="input-qty" value="1" min="0"></td><td>7</td></tr>
+ <tr><td>Book</td><td><input type="number" id="inv-book" class="input-qty" value="1" min="0"></td><td>5</td></tr>
+ <tr><td>Crossbow Bolt</td><td><input type="number" id="inv-crossbow-bolt" class="input-qty" value="20" min="0"></td><td>--</td></tr>
+ <tr><td>Healer's Kit</td><td><input type="number" id="inv-healers-kit" class="input-qty" value="1" min="0"></td><td>3</td></tr>
+ <tr><td>Heavy Crossbow</td><td><input type="number" id="inv-heavy-crossbow" class="input-qty" value="1" min="0"></td><td>18</td></tr>
+ <tr><td>Herbalism Kit</td><td><input type="number" id="inv-herbalism-kit" class="input-qty" value="1" min="0"></td><td>3</td></tr>
+ <tr><td>Oil (flask)</td><td><input type="number" id="inv-oil-flask" class="input-qty" value="1" min="0"></td><td>1</td></tr>
+ <tr><td>Traveler's Clothes</td><td><input type="number" id="inv-travelers-clothes" class="input-qty" value="1" min="0"></td><td>4</td></tr>
+ <tr><td>Quarterstaff</td><td><input type="number" id="inv-quarterstaff" class="input-qty" value="1" min="0"></td><td>4</td></tr>
+ <tr><td>Rations (1 day)</td><td><input type="number" id="inv-rations" class="input-qty" value="10" min="0"></td><td>2</td></tr>
+ <tr><td>Lamp</td><td><input type="number" id="inv-lamp" class="input-qty" value="1" min="0"></td><td>1</td></tr>
+ <tr><td>Hempen Rope (50 feet)</td><td><input type="number" id="inv-hempen-rope" class="input-qty" value="1" min="0"></td><td>10</td></tr>
+ <tr><td>Shield</td><td><input type="number" id="inv-shield" class="input-qty" value="1" min="0"></td><td>6</td></tr>
+ <tr><td>Studded Leather Armor</td><td><input type="number" id="inv-studded-leather" class="input-qty" value="1" min="0"></td><td>13</td></tr>
+ <tr><td>Tinderbox</td><td><input type="number" id="inv-tinderbox" class="input-qty" value="1" min="0"></td><td>1</td></tr>
+ <tr><td>Torch</td><td><input type="number" id="inv-torch" class="input-qty" value="10" min="0"></td><td>1</td></tr>
+ <tr><td>Waterskin</td><td><input type="number" id="inv-waterskin" class="input-qty" value="1" min="0"></td><td>5</td></tr>
+ <tr><td>Breastplate</td><td><input type="number" id="inv-breastplate" class="input-qty" value="1" min="0"></td><td>20</td></tr>
+ <tr><td>Half Plate Armor</td><td><input type="number" id="inv-half-plate" class="input-qty" value="1" min="0"></td><td>40</td></tr>
+ <tr><td>Splinter Arrows</td><td><input type="number" id="inv-splinter-arrows" class="input-qty" value="0" min="0"></td><td>--</td></tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 3: RASGOS PRINCIPALES, CIRCLE OF THE SHEPHERD Y FEATS -->
+ <details>
+ <summary>🌿 3. Rasgos de Clase, Círculo (Shepherd) y Feats</summary>
+ <div class="section-content">
+ <div class="feature-grid">
+ <div class="feature-card">
+ <h4><span class="tag">Druida</span> Primal Order: Warden</h4>
+ <p>Entrenamiento sagrado enfocado en el combate activo. Otorga competencia con <strong>Armaduras Medias</strong> y <strong>Armas Marciales</strong>.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Druida</span> Druidic & Wild Companion</h4>
+ <p>• <strong>Druidic:</strong> Idioma secreto de los druidas y mensajes ocultos.</p>
+ <p>• <strong>Wild Companion:</strong> Puedes gastar un uso de Wild Shape para lanzar <em>Find Familiar</em> sin componentes materiales. El familiar es tipo Fey, dura nivel/2 horas (4 horas) y desaparece si cae a 0 HP o vuelves a usar este rasgo.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Druida</span> Wild Shape & Primal Strike</h4>
+ <p>• <strong>Wild Shape:</strong> 2 usos por descanso corto/largo. Bonus Action para transformarte en bestia dentro de tus límites. Retienes INT, WIS y CHA. Mantienes concentración con checks normales.</p>
+ <p>• <strong>Primal Strike:</strong> Los ataques de tus formas bestiales cuentan como mágicos.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Druida</span> Elemental Fury</h4>
+ <p>Una vez por turno, cuando golpeas con un ataque que use tus armas o ataques de Wild Shape, añade <strong>+1d6 fire o cold damage</strong>. Anota el tipo elegido antes de tirar daño.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Shepherd</span> Speech of the Woods</h4>
+ <p>Aprendes Sylvan. Las bestias y plantas pueden entender tu habla, y tú puedes interpretar sus ruidos y gestos simples.</p>
+ </div>
+
+ <div class="feature-card" style="border-left-color: var(--accent-gold); grid-column: span 1;">
+ <h4><span class="tag">Shepherd</span> Spirit Totem (Bonus Action)</h4>
+ <p>Invocas un espíritu incorpóreo a 60 ft con un aura de 30 ft de radio por 1 min. Se mueve 60 ft como bonus action.</p>
+ <ul>
+ <li><strong>🐻 Bear Spirit:</strong> Otorga <strong>13 Temp HP</strong> (Nivel 8 + WIS 5) al invocar a ti y aliados. Ventaja en checks y salvaciones de STR.</li>
+ <li><strong>🦅 Hawk Spirit:</strong> Reacción para dar <em>Advantage</em> a un ataque de un aliado en el aura. Ventaja en Perception (WIS).</li>
+ <li><strong>🦄 Unicorn Spirit:</strong> Ventaja en checks para detectar criaturas. Al lanzar un spell slot de curación, todas las criaturas elegidas en el aura curan <strong>+8 HP adicionales</strong> (Nivel de druida).</li>
+ </ul>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Shepherd</span> Mighty Summoner</h4>
+ <p>Cada Beast o Fey invocada/creada con un conjuro gana <strong>+2 HP por Hit Die</strong> y sus ataques naturales cuentan como <strong>mágicos</strong>. *(Aplica a Summon Beast, Summon Fey, Conjure Woodland Beings y criaturas fey con HD)*.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Feat</span> Eldritch Adept — Pact of the Chain</h4>
+ <p>Conoces <em>Find Familiar</em> (se lanza como ritual). Puedes elegir una forma especial: <strong>Imp, Pseudodragon, Quasit o Sprite</strong>.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Feat</span> Fey-Touched</h4>
+ <p>+1 WIS incl. Aprendes <strong>Misty Step</strong> y <strong>Command</strong>. Puedes lanzar cada uno 1 vez gratis por descanso largo.</p>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Feat</span> Healer</h4>
+ <p>• Con Healer's Kit (Acción + 1 uso del kit): estabiliza a 0 HP y recupera <strong>1 HP</strong>.</p>
+ <p>• Acción + uso del kit: cura <strong>1d6 + 4 + Nivel HD</strong> (a Fiona cura <strong>1d6 + 12</strong>). 1 vez por criatura por descanso corto/largo.</p>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollGenericDamage(1, 6, 12, 'Curación Feat Healer a Fiona')">💚 Curar 1d6+12</button>
+ </div>
+
+ <div class="feature-card">
+ <h4><span class="tag">Raza</span> Orc Traits</h4>
+ <p>• <strong>Adrenaline Rush (3/largo):</strong> Bonus Action Dash + gana <strong>3 Temp HP</strong>.</p>
+ <p>• <strong>Darkvision:</strong> Visión en la oscuridad 60 ft.</p>
+ <p>• <strong>Relentless Endurance (1/largo):</strong> Al caer a 0 HP sin morir, quedas en 1 HP.</p>
+ </div>
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 4: CONJUROS PREPARADOS -->
+ <details open>
+ <summary>📜 4. Conjuros Preparados y Referencia Rápida</summary>
+ <div class="section-content">
+ <table>
+ <thead>
+ <tr>
+ <th>Nivel</th>
+ <th>Conjuro</th>
+ <th>Tiempo / Rango</th>
+ <th>Resumen y Efecto Mecánico</th>
+ <th>Tirar / Efecto</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Poison Spray</strong></td>
+ <td>1 Acc / 30 ft</td>
+ <td>CON save DC (Base 16); 4d12 poison damage.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(4, 12, 0, 'Poison Spray (4d12)')">☣️ 4d12 Poison</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Shillelagh</strong></td>
+ <td>1 B.Acc / Touch</td>
+ <td>Arma usa WIS, 1d8 bludgeoning, 1 min.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 8, 5, 'Shillelagh Strike')">💥 1d8+5</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Guidance</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Objetivo suma 1d4 a un ability check.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance (+1d4)')">🎲 1d4</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Cure Wounds (2024)</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Cura 2d8 + 5 (WIS). Upcast: +2d8 por nivel. <em>(+8 HP con Unicorn Totem)</em>.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 8, 5, 'Cure Wounds Nivel 1')">💚 2d8+5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 8, 13, 'Cure Wounds + Unicorn Totem')">🦄 2d8+13</button>
+ </td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Healing Word (2024)</strong></td>
+ <td>1 B.Acc / 60 ft</td>
+ <td>Cura 2d4 + 5 (WIS). Upcast: +2d4 por nivel. <em>(+8 HP con Unicorn Totem)</em>.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 4, 5, 'Healing Word Nivel 1')">💚 2d4+5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 4, 13, 'Healing Word + Unicorn Totem')">🦄 2d4+13</button>
+ </td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Faerie Fire</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>DEX save DC (Base 16). Ventaja en ataques contra afectados; impide invisibilidad. Conc. 1 min.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Command</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>WIS save DC (Base 16). Orden de 1 palabra: Approach, Drop, Flee, Grovel, Halt.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Hold Person</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>Humanoide; WIS save DC (Base 16) o Paralyzed. Repite save al final de cada turno. Conc. 1 min.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Lesser Restoration</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Termina condición: Blinded, Deafened, Paralyzed o Poisoned.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Summon Beast</strong></td>
+ <td>1 Acc / 90 ft</td>
+ <td>Invoca espíritu bestial (Air, Land, Water). Conc. 1 hora.</td>
+ <td><em>Ver bloque abajo</em></td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Misty Step</strong></td>
+ <td>1 B.Acc / Self</td>
+ <td>Teleport 30 ft a espacio visible desocupado.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">3rd</span></td>
+ <td><strong>Conjure Animals (2024)</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>Pack espectral Large. DEX save DC (Base 16) o 3d10 slashing al mover/entrar. Upcast: +1d10/nivel. Conc. 10 min.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(3, 10, 0, 'Conjure Animals 2024 (3d10)')">🐺 3d10 Slashing</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">3rd</span></td>
+ <td><strong>Summon Fey</strong></td>
+ <td>1 Acc / 90 ft</td>
+ <td>Invoca espíritu fey (Fuming, Mirthful, Tricksy). Conc. 1 hora.</td>
+ <td><em>Ver bloque abajo</em></td>
+ </tr>
+ <tr>
+ <td><span class="tag">4th</span></td>
+ <td><strong>Conjure Woodland Beings</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>Invoca criaturas Fey de CR total según elección/DM (1 CR 2, 2 CR 1, 4 CR 1/2, 8 CR 1/4). Conc. 1 hora.</td>
+ <td><em>Ver Sección 7 para Stat Blocks completos</em></td>
+ </tr>
+ <tr>
+ <td><span class="tag">4th</span></td>
+ <td><strong>Giant Insect</strong></td>
+ <td>1 Acc / 30 ft</td>
+ <td>Transforma insectos en versiones gigantes (Centipede, Spider, Bee, Ant, Wasp). Conc. 10 min.</td>
+ <td><em>Ver bloque abajo</em></td>
+ </tr>
+ <tr>
+ <td><span class="tag">4th</span></td>
+ <td><strong>Grasping Vine</strong></td>
+ <td>1 B.Acc / 30 ft</td>
+ <td>Invoca vid. B.Acc para forzar DEX save DC (Base 16) a criatura a 30 ft; si falla la atrae 20 ft. Conc. 1 min.</td>
+ <td>-</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 5: FAMILIARES Y WILD SHAPES -->
+ <details>
+ <summary>🐾 5. Familiares (Pact of the Chain) y Formas Bestiales (Wild Shape)</summary>
+ <div class="section-content">
+ <h3>Familiares Especiales (Pact of the Chain / Wild Companion)</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Familiar</th>
+ <th>AC / HP / Speed</th>
+ <th>Habilidades Clave</th>
+ <th>Ataques & Tiradas</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Imp</strong> (Fiend)</td>
+ <td>AC 13 / HP 10 / Fly 40ft</td>
+ <td>Invisibility, Shapechanger, Devil's Sight. Infiltrador aéreo y scout principal.</td>
+ <td>
+ Sting +5 (1d4+3 P + 3d6 Poison CON save DC 11)
+ <br><button class="btn-roll" onclick="rollAttack(5, 'Imp Sting Atk')">🎯 +5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 4, 3, 'Imp Sting Piercing')">💥 1d4+3</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Imp Poison Damage')">☣️ 3d6 Poison</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Pseudodragon</strong> (Dragon)</td>
+ <td>AC 13 / HP 7 / Fly 60ft</td>
+ <td>Blindsight 10ft, Magic Resistance, Keen Senses. Scout de percepción.</td>
+ <td>
+ Sting +4 (1d4+2 P + Poison CON save DC 11 o Unconscious)
+ <br><button class="btn-roll" onclick="rollAttack(4, 'Pseudodragon Sting')">🎯 +4</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 4, 2, 'Pseudodragon Damage')">💥 1d4+2</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Quasit</strong> (Fiend)</td>
+ <td>AC 13 / HP 7 / Speed 40ft</td>
+ <td>Invisibility, Scare (1/day WIS save DC 10), Shapechanger. Control y miedo.</td>
+ <td>
+ Claws +4 (1d4+3 S + 2d6 Poison CON save DC 11)
+ <br><button class="btn-roll" onclick="rollAttack(4, 'Quasit Claws Atk')">🎯 +4</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 4, 3, 'Quasit Damage')">💥 1d4+3</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 6, 0, 'Quasit Poison')">☣️ 2d6 Poison</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Sprite</strong> (Fey)</td>
+ <td>AC 15 / HP 2 / Fly 40ft</td>
+ <td>Invisibility, Stealth +8, Heart Sight (CHA save DC 10 revela alineamiento/emoción).</td>
+ <td>
+ Shortbow +6 (1 P + Poison CON save DC 10 o Unconscious si falla por 5+)
+ <br><button class="btn-roll" onclick="rollAttack(6, 'Sprite Shortbow')">🎯 +6</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Formas de Wild Shape Recomendadas</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Forma</th>
+ <th>CR / AC / HP</th>
+ <th>Velocidad / Sentidos</th>
+ <th>Ataques y Utilidad</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Giant Spider</strong></td>
+ <td>CR 1 / AC 14 / HP 26</td>
+ <td>30 ft, Climb 30 ft / Darkvision 60ft</td>
+ <td>
+ Bite +5 (1d8+3 P + 2d8 Poison DC 11). Web (Rango 30/60, Restrained, DC 12). Spider Climb.
+ <br><button class="btn-roll" onclick="rollAttack(5, 'Giant Spider Bite')">🎯 +5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Spider Bite Piercing')">💥 1d8+3</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Spider Poison')">☣️ 2d8 Poison</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Brown Bear</strong></td>
+ <td>CR 1 / AC 11 / HP 34</td>
+ <td>40 ft, Climb 30 ft / Keen Smell</td>
+ <td>
+ Multiattack (Bite + Claws). Bite +5 (1d8+4 P), Claws +5 (2d6+4 S). Tank/Damage.
+ <br><button class="btn-roll" onclick="rollAttack(5, 'Brown Bear Atk')">🎯 +5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 4, 'Bear Bite')">💥 1d8+4</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 6, 4, 'Bear Claws')">🐾 2d6+4</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>War Horse</strong></td>
+ <td>CR 1/2 / AC 11 / HP 19</td>
+ <td>60 ft / Normal</td>
+ <td>Hooves +6 (2d6+4 B). Carga rápida y montura. <button class="btn-roll" onclick="rollGenericDamage(2, 6, 4, 'War Horse Hooves')">🐴 2d6+4</button></td>
+ </tr>
+ <tr>
+ <td><strong>Owl / Lechuza</strong></td>
+ <td>CR 0 / AC 11 / HP 1</td>
+ <td>Fly 60 ft / Darkvision 120ft</td>
+ <td>Flyby (no provoca ataques de oportunidad). Scout aéreo perfecto.</td>
+ </tr>
+ <tr>
+ <td><strong>Cat / Rat</strong></td>
+ <td>CR 0 / AC 10-12 / HP 1-2</td>
+ <td>Stealth Urbano / Pasajes estrechos</td>
+ <td>Infiltración sigilosa no sospechosa.</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 6: INVOCACIONES Y STAT BLOCKS COMPLETOS -->
+ <details>
+ <summary>🧚 6. Stat Blocks de Invocación (Summon Fey, Summon Beast, Giant Insect)</summary>
+ <div class="section-content">
+ <h3>Fey Spirit (Summon Fey — Nivel 3 / 4)</h3>
+ <div class="highlight-box">
+ <strong>Stats Base:</strong> AC 12 + Slot (Slot 3 = AC 15, Slot 4 = AC 16) | 
+<strong>HP (con Mighty Summoner):</strong> Slot 3 = <strong>36 HP</strong>, Slot 4 = <strong>44 HP</strong> | 
+<strong>Velocidad:</strong> 40 ft | <strong>Ataque de Conjuro:</strong> Según Spell Atk Total
+ </div>
+ <table>
+ <thead>
+ <tr>
+ <th>Acción / Habilidad</th>
+ <th>Efecto Mecánico</th>
+ <th>Tirar Dado</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Multiattack</strong></td>
+ <td>Ataques = mitad del nivel del slot (Slot 3: 1 ataque, Slot 4: 2 ataques).</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><strong>Shortsword (Melee)</strong></td>
+ <td>Spell Atk, Reach 5 ft; Daño: 1d6 + 3 + Slot Piercing (Slot 3: 1d6+6, Slot 4: 1d6+7). *(Ataques mágicos por Mighty Summoner)*</td>
+ <td>
+ <button class="btn-roll" onclick="rollSpellAttack('Fey Shortsword Atk')">🎯 Spell Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 6, 'Fey Shortsword Slot 3')">🗡️ 1d6+6</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 7, 'Fey Shortsword Slot 4')">🗡️ 1d6+7</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Longbow (Rango)</strong></td>
+ <td>Spell Atk, Rango 150/600; Daño: 1d8 + 3 + Slot Piercing (Slot 3: 1d8+6, Slot 4: 1d8+7). *(Ataques mágicos por Mighty Summoner)*</td>
+ <td>
+ <button class="btn-roll" onclick="rollSpellAttack('Fey Longbow Atk')">🎯 Spell Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Fey Longbow Slot 3')">🏹 1d8+6</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 7, 'Fey Longbow Slot 4')">🏹 1d8+7</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Fey Step (B.Action)</strong></td>
+ <td>Teleport 30 ft + Aplica efecto según la variante elegida:</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td>• <strong>Fuming Fey Step</strong></td>
+ <td>Ventaja en el siguiente ataque que realice el espíritu antes del final de su turno.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td>• <strong>Mirthful Fey Step</strong></td>
+ <td>Criatura a 10 ft debe superar WIS save DC 16 o queda <strong>Charmed</strong> por ti y el espíritu.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td>• <strong>Tricksy Fey Step</strong></td>
+ <td>Crea un cubo de oscuridad mágica de 5 ft en un espacio a 5 ft que dura hasta tu siguiente turno.</td>
+ <td>-</td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Bestial Spirit (Summon Beast — Nivel 2 / 3 / 4)</h3>
+ <div class="highlight-box">
+ <strong>Stats Base:</strong> AC 11 + Slot (Slot 2 = AC 13, Slot 3 = AC 14) | 
+<strong>HP (con Mighty Summoner):</strong> Slot 2 = <strong>24 HP</strong>, Slot 3 = <strong>30 HP</strong>, Slot 4 = <strong>36 HP</strong>
+ </div>
+ <table>
+ <thead>
+ <tr>
+ <th>Forma</th>
+ <th>Movimiento / Pasiva</th>
+ <th>Ataque Rend (Spell Atk) *(Mágico)*</th>
+ <th>Tirar Daño</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Air (Aire)</strong></td>
+ <td>Fly 60 ft / Flyby (no provoca Oportunidad)</td>
+ <td>Slot 2: 1d8+6 P / Slot 3: 1d8+7 P</td>
+ <td>
+ <button class="btn-roll" onclick="rollSpellAttack('Beast Air Atk')">🎯 Spell Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Beast Rend Slot 2')">💥 1d8+6</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Land (Tierra)</strong></td>
+ <td>Speed 30 ft, Climb 30 ft / Pack Tactics (Adv con aliado a 5ft)</td>
+ <td>Slot 2: 1d8+6 P / Slot 3: 1d8+7 P</td>
+ <td>
+ <button class="btn-roll" onclick="rollSpellAttack('Beast Land Atk')">🎯 Spell Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Beast Rend Slot 2')">💥 1d8+6</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Water (Agua)</strong></td>
+ <td>Swim 30 ft / Respiración Acuática</td>
+ <td>Slot 2: 1d8+6 P / Slot 3: 1d8+7 P</td>
+ <td>
+ <button class="btn-roll" onclick="rollSpellAttack('Beast Water Atk')">🎯 Spell Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Beast Rend Slot 2')">💥 1d8+6</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Giant Insect Stat Blocks (Giant Insect — Nivel 4)</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Insecto Gigante</th>
+ <th>AC / HP / Speed</th>
+ <th>Ataques & Efectos</th>
+ <th>Tirar Dados</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Giant Centipede</strong></td>
+ <td>AC 13 / HP 4 / 30 ft, Climb 30 ft</td>
+ <td>Bite +4 (1d4+2 P + CON save DC 11 o 3d6 Poison damage).</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Centipede Bite Atk')">🎯 +4</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 4, 2, 'Centipede Piercing')">💥 1d4+2</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Centipede Poison')">☣️ 3d6 Poison</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Giant Wasp / Bee</strong></td>
+ <td>AC 12 / HP 13 / Fly 50 ft</td>
+ <td>Sting +4 (1d6+2 P + CON save DC 11 o 3d6 Poison damage).</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Wasp Sting Atk')">🎯 +4</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 2, 'Wasp Piercing')">💥 1d6+2</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Wasp Poison')">☣️ 3d6 Poison</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Giant Spider</strong></td>
+ <td>AC 14 / HP 26 / 30 ft, Climb 30 ft</td>
+ <td>Bite +5 (1d8+3 P + 2d8 Poison DC 11). Web ranged +5 (Restrained DC 12).</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(5, 'Spider Bite')">🎯 +5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Spider Piercing')">💥 1d8+3</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Spider Poison')">☣️ 2d8 Poison</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 7: CONJURE WOODLAND BEINGS -->
+ <details open>
+ <summary>🌲 7. Conjure Woodland Beings — Stat Blocks Completos y Criaturas Invocables</summary>
+ <div class="section-content">
+ <div class="highlight-box">
+ <strong>Reglas y Bono de Círculo (Mighty Summoner):</strong><br>
+ Invoca criaturas tipo Fey. Puedes elegir una de las siguientes opciones según el Desafío (CR):<br>
+ • <strong>1 criatura de CR 2 o menor</strong><br>
+ • <strong>2 criaturas de CR 1 o menor</strong><br>
+ • <strong>4 criaturas de CR 1/2 o menor</strong><br>
+ • <strong>8 criaturas de CR 1/4 o menor</strong><br>
+ ✨ <strong>Beneficio Shepherd (Mighty Summoner):</strong> Todas las criaturas Fey invocadas ganan <strong>+2 HP por Hit Die</strong> y sus ataques naturales cuentan como <strong>mágicos</strong>.
+ </div>
+
+ <!-- CR 1/4 BEINGS -->
+ <h3 style="margin-top:20px; color:var(--accent-gold);">Opciones CR 1/4 (Hasta 8 Criaturas)</h3>
+
+ <!-- PIXIE -->
+ <div class="stat-block">
+ <div class="stat-block-header">
+ <h4>Pixie (Hada) — CR 1/4</h4>
+ <div class="stat-block-sub">Tiny Fey, Neutral Bueno | HP Base: 1 (1d4-1) → <strong>HP Mágico Shepherd: 3 HP (1d4+1)</strong></div>
+ </div>
+ <div class="stat-block-line"><strong>AC:</strong> 15 | <strong>Velocidad:</strong> 10 ft, Fly 30 ft</div>
+ <div class="stat-block-line"><strong>Atributos:</strong> STR 2 (-4), DEX 20 (+5), CON 8 (-1), INT 10 (+0), WIS 14 (+2), CHA 15 (+2)</div>
+ <div class="stat-block-line"><strong>Habilidades & Resistencias:</strong> Stealth +7, Magic Resistance (Ventaja en salvaciones contra conjuros).</div>
+ <div class="stat-block-line"><strong>Superior Invisibility:</strong> Se vuelve invisible mágicamente junto a su equipo. Concentración, termina si ataca o lanza un conjuro.</div>
+ 
+<div style="margin-top:10px;">
+ <strong>Innate Spellcasting (WIS Save DC 12 / Spell Atk +4):</strong>
+ 
+<div class="spell-details-box">
+ <h5>✨ Conjuros Innatos (1/día cada uno, Sin componentes):</h5>
+ <p>• <strong>Confusion:</strong> 1 Acc / Rango 90 ft / Conc. 1 min / Esfera 10 ft. Cada criatura debe superar WIS Save DC 12 o tirar 1d10 para determinar sus acciones.</p>
+ <p>• <strong>Polymorph:</strong> 1 Acc / Rango 60 ft / Conc. 1 hora. Transforma una criatura en una Bestia de CR igual o menor al objetivo (WIS Save DC 12).</p>
+ <p>• <strong>Entangle:</strong> 1 Acc / Rango 90 ft / Conc. 1 min / Cuadrado 20 ft. Enredaderas dificultan terreno; STR Save DC 12 o Restrained.</p>
+ <p>• <strong>Phantasmal Force:</strong> 1 Acc / Rango 60 ft / Conc. 1 min. Ilusión mental (INT Save DC 12); inflige 1d6 psíquico por turno.</p>
+ <p>• <strong>Fly:</strong> 1 Acc / Rango Toque / Conc. 10 min. Otorga velocidad de vuelo (Fly Speed) de 60 ft.</p>
+ <p>• <strong>Sleep:</strong> 1 Acc / Rango 90 ft / 1 min. Afecta 5d8 HP de criaturas en área de 20 ft.</p>
+ <p>• <strong>Dispel Magic:</strong> 1 Acc / Rango 120 ft. Termina un conjuro de nivel 3 o inferior en el objetivo.</p>
+ </div>
+ </div>
+
+ <div style="margin-top:10px;">
+ <button class="btn-roll" onclick="rollCheckSave('d20', 7, 'Pixie Stealth', 'check')">🥷 Stealth +7</button>
+ <button class="btn-roll" onclick="rollGenericDamage(5, 8, 0, 'Pixie Sleep Spell (5d8 HP)')">💤 Sleep (5d8 HP)</button>
+ <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Pixie Dispel Magic Check', 'check')">✨ Dispel Check (+2)</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Phantasmal Force Damage')">🧠 Phantasmal 1d6</button>
+ </div>
+ </div>
+
+ <!-- SPRITE -->
+ <div class="stat-block">
+ <div class="stat-block-header">
+ <h4>Sprite (Elfo de los Bosques) — CR 1/4</h4>
+ <div class="stat-block-sub">Tiny Fey, Neutral Bueno | HP Base: 2 (1d4) → <strong>HP Mágico Shepherd: 4 HP (1d4+2)</strong></div>
+ </div>
+ <div class="stat-block-line"><strong>AC:</strong> 15 (Leather Armor) | <strong>Velocidad:</strong> 10 ft, Fly 40 ft</div>
+ <div class="stat-block-line"><strong>Atributos:</strong> STR 3 (-4), DEX 18 (+4), CON 10 (+0), INT 14 (+2), WIS 13 (+1), CHA 11 (+0)</div>
+ <div class="stat-block-line"><strong>Habilidades:</strong> Perception +3, Stealth +8</div>
+ 
+<div class="spell-details-box">
+ <h5>✨ Habilidades Mágicas Innatas:</h5>
+ <p>• <strong>Heart Sight:</strong> 1 Acción / Rango Toque. CHA Save DC 10 o revela estado emocional actual y alineamiento moral.</p>
+ <p>• <strong>Invisibility:</strong> 1 Acción. Se vuelve invisible mágicamente con su equipo.</p>
+ </div>
+
+ <div class="stat-block-line" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">
+ <strong>Acciones de Ataque (Mágicos):</strong><br>
+ • <strong>Longsword:</strong> +2 Atk, 1 slashing damage.<br>
+ • <strong>Shortbow:</strong> +6 Atk, Rango 40/160; 1 piercing damage + Veneno. CON save DC 10 o Poisoned por 1 min (Unconscious si falla por 5+).
+ </div>
+ <div style="margin-top:8px;">
+ <button class="btn-roll" onclick="rollAttack(6, 'Sprite Shortbow')">🏹 Shortbow +6</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Sprite Sleep Duration (Horas)')">💤 Unconscious (1d4 hrs)</button>
+ </div>
+ </div>
+
+ <!-- CR 1/2 BEINGS -->
+ <h3 style="margin-top:20px; color:var(--accent-gold);">Opciones CR 1/2 (Hasta 4 Criaturas)</h3>
+
+ <!-- SATYR -->
+ <div class="stat-block">
+ <div class="stat-block-header">
+ <h4>Satyr (Sátiro) — CR 1/2</h4>
+ <div class="stat-block-sub">Medium Fey, Caótico Neutral | HP Base: 31 (7d8) → <strong>HP Mágico Shepherd: 45 HP (7d8+14)</strong></div>
+ </div>
+ <div class="stat-block-line"><strong>AC:</strong> 14 (Leather Armor) | <strong>Velocidad:</strong> 40 ft</div>
+ <div class="stat-block-line"><strong>Magic Resistance:</strong> Ventaja en salvaciones contra conjuros y efectos mágicos.</div>
+ 
+<div class="spell-details-box">
+ <h5>🎶 Panpipes (Gaita Mágica):</h5>
+ <p>1 Acción. WIS Save DC 13 o sufre: Charm, Frightened o Sleep por 1 min.</p>
+ </div>
+
+ <div class="stat-block-line" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">
+ <strong>Acciones de Ataque (Mágicos):</strong><br>
+ • <strong>Ram:</strong> +3 Atk, 2d4 + 1 bludgeoning.<br>
+ • <strong>Shortsword:</strong> +5 Atk, 1d6 + 3 piercing.
+ </div>
+ <div style="margin-top:8px;">
+ <button class="btn-roll" onclick="rollAttack(3, 'Satyr Ram Atk')">🐏 Ram +3</button>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 4, 1, 'Satyr Ram Damage')">💥 2d4+1</button>
+ <button class="btn-roll" onclick="rollAttack(5, 'Satyr Shortsword/Bow Atk')">🗡️ Atk +5</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 3, 'Satyr Weapon Damage')">💥 1d6+3</button>
+ </div>
+ </div>
+
+ <!-- CR 1 BEINGS -->
+ <h3 style="margin-top:20px; color:var(--accent-gold);">Opciones CR 1 (Hasta 2 Criaturas)</h3>
+
+ <!-- DRYAD -->
+ <div class="stat-block">
+ <div class="stat-block-header">
+ <h4>Dryad (Dríada) — CR 1</h4>
+ <div class="stat-block-sub">Medium Fey, Neutral | HP Base: 22 (5d8) → <strong>HP Mágico Shepherd: 32 HP (5d8+10)</strong></div>
+ </div>
+ <div class="stat-block-line"><strong>AC:</strong> 11 (16 con Barkskin) | <strong>Velocidad:</strong> 30 ft</div>
+ 
+<div class="spell-details-box">
+ <h5>✨ Fey Charm & Innate Spellcasting (WIS Save DC 12 / CHA DC 14):</h5>
+ <p>• <strong>Fey Charm:</strong> WIS Save DC 14 o Charmed por 24 hrs.</p>
+ <p>• <strong>Spells:</strong> Barkskin (1/día), Entangle (3/día), Goodberry (3/día), Pass without Trace (1/día), Shillelagh (1/día).</p>
+ </div>
+
+ <div class="stat-block-line" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">
+ <strong>Club (con Shillelagh - Ataque Mágico):</strong> +6 Atk, 1d8 + 4 bludgeoning.
+ </div>
+ <div style="margin-top:8px;">
+ <button class="btn-roll" onclick="rollAttack(6, 'Dryad Shillelagh Atk')">🌳 Club +6</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 4, 'Dryad Club Damage')">💥 1d8+4</button>
+ </div>
+ </div>
+
+ </div>
+ </details>
+
+ <!-- 📝 SECCIÓN: NOTAS DE AVENTURA -->
+ <details open>
+ <summary>📝 Notas de Aventura y Campaña</summary>
+ <div class="section-content">
+ <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Utiliza este espacio para apuntar tus notas personales de la sesión. Se guardan solas en la nube:</p>
+ <textarea id="notas-personaje" class="notes-section" style="width: 100%; height: 160px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 12px; font-size: 0.95rem; outline: none; resize: vertical; margin-top: 10px;" placeholder="Escribe aquí tu bitácora de juego..."></textarea>
+ </div>
+ </details>
+
+
+</div>
+
+<!-- LANZADOR DE DADOS FLOTANTE Y FIJO (DICE ROLLER) -->
+<div class="dice-roller-panel">
+ <div class="dice-container">
+ <div>
+ <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-gold); font-size:0.9rem; margin-bottom:4px;">
+ 🎲 LANZADOR DE DADOS
+ </div>
+ <div class="dice-btns">
+ <button class="btn-dice" onclick="rollManualDice(1, 4, getMod(), 'd4')">d4</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 6, getMod(), 'd6')">d6</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 8, getMod(), 'd8')">d8</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 10, getMod(), 'd10')">d10</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 12, getMod(), 'd12')">d12</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 20, getMod(), 'd20')">d20</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 100, getMod(), 'd100')">d100</button>
+ 
+<div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
+ <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
+ <input type="number" id="dice-mod" class="dice-mod-input" value="0">
+ </div>
+ </div>
+ </div>
+
+ <div class="dice-result-box">
+ <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
+ <div class="dice-result-val" id="dice-total">0</div>
+ <div class="dice-result-details" id="dice-breakdown">Selecciona un dado</div>
+ </div>
+
+ <div style="flex:1; min-width:200px;">
+ <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+ <span style="font-size:0.75rem; color:var(--text-muted);">Historial de Tiradas:</span>
+ <button class="btn-clear" onclick="clearDiceHistory()">🗑️ Limpiar</button>
+ </div>
+ <div class="dice-history" id="dice-history">Sin tiradas previas.</div>
+ </div>
+ </div>
+</div>
+
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+    // ==========================================
+    // 1. CONFIGURACIÓN E INSTANCIAS DE FIREBASE
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+        authDomain: "personajes-rol.firebaseapp.com",
+        databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+        projectId: "personajes-rol"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    
+    var db = firebase.database();
+    const urlParams = new URLSearchParams(window.location.search);
+    var codigoCampana = urlParams.get('campana');
+    const PERSONAJE_ID = "fiona_faraway";
+
+    // Hacer que el botón "Volver" recuerde tu campaña activa al regresar [1, 2]
+    const btnVolver = document.querySelector('a[href="index.html"]');
+    if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
+
+        var charRef = null;
+
+    // Escuchamos el estado de autenticación antes de conectar a la base de datos
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            console.log("Sesión activa detectada en la ficha para el UID:", user.uid);
+            
+            if (codigoCampana) {
+                charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+            } else {
+                // Usamos el UID real del usuario logueado en lugar de "usuario_local"
+                charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+            }
+            
+            // Iniciamos la sincronización una vez autenticados con éxito
+            sincronizarDatosDesdeNube();
+            // Listener para controlar la visibilidad del botón "Compartir"
+charRef.on('value', snap => {
+    const p = snap.val();
+    if (!p) return;
+    const esMio = p.owner === user.uid;
+    const btnCompartir = document.getElementById('btn-compartir');
+
+    if (btnCompartir && esMio) {
+        btnCompartir.style.display = 'inline-block';
+        btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+        btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+        
+        btnCompartir.onclick = () => {
+            charRef.child('publico').set(!p.publico);
+        };
+    }
+});
+
+        } else {
+            console.warn("No hay una sesión activa. Redirigiendo al menú...");
+            // Opcional: Redirigir al index para que inicie sesión si intenta entrar directo
+            window.location.href = "index.html";
+        }
+    });
+
+
+    // ==========================================
+    // 2. LÓGICA DE DADOS Y ESTADÍSTICAS (GLOBALES CON var) [1.2.3]
+    // ==========================================
+    var rollHistory = [];
+    function recalcStats() {
+        const acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
+        const atkBuff = parseInt(document.getElementById('atk-buff').value) || 0;
+        const spellAtkBuff = parseInt(document.getElementById('spell-atk-buff').value) || 0;
+        const spellDcBuff = parseInt(document.getElementById('spell-dc-buff').value) || 0;
+        document.getElementById('ac-total').innerText = 17 + acBuff;
+        document.getElementById('atk-total').innerText = (4 + atkBuff >= 0 ? '+' : '') + (4 + atkBuff);
+        document.getElementById('spell-atk-total').innerText = (8 + spellAtkBuff >= 0 ? '+' : '') + (8 + spellAtkBuff);
+        document.getElementById('spell-dc-total').innerText = 16 + spellDcBuff;
+    }
+    function toggleConditionsDropdown() {
+        const dropdown = document.getElementById('conditions-dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+    window.addEventListener('click', e => {
+        if (!e.target.closest('.multiselect-container')) {
+            const d = document.getElementById('conditions-dropdown');
+            if (d) d.style.display = 'none';
+        }
+    });
+    function updateConditions() {
+        const checkboxes = document.querySelectorAll('#conditions-dropdown input[type="checkbox"]');
+        const activeList = document.getElementById('active-conditions-list');
+        if (!activeList) return;
+        activeList.innerHTML = '';
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const tag = document.createElement('span');
+                const isBuff = cb.getAttribute('data-type') === 'buff';
+                tag.className = `cond-tag ${isBuff ? 'buff' : 'debuff'}`;
+                tag.innerText = cb.value;
+                activeList.appendChild(tag);
+            }
+        });
+    }
+    function changeVal(id, delta) {
+        let el = document.getElementById(id);
+        if (!el) return;
+        let val = parseInt(el.innerText) + delta;
+        if (id === 'hp-cur') {
+            val = Math.max(0, Math.min(val, 59));
+            const s = document.getElementById('hp-summary');
+            if (s) s.innerText = val + ' / 59';
+        }
+        if (['healer-kit-cur', 'honor-cur', 'rep-cur'].includes(id)) val = Math.max(0, val);
+        el.innerText = val;
+        if (charRef) charRef.child('datos/' + id).set(val);
+    }
+    function changeInputVal(id, delta) {
+        let input = document.getElementById(id);
+        if (!input) return;
+        let val = Math.max(0, (parseInt(input.value) || 0) + delta);
+        input.value = val;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    function restShort() {
+        if (confirm("¿Efectuar Descanso Corto?")) {
+            document.querySelectorAll('#group-wildshape input, #group-totem input').forEach(cb => {
+                cb.checked = false;
+                cb.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            alert("✨ Descanso Corto completado.");
+        }
+    }
+    function restLong() {
+        if (confirm("¿Efectuar Descanso Largo?")) {
+            const h = document.getElementById('hp-cur');
+            if (h) h.innerText = '59';
+            if (charRef) charRef.child('datos/hp-cur').set(59);
+            let hpTemp = document.getElementById('hp-temp-input');
+            if (hpTemp) { hpTemp.value = '0'; hpTemp.dispatchEvent(new Event('input', { bubbles: true })); }
+            const s = document.getElementById('hp-summary');
+            if (s) s.innerText = '59 / 59';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+                cb.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            updateConditions();
+            alert("🌙 Descanso Largo completado.");
+        }
+    }
+    function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
+    function displayRollResult(total, label, breakdownStr) {
+        document.getElementById('dice-total').innerText = total;
+        document.getElementById('dice-label').innerText = label;
+        document.getElementById('dice-breakdown').innerText = breakdownStr;
+        let historyEntry = `<strong>${label}:</strong> ${total} <span style="color:#a3b899;">(${breakdownStr})</span>`;
+        rollHistory.unshift(historyEntry);
+        if (rollHistory.length > 10) rollHistory.pop();
+        document.getElementById('dice-history').innerHTML = rollHistory.join('<br>');
+        if (codigoCampana) {
+            db.ref(`campanas/${codigoCampana}/tiradas`).push({
+                personaje: "Fiona Faraway",
+                tipo: label,
+                resultado: total,
+                fecha: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+    }
+    function clearDiceHistory() {
+        rollHistory = [];
+        document.getElementById('dice-history').innerHTML = 'Sin tiradas previas.';
+    }
+    function rollManualDice(count, sides, mod, label) {
+        let rolls = [];
+        let sum = 0;
+        for (let i = 0; i < count; i++) {
+            let r = Math.floor(Math.random() * sides) + 1;
+            rolls.push(r);
+            sum += r;
+        }
+        let total = sum + mod;
+        let b = `[${rolls.join(', ')}]` + (mod !== 0 ? (mod > 0 ? ` + ${mod}` : ` - ${Math.abs(mod)}`) : '');
+        displayRollResult(total, label + ` (${count}d${sides})`, b);
+    }
+    function rollGenericDamage(count, sides, mod, label) { rollManualDice(count, sides, mod, label); }
+    function rollAttack(baseMod, attackLabel) {
+        const totalFlatMod = baseMod + (parseInt(document.getElementById('atk-buff').value) || 0);
+        rollD20WithMechanics(totalFlatMod, attackLabel, document.getElementById('adv-attack').value, true);
+    }
+    function rollSpellAttack(attackLabel) {
+        const totalFlatMod = 8 + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
+        rollD20WithMechanics(totalFlatMod, attackLabel, document.getElementById('adv-attack').value, true);
+    }
+    function rollCheckSave(sides, baseMod, label, mode) {
+        rollD20WithMechanics(baseMod, label, document.getElementById('adv-save').value, mode === 'save');
+    }
+    function rollConcentrationSave() {
+        rollD20WithMechanics(2, 'Save Concentración', document.getElementById('adv-conc').value, true);
+    }
+    function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
+    let finalAdv = advState;
+
+    // Lógica D&D 5e: Si está Cegada o Apresada, tira con desventaja los ataques
+    if (isSaveOrAtk && label.toLowerCase().includes("ataque")) {
+        const estaCegada = document.getElementById('cond-blinded')?.checked;
+        const estaApresada = document.getElementById('cond-restrained')?.checked;
+        if (estaCegada || estaApresada) {
+            finalAdv = 'disadvantage';
+            label += " 🛑 (Desventaja por Condición)";
+        }
+    }
+        let r1 = Math.floor(Math.random() * 20) + 1;
+        let r2 = Math.floor(Math.random() * 20) + 1;
+        let chosenD20 = advState === 'advantage' ? Math.max(r1, r2) : (advState === 'disadvantage' ? Math.min(r1, r2) : r1);
+        let advText = advState === 'advantage' ? ` [Ventaja: ${r1}, ${r2} -> ${chosenD20}]` : (advState === 'disadvantage' ? ` [Desventaja: ${r1}, ${r2} -> ${chosenD20}]` : ` [d20: ${r1}]`);
+        let total = chosenD20 + flatMod;
+        let b = [`Base: ${chosenD20}`];
+        if (flatMod !== 0) b.push(`Mod: ${flatMod > 0 ? '+' + flatMod : flatMod}`);
+        if (isSaveOrAtk) {
+            if (document.getElementById('buff-bless').checked) { let r = Math.floor(Math.random() * 4) + 1; total += r; b.push(`Bless: +${r}`); }
+            if (document.getElementById('debuff-bane').checked) { let r = Math.floor(Math.random() * 4) + 1; total -= r; b.push(`Bane: -${r}`); }
+        }
+        displayRollResult(total, label + advText, b.join(' | '));
+    }
+
+    // ==========================================
+    // 3. SINCRONIZACIÓN FIREBASE (INPUTS & RECUPERACIÓN) [6]
+    // ==========================================
+    document.addEventListener('input', e => {
+        if (e.target.matches('input, textarea, select')) {
+            const fieldId = e.target.id;
+            if (fieldId && charRef) {
+                const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                charRef.child('datos/' + fieldId).set(val);
+            }
+        }
+    });
+
+    document.addEventListener('change', e => {
+        if (e.target.matches('input[type="checkbox"], select')) {
+            const fieldId = e.target.id;
+            if (fieldId && charRef) {
+                const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                charRef.child('datos/' + fieldId).set(val);
+            }
+        }
+    });
+
+    function sincronizarDatosDesdeNube() {
+        if (!charRef) return;
+        charRef.child('datos').on('value', snapshot => {
+            const data = snapshot.val();
+            if (!data) return;
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') {
+                        if (el.checked !== data[id]) el.checked = data[id];
+                    } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+                        if (el.innerText !== String(data[id])) {
+                            el.innerText = data[id];
+                            if (id === 'hp-cur') {
+                                const s = document.getElementById('hp-summary');
+                                if (s) s.innerText = data[id] + ' / 59';
+                            }
+                        }
+                    } else {
+                        if (el.value !== String(data[id])) el.value = data[id];
+                    }
+                }
+            });
+            if (typeof recalcStats === 'function') recalcStats();
+            if (typeof updateConditions === 'function') updateConditions();
+        });
+    }
+
+</script>
+</body>
+</html>

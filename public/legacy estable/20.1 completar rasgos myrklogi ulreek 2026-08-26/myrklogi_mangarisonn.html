@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Myrklogi Mangarisonn — Chronurgy Wizard Sheet</title>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+ <style>
+ :root {
+ --bg-primary: #1a1c23;
+ --bg-card: #242834;
+ --bg-card-header: #2e3444;
+ --accent-gray: #4b5263;
+ --accent-silver: #abb2bf;
+ --accent-hover: #5c6370;
+ --text-light: #f5f6f7;
+ --text-muted: #9da5b4;
+ --border-color: #3e4452;
+ --danger-color: #c94a4a;
+ --heal-color: #38a169;
+ --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+ --surface-soft: rgba(0,0,0,0.2);
+ --surface-mid: rgba(0,0,0,0.3);
+ --surface-strong: rgba(0,0,0,0.45);
+ --text-on-surface: #fff;
+ }
+ body.light-mode {
+ --bg-primary: #eceef2;
+ --bg-card: #ffffff;
+ --bg-card-header: #e1e5eb;
+ --accent-gray: #5b6472;
+ --accent-silver: #4a5568;
+ --accent-hover: #333947;
+ --text-light: #232733;
+ --text-muted: #5f6673;
+ --border-color: #ccd2db;
+ --shadow: 0 4px 15px rgba(60,70,90,0.18);
+ --surface-soft: rgba(35,39,51,0.05);
+ --surface-mid: rgba(35,39,51,0.08);
+ --surface-strong: rgba(35,39,51,0.13);
+ --text-on-surface: #232733;
+ }
+
+ * {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ font-family: 'Nunito', sans-serif;
+ }
+
+ body {
+ background-color: var(--bg-primary);
+ color: var(--text-light);
+ padding: 20px;
+ padding-bottom: 280px;
+ line-height: 1.5;
+ }
+
+ .container {
+ max-width: 1200px;
+ margin: 0 auto;
+ }
+
+ /* HEADER & IDENTITY */
+ header {
+ background: linear-gradient(135deg, #2e3444 0%, #1a1c23 100%);
+ border: 2px solid var(--accent-silver);
+ border-radius: 12px;
+ padding: 24px;
+ margin-bottom: 20px;
+ box-shadow: var(--shadow);
+ position: relative;
+ overflow: hidden;
+ }
+
+ header::before {
+ content: "⏳";
+ position: absolute;
+ right: 20px;
+ top: 10px;
+ font-size: 8rem;
+ opacity: 0.05;
+ pointer-events: none;
+ }
+
+ body.light-mode header { background: linear-gradient(135deg, #f4f6f9 0%, #e1e5eb 100%); }
+
+ h1, h2, h3, h4 {
+ font-family: 'Cinzel', serif;
+ color: var(--accent-silver);
+ letter-spacing: 0.5px;
+ }
+
+ /* BARRA STICKY DE COMBATE */
+ .sticky-combat-bar { position: sticky; top: 0; z-index: 50; background: linear-gradient(145deg, rgba(36,40,52,.98), rgba(26,28,35,.98)); border: 1px solid var(--accent-silver); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+ body.light-mode .sticky-combat-bar { background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(225,229,235,.98)); }
+ .sticky-combat-bar .scb-name { font-family: 'Cinzel', serif; color: var(--accent-silver); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+ .sticky-combat-bar .scb-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+ .scb-stat { text-align: center; min-width: 46px; }
+ .scb-stat .scb-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+ .scb-stat .scb-value { font-size: 1rem; font-weight: 800; color: var(--accent-silver); }
+ .sticky-combat-bar .scb-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+ .sticky-combat-bar .scb-actions .btn-rest, .sticky-combat-bar .scb-actions .btn-roll { font-size: 0.75rem; padding: 5px 9px; }
+ @media (max-width: 700px) { .sticky-combat-bar { justify-content: center; } .sticky-combat-bar .scb-actions { margin-left: 0; width: 100%; justify-content: center; } }
+
+ .theme-toggle-btn { background: var(--bg-card-header); border: 1px solid var(--accent-silver); color: var(--accent-silver); padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all .2s; }
+ .theme-toggle-btn:hover { background: var(--accent-silver); color: var(--bg-primary); }
+
+ .xp-popover-wrap { position: relative; display: inline-block; }
+ .xp-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-silver); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+ .xp-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-silver); border-radius: 8px; padding: 10px; z-index: 60; min-width: 170px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+ .xp-popover-panel.open { display: flex; flex-direction: column; gap: 6px; }
+
+ /* MOTOR DE SUBIDA DE NIVEL (oculto) */
+ .nivel-popover-wrap { position: relative; display: inline-block; }
+ .nivel-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-silver); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+ .nivel-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-silver); border-radius: 8px; padding: 12px; z-index: 60; min-width: 280px; max-width: 340px; max-height: 400px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+ .nivel-popover-panel.open { display: block; }
+ .nivel-hab-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .nivel-hab-item:last-child { border-bottom: none; }
+
+ .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
+ .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-silver); list-style: none; font-size: 0.9rem; }
+ .bitacora-section > summary::-webkit-details-marker { display: none; }
+ .bitacora-section > summary::before { content: '▶'; display: inline-block; margin-right: 8px; font-size: 0.7em; transition: transform 0.2s; }
+ .bitacora-section[open] > summary::before { transform: rotate(90deg); }
+ .bitacora-section-content { padding: 0 14px 14px; }
+ .bitacora-section-content input[type="text"], .bitacora-section-content textarea { width: 100%; box-sizing: border-box; background: #0f0f12; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 8px; font-size: 0.85rem; margin-bottom: 8px; font-family: inherit; }
+ .bitacora-section-content .bf-entrada { border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.8rem; }
+ .bitacora-section-content .bf-entrada:last-child { border-bottom: none; }
+ .bitacora-section-content .bf-fecha { color: var(--accent-silver); font-size: 0.72rem; }
+ .bitacora-section-label { margin: 0 0 8px; font-weight: 700; color: var(--accent-silver); font-size: 0.85rem; }
+ #bitacora-ficha-lista { max-height: 260px; overflow-y: auto; }
+ .nivel-hab-item h5 { color: var(--accent-silver); font-size: 0.85rem; margin-bottom: 3px; }
+ .nivel-hab-item p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+ .nivel-hab-item button { background: var(--accent-silver); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-weight: 700; }
+ .nivel-hab-item.agregada { opacity: 0.5; }
+ .nivel-hab-item.agregada button { display: none; }
+
+ .character-title {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 8px;
+ margin-bottom: 10px;
+ }
+
+ .char-name h1 {
+ font-size: 1.9rem;
+ color: var(--accent-silver);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+ margin-bottom: 2px;
+ }
+
+ body.light-mode .char-name h1 { text-shadow: none; }
+
+ .char-sub {
+ font-size: 0.95rem;
+ color: var(--accent-silver);
+ font-weight: 600;
+ }
+
+ .btn-rest {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-silver);
+ color: var(--accent-silver);
+ padding: 8px 16px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-weight: 700;
+ transition: all 0.2s;
+ font-size: 0.9rem;
+ }
+
+ .btn-rest:hover {
+ background: var(--accent-silver);
+ color: #1a1c23;
+ box-shadow: 0 0 10px rgba(171, 178, 191, 0.4);
+ }
+
+ /* GRID LAYOUTS */
+ .grid-identity { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+ .stat-badge { background: var(--surface-strong); border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; text-align: center; }
+ .stat-badge label { display: block; font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.3px; font-weight: 700; line-height: 1.15; }
+ .stat-badge span { font-size: 0.9rem; font-weight: 700; color: var(--text-light); display: block; margin-top: 3px; }
+ .stat-badge .stat-base { font-size: 0.64rem; font-weight: 600; color: var(--text-muted); display: block; margin-top: 1px; line-height: 1.2; }
+ .stat-badge .buff-row { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 3px; }
+ .stat-badge .stat-total { font-size: 1.05rem; color: var(--accent-silver); font-weight: 800; }
+ .stat-badge input[type="number"] { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-silver); font-size: 0.85rem; font-weight: 700; text-align: center; width: 100%; outline: none; }
+ .stat-badge .buff-row input[type="number"] { width: 38px; padding: 1px; }
+ .stat-badge input:focus { border-color: var(--accent-silver); }
+
+ /* STATS & ABILITIES */
+ .abilities-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ }
+
+ .ability-box {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 12px;
+ text-align: center;
+ box-shadow: var(--shadow);
+ position: relative;
+ transition: transform 0.2s, border-color 0.2s;
+ }
+
+ .ability-box:hover {
+ border-color: var(--accent-silver);
+ transform: translateY(-2px);
+ }
+
+ .ability-name {
+ font-size: 0.85rem;
+ font-weight: 800;
+ color: var(--accent-silver);
+ text-transform: uppercase;
+ }
+
+ .ability-score {
+ font-size: 1.8rem;
+ font-weight: 800;
+ margin: 4px 0;
+ color: #fff;
+ }
+
+ .ability-mod {
+ display: inline-block;
+ background: var(--accent-gray);
+ color: #fff;
+ padding: 2px 10px;
+ border-radius: 12px;
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ .ability-save {
+ margin-top: 6px;
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ }
+
+ /* HP & RESOURCE TRACKERS */
+ .resources-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 16px;
+ margin-bottom: 20px;
+ }
+
+ .tracker-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ padding: 16px;
+ box-shadow: var(--shadow);
+ }
+
+ .tracker-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 10px;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 6px;
+ }
+
+ .tracker-header h3 {
+ font-size: 1.1rem;
+ }
+
+ .counter-controls {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .btn-cnt {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-silver);
+ color: var(--text-light);
+ width: 32px;
+ height: 32px;
+ border-radius: 6px;
+ font-size: 1.2rem;
+ font-weight: bold;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
+ }
+
+ .btn-cnt:hover {
+ background: var(--accent-gray);
+ color: #fff;
+ }
+
+ .cnt-val {
+ font-size: 1.4rem;
+ font-weight: 800;
+ width: 50px;
+ text-align: center;
+ }
+
+ .cnt-max {
+ font-size: 0.9rem;
+ color: var(--text-muted);
+ }
+
+ .editable-cnt-val {
+ background: transparent;
+ border: 1px dashed var(--accent-silver);
+ border-radius: 4px;
+ color: var(--accent-silver);
+ font-size: 1.3rem;
+ font-weight: 800;
+ width: 60px;
+ text-align: center;
+ outline: none;
+ }
+
+ .checkbox-group {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 8px;
+ }
+
+ .check-box-item {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ background: var(--surface-soft);
+ padding: 6px 10px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ font-size: 0.85rem;
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .check-box-item input[type="checkbox"] {
+ accent-color: var(--accent-silver);
+ width: 16px;
+ height: 16px;
+ cursor: pointer;
+ }
+
+ /* SECTIONS & COLLAPSIBLES */
+ details {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ margin-bottom: 16px;
+ box-shadow: var(--shadow);
+ overflow: hidden;
+ transition: border-color 0.2s;
+ }
+
+ details[open] {
+ border-color: var(--accent-gray);
+ }
+
+ summary {
+ padding: 16px 20px;
+ font-family: 'Cinzel', serif;
+ font-size: 1.2rem;
+ font-weight: 700;
+ color: var(--accent-silver);
+ background: var(--bg-card-header);
+ cursor: pointer;
+ user-select: none;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ list-style: none;
+ transition: background 0.2s;
+ }
+
+ summary::-webkit-details-marker {
+ display: none;
+ }
+
+ summary::after {
+ content: "►";
+ font-size: 0.9rem;
+ transition: transform 0.2s;
+ color: var(--accent-silver);
+ }
+
+ details[open] summary::after {
+ transform: rotate(90deg);
+ }
+
+ summary:hover {
+ background: #2f3442;
+ }
+
+ .section-content {
+ padding: 20px;
+ }
+
+ /* TABLES & EDITABLE INVENTORY */
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ font-size: 0.92rem;
+ }
+
+ th, td {
+ padding: 10px 12px;
+ text-align: left;
+ border-bottom: 1px solid var(--border-color);
+ }
+
+ th {
+ background: var(--surface-strong);
+ color: var(--accent-silver);
+ font-family: 'Cinzel', serif;
+ font-size: 0.85rem;
+ letter-spacing: 0.5px;
+ }
+
+ tr:nth-child(even) {
+ background: rgba(255, 255, 255, 0.02);
+ }
+
+ tr:hover {
+ background: rgba(171, 178, 191, 0.08);
+ }
+
+ .input-qty {
+ background: var(--surface-strong);
+ border: 1px solid var(--border-color);
+ color: var(--accent-silver);
+ font-weight: bold;
+ text-align: center;
+ width: 60px;
+ padding: 4px;
+ border-radius: 4px;
+ outline: none;
+ }
+
+ .btn-roll {
+ background: linear-gradient(135deg, #2e3444, #1a1c23);
+ border: 1px solid var(--accent-silver);
+ color: var(--text-light);
+ padding: 4px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.8rem;
+ font-weight: 700;
+ transition: all 0.2s;
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ }
+
+ .btn-roll:hover {
+ background: var(--accent-gray);
+ box-shadow: 0 0 8px rgba(171, 178, 191, 0.5);
+ transform: scale(1.03);
+ }
+
+ .btn-clear {
+ background: rgba(201, 74, 74, 0.2);
+ border: 1px solid var(--danger-color);
+ color: #ff9999;
+ padding: 2px 8px;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 0.7rem;
+ font-weight: bold;
+ transition: all 0.2s;
+ }
+
+ .btn-clear:hover {
+ background: var(--danger-color);
+ color: #fff;
+ }
+
+ /* FEATURE CARDS */
+ .feature-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+ gap: 16px;
+ }
+
+ .feature-card {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-left: 4px solid var(--accent-silver);
+ padding: 14px;
+ border-radius: 6px;
+ }
+
+ .feature-card h4 {
+ font-size: 1rem;
+ margin-bottom: 6px;
+ color: var(--accent-silver);
+ }
+
+ .feature-card p {
+ font-size: 0.9rem;
+ color: var(--text-light);
+ line-height: 1.4;
+ }
+
+ .tag {
+ display: inline-block;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-gray);
+ color: var(--accent-silver);
+ font-size: 0.75rem;
+ padding: 2px 8px;
+ border-radius: 4px;
+ margin-right: 6px;
+ font-weight: 700;
+ }
+
+ .dice-roller-panel {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ background: #1a1c23;
+ border-top: 3px solid var(--accent-silver);
+ box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
+ padding: 12px 20px;
+ z-index: 1000;
+ }
+
+ .dice-container {
+ max-width: 1200px;
+ margin: 0 auto;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 15px;
+ align-items: center;
+ justify-content: space-between;
+ }
+
+ .dice-btns {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ align-items: center;
+ }
+
+ .btn-dice {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: var(--accent-silver);
+ font-family: 'Cinzel', serif;
+ font-weight: 800;
+ font-size: 0.95rem;
+ padding: 8px 14px;
+ border-radius: 8px;
+ cursor: pointer;
+ transition: all 0.2s;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ }
+
+ .btn-dice:hover {
+ background: var(--accent-gray);
+ color: #fff;
+ border-color: var(--accent-silver);
+ transform: translateY(-2px);
+ }
+
+ .dice-mod-input {
+ width: 60px;
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: #fff;
+ padding: 6px;
+ border-radius: 6px;
+ text-align: center;
+ font-size: 1rem;
+ font-weight: bold;
+ }
+
+ .dice-result-box {
+ background: var(--surface-strong);
+ border: 1px solid var(--accent-silver);
+ border-radius: 8px;
+ padding: 8px 16px;
+ min-width: 220px;
+ text-align: center;
+ }
+
+ .dice-result-val {
+ font-size: 1.8rem;
+ font-weight: 800;
+ color: var(--accent-silver);
+ line-height: 1;
+ }
+
+ .dice-result-details {
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ margin-top: 4px;
+ }
+
+ .dice-history {
+ font-size: 0.75rem;
+ color: var(--accent-silver);
+ max-height: 40px;
+ overflow-y: auto;
+ margin-top: 4px;
+ }
+
+ .highlight-box {
+ background: rgba(171, 178, 191, 0.08);
+ border: 1px dashed var(--accent-silver);
+ padding: 12px;
+ border-radius: 8px;
+ margin: 10px 0;
+ font-size: 0.9rem;
+ }
+
+ .currency-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+ gap: 10px;
+ margin-bottom: 16px;
+ }
+
+ .currency-box {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 8px;
+ text-align: center;
+ }
+
+ .currency-box label {
+ display: block;
+ font-size: 0.75rem;
+ font-weight: bold;
+ color: var(--accent-silver);
+ }
+
+ .currency-box input {
+ width: 100%;
+ background: transparent;
+ border: none;
+ color: #fff;
+ font-size: 1.2rem;
+ font-weight: bold;
+ text-align: center;
+ outline: none;
+ }
+
+ @media (max-width: 768px) {
+ body { padding-bottom: 340px; }
+ .dice-container { flex-direction: column; align-items: stretch; }
+ .dice-btns { justify-content: center; }
+ .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+ }
+
+ /* VENTAJA / DESVENTAJA Y CONDICIONES (unificado con el resto de fichas) */
+ .advantage-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; background: var(--bg-card); border: 1px solid var(--accent-silver); border-radius: 10px; padding: 14px; box-shadow: var(--shadow); }
+ .adv-card { background: var(--surface-mid); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); text-align: center; position: relative; }
+ .adv-card label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--accent-silver); text-transform: uppercase; margin-bottom: 4px; }
+ .adv-card select { width: 100%; background: var(--bg-card-header); border: 1px solid var(--accent-gray); color: var(--text-light); font-weight: 700; padding: 6px; border-radius: 6px; outline: none; cursor: pointer; }
+ .multiselect-container { position: relative; width: 100%; }
+ .select-box { background: var(--bg-card-header); border: 1px solid var(--accent-gray); color: var(--text-light); font-weight: 700; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+ .checkboxes-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--accent-silver); border-radius: 6px; max-height: 220px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.8); padding: 6px; margin-top: 4px; text-align: left; }
+ .checkboxes-dropdown label { display: flex; align-items: center; gap: 8px; padding: 4px 6px; font-size: 0.8rem; text-transform: none; color: var(--text-light); cursor: pointer; font-weight: normal; border-radius: 4px; }
+ .checkboxes-dropdown label:hover { background: rgba(171, 178, 191, 0.15); }
+ .checkboxes-dropdown input[type="checkbox"] { accent-color: var(--accent-silver); width: 14px; height: 14px; }
+ .active-conditions-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-height: 20px; }
+ .cond-tag { background: var(--accent-gray); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+ .cond-tag.buff { background: #2b6cb0; }
+ .cond-tag.debuff { background: #c53030; }
+
+ /* MODO SOLO LECTURA (unificado con el resto de fichas) */
+ .readonly-banner {
+     background: #3182ce;
+     color: #fff;
+     text-align: center;
+     padding: 10px;
+     border-radius: 8px;
+     margin-bottom: 15px;
+     font-weight: bold;
+     font-size: 0.9rem;
+ }
+ .readonly-mode input,
+ .readonly-mode textarea,
+ .readonly-mode select {
+     pointer-events: none !important;
+     opacity: 0.65;
+ }
+ .readonly-mode button:not(#btn-compartir):not(.btn-volver):not(.theme-toggle-btn) {
+     pointer-events: none !important;
+     opacity: 0.5;
+ }
+ 
+/* === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) === */
+.inventory-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.inventory-item { background: var(--surface-mid, var(--bg-card, rgba(255,255,255,0.04))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); border-radius: 6px; padding: 10px 12px; }
+.inventory-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.inventory-item-name { font-weight: bold; color: var(--text-light, #eee); font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+.inventory-item-name input[type="checkbox"] { cursor: pointer; }
+.inventory-item-meta { font-size: 0.72rem; color: var(--text-muted, #999); font-family: inherit; white-space: nowrap; }
+.inventory-item-desc { font-size: 0.8rem; color: var(--text-muted, #999); margin-top: 4px; }
+.inventory-item-actions { display: flex; gap: 4px; }
+.inventory-item-actions button { background: var(--surface-soft, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); color: var(--text-light, #eee); border-radius: 4px; padding: 2px 7px; font-size: 0.75rem; cursor: pointer; }
+.inventory-item-actions button:hover { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; }
+.inventory-add-btn { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; border: none; border-radius: 6px; padding: 7px 12px; font-weight: bold; font-size: 0.8rem; cursor: pointer; margin-bottom: 10px; }
+.inventory-form { background: var(--surface-strong, var(--bg-card-header, rgba(255,255,255,0.06))); border: 1px dashed var(--accent-gold, var(--accent-silver, #d4af37)); border-radius: 6px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+.inventory-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.inventory-form-row label { font-size: 0.7rem; color: var(--text-muted, #999); display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 100px; }
+.inventory-form-row input, .inventory-form-row textarea { background: var(--surface-soft, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); color: var(--text-light, #eee); border-radius: 4px; padding: 5px 7px; font-size: 0.82rem; font-family: inherit; }
+.inventory-form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.inventory-form-actions button { background: var(--surface-soft, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); color: var(--text-light, #eee); border-radius: 4px; padding: 6px 14px; font-size: 0.8rem; cursor: pointer; }
+.inventory-form-actions button:last-child { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; font-weight: bold; border: none; }
+.inventory-total { font-size: 0.78rem; color: var(--accent-gold, var(--accent-silver, #d4af37)); font-weight: bold; margin-bottom: 8px; min-height: 1em; }
+.inventory-empty { font-size: 0.8rem; color: var(--text-muted, #999); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<div id="readonly-banner" class="readonly-banner" style="display:none;">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
+
+ <!-- BOTÓN VOLVER AL MENÚ, TEMA Y COMPARTIR -->
+ <div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+     <a href="index.html" class="btn-volver" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header, #2e3444); color: var(--accent-silver, #abb2bf); text-decoration: none; border: 1px solid var(--accent-silver, #abb2bf); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">
+         ⬅ Volver al Menú
+     </a>
+     <div style="display: flex; gap: 10px; align-items: center;">
+         <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
+         <button id="btn-compartir" style="display: none; padding: 8px 16px; background-color: #3a7d44; color: white; border: 1px solid var(--accent-silver, #abb2bf); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;"></button>
+     </div>
+ </div>
+
+ <!-- BARRA STICKY DE COMBATE -->
+ <div class="sticky-combat-bar">
+ <div class="scb-name">⏳ Myrklogi Mangarisonn</div>
+ <div class="scb-stats">
+ <div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">43/70</div></div>
+ <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value" id="scb-ac">16</div></div>
+ <div class="scb-stat"><div class="scb-label">✨ DC</div><div class="scb-value" id="scb-dc">16</div></div>
+ </div>
+ <div class="scb-actions">
+ <button class="btn-rest" onclick="restShort()" title="Descanso Corto">☕</button>
+ <button class="btn-rest" onclick="restLong()" title="Descanso Largo">🌙</button>
+ </div>
+ </div>
+
+ <details class="bitacora-section" id="bitacora-section">
+ <summary>📜 Bitácora de la Campaña</summary>
+ <div class="bitacora-section-content">
+ <p class="bitacora-section-label">Nueva entrada</p>
+ <input type="text" id="bitacora-ficha-titulo" placeholder="Título (opcional)">
+ <textarea id="bitacora-ficha-texto" rows="3" placeholder="Qué pasó..."></textarea>
+ <button type="button" onclick="guardarEntradaBitacoraFicha()">Guardar Entrada</button>
+ <p class="bitacora-section-label" style="margin-top:10px;border-top:1px solid var(--border-color);padding-top:8px;">Últimas entradas</p>
+ <div id="bitacora-ficha-lista"></div>
+ </div>
+ </details>
+
+ <!-- HEADER / IDENTIDAD -->
+ <header>
+ <div class="character-title">
+ <div class="char-name">
+ <h1>Myrklogi Mangarisonn</h1>
+ <div class="char-sub">Mago 9 — Chronurgy Magic | Human like (Unaligned)</div>
+ </div>
+ <div class="xp-popover-wrap">
+ <button class="xp-popover-btn" onclick="toggleXpPopover()" type="button">⭐ XP</button>
+ <div class="xp-popover-panel" id="xp-popover-panel">
+ <div class="stat-badge">
+ <label>XP Actual</label>
+ <input type="number" id="xp-val" value="60875" step="100">
+ </div>
+ <div class="stat-badge">
+ <label>XP Próximo Lvl</label>
+ <input type="number" id="xp-next" value="64000" step="500">
+ </div>
+ </div>
+ </div>
+ <div class="nivel-popover-wrap">
+ <button class="nivel-popover-btn" onclick="toggleNivelPopover()" type="button">📖 Nivel <span id="nivel-actual-display">—</span></button>
+ <div class="nivel-popover-panel" id="nivel-popover-panel">
+ <div id="nivel-hab-lista"></div>
+ </div>
+ </div>
+ <input type="hidden" id="habilidades-agregadas-nivel" value="">
+ </div>
+
+ <div class="grid-identity">
+ <div class="stat-badge">
+ <label>❤️ HP</label>
+ <span id="hp-summary">43 / 70</span>
+ </div>
+ <div class="stat-badge">
+ <label>🛡️ AC (Armadura)</label>
+ <input type="number" id="ac-val" value="16" onchange="recalcStats()">
+ </div>
+ <div class="stat-badge">
+ <label>✨ Poder de Hechizo (DC)</label>
+ <span id="spell-dc-val">16</span>
+ </div>
+ <div class="stat-badge">
+ <label>🎲 Iniciativa</label>
+ <button class="btn-roll" style="margin-top:4px; padding:3px 8px; font-size:0.8rem;" onclick="rollCheckSave('d20', 6, 'Iniciativa', 'check')">🎲 +6</button>
+ </div>
+ <div class="stat-badge">
+ <label>🏃 Velocidad</label>
+ <span>30 ft</span>
+ </div>
+ <div class="stat-badge">
+ <label>📘 Prof. Bonus</label>
+ <span>+4</span>
+ </div>
+ </div>
+ </header>
+
+ <!-- CONTROLES DE VENTAJAS Y CONDICIONES -->
+ <div class="advantage-bar">
+ <div class="adv-card">
+ <label>🎲 Próximo Ataque</label>
+ <select id="adv-attack">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+ <div class="adv-card">
+ <label>🛡️ Próxima Salvación</label>
+ <select id="adv-save">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+ <div class="adv-card">
+ <label>✨ Condiciones y Efectos</label>
+ <div class="multiselect-container">
+ <div class="select-box" onclick="toggleConditionsDropdown()">
+ <span>Seleccionar...</span>
+ <span>▼</span>
+ </div>
+ <div class="checkboxes-dropdown" id="conditions-dropdown">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-silver); margin-bottom:4px;">EFECTOS Y BUFFS</strong>
+ <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="buff-guidance" value="Guidance" data-type="buff" onchange="updateConditions()"> 📜 Guidance (+1d4 Check)</label>
+ <hr style="border-color:var(--border-color); margin:4px 0;">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-silver); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
+ <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded</label>
+ <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened</label>
+ <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned</label>
+ <label><input type="checkbox" id="cond-stunned" value="Stunned" data-type="debuff" onchange="updateConditions()"> 💫 Stunned</label>
+ </div>
+ </div>
+ <div class="active-conditions-tags" id="active-conditions-list"></div>
+ </div>
+ </div>
+
+ <!-- CARACTERÍSTICAS -->
+ <div class="abilities-grid">
+ <div class="ability-box">
+ <div class="ability-name">Fuerza (STR)</div>
+ <div class="ability-score">10</div>
+ <div class="ability-mod">+0</div>
+ <div class="ability-save">Save: +0</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 0, 'STR Check / Save', 'save')">🎲 +0</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Destreza (DEX)</div>
+ <div class="ability-score">14</div>
+ <div class="ability-mod">+2</div>
+ <div class="ability-save">Save: +2</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 2, 'DEX Check / Save', 'save')">🎲 +2</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Constitución (CON)</div>
+ <div class="ability-score">16</div>
+ <div class="ability-mod">+3</div>
+ <div class="ability-save">Save: +3</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 3, 'CON Check / Save', 'save')">🎲 +3</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Inteligencia (INT)</div>
+ <div class="ability-score">18</div>
+ <div class="ability-mod">+4</div>
+ <div class="ability-save" style="color:var(--accent-silver); font-weight:bold;">Save: +8 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 8, 'INT Save', 'save')">🎲 +8</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Sabiduría (WIS)</div>
+ <div class="ability-score">13</div>
+ <div class="ability-mod">+1</div>
+ <div class="ability-save" style="color:var(--accent-silver); font-weight:bold;">Save: +5 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 5, 'WIS Save', 'save')">🎲 +5</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Carisma (CHA)</div>
+ <div class="ability-score">8</div>
+ <div class="ability-mod">-1</div>
+ <div class="ability-save">Save: -1</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', -1, 'CHA Check / Save', 'save')">🎲 -1</button>
+ </div>
+ </div>
+
+ <!-- CONTADORES Y RECURSOS -->
+ <div class="resources-bar">
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>❤️ Puntos de Golpe (HP)</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('hp-cur', -1)">-</button>
+ <span id="hp-cur" class="cnt-val">43</span>
+ <span class="cnt-max">/ 70</span>
+ <button class="btn-cnt" onclick="changeVal('hp-cur', 1)">+</button>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-silver);">Recursos de Clase:</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="shift-1"> Chronal Shift 1</label>
+ <label class="check-box-item"><input type="checkbox" id="shift-2"> Chronal Shift 2</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-1"> Stasis 1</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-2"> Stasis 2</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-3"> Stasis 3</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-4"> Stasis 4</label>
+ </div>
+ </div>
+ </div>
+
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>✨ Spell Slots (Restantes)</h3>
+ </div>
+ <div style="margin-top: 4px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 1 (4 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-1-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-3"> S3</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-4"> S4</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 2 (3 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-2-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-2-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-2-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 3 (3 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-3-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-3-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-3-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 4 (3 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-4-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-4-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-4-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 5 (1 Slot):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-5-1"> S1</label>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- SECCIÓN 1: ATAQUES Y HABILIDADES -->
+ <details open>
+ <summary>⚔️ 1. Ataques y Acciones Especiales</summary>
+ <div class="section-content">
+ <table>
+ <thead>
+ <tr>
+ <th>Ataque / Acción</th>
+ <th>Bono Base</th>
+ <th>Daño / Tipo</th>
+ <th>Efecto & Notas</th>
+ <th>Lanzar Dados</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>The Hidden Attack</strong></td>
+ <td>+6 (DEX+Prof)</td>
+ <td>1d6 + 4 P</td>
+ <td>Finesse. Otorga +2 AC (Escudo invisible en la off hand). Recup. slot 1/largo</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'The Hidden Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Daño The Hidden (Piercing)')">💥 1d6+4</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Shortsword (STR)</strong></td>
+ <td>+4</td>
+ <td>1d6 + 0 P</td>
+ <td>Ataque con espada corta usando fuerza</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Shortsword STR Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Shortsword STR Daño')">💥 1d6</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Shortsword (DEX)</strong></td>
+ <td>+6</td>
+ <td>1d6 + 2 P</td>
+ <td>Ataque con espada corta usando destreza (Finesse)</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'Shortsword DEX Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 2, 'Shortsword DEX Daño')">💥 1d6+2</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Unarmed Strike</strong></td>
+ <td>+4</td>
+ <td>1 + 0 B</td>
+ <td>Golpe desarmado estándar</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Unarmed Strike')">🎯 Atk</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Habilidades (Skills)</h3>
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 10px;">
+ <div class="feature-card"><strong>Acrobatics:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobatics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Animal Handling:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Animal Handling', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Arcana ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Arcana', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Athletics:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Athletics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Deception:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Deception', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>History ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'History', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Insight:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Insight', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Intimidation:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Intimidation', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Investigation ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Investigation', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Medicine:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Medicine', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Nature:</strong> +4 <button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Nature', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Perception ★:</strong> +5 <button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Perception', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Performance:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Performance', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Persuasion:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Persuasion', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Religion ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Religion', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Sleight of Hand:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Sleight of Hand', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Stealth:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Stealth', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Survival:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Survival', 'check')">🎲</button></div>
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 2: INVENTARIO -->
+ <details>
+ <summary>🎒 2. Inventario, Pociones y Oro</summary>
+ <div class="section-content">
+ <div class="currency-grid">
+ <div class="currency-box">
+ <label>GP (Oro)</label>
+ <input type="number" id="gp-val" value="331">
+ </div>
+ </div>
+
+ <div class="highlight-box">
+ <strong>Bolsa de 1kg de arena picante (droga)</strong> | Amuleto del dios de la muerte (+1d4 saves) | Pociones de Sanación | Poción de Intelecto (+2 INT) | Anillo de Agilidad Felina (+10ft, ventaja Acrobatics/Stealth) | Tenedor de acero.
+ </div>
+
+ <div class="inventory-total" id="inventario-total"></div>
+<button type="button" class="inventory-add-btn" onclick="mostrarFormularioInventario()">➕ Agregar Ítem</button>
+<div id="inventario-form-container"></div>
+<div class="inventory-list" id="inventario-lista"></div>
+<input type="hidden" id="inventario-json" value="">
+ </div>
+ </details>
+
+ <!-- SECCIÓN 3: CONJUROS PREPARADOS -->
+ <details open>
+ <summary>📜 3. Libro de Conjuros Preparados</summary>
+ <div class="section-content">
+ <table>
+ <thead>
+ <tr>
+ <th>Nivel</th>
+ <th>Conjuro</th>
+ <th>Casting Time / Rango</th>
+ <th>Descripción y Efectos</th>
+ <th>Acción rápida</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Fire Bolt</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>Spell Atk (+8); 2d10 fire damage.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(2, 10, 0, 'Fire Bolt (2d10)')">🔥 2d10</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Ray of Frost</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>Spell Atk (+8); 2d8 cold damage, -10ft vel.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Ray of Frost (2d8)')">❄️ 2d8</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Guidance</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Objetivo suma 1d4 a su próximo ability check.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance (1d4)')">🎲 1d4</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Magic Missile</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>Tres dardos infalibles; 1d4+1 force c/u.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 4, 3, 'Magic Missile (3 dardos)')">💥 3d4+3</button>
+ <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+ <select id="upcast-nivel-magic-missile" style="font-size:0.75rem;padding:2px 4px;background:#0f0f12;color:#fff;border:1px solid var(--border-color);border-radius:4px;"></select>
+ <button class="btn-roll" onclick="tirarHechizoUpcast('magic-missile')">🎲 Tirar a nivel</button>
+ </div>
+ </td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Shield</strong></td>
+ <td>1 Reacción</td>
+ <td>+5 AC hasta el inicio de tu próximo turno.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">3rd</span></td>
+ <td><strong>Fireball</strong></td>
+ <td>1 Acc / 150 ft</td>
+ <td>DEX Save DC 16; 8d6 fire damage. Esfera 20ft.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(8, 6, 0, 'Fireball (8d6)')">🔥 8d6</button>
+ <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+ <select id="upcast-nivel-fireball" style="font-size:0.75rem;padding:2px 4px;background:#0f0f12;color:#fff;border:1px solid var(--border-color);border-radius:4px;"></select>
+ <button class="btn-roll" onclick="tirarHechizoUpcast('fireball')">🎲 Tirar a nivel</button>
+ </div>
+ </td>
+ </tr>
+ <tr>
+ <td><span class="tag">4th</span></td>
+ <td><strong>Psychic Lance (UA)</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>INT Save DC 16; 10d6 psychic y queda incapacitado.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(10, 6, 0, 'Psychic Lance (10d6)')">🧠 10d6</button>
+ <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+ <select id="upcast-nivel-psychic-lance" style="font-size:0.75rem;padding:2px 4px;background:#0f0f12;color:#fff;border:1px solid var(--border-color);border-radius:4px;"></select>
+ <button class="btn-roll" onclick="tirarHechizoUpcast('psychic-lance')">🎲 Tirar a nivel</button>
+ </div>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- NUEVA SECCIÓN: NOTAS PERSONALES (AUTOMATIZADA) -->
+ <details open>
+ <summary>📝 4. Apuntes y Notas de Campaña</summary>
+ <div class="section-content">
+ <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">Estas anotaciones se guardan solas en tiempo real en la nube bajo tu cuenta de jugador:</p>
+ <textarea id="notas-personaje" style="width: 100%; height: 180px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 15px; font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none;" placeholder="Escribe aquí tu bitácora, nombres de NPCs, secretos del vacío o tus planes futuros..."></textarea>
+ </div>
+ </details>
+
+ <!-- NUEVA SECCIÓN: RASGOS DE NIVEL AGREGADOS (motor de subida de nivel) -->
+ <details open>
+ <summary>🆕 5. Rasgos de Nivel Agregados</summary>
+ <div class="section-content">
+ <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">Rasgos que fuiste agregando a la ficha desde el botón "📖 Nivel" a medida que tu personaje subió de nivel en la partida.</p>
+ <div class="feature-grid"></div>
+ </div>
+ </details>
+
+</div>
+
+<!-- LANZADOR DE DADOS FLOTANTE -->
+<div class="dice-roller-panel">
+ <div class="dice-container">
+ <div>
+          <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-silver); font-size:0.9rem; margin-bottom:4px;">
+         🎲 LANZADOR DE DADOS
+         </div>
+         <div class="dice-btns">
+         <button class="btn-dice" onclick="rollManualDice(1, 4, getMod(), 'd4')">d4</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 6, getMod(), 'd6')">d6</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 8, getMod(), 'd8')">d8</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 10, getMod(), 'd10')">d10</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 12, getMod(), 'd12')">d12</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 20, getMod(), 'd20')">d20</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 100, getMod(), 'd100')">d100</button>
+         
+         <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
+         <input type="number" id="dice-mod" class="dice-mod-input" value="0">
+         </div>
+         </div>
+         </div>
+
+         <div class="dice-result-box">
+         <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
+         <div class="dice-result-val" id="dice-total">0</div>
+         <div class="dice-result-details" id="dice-breakdown">Selecciona un dado</div>
+         </div>
+
+         <div style="flex:1; min-width:200px;">
+         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+         <span style="font-size:0.75rem; color:var(--text-muted);">Historial de Tiradas:</span>
+         <button class="btn-clear" onclick="clearDiceHistory()">🗑️ Limpiar</button>
+         </div>
+         <div class="dice-history" id="dice-history">Sin tiradas previas.</div>
+         </div>
+         </div>
+        </div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+  // ==========================================
+  // 1. CONFIGURACIÓN E INSTANCIAS DE FIREBASE
+  // ==========================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.database();
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+  const PERSONAJE_ID = "myrklogi_mangarisonn";
+  const NOMBRE_PERSONAJE_FICHA = "Myrklogi Mangarisonn";
+  const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
+  let charRef = null;
+  let bitacoraCampanaListener = null;
+
+  const btnVolver = document.querySelector('a[href="index.html"]');
+  if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
+
+  let modoLectura = false; // Guardia en cliente (defensa en profundidad, además de las reglas de Firebase)
+  let ownerReparado = false; // Evita repetir el auto-reclamo de owner en cada snapshot
+
+  function aplicarModoLectura(soloLectura) {
+    const container = document.querySelector('.container');
+    const banner = document.getElementById('readonly-banner');
+    if (!container) return;
+    modoLectura = soloLectura;
+    container.classList.toggle('readonly-mode', soloLectura);
+    if (banner) banner.style.display = soloLectura ? 'block' : 'none';
+    container.querySelectorAll('input, select, textarea').forEach(el => {
+      el.disabled = soloLectura;
+    });
+  }
+
+  function bloquearPorSistemaIncorrecto(sistemaCampana) {
+    document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
+      <div style="font-size:3rem;">⚠️</div>
+      <h1 style="font-size:1.3rem;color:#e0b84a;">Ficha fuera de sistema</h1>
+      <p style="max-width:420px;color:#94a3b8;">Esta ficha es de <strong>${SISTEMA_PERSONAJE_PROPIO === 'coc' ? 'Call of Cthulhu' : 'D&D'}</strong> y la campaña seleccionada es de <strong>${sistemaCampana === 'coc' ? 'Call of Cthulhu' : 'D&D'}</strong>. No se puede abrir esta ficha desde esa campaña.</p>
+      <a href="index.html?campana=${codigoCampana}" style="color:#e0b84a;text-decoration:underline;">← Volver al selector de personajes</a>
+    </div>`;
+  }
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      console.log("Sesión activa detectada en la ficha de Myrklogi:", user.uid);
+
+      if (codigoCampana) {
+        const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
+        const sistemaCampana = sistemaSnap.val();
+        if (sistemaCampana && sistemaCampana !== SISTEMA_PERSONAJE_PROPIO) {
+          bloquearPorSistemaIncorrecto(sistemaCampana);
+          return;
+        }
+      }
+
+      if (codigoCampana) {
+        charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+      } else {
+        charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+      }
+
+      sincronizarDatosDesdeNube();
+
+      if (codigoCampana) {
+        bitacoraCampanaListener = db.ref(`campanas/${codigoCampana}/bitacora`);
+        bitacoraCampanaListener.on('value', snap => renderizarBitacoraFicha(snap.val() || {}));
+      } else {
+        const bitacoraWrap = document.getElementById('bitacora-section');
+        if (bitacoraWrap) bitacoraWrap.style.display = 'none';
+      }
+
+      const gmRefPromise = codigoCampana
+        ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+        : Promise.resolve(true);
+
+      gmRefPromise.then(soyElGM => {
+        charRef.on('value', snap => {
+          const p = snap.val();
+          if (!p) return;
+
+          // Auto-reparación: personaje activo sin owner (dato legacy) -> quien lo abre lo reclama.
+          if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+            ownerReparado = true;
+            charRef.child('owner').set(user.uid);
+            return;
+          }
+
+          const esMio = codigoCampana ? (p.owner === user.uid) : true;
+          const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+          aplicarModoLectura(soloLectura);
+
+          // Sincroniza el HP máximo real (hardcodeado en esta ficha) a Firebase, para que
+          // la pantalla del GM en index.html muestre el valor correcto en vez de un default.
+          const HP_MAX_MYRKLOGI = 70;
+          if ((esMio || soyElGM) && p.datos?.['hp-max'] !== HP_MAX_MYRKLOGI) {
+            charRef.child('datos/hp-max').set(HP_MAX_MYRKLOGI);
+          }
+
+          const btnCompartir = document.getElementById('btn-compartir');
+          if (btnCompartir) {
+            if (esMio) {
+              btnCompartir.style.display = 'inline-block';
+              btnCompartir.innerText = p.publico ? "🔒 Dejar de Compartir" : "👁️ Compartir Ficha";
+              btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+              btnCompartir.onclick = () => charRef.child('publico').set(!p.publico);
+            } else {
+              btnCompartir.style.display = 'none';
+            }
+          }
+        });
+      });
+    } else {
+      console.warn("Ficha sin sesión activa. Redirigiendo...");
+      window.location.href = "index.html";
+    }
+  });
+
+  function guardarCampo(fieldId, value) {
+    if (modoLectura) return;
+    if (charRef) charRef.child('datos/' + fieldId).set(value);
+  }
+
+  // ==========================================
+  // 2. SINCRONIZACIÓN FIREBASE (INPUTS & RECUPERACIÓN)
+  // ==========================================
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input, textarea, select')) {
+      const fieldId = e.target.id;
+      if (fieldId) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        guardarCampo(fieldId, val);
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="checkbox"], select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        guardarCampo(fieldId, val);
+      }
+    }
+  });
+
+  function sincronizarDatosDesdeNube() {
+    if (!charRef) return;
+    charRef.child('datos').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') {
+            if (el.checked !== data[id]) el.checked = data[id];
+          } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+            if (el.innerText !== String(data[id])) {
+              el.innerText = data[id];
+              if (id === 'hp-cur') {
+                document.getElementById('hp-summary').innerText = data[id] + ' / 70';
+              }
+            }
+          } else {
+            if (el.value !== String(data[id]) && document.activeElement !== el) {
+              el.value = data[id];
+            }
+          }
+        }
+      });
+      if (typeof recalcStats === 'function') recalcStats();
+      if (typeof updateConditions === 'function') updateConditions();
+    });
+  }
+
+  // ==========================================
+  // 3. LÓGICA DE INTERFAZ, RECURSOS Y DADOS
+  // ==========================================
+  function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
+
+  // --- MODO DÍA/NOCHE (replicado del mismo mecanismo que usa Eldur) ---
+  function applyTheme(isDark) {
+    document.body.classList.toggle('light-mode', !isDark);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.innerText = isDark ? '☀️ Modo Día' : '🌙 Modo Noche';
+  }
+  function toggleTheme() {
+    const isDark = document.body.classList.contains('light-mode');
+    applyTheme(isDark);
+    localStorage.setItem(`${PERSONAJE_ID}_theme`, isDark ? 'dark' : 'light');
+  }
+  function initTheme() {
+    const saved = localStorage.getItem(`${PERSONAJE_ID}_theme`);
+    if (saved) {
+      applyTheme(saved === 'dark');
+    } else {
+      const hour = new Date().getHours();
+      applyTheme(!(hour >= 7 && hour < 19)); // de día (7-19h) arranca en modo día
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initTheme);
+
+  // --- BARRA STICKY DE COMBATE Y POPOVER DE XP ---
+  function syncStickyBar() {
+    const hp = document.getElementById('hp-summary');
+    const ac = document.getElementById('ac-val');
+    const dc = document.getElementById('spell-dc-val');
+    const scbHp = document.getElementById('scb-hp');
+    const scbAc = document.getElementById('scb-ac');
+    const scbDc = document.getElementById('scb-dc');
+    if (scbHp && hp) scbHp.innerText = hp.innerText;
+    if (scbAc && ac) scbAc.innerText = ac.value;
+    if (scbDc && dc) scbDc.innerText = dc.innerText;
+  }
+  function toggleXpPopover() {
+    const p = document.getElementById('xp-popover-panel');
+    if (p) p.classList.toggle('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.xp-popover-wrap')) {
+      const p = document.getElementById('xp-popover-panel');
+      if (p) p.classList.remove('open');
+    }
+  });
+
+  // ============================================
+  // SISTEMA DE SUBIDA DE NIVEL (oculto) — tabla de XP homebrew de la campaña
+  // ============================================
+  const TABLA_XP_NIVELES = [
+    {nivel:1, xp:0}, {nivel:2, xp:1500}, {nivel:3, xp:4500}, {nivel:4, xp:9500},
+    {nivel:5, xp:16500}, {nivel:6, xp:25500}, {nivel:7, xp:36500}, {nivel:8, xp:49500},
+    {nivel:9, xp:64500}, {nivel:10, xp:81500}, {nivel:11, xp:100500}, {nivel:12, xp:121500},
+    {nivel:13, xp:144500}, {nivel:14, xp:169500}, {nivel:15, xp:196500}, {nivel:16, xp:225500},
+    {nivel:17, xp:256500}, {nivel:18, xp:289500}, {nivel:19, xp:324500}, {nivel:20, xp:361500}
+  ];
+
+  const PROXIMAS_HABILIDADES = [
+    {nivel: 10, nombre: "Arcane Abeyance", descripcion: "Al lanzar un conjuro de nivel 3 o inferior con tiempo de lanzamiento de 1 acción, podés hacer que la magia quede latente e invisible en un espacio de hasta 5 pies dentro del alcance en lugar de manifestarse de inmediato. Permanece contenida hasta 1 minuto y podés liberarla con una acción adicional para que el conjuro se resuelva desde ese punto; si no la liberás a tiempo, se disipa sin efecto. ⚠️ (verificá la duración máxima y restricciones exactas: Chronurgy Magic —de Explorer's Guide to Wildemount— no tiene actualización oficial a las reglas de 2024)."},
+    {nivel: 12, nombre: "Mejora de Puntuación de Habilidad (recordatorio)", descripcion: "En este nivel corresponde una Mejora de Puntuación de Habilidad (ASI) o un Talento, ya gestionada en la sección de habilidades de la ficha — no requiere una tarjeta de rasgo nueva."},
+    {nivel: 14, nombre: "Convergent Future", descripcion: "Como reacción, cuando vos o una criatura que podés ver a 30 pies hacés una tirada de d20 de ataque, salvación o característica, podés forzar que el resultado sea un número específico de tu elección en lugar del tirado. Usable una cantidad de veces igual a tu bono de competencia por descanso largo. ⚠️ (confirmá cantidad de usos y alcance exacto contra tu manual; Chronurgy Magic no fue actualizada oficialmente a 2024)."},
+    {nivel: 16, nombre: "Mejora de Puntuación de Habilidad (recordatorio)", descripcion: "En este nivel corresponde otra Mejora de Puntuación de Habilidad (ASI) o Talento, ya gestionada en la sección de habilidades de la ficha — no requiere una tarjeta de rasgo nueva."},
+    {nivel: 18, nombre: "Spell Mastery", descripcion: "Elegís un conjuro de mago de nivel 1 y uno de nivel 2 de tu libro de conjuros. Mientras los tengas preparados, podés lanzarlos en su nivel más bajo sin gastar espacios de conjuro (para lanzarlos a nivel superior sí debés gastar un espacio). Tras 8 horas de estudio podés cambiar los conjuros elegidos por otros del mismo nivel. ⚠️ (verificá que la redacción no haya cambiado en el PHB 2024, que revisó varios rasgos base del Mago)."},
+    {nivel: 19, nombre: "Mejora de Puntuación de Habilidad / Talento Épico (recordatorio)", descripcion: "Última ASI de la progresión estándar de Mago. En las reglas de 2024, en niveles altos varias clases pueden optar por un Talento Épico (Epic Boon) en lugar de la ASI estándar — confirmá con tu mesa si aplica en este nivel. ⚠️"},
+    {nivel: 20, nombre: "Signature Spells", descripcion: "Elegís dos conjuros de mago de nivel 3 de tu libro como conjuros insignia: quedan siempre preparados (sin contar contra tu límite de preparados) y podés lanzar cada uno una vez a nivel 3 sin gastar espacio de conjuro; para repetirlo sin espacio necesitás completar un descanso corto o largo (lanzarlos a nivel superior sí consume un espacio normalmente). ⚠️ (confirmá la redacción exacta contra el PHB 2024, que reescribió el capítulo de Mago)."}
+  ];
+
+  function nivelPorXP(xpTotal) {
+    let nivel = 1;
+    for (const fila of TABLA_XP_NIVELES) if (xpTotal >= fila.xp) nivel = fila.nivel;
+    return nivel;
+  }
+  function proximoUmbralXP(xpTotal) {
+    return TABLA_XP_NIVELES.find(f => f.xp > xpTotal) || null;
+  }
+
+  function actualizarNivelYProximaXP() {
+    const xpInput = document.getElementById('xp-val');
+    if (!xpInput) return;
+    const xpActual = parseInt(xpInput.value) || 0;
+    const nivel = nivelPorXP(xpActual);
+    document.querySelectorAll('#nivel-actual-display').forEach(el => el.innerText = nivel);
+    const umbral = proximoUmbralXP(xpActual);
+    const nextInput = document.getElementById('xp-next');
+    if (nextInput) {
+      nextInput.value = umbral ? umbral.xp : xpActual;
+      nextInput.readOnly = true;
+      nextInput.style.opacity = '0.7';
+    }
+    renderizarProximasHabilidades(nivel);
+  }
+
+  function insertarFeatureCard(h) {
+    const grid = document.querySelector('.feature-grid');
+    if (!grid) return;
+    const yaExiste = Array.from(grid.querySelectorAll('.feature-card h4')).some(el => el.innerText.includes(h.nombre));
+    if (yaExiste) return;
+    const card = document.createElement('div');
+    card.className = 'feature-card';
+    card.innerHTML = `<h4>🆕 ${h.nombre} <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400;">(Nvl ${h.nivel}${h.clase ? ' — ' + h.clase : ''})</span></h4><p>${h.descripcion}</p>`;
+    grid.appendChild(card);
+  }
+
+  function obtenerHabilidadesAgregadas() {
+    try {
+      const raw = document.getElementById('habilidades-agregadas-nivel')?.value || '[]';
+      return JSON.parse(raw);
+    } catch(e) { return []; }
+  }
+
+  function restaurarHabilidadesAgregadas() {
+    const nombres = obtenerHabilidadesAgregadas();
+    if (!nombres.length || typeof PROXIMAS_HABILIDADES === 'undefined') return;
+    nombres.forEach(n => {
+      const h = PROXIMAS_HABILIDADES.find(x => x.nombre === n);
+      if (h) insertarFeatureCard(h);
+    });
+  }
+
+  function renderizarProximasHabilidades(nivelActual) {
+    const cont = document.getElementById('nivel-hab-lista');
+    if (!cont || typeof PROXIMAS_HABILIDADES === 'undefined') return;
+    const agregadas = obtenerHabilidadesAgregadas();
+    cont.innerHTML = '';
+    if (!PROXIMAS_HABILIDADES.length) {
+      cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">No hay más habilidades registradas.</p>';
+      return;
+    }
+    PROXIMAS_HABILIDADES.forEach((h, idx) => {
+      const item = document.createElement('div');
+      const agregada = agregadas.includes(h.nombre);
+      item.className = 'nivel-hab-item' + (agregada ? ' agregada' : '');
+      item.innerHTML = `
+        <h5>${agregada ? '✅' : '🔒'} Nvl ${h.nivel}${h.clase ? ' (' + h.clase + ')' : ''} — ${h.nombre}</h5>
+        <p>${h.descripcion}</p>
+        ${!agregada ? `<button type="button" data-idx="${idx}">➕ Agregar a la ficha</button>` : ''}
+      `;
+      cont.appendChild(item);
+    });
+    cont.querySelectorAll('button[data-idx]').forEach(btn => {
+      btn.onclick = () => agregarHabilidadANivel(parseInt(btn.dataset.idx));
+    });
+  }
+
+  function agregarHabilidadANivel(idx) {
+    const h = PROXIMAS_HABILIDADES[idx];
+    if (!h) return;
+    insertarFeatureCard(h);
+    const actuales = obtenerHabilidadesAgregadas();
+    if (!actuales.includes(h.nombre)) {
+      actuales.push(h.nombre);
+      const hiddenInput = document.getElementById('habilidades-agregadas-nivel');
+      if (hiddenInput) hiddenInput.value = JSON.stringify(actuales);
+      if (typeof guardarCampo === 'function') guardarCampo('habilidades-agregadas-nivel', JSON.stringify(actuales));
+    }
+    renderizarProximasHabilidades(nivelPorXP(parseInt(document.getElementById('xp-val')?.value) || 0));
+  }
+
+  function toggleNivelPopover() {
+    const p = document.getElementById('nivel-popover-panel');
+    if (p) p.classList.toggle('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nivel-popover-wrap')) {
+      const p = document.getElementById('nivel-popover-panel');
+      if (p) p.classList.remove('open');
+    }
+  });
+
+  // === BITÁCORA DESDE LA FICHA ===
+  function renderizarBitacoraFicha(logs) {
+    const cont = document.getElementById('bitacora-ficha-lista');
+    if (!cont) return;
+    const entradas = Object.values(logs || {}).sort((a, b) => (b.fecha || 0) - (a.fecha || 0)).slice(0, 8);
+    if (!entradas.length) {
+      cont.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);">Sin entradas todavía.</p>';
+      return;
+    }
+    cont.innerHTML = entradas.map(log => `
+      <div class="bf-entrada">
+        <div class="bf-fecha">${log.fecha ? new Date(log.fecha).toLocaleString() : ''}${log.personaje ? ' · ' + log.personaje : ''}</div>
+        ${log.titulo ? `<strong>${log.titulo}</strong>` : ''}
+        <p style="white-space:pre-wrap;margin:2px 0 0;">${log.texto || ''}</p>
+      </div>
+    `).join('');
+  }
+  function guardarEntradaBitacoraFicha() {
+    if (!codigoCampana) { alert('Esta ficha no está asociada a ninguna campaña.'); return; }
+    const tituloEl = document.getElementById('bitacora-ficha-titulo');
+    const textoEl = document.getElementById('bitacora-ficha-texto');
+    const texto = (textoEl.value || '').trim();
+    if (!texto) return;
+    db.ref(`campanas/${codigoCampana}/bitacora`).push({
+      titulo: (tituloEl.value || '').trim(),
+      texto: texto,
+      fecha: firebase.database.ServerValue.TIMESTAMP,
+      personaje: NOMBRE_PERSONAJE_FICHA
+    }).then(() => {
+      tituloEl.value = '';
+      textoEl.value = '';
+    }).catch(err => alert('No se pudo guardar la entrada en la bitácora: ' + err.message));
+  }
+  document.getElementById('xp-val')?.addEventListener('input', actualizarNivelYProximaXP);
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); }, 800);
+  });
+
+  function recalcStats() {
+    syncStickyBar();
+  }
+
+  function changeVal(id, delta) {
+    let el = document.getElementById(id);
+    let val = Math.max(0, (parseInt(el.innerText) || 0) + delta);
+    if (id === 'hp-cur') {
+      val = Math.min(val, 70);
+      document.getElementById('hp-summary').innerText = val + ' / 70';
+      syncStickyBar();
+    }
+    el.innerText = val;
+    guardarCampo(id, val);
+  }
+
+  var rollHistory = [];
+  function clearDiceHistory() { rollHistory = []; document.getElementById('dice-history').innerText = 'Sin tiradas previas.'; }
+
+  function displayRollResult(total, label, breakdownStr) {
+    document.getElementById('dice-total').innerText = total;
+    document.getElementById('dice-label').innerText = label;
+    document.getElementById('dice-breakdown').innerText = breakdownStr;
+    rollHistory.unshift(`<strong>${label}:</strong> ${total} <span style="color:#9da5b4;">(${breakdownStr})</span>`);
+    if (rollHistory.length > 10) rollHistory.pop();
+    document.getElementById('dice-history').innerHTML = rollHistory.join('<br>');
+
+    if (codigoCampana) {
+      db.ref(`campanas/${codigoCampana}/tiradas`).push({
+        personaje: "Myrklogi Mangarisonn",
+        tipo: label,
+        resultado: total,
+        fecha: firebase.database.ServerValue.TIMESTAMP
+      });
+    }
+  }
+
+  function rollManualDice(count, sides, mod, label) {
+    let rolls = []; let sum = 0;
+    for (let i = 0; i < count; i++) {
+      let r = Math.floor(Math.random() * sides) + 1;
+      rolls.push(r); sum += r;
+    }
+    displayRollResult(sum + mod, `${label} (${count}d${sides})`, `[${rolls.join(', ')}]` + (mod !== 0 ? (mod > 0 ? ` + ${mod}` : ` - ${Math.abs(mod)}`) : ''));
+  }
+
+  function rollGenericDamage(count, sides, mod, label) { rollManualDice(count, sides, mod, label); }
+
+  // === UPCAST DE HECHIZOS (nivel de slot superior al base) ===
+  // Fórmulas verificadas contra fuentes públicas de D&D 5e (roll20.net/compendium/dnd5e y dnd5e.wikidot.com) el 26 ago 2026.
+  const HECHIZOS_UPCASTEABLES = {
+    'magic-missile': { nombre: 'Magic Missile', nivelBase: 1, dados: { count: 3, sides: 4, mod: 3 }, incremento: { count: 1, sides: 4, mod: 1 } },
+    'fireball': { nombre: 'Fireball', nivelBase: 3, dados: { count: 8, sides: 6, mod: 0 }, incremento: { count: 1, sides: 6, mod: 0 } },
+    'psychic-lance': { nombre: "Raulothim's Psychic Lance", nivelBase: 4, dados: { count: 10, sides: 6, mod: 0 }, incremento: { count: 1, sides: 6, mod: 0 } }
+  };
+  function maxNivelSlotDisponible() {
+    let max = 0;
+    for (let n = 1; n <= 9; n++) { if (document.getElementById(`slot-${n}-1`)) max = n; }
+    return max;
+  }
+  function inicializarSelectoresUpcast() {
+    const maxNivel = maxNivelSlotDisponible();
+    Object.keys(HECHIZOS_UPCASTEABLES).forEach(key => {
+      const h = HECHIZOS_UPCASTEABLES[key];
+      const sel = document.getElementById(`upcast-nivel-${key}`);
+      if (!sel) return;
+      sel.innerHTML = '';
+      const tope = Math.max(h.nivelBase, maxNivel);
+      for (let n = h.nivelBase; n <= tope; n++) {
+        const opt = document.createElement('option');
+        opt.value = n;
+        opt.textContent = `Nivel ${n}` + (n === h.nivelBase ? ' (base)' : '');
+        sel.appendChild(opt);
+      }
+    });
+  }
+  function tirarHechizoUpcast(key) {
+    const h = HECHIZOS_UPCASTEABLES[key];
+    if (!h) return;
+    const sel = document.getElementById(`upcast-nivel-${key}`);
+    const nivel = parseInt(sel?.value) || h.nivelBase;
+    const extra = Math.max(0, nivel - h.nivelBase);
+    const count = h.dados.count + h.incremento.count * extra;
+    const mod = h.dados.mod + h.incremento.mod * extra;
+    rollGenericDamage(count, h.dados.sides, mod, `${h.nombre} (Nivel ${nivel})`);
+  }
+  document.addEventListener('DOMContentLoaded', inicializarSelectoresUpcast);
+
+  function rollAttack(baseMod, label) {
+    const adv = document.getElementById('adv-attack').value;
+    rollD20WithMechanics(baseMod, label, adv, true);
+  }
+
+  function rollCheckSave(sides, baseMod, label, mode) {
+    const adv = document.getElementById(mode === 'save' ? 'adv-save' : 'adv-attack').value;
+    rollD20WithMechanics(baseMod, label, adv, mode === 'save');
+  }
+
+  function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
+    let d1 = Math.floor(Math.random() * 20) + 1;
+    let d2 = Math.floor(Math.random() * 20) + 1;
+    let chosen = advState === 'advantage' ? Math.max(d1, d2) : (advState === 'disadvantage' ? Math.min(d1, d2) : d1);
+    let advText = advState === 'advantage' ? ` [Ventaja: ${d1}, ${d2} -> ${chosen}]` : (advState === 'disadvantage' ? ` [Desventaja: ${d1}, ${d2} -> ${chosen}]` : ` [d20: ${d1}]`);
+    let total = chosen + flatMod;
+    let b = [`Base: ${chosen}`];
+    if (flatMod !== 0) b.push(`Mod: ${flatMod > 0 ? '+' + flatMod : flatMod}`);
+    if (isSaveOrAtk) {
+      const bless = document.getElementById('buff-bless');
+      const bane = document.getElementById('debuff-bane');
+      if (bless && bless.checked) { let r = Math.floor(Math.random() * 4) + 1; total += r; b.push(`Bless: +${r}`); }
+      if (bane && bane.checked) { let r = Math.floor(Math.random() * 4) + 1; total -= r; b.push(`Bane: -${r}`); }
+    }
+    displayRollResult(total, label + advText, b.join(' | '));
+  }
+
+  function restShort() {
+    alert("☕ Descanso corto finalizado.");
+  }
+
+  function restLong() {
+    document.getElementById('hp-cur').innerText = '70';
+    document.getElementById('hp-summary').innerText = '70 / 70';
+    guardarCampo('hp-cur', 70);
+    syncStickyBar();
+    alert("🌙 Descanso largo finalizado. HP restablecido.");
+  }
+
+  function toggleConditionsDropdown() {
+    const dd = document.getElementById('conditions-dropdown');
+    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+  }
+  window.addEventListener('click', e => {
+    if (!e.target.closest('.multiselect-container')) {
+      const d = document.getElementById('conditions-dropdown');
+      if (d) d.style.display = 'none';
+    }
+  });
+
+  function updateConditions() {
+    const container = document.getElementById('active-conditions-list');
+    if (!container) return;
+    container.innerHTML = '';
+    document.querySelectorAll('#conditions-dropdown input[type="checkbox"]:checked').forEach(cb => {
+      const span = document.createElement('span');
+      span.className = `cond-tag ${cb.getAttribute('data-type') || 'debuff'}`;
+      span.innerText = cb.value;
+      container.appendChild(span);
+    });
+  }
+
+const INVENTARIO_INICIAL = [
+  { nombre: `The Hidden (broken)`, descripcion: `Espada corta mágica (+2 AC)`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Potion of Healing`, descripcion: `Recupera 2d4+3 HP al consumirse`, cantidad: 0, precio: 0, equipado: true },
+  { nombre: `Potion of Radiant Damage`, descripcion: `Inflige 1d4+1 de daño radiante`, cantidad: 8, precio: 0, equipado: true },
+  { nombre: `Smokescultor Pipe`, descripcion: `Pipa con sintonía de mago`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Feline Agility Ring`, descripcion: `Acrobacias y sigilo mejorados`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Coin of Fate`, descripcion: `Duplica tu daño o lo recibes tú`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Intellect potion`, descripcion: `+2 INT temporal`, cantidad: 1, precio: 0, equipado: true }
+];
+
+// === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) ===
+let inventario = [];
+let editandoIdxInventario = null;
+
+function cargarInventarioInicialSiVacio() {
+  if (!inventario.length && typeof INVENTARIO_INICIAL !== 'undefined') {
+    inventario = INVENTARIO_INICIAL.map(it => ({...it}));
+  }
+}
+
+function guardarInventario() {
+  const json = JSON.stringify(inventario);
+  const hidden = document.getElementById('inventario-json');
+  if (hidden) hidden.value = json;
+  if (typeof guardarCampo === 'function') {
+    guardarCampo('inventario-json', json);
+  } else if (hidden) {
+    hidden.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+function renderizarInventario() {
+  const cont = document.getElementById('inventario-lista');
+  const totalEl = document.getElementById('inventario-total');
+  if (!cont) return;
+  cont.innerHTML = '';
+  if (!inventario.length) {
+    cont.innerHTML = '<p class="inventory-empty">No hay ítems en el inventario.</p>';
+  }
+  let valorTotal = 0;
+  inventario.forEach((item, idx) => {
+    const cant = parseFloat(item.cantidad) || 1;
+    const precio = parseFloat(item.precio) || 0;
+    valorTotal += cant * precio;
+    const div = document.createElement('div');
+    div.className = 'inventory-item';
+    div.innerHTML = `
+      <div class="inventory-item-top">
+        <div class="inventory-item-name">
+          <input type="checkbox" ${item.equipado ? 'checked' : ''} onchange="toggleEquipadoInventario(${idx}, this.checked)" title="Equipado / Portado">
+          ${item.nombre || '(sin nombre)'}
+          <span class="inventory-item-meta">${cant != 1 ? '×' + cant : ''} ${precio ? '· ' + precio + ' po' : ''}</span>
+        </div>
+        <div class="inventory-item-actions">
+          <button type="button" onclick="editarItemInventario(${idx})">✏️ Editar</button>
+          <button type="button" onclick="eliminarItemInventario(${idx})">🗑️</button>
+        </div>
+      </div>
+      ${item.descripcion ? `<div class="inventory-item-desc">${item.descripcion}</div>` : ''}
+    `;
+    cont.appendChild(div);
+  });
+  if (totalEl) totalEl.textContent = valorTotal > 0 ? `💰 Valor total estimado: ${valorTotal} po` : '';
+}
+
+function toggleEquipadoInventario(idx, checked) {
+  if (!inventario[idx]) return;
+  inventario[idx].equipado = checked;
+  guardarInventario();
+}
+
+function mostrarFormularioInventario(idx) {
+  editandoIdxInventario = (typeof idx === 'number') ? idx : null;
+  const item = (editandoIdxInventario !== null) ? inventario[editandoIdxInventario] : { nombre: '', descripcion: '', cantidad: 1, precio: 0, equipado: false };
+  const cont = document.getElementById('inventario-form-container');
+  if (!cont) return;
+  cont.innerHTML = `
+    <div class="inventory-form">
+      <div class="inventory-form-row">
+        <label>Nombre<input type="text" id="inv-form-nombre" value="${(item.nombre || '').replace(/"/g,'&quot;')}"></label>
+        <label>Cantidad<input type="number" id="inv-form-cantidad" value="${item.cantidad ?? 1}" min="1"></label>
+        <label>Precio (po)<input type="number" id="inv-form-precio" value="${item.precio ?? 0}" min="0"></label>
+      </div>
+      <div class="inventory-form-row">
+        <label style="flex: 1 1 100%;">Descripción / Notas<textarea id="inv-form-descripcion" rows="2">${item.descripcion || ''}</textarea></label>
+      </div>
+      <div class="inventory-form-row">
+        <label style="flex-direction: row; align-items: center; gap: 6px;"><input type="checkbox" id="inv-form-equipado" ${item.equipado ? 'checked' : ''}> Equipado / Portado</label>
+      </div>
+      <div class="inventory-form-actions">
+        <button type="button" onclick="cerrarFormularioInventario()">Cancelar</button>
+        <button type="button" onclick="guardarItemDesdeFormulario()">💾 Guardar</button>
+      </div>
+    </div>
+  `;
+}
+
+function cerrarFormularioInventario() {
+  editandoIdxInventario = null;
+  const cont = document.getElementById('inventario-form-container');
+  if (cont) cont.innerHTML = '';
+}
+
+function guardarItemDesdeFormulario() {
+  const nombreEl = document.getElementById('inv-form-nombre');
+  const nombre = nombreEl ? nombreEl.value.trim() : '';
+  if (!nombre) { alert('El ítem necesita un nombre.'); return; }
+  const descEl = document.getElementById('inv-form-descripcion');
+  const cantEl = document.getElementById('inv-form-cantidad');
+  const precioEl = document.getElementById('inv-form-precio');
+  const equipEl = document.getElementById('inv-form-equipado');
+  const nuevoItem = {
+    nombre: nombre,
+    descripcion: descEl ? descEl.value.trim() : '',
+    cantidad: cantEl ? (parseInt(cantEl.value) || 1) : 1,
+    precio: precioEl ? (parseFloat(precioEl.value) || 0) : 0,
+    equipado: equipEl ? equipEl.checked : false
+  };
+  if (editandoIdxInventario !== null) {
+    inventario[editandoIdxInventario] = nuevoItem;
+  } else {
+    inventario.push(nuevoItem);
+  }
+  cerrarFormularioInventario();
+  guardarInventario();
+  renderizarInventario();
+}
+
+function editarItemInventario(idx) {
+  mostrarFormularioInventario(idx);
+}
+
+function eliminarItemInventario(idx) {
+  if (!inventario[idx]) return;
+  if (!confirm('¿Eliminar "' + inventario[idx].nombre + '" del inventario?')) return;
+  inventario.splice(idx, 1);
+  guardarInventario();
+  renderizarInventario();
+}
+
+function restaurarInventarioDesdeDatos(json) {
+  try {
+    const parsed = JSON.parse(json);
+    if (Array.isArray(parsed) && parsed.length) {
+      inventario = parsed;
+    } else {
+      cargarInventarioInicialSiVacio();
+    }
+  } catch(e) {
+    cargarInventarioInicialSiVacio();
+  }
+  renderizarInventario();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const raw = (document.getElementById('inventario-json') || {}).value || '[]';
+    restaurarInventarioDesdeDatos(raw);
+  }, 900);
+});
+
+</script>
+</body>
+</html>
+

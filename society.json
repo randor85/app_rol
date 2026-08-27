@@ -1,0 +1,12 @@
+{
+  "coc_soc": {
+    "nombre": "The Society",
+    "gm": "TU_UID_AQUÍ",
+    "personajes": {
+      "nevada_jones": {
+        "nombre": "Nevada Jones",
+        "clase": "Profesor de Arqueología"
+      }
+    }
+  }
+}

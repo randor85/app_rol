@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Myrklogi Mangarisonn — Chronurgy Wizard Sheet</title>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+ <style>
+ :root {
+ --bg-primary: #1a1c23;
+ --bg-card: #242834;
+ --bg-card-header: #2e3444;
+ --accent-gray: #4b5263;
+ --accent-silver: #abb2bf;
+ --accent-hover: #5c6370;
+ --text-light: #f5f6f7;
+ --text-muted: #9da5b4;
+ --border-color: #3e4452;
+ --danger-color: #c94a4a;
+ --heal-color: #38a169;
+ --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+ }
+
+ * {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ font-family: 'Nunito', sans-serif;
+ }
+
+ body {
+ background-color: var(--bg-primary);
+ color: var(--text-light);
+ padding: 20px;
+ padding-bottom: 280px;
+ line-height: 1.5;
+ }
+
+ .container {
+ max-width: 1200px;
+ margin: 0 auto;
+ }
+
+ /* HEADER & IDENTITY */
+ header {
+ background: linear-gradient(135deg, #2e3444 0%, #1a1c23 100%);
+ border: 2px solid var(--accent-silver);
+ border-radius: 12px;
+ padding: 24px;
+ margin-bottom: 20px;
+ box-shadow: var(--shadow);
+ position: relative;
+ overflow: hidden;
+ }
+
+ header::before {
+ content: "⏳";
+ position: absolute;
+ right: 20px;
+ top: 10px;
+ font-size: 8rem;
+ opacity: 0.05;
+ pointer-events: none;
+ }
+
+ h1, h2, h3, h4 {
+ font-family: 'Cinzel', serif;
+ color: var(--accent-silver);
+ letter-spacing: 0.5px;
+ }
+
+ .character-title {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 12px;
+ margin-bottom: 16px;
+ }
+
+ .char-name h1 {
+ font-size: 2.4rem;
+ color: var(--accent-silver);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+ }
+
+ .char-sub {
+ font-size: 1.1rem;
+ color: var(--accent-silver);
+ font-weight: 600;
+ }
+
+ .quick-rest-btns {
+ display: flex;
+ gap: 10px;
+ margin-top: 10px;
+ }
+
+ .btn-rest {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-silver);
+ color: var(--accent-silver);
+ padding: 8px 16px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-weight: 700;
+ transition: all 0.2s;
+ font-size: 0.9rem;
+ }
+
+ .btn-rest:hover {
+ background: var(--accent-silver);
+ color: #1a1c23;
+ box-shadow: 0 0 10px rgba(171, 178, 191, 0.4);
+ }
+
+ /* GRID LAYOUTS */
+ .grid-identity {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+ gap: 12px;
+ }
+
+ .stat-badge {
+ background: rgba(0, 0, 0, 0.3);
+ border: 1px solid var(--border-color);
+ padding: 10px;
+ border-radius: 8px;
+ text-align: center;
+ }
+
+ .stat-badge label {
+ display: block;
+ font-size: 0.75rem;
+ text-transform: uppercase;
+ color: var(--text-muted);
+ letter-spacing: 0.5px;
+ font-weight: 700;
+ }
+
+ .stat-badge span {
+ font-size: 1.1rem;
+ font-weight: 800;
+ color: var(--text-light);
+ display: block;
+ }
+
+ .stat-badge .stat-total {
+ font-size: 1.3rem;
+ color: var(--accent-silver);
+ font-weight: 800;
+ margin-top: 2px;
+ }
+
+ .stat-badge input[type="number"] {
+ background: rgba(0,0,0,0.2);
+ border: 1px solid var(--border-color);
+ border-radius: 4px;
+ color: var(--accent-silver);
+ font-size: 1rem;
+ font-weight: 700;
+ text-align: center;
+ width: 100%;
+ outline: none;
+ margin-top: 2px;
+ }
+
+ .stat-badge input:focus {
+ border-color: var(--accent-silver);
+ }
+
+ /* STATS & ABILITIES */
+ .abilities-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ }
+
+ .ability-box {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 12px;
+ text-align: center;
+ box-shadow: var(--shadow);
+ position: relative;
+ transition: transform 0.2s, border-color 0.2s;
+ }
+
+ .ability-box:hover {
+ border-color: var(--accent-silver);
+ transform: translateY(-2px);
+ }
+
+ .ability-name {
+ font-size: 0.85rem;
+ font-weight: 800;
+ color: var(--accent-silver);
+ text-transform: uppercase;
+ }
+
+ .ability-score {
+ font-size: 1.8rem;
+ font-weight: 800;
+ margin: 4px 0;
+ color: #fff;
+ }
+
+ .ability-mod {
+ display: inline-block;
+ background: var(--accent-gray);
+ color: #fff;
+ padding: 2px 10px;
+ border-radius: 12px;
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ .ability-save {
+ margin-top: 6px;
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ }
+
+ /* HP & RESOURCE TRACKERS */
+ .resources-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 16px;
+ margin-bottom: 20px;
+ }
+
+ .tracker-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ padding: 16px;
+ box-shadow: var(--shadow);
+ }
+
+ .tracker-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 10px;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 6px;
+ }
+
+ .tracker-header h3 {
+ font-size: 1.1rem;
+ }
+
+ .counter-controls {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .btn-cnt {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-silver);
+ color: var(--text-light);
+ width: 32px;
+ height: 32px;
+ border-radius: 6px;
+ font-size: 1.2rem;
+ font-weight: bold;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
+ }
+
+ .btn-cnt:hover {
+ background: var(--accent-gray);
+ color: #fff;
+ }
+
+ .cnt-val {
+ font-size: 1.4rem;
+ font-weight: 800;
+ width: 50px;
+ text-align: center;
+ }
+
+ .cnt-max {
+ font-size: 0.9rem;
+ color: var(--text-muted);
+ }
+
+ .editable-cnt-val {
+ background: transparent;
+ border: 1px dashed var(--accent-silver);
+ border-radius: 4px;
+ color: var(--accent-silver);
+ font-size: 1.3rem;
+ font-weight: 800;
+ width: 60px;
+ text-align: center;
+ outline: none;
+ }
+
+ .checkbox-group {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 8px;
+ }
+
+ .check-box-item {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ background: rgba(0,0,0,0.2);
+ padding: 6px 10px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ font-size: 0.85rem;
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .check-box-item input[type="checkbox"] {
+ accent-color: var(--accent-silver);
+ width: 16px;
+ height: 16px;
+ cursor: pointer;
+ }
+
+ /* SECTIONS & COLLAPSIBLES */
+ details {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ margin-bottom: 16px;
+ box-shadow: var(--shadow);
+ overflow: hidden;
+ transition: border-color 0.2s;
+ }
+
+ details[open] {
+ border-color: var(--accent-gray);
+ }
+
+ summary {
+ padding: 16px 20px;
+ font-family: 'Cinzel', serif;
+ font-size: 1.2rem;
+ font-weight: 700;
+ color: var(--accent-silver);
+ background: var(--bg-card-header);
+ cursor: pointer;
+ user-select: none;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ list-style: none;
+ transition: background 0.2s;
+ }
+
+ summary::-webkit-details-marker {
+ display: none;
+ }
+
+ summary::after {
+ content: "►";
+ font-size: 0.9rem;
+ transition: transform 0.2s;
+ color: var(--accent-silver);
+ }
+
+ details[open] summary::after {
+ transform: rotate(90deg);
+ }
+
+ summary:hover {
+ background: #2f3442;
+ }
+
+ .section-content {
+ padding: 20px;
+ }
+
+ /* TABLES & EDITABLE INVENTORY */
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ font-size: 0.92rem;
+ }
+
+ th, td {
+ padding: 10px 12px;
+ text-align: left;
+ border-bottom: 1px solid var(--border-color);
+ }
+
+ th {
+ background: rgba(0, 0, 0, 0.4);
+ color: var(--accent-silver);
+ font-family: 'Cinzel', serif;
+ font-size: 0.85rem;
+ letter-spacing: 0.5px;
+ }
+
+ tr:nth-child(even) {
+ background: rgba(255, 255, 255, 0.02);
+ }
+
+ tr:hover {
+ background: rgba(171, 178, 191, 0.08);
+ }
+
+ .input-qty {
+ background: rgba(0, 0, 0, 0.4);
+ border: 1px solid var(--border-color);
+ color: var(--accent-silver);
+ font-weight: bold;
+ text-align: center;
+ width: 60px;
+ padding: 4px;
+ border-radius: 4px;
+ outline: none;
+ }
+
+ .btn-roll {
+ background: linear-gradient(135deg, #2e3444, #1a1c23);
+ border: 1px solid var(--accent-silver);
+ color: var(--text-light);
+ padding: 4px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.8rem;
+ font-weight: 700;
+ transition: all 0.2s;
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ }
+
+ .btn-roll:hover {
+ background: var(--accent-gray);
+ box-shadow: 0 0 8px rgba(171, 178, 191, 0.5);
+ transform: scale(1.03);
+ }
+
+ .btn-clear {
+ background: rgba(201, 74, 74, 0.2);
+ border: 1px solid var(--danger-color);
+ color: #ff9999;
+ padding: 2px 8px;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 0.7rem;
+ font-weight: bold;
+ transition: all 0.2s;
+ }
+
+ .btn-clear:hover {
+ background: var(--danger-color);
+ color: #fff;
+ }
+
+ /* FEATURE CARDS */
+ .feature-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+ gap: 16px;
+ }
+
+ .feature-card {
+ background: rgba(0, 0, 0, 0.25);
+ border: 1px solid var(--border-color);
+ border-left: 4px solid var(--accent-silver);
+ padding: 14px;
+ border-radius: 6px;
+ }
+
+ .feature-card h4 {
+ font-size: 1rem;
+ margin-bottom: 6px;
+ color: var(--accent-silver);
+ }
+
+ .feature-card p {
+ font-size: 0.9rem;
+ color: var(--text-light);
+ line-height: 1.4;
+ }
+
+ .tag {
+ display: inline-block;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-gray);
+ color: var(--accent-silver);
+ font-size: 0.75rem;
+ padding: 2px 8px;
+ border-radius: 4px;
+ margin-right: 6px;
+ font-weight: 700;
+ }
+
+ .dice-roller-panel {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ background: #1a1c23;
+ border-top: 3px solid var(--accent-silver);
+ box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
+ padding: 12px 20px;
+ z-index: 1000;
+ }
+
+ .dice-container {
+ max-width: 1200px;
+ margin: 0 auto;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 15px;
+ align-items: center;
+ justify-content: space-between;
+ }
+
+ .dice-btns {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ align-items: center;
+ }
+
+ .btn-dice {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: var(--accent-silver);
+ font-family: 'Cinzel', serif;
+ font-weight: 800;
+ font-size: 0.95rem;
+ padding: 8px 14px;
+ border-radius: 8px;
+ cursor: pointer;
+ transition: all 0.2s;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ }
+
+ .btn-dice:hover {
+ background: var(--accent-gray);
+ color: #fff;
+ border-color: var(--accent-silver);
+ transform: translateY(-2px);
+ }
+
+ .dice-mod-input {
+ width: 60px;
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: #fff;
+ padding: 6px;
+ border-radius: 6px;
+ text-align: center;
+ font-size: 1rem;
+ font-weight: bold;
+ }
+
+ .dice-result-box {
+ background: rgba(0, 0, 0, 0.5);
+ border: 1px solid var(--accent-silver);
+ border-radius: 8px;
+ padding: 8px 16px;
+ min-width: 220px;
+ text-align: center;
+ }
+
+ .dice-result-val {
+ font-size: 1.8rem;
+ font-weight: 800;
+ color: var(--accent-silver);
+ line-height: 1;
+ }
+
+ .dice-result-details {
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ margin-top: 4px;
+ }
+
+ .dice-history {
+ font-size: 0.75rem;
+ color: var(--accent-silver);
+ max-height: 40px;
+ overflow-y: auto;
+ margin-top: 4px;
+ }
+
+ .highlight-box {
+ background: rgba(171, 178, 191, 0.08);
+ border: 1px dashed var(--accent-silver);
+ padding: 12px;
+ border-radius: 8px;
+ margin: 10px 0;
+ font-size: 0.9rem;
+ }
+
+ .currency-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+ gap: 10px;
+ margin-bottom: 16px;
+ }
+
+ .currency-box {
+ background: rgba(0,0,0,0.3);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 8px;
+ text-align: center;
+ }
+
+ .currency-box label {
+ display: block;
+ font-size: 0.75rem;
+ font-weight: bold;
+ color: var(--accent-silver);
+ }
+
+ .currency-box input {
+ width: 100%;
+ background: transparent;
+ border: none;
+ color: #fff;
+ font-size: 1.2rem;
+ font-weight: bold;
+ text-align: center;
+ outline: none;
+ }
+
+ @media (max-width: 768px) {
+ body { padding-bottom: 340px; }
+ .dice-container { flex-direction: column; align-items: stretch; }
+ .dice-btns { justify-content: center; }
+ .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+ }
+ </style>
+</head>
+<body>
+
+<div class="container">
+
+ <!-- BOTÓN VOLVER AL MENÚ -->
+ <div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; text-align: left;">
+     <a href="index.html" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header, #2e3444); color: var(--accent-silver, #abb2bf); text-decoration: none; border: 1px solid var(--accent-silver, #abb2bf); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">
+         ⬅ Volver al Menú
+     </a>
+ </div>
+
+ <!-- HEADER / IDENTIDAD -->
+ <header>
+ <div class="character-title">
+ <div class="char-name">
+ <h1>Myrklogi Mangarisonn</h1>
+ <div class="char-sub">Mago 9 — Chronurgy Magic | Human like (Unaligned)</div>
+ </div>
+ <div class="quick-rest-btns">
+ <button class="btn-rest" onclick="restShort()">☕ Descanso Corto</button>
+ <button class="btn-rest" onclick="restLong()">🌙 Descanso Largo</button>
+ </div>
+ </div>
+
+ <div class="grid-identity">
+ <div class="stat-badge">
+ <label>XP Actual</label>
+ <input type="number" id="xp-val" value="60875" step="100">
+ </div>
+ <div class="stat-badge">
+ <label>AC (Armadura)</label>
+ <input type="number" id="ac-val" value="16">
+ </div>
+ <div class="stat-badge">
+ <label>Vida (HP)</label>
+ <span id="hp-summary" style="font-size:1.2rem; margin-top:4px;">43 / 70</span>
+ </div>
+ <div class="stat-badge">
+ <label>Iniciativa</label>
+ <button class="btn-roll" style="margin-top:10px;" onclick="rollCheckSave('d20', 6, 'Iniciativa', 'check')">🎲 +6</button>
+ </div>
+ <div class="stat-badge">
+ <label>Velocidad</label>
+ <span style="font-size:1.2rem; margin-top:8px;">30 ft</span>
+ </div>
+ <div class="stat-badge">
+ <label>Prof. Bonus</label>
+ <span style="font-size:1.2rem; margin-top:8px;">+4</span>
+ </div>
+ <div class="stat-badge">
+ <label>Poder de Hechizo (DC)</label>
+ <span style="font-size:1.2rem; margin-top:8px;">16</span>
+ </div>
+ </div>
+ </header>
+
+ <!-- CARACTERÍSTICAS -->
+ <div class="abilities-grid">
+ <div class="ability-box">
+ <div class="ability-name">Fuerza (STR)</div>
+ <div class="ability-score">10</div>
+ <div class="ability-mod">+0</div>
+ <div class="ability-save">Save: +0</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 0, 'STR Check / Save', 'save')">🎲 +0</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Destreza (DEX)</div>
+ <div class="ability-score">14</div>
+ <div class="ability-mod">+2</div>
+ <div class="ability-save">Save: +2</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 2, 'DEX Check / Save', 'save')">🎲 +2</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Constitución (CON)</div>
+ <div class="ability-score">16</div>
+ <div class="ability-mod">+3</div>
+ <div class="ability-save">Save: +3</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 3, 'CON Check / Save', 'save')">🎲 +3</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Inteligencia (INT)</div>
+ <div class="ability-score">18</div>
+ <div class="ability-mod">+4</div>
+ <div class="ability-save" style="color:var(--accent-silver); font-weight:bold;">Save: +8 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 8, 'INT Save', 'save')">🎲 +8</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Sabiduría (WIS)</div>
+ <div class="ability-score">13</div>
+ <div class="ability-mod">+1</div>
+ <div class="ability-save" style="color:var(--accent-silver); font-weight:bold;">Save: +5 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 5, 'WIS Save', 'save')">🎲 +5</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Carisma (CHA)</div>
+ <div class="ability-score">8</div>
+ <div class="ability-mod">-1</div>
+ <div class="ability-save">Save: -1</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', -1, 'CHA Check / Save', 'save')">🎲 -1</button>
+ </div>
+ </div>
+
+ <!-- CONTADORES Y RECURSOS -->
+ <div class="resources-bar">
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>❤️ Puntos de Golpe (HP)</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('hp-cur', -1)">-</button>
+ <span id="hp-cur" class="cnt-val">43</span>
+ <span class="cnt-max">/ 70</span>
+ <button class="btn-cnt" onclick="changeVal('hp-cur', 1)">+</button>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-silver);">Recursos de Clase:</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="shift-1"> Chronal Shift 1</label>
+ <label class="check-box-item"><input type="checkbox" id="shift-2"> Chronal Shift 2</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-1"> Stasis 1</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-2"> Stasis 2</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-3"> Stasis 3</label>
+ <label class="check-box-item"><input type="checkbox" id="stasis-4"> Stasis 4</label>
+ </div>
+ </div>
+ </div>
+
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>✨ Spell Slots (Restantes)</h3>
+ </div>
+ <div style="margin-top: 4px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 1 (4 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-1-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-3"> S3</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-4"> S4</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 2 (3 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-2-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-2-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-2-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 3 (3 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-3-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-3-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-3-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 4 (3 Slots):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-4-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-4-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-4-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-silver);">Nivel 5 (1 Slot):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-5-1"> S1</label>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- SECCIÓN 1: ATAQUES Y HABILIDADES -->
+ <details open>
+ <summary>⚔️ 1. Ataques y Acciones Especiales</summary>
+ <div class="section-content">
+ <table>
+ <thead>
+ <tr>
+ <th>Ataque / Acción</th>
+ <th>Bono Base</th>
+ <th>Daño / Tipo</th>
+ <th>Efecto & Notas</th>
+ <th>Lanzar Dados</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>The Hidden Attack</strong></td>
+ <td>+6 (DEX+Prof)</td>
+ <td>1d6 + 4 P</td>
+ <td>Finesse. Otorga +2 AC (Escudo invisible en la off hand). Recup. slot 1/largo</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'The Hidden Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Daño The Hidden (Piercing)')">💥 1d6+4</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Shortsword (STR)</strong></td>
+ <td>+4</td>
+ <td>1d6 + 0 P</td>
+ <td>Ataque con espada corta usando fuerza</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Shortsword STR Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Shortsword STR Daño')">💥 1d6</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Shortsword (DEX)</strong></td>
+ <td>+6</td>
+ <td>1d6 + 2 P</td>
+ <td>Ataque con espada corta usando destreza (Finesse)</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'Shortsword DEX Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 2, 'Shortsword DEX Daño')">💥 1d6+2</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Unarmed Strike</strong></td>
+ <td>+4</td>
+ <td>1 + 0 B</td>
+ <td>Golpe desarmado estándar</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(4, 'Unarmed Strike')">🎯 Atk</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Habilidades (Skills)</h3>
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 10px;">
+ <div class="feature-card"><strong>Acrobatics:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobatics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Animal Handling:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Animal Handling', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Arcana ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Arcana', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Athletics:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Athletics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Deception:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Deception', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>History ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'History', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Insight:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Insight', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Intimidation:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Intimidation', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Investigation ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Investigation', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Medicine:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Medicine', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Nature:</strong> +4 <button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Nature', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Perception ★:</strong> +5 <button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Perception', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Performance:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Performance', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Persuasion:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Persuasion', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-silver);"><strong>Religion ★:</strong> +8 <button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Religion', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Sleight of Hand:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Sleight of Hand', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Stealth:</strong> +2 <button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Stealth', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Survival:</strong> +1 <button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Survival', 'check')">🎲</button></div>
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 2: INVENTARIO -->
+ <details>
+ <summary>🎒 2. Inventario, Pociones y Oro</summary>
+ <div class="section-content">
+ <div class="currency-grid">
+ <div class="currency-box">
+ <label>GP (Oro)</label>
+ <input type="number" id="gp-val" value="331">
+ </div>
+ </div>
+
+ <div class="highlight-box">
+ <strong>Bolsa de 1kg de arena picante (droga)</strong> | Amuleto del dios de la muerte (+1d4 saves) | Pociones de Sanación | Poción de Intelecto (+2 INT) | Anillo de Agilidad Felina (+10ft, ventaja Acrobatics/Stealth) | Tenedor de acero.
+ </div>
+
+ <h3>🎒 Equipamiento Detallado</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Ítem</th>
+ <th>Cantidad</th>
+ <th>Notas / Efectos</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><td>The Hidden (broken)</td><td><input type="number" id="inv-hidden" class="input-qty" value="1"></td><td>Espada corta mágica (+2 AC)</td></tr>
+ <tr><td>Potion of Healing</td><td><input type="number" id="inv-heal-pot" class="input-qty" value="0"></td><td>Recupera 2d4+3 HP al consumirse</td></tr>
+ <tr><td>Potion of Radiant Damage</td><td><input type="number" id="inv-radiant" class="input-qty" value="8"></td><td>Inflige 1d4+1 de daño radiante</td></tr>
+ <tr><td>Smokescultor Pipe</td><td><input type="number" id="inv-pipe" class="input-qty" value="1"></td><td>Pipa con sintonía de mago</td></tr>
+ <tr><td>Feline Agility Ring</td><td><input type="number" id="inv-feline-ring" class="input-qty" value="1"></td><td>Acrobacias y sigilo mejorados</td></tr>
+ <tr><td>Coin of Fate</td><td><input type="number" id="inv-coin-fate" class="input-qty" value="1"></td><td>Duplica tu daño o lo recibes tú</td></tr>
+ <tr><td>Intellect potion</td><td><input type="number" id="inv-intellect" class="input-qty" value="1"></td><td>+2 INT temporal</td></tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 3: CONJUROS PREPARADOS -->
+ <details open>
+ <summary>📜 3. Libro de Conjuros Preparados</summary>
+ <div class="section-content">
+ <table>
+ <thead>
+ <tr>
+ <th>Nivel</th>
+ <th>Conjuro</th>
+ <th>Casting Time / Rango</th>
+ <th>Descripción y Efectos</th>
+ <th>Acción rápida</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Fire Bolt</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>Spell Atk (+8); 2d10 fire damage.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(2, 10, 0, 'Fire Bolt (2d10)')">🔥 2d10</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Ray of Frost</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>Spell Atk (+8); 2d8 cold damage, -10ft vel.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Ray of Frost (2d8)')">❄️ 2d8</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Guidance</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Objetivo suma 1d4 a su próximo ability check.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance (1d4)')">🎲 1d4</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Magic Missile</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>Tres dardos infalibles; 1d4+1 force c/u.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(3, 4, 3, 'Magic Missile (3 dardos)')">💥 3d4+3</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Shield</strong></td>
+ <td>1 Reacción</td>
+ <td>+5 AC hasta el inicio de tu próximo turno.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">3rd</span></td>
+ <td><strong>Fireball</strong></td>
+ <td>1 Acc / 150 ft</td>
+ <td>DEX Save DC 16; 8d6 fire damage. Esfera 20ft.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(8, 6, 0, 'Fireball (8d6)')">🔥 8d6</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">4th</span></td>
+ <td><strong>Psychic Lance (UA)</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>INT Save DC 16; 10d6 psychic y queda incapacitado.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(10, 6, 0, 'Psychic Lance (10d6)')">🧠 10d6</button></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- NUEVA SECCIÓN: NOTAS PERSONALES (AUTOMATIZADA) -->
+ <details open>
+ <summary>📝 4. Apuntes y Notas de Campaña</summary>
+ <div class="section-content">
+ <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">Estas anotaciones se guardan solas en tiempo real en la nube bajo tu cuenta de jugador:</p>
+ <textarea id="notas-personaje" style="width: 100%; height: 180px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 15px; font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none;" placeholder="Escribe aquí tu bitácora, nombres de NPCs, secretos del vacío o tus planes futuros..."></textarea>
+ </div>
+ </details>
+
+</div>
+
+<!-- LANZADOR DE DADOS FLOTANTE -->
+<div class="dice-roller-panel">
+ <div class="dice-container">
+ <div>
+          <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-silver); font-size:0.9rem; margin-bottom:4px;">
+         🎲 LANZADOR DE DADOS
+         </div>
+         <div class="dice-btns">
+         <button class="btn-dice" onclick="rollManualDice(1, 4, getMod(), 'd4')">d4</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 6, getMod(), 'd6')">d6</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 8, getMod(), 'd8')">d8</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 10, getMod(), 'd10')">d10</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 12, getMod(), 'd12')">d12</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 20, getMod(), 'd20')">d20</button>
+         <button class="btn-dice" onclick="rollManualDice(1, 100, getMod(), 'd100')">d100</button>
+         
+         <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
+         <input type="number" id="dice-mod" class="dice-mod-input" value="0">
+         </div>
+         </div>
+         </div>
+
+         <div class="dice-result-box">
+         <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
+         <div class="dice-result-val" id="dice-total">0</div>
+         <div class="dice-result-details" id="dice-breakdown">Selecciona un dado</div>
+         </div>
+
+         <div style="flex:1; min-width:200px;">
+         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+         <span style="font-size:0.75rem; color:var(--text-muted);">Historial de Tiradas:</span>
+         <button class="btn-clear" onclick="clearDiceHistory()">🗑️ Limpiar</button>
+         </div>
+         <div class="dice-history" id="dice-history">Sin tiradas previas.</div>
+         </div>
+         </div>
+        </div>
+
+<script>
+ // --- LÓGICA DE INTERFAZ, VALORES Y DADOS ---
+ function changeVal(id, delta) {
+   let el = document.getElementById(id);
+   let val = parseInt(el.innerText) + delta;
+   if (id === 'hp-cur') {
+     if (val < 0) val = 0;
+     if (val > 70) val = 70;
+     document.getElementById('hp-summary').innerText = val + ' / 70';
+   }
+   el.innerText = val;
+   if (typeof charRef !== 'undefined' && charRef) {
+     charRef.child('datos/' + id).set(val);
+   }
+ }
+
+ let rollHistory = [];
+ function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
+ function clearDiceHistory() { rollHistory = []; document.getElementById('dice-history').innerText = 'Sin tiradas previas.'; }
+
+  function displayRollResult(total, label, breakdownStr) {
+   document.getElementById('dice-total').innerText = total;
+   document.getElementById('dice-label').innerText = label;
+   document.getElementById('dice-breakdown').innerText = breakdownStr;
+   rollHistory.unshift(`<strong>${label}:</strong> ${total} <span style="color:#9da5b4;">(${breakdownStr})</span>`);
+   if (rollHistory.length > 10) rollHistory.pop();
+   document.getElementById('dice-history').innerHTML = rollHistory.join('<br>');
+
+   // 👇 CORREGIDO: Envía la tirada al GM con su nombre y tipo de tirada correspondientes
+   if (typeof codigoCampana !== 'undefined' && codigoCampana) {
+     db.ref(`campanas/${codigoCampana}/tiradas`).push({
+       personaje: "Myrklogi Mangarisonn", // 👈 Cambiado al nombre real del Mago
+       tipo: label, // 👈 Enviamos la etiqueta de la tirada (ej: Fireball, Arcana)
+       resultado: total,
+       fecha: firebase.database.ServerValue.TIMESTAMP
+     });
+   }
+}
+
+
+ function rollManualDice(count, sides, mod, label) {
+   let rolls = []; let sum = 0;
+   for (let i = 0; i < count; i++) {
+     let r = Math.floor(Math.random() * sides) + 1;
+     rolls.push(r); sum += r;
+   }
+   displayRollResult(sum + mod, `${label} (${count}d${sides})`, `[${rolls.join(', ')}]` + (mod !== 0 ? (mod > 0 ? ` + ${mod}` : ` - ${Math.abs(mod)}`) : ''));
+ }
+
+ function rollGenericDamage(count, sides, mod, label) { rollManualDice(count, sides, mod, label); }
+ function rollAttack(baseMod, label) { rollManualDice(1, 20, baseMod, label); }
+ function rollCheckSave(sides, baseMod, label, mode) { rollManualDice(1, 20, baseMod, label); }
+ function restShort() { alert("☕ Descanso corto finalizado."); }
+ function restLong() { 
+   document.getElementById('hp-cur').innerText = '70';
+   document.getElementById('hp-summary').innerText = '70 / 70';
+   if (charRef) charRef.child('datos/hp-cur').set(70);
+   alert("🌙 Descanso largo finalizado. HP restablecido."); 
+ }
+</script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  
+  const PERSONAJE_ID = "myrklogi_mangarisonn"; 
+  let charRef; 
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+  const uid = "usuario_local";
+  // NUEVO: Hacer que el botón "Volver" recuerde tu campaña activa al regresar [1, 2]
+  const btnVolver = document.querySelector('a[href="index.html"]');
+  if (btnVolver && codigoCampana) {
+    btnVolver.href = `index.html?campana=${codigoCampana}`;
+  }
+
+  if (codigoCampana) {
+    charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+  } else {
+    charRef = db.ref(`usuarios/${uid}/personajes/${PERSONAJE_ID}`);
+  }
+
+  sincronizarDatosDesdeNube();
+
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input, textarea, select')) {
+      const fieldId = e.target.id;
+      if (fieldId && charRef) { 
+        charRef.child('datos/' + fieldId).set(e.target.type === 'checkbox' ? e.target.checked : e.target.value);
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="checkbox"], select')) {
+      const fieldId = e.target.id;
+      if (fieldId && charRef) { 
+        charRef.child('datos/' + fieldId).set(e.target.type === 'checkbox' ? e.target.checked : e.target.value);
+      }
+    }
+  });
+
+  function sincronizarDatosDesdeNube() {
+    charRef.child('datos').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') {
+            if (el.checked !== data[id]) el.checked = data[id];
+          } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+            if (el.innerText !== String(data[id])) {
+              el.innerText = data[id];
+              if (id === 'hp-cur') {
+                document.getElementById('hp-summary').innerText = data[id] + ' / 70';
+              }
+            }
+          } else {
+            if (el.value !== String(data[id])) el.value = data[id];
+          }
+        }
+      });
+    });
+  }
+</script>
+</body>
+</html>
+

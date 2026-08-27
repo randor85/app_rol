@@ -1,0 +1,10 @@
+// Biblioteca de plantillas para creación rápida [1]
+      const plantillasPersonajes = {
+        fiona_faraway: { nombre: "Fiona Faraway", clase: "Druida Shepherd 8" },
+        nevada_jones: { nombre: "Nevada Jones", clase: "Profesor de Arqueología" },
+        myrklogi_mangarisonn: { nombre: "Myrklogi Mangarisonn", clase: "Wizard 9 (Chronurgy)" },
+        dane: { nombre: "Dane", clase: "Ranger 5 / Rogue 3 (Assassin)" }
+        eldur: { nombre: "Eldur Redmane", clase: "Monk 5 / Cleric 3 (light)" }
+        uldir: { nombre: "Uldir", clase: "sorcerer 8 (wild magic)" }
+        muldar: { nombre: "Muldar", clase: "barbaro 7" }
+        nn: { nombre: "nn", clase: "paladin 8" }

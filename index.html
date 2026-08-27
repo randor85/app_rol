@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha de Personaje</title>
+</head>
+<body>
+
+  <h2>Ficha de Personaje</h2>
+  
+  <!-- Campo para escribir el nombre -->
+  <label>Nombre del Personaje:</label>
+  <input type="text" id="nombreInput" placeholder="Ej. Aragorn">
+  
+  <button id="botonGuardar">Guardar en la Nube</button>
+
+ <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.firebasestorage.app",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5",
+    measurementId: "G-PD3PQJ98ER"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+  <!-- 2. ABAJO DE TU CÓDIGO COPIADO, AGREGA ESTAS LÍNEAS PARA ENVIAR LOS DATOS -->
+  <script type="module">
+    // (Este código asume que tu variable de base de datos se llama "db")
+    const boton = document.getElementById("botonGuardar");
+    
+    boton.addEventListener("click", () => {
+      const nombreGuardado = document.getElementById("nombreInput").value;
+      
+      // Guarda el nombre en la carpeta "personajes/principal" de tu base de datos
+      set(ref(db, "personajes/principal"), {
+        nombre: nombreGuardado
+      }).then(() => {
+        alert("¡Ficha guardada con éxito!");
+      });
+    });
+  </script>
+
+</body>
+</html>

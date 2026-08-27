@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Eldur Redmane — Firelord Sheet</title>
+ <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Metamorphous&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+ 
+ <!-- Firebase SDKs (Compat v9) -->
+ <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <style>
+ :root {
+   --bg-primary: #1a0f0d;
+   --bg-card: #2a1815;
+   --bg-card-header: #3d1e18;
+   --accent-red: #c93b2b;
+   --accent-gold: #e69a28;
+   --accent-light: #f5b06b;
+   --text-light: #fceee9;
+   --text-muted: #c29b8c;
+   --border-color: #542820;
+   --shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+ }
+ * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+ body { background-color: var(--bg-primary); color: var(--text-light); padding: 20px; padding-bottom: 280px; }
+ .container { max-width: 1200px; margin: 0 auto; }
+ header { background: linear-gradient(135deg, #3d1a14 0%, #170806 100%); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); position: relative; }
+ header::before { content: "🔥"; position: absolute; right: 20px; top: 10px; font-size: 8rem; opacity: 0.08; pointer-events: none; }
+ h1, h2, h3, h4 { font-family: 'Cinzel', serif; color: var(--accent-gold); }
+ .grid-identity { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+ .stat-badge { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; text-align: center; }
+ .stat-badge label { display: block; font-size: 0.75rem; color: var(--text-muted); }
+ .stat-badge input[type="number"] { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--accent-light); font-size: 1rem; width: 100%; text-align: center; }
+ .advantage-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; background: var(--bg-card); border: 1px solid var(--accent-gold); padding: 14px; border-radius: 10px; }
+ .adv-card { background: rgba(0, 0, 0, 0.3); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); text-align: center; }
+ .abilities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+ .ability-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; }
+ .ability-box:hover { border-color: var(--accent-light); }
+ .ability-mod { display: inline-block; background: var(--accent-red); color: #fff; padding: 2px 10px; border-radius: 12px; }
+ .resources-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+ .tracker-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; }
+ .btn-cnt { background: var(--bg-card-header); border: 1px solid var(--accent-light); color: var(--text-light); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; }
+ details { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 16px; }
+ summary { padding: 16px 20px; font-family: 'Cinzel', serif; color: var(--accent-gold); background: var(--bg-card-header); cursor: pointer; display: flex; justify-content: space-between; }
+ table { width: 100%; border-collapse: collapse; }
+ th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+ th { background: rgba(0, 0, 0, 0.5); color: var(--accent-gold); font-family: 'Cinzel', serif; }
+ .btn-roll { background: linear-gradient(135deg, #7a2318, #3d120c); border: 1px solid var(--accent-light); color: var(--text-light); padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+ .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+ .feature-card { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 14px; border-radius: 6px; }
+ .dice-roller-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #170a08; border-top: 3px solid var(--accent-gold); padding: 12px 20px; z-index: 1000; }
+ .dice-container { max-width: 1200px; margin: 0 auto; display: flex; gap: 15px; align-items: center; justify-content: space-between; }
+ .btn-dice { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--accent-gold); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+ .stat-badge input:focus { border-color: var(--accent-gold); }
+ .adv-card select { width: 100%; background: var(--bg-card-header); border: 1px solid var(--accent-red); color: var(--text-light); font-weight: 700; padding: 6px; border-radius: 6px; outline: none; cursor: pointer; }
+ .checkboxes-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 6px; max-height: 220px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.9); padding: 6px; margin-top: 4px; text-align: left; }
+ .checkboxes-dropdown label { display: flex; align-items: center; gap: 8px; padding: 4px 6px; font-size: 0.8rem; text-transform: none; color: var(--text-light); cursor: pointer; font-weight: normal; border-radius: 4px; }
+ .checkboxes-dropdown label:hover { background: rgba(230, 154, 40, 0.2); }
+ .checkboxes-dropdown input[type="checkbox"] { accent-color: var(--accent-gold); width: 14px; height: 14px; }
+ .active-conditions-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-height: 20px; }
+ .cond-tag { background: var(--accent-red); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+ .cond-tag.buff { background: #2b6cb0; }
+ .cond-tag.debuff { background: #c53030; }
+ .editable-cnt-val { background: transparent; border: 1px dashed var(--accent-gold); border-radius: 4px; color: var(--accent-gold); font-size: 1.3rem; font-weight: 800; width: 60px; text-align: center; outline: none; }
+ .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+ .check-box-item { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem; cursor: pointer; user-select: none; }
+ .check-box-item input[type="checkbox"] { accent-color: var(--accent-gold); width: 16px; height: 16px; cursor: pointer; }
+ .input-qty { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-color); color: var(--accent-gold); font-weight: bold; text-align: center; width: 60px; padding: 4px; border-radius: 4px; outline: none; }
+ .input-qty:focus { border-color: var(--accent-gold); background: rgba(0, 0, 0, 0.7); }
+ .dice-result-box { background: rgba(0, 0, 0, 0.6); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 8px 16px; min-width: 220px; text-align: center; }
+ .dice-result-val { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); line-height: 1; }
+ .dice-result-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+ .currency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 16px; }
+ .currency-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; text-align: center; }
+ .currency-box label { display: block; font-size: 0.75rem; font-weight: bold; color: var(--accent-gold); }
+ .currency-box input { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.2rem; font-weight: bold; text-align: center; outline: none; }
+ </style>
+
+</head>
+
+<body>
+
+<div class="container">
+ <div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; text-align: left;">
+ <a href="index.html" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header); color: var(--accent-gold); text-decoration: none; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;">
+ ⬅ Volver al Menú
+ </a>
+ </div>
+
+ <!-- HEADER E IDENTIDAD -->
+ <header>
+ <div class="character-title">
+ <div class="char-name">
+ <h1>Eldur (Firelord Redmane)</h1>
+ <div class="char-sub">Monk 5 / Cleric 2 (Light Domain) | Fire Genasi | Legal Bueno</div>
+ </div>
+ <div class="quick-rest-btns">
+ <button class="btn-rest" onclick="restShort()">☕ Descanso Corto</button>
+ <button class="btn-rest" onclick="restLong()">🌙 Descanso Largo</button>
+ </div>
+ </div>
+
+ <div class="grid-identity">
+ <div class="stat-badge">
+ <label>XP Actual</label>
+ <input type="number" id="xp-val" value="49000" step="100" onchange="saveToFirebase()">
+ </div>
+ <div class="stat-badge">
+ <label>XP Próximo Lvl</label>
+ <input type="number" id="xp-next" value="49500" step="500">
+ </div>
+ <div class="stat-badge">
+ <label>Puntos Golpe (HP)</label>
+ <span id="hp-summary" style="font-size:1.2rem; margin-top:4px;">52 / 52</span>
+ </div>
+ <div class="stat-badge">
+ <label>AC (Unarmored)</label>
+ <span>Base: 17 (10+DEX+WIS)</span>
+ <label style="margin-top:2px;">Bono Buffs:</label>
+ <input type="number" id="ac-buff" value="0" onchange="recalcStats(); saveToFirebase();">
+ <div class="stat-total" id="ac-total">17</div>
+ </div>
+ <div class="stat-badge">
+ <label>Bono Ataque (Atk Mod)</label>
+ <span>Base: +7 (DEX + Prof)</span>
+ <label style="margin-top:2px;">Bono Buffs:</label>
+ <input type="number" id="atk-buff" value="0" onchange="recalcStats(); saveToFirebase();">
+ <div class="stat-total" id="atk-total">+7</div>
+ </div>
+ <div class="stat-badge">
+ <label>Spell Atk / Save DC</label>
+ <span>+6 / DC 14 (WIS)</span>
+ <div class="stat-total" style="font-size: 1rem; margin-top: 6px;">Ki DC 14</div>
+ </div>
+ <div class="stat-badge">
+ <label>Iniciativa</label>
+ <button class="btn-roll" style="margin-top:10px;" onclick="rollCheckSave('d20', 4, 'Iniciativa', 'save')">🎲 +4</button>
+ </div>
+ <div class="stat-badge">
+ <label>Velocidad</label>
+ <span style="font-size:1.2rem; margin-top:8px;">40 ft</span>
+ </div>
+ <div class="stat-badge">
+ <label>Prof. Bonus</label>
+ <span style="font-size:1.2rem; margin-top:8px;">+3</span>
+ </div>
+ <div class="stat-badge">
+ <label>Percepción Pasiva</label>
+ <span style="font-size:1.2rem; margin-top:8px;">16</span>
+ </div>
+ </div>
+ </header>
+
+ <!-- CONTROLES DE VENTAJAS Y CONDICIONES -->
+ <div class="advantage-bar">
+ <div class="adv-card">
+ <label>🎲 Próximo Ataque</label>
+ <select id="adv-attack">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+ <div class="adv-card">
+ <label>🛡️ Próxima Salvación</label>
+ <select id="adv-save">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+ <div class="adv-card" style="border-color: var(--accent-light);">
+ <label>🧘 Save Concentración</label>
+ <select id="adv-conc" style="margin-bottom:6px;">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ <button class="btn-roll" style="width:100%; justify-content:center;" onclick="rollConcentrationSave()">🧘 CON Save (+2)</button>
+ </div>
+ <div class="adv-card">
+ <label>✨ Condiciones y Efectos</label>
+ <div class="multiselect-container">
+ <div class="select-box" onclick="toggleConditionsDropdown()">
+ <span>Seleccionar...</span>
+ <span>▼</span>
+ </div>
+ <div class="checkboxes-dropdown" id="conditions-dropdown">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS Y BUFFS</strong>
+ <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="buff-guidance" value="Guidance" data-type="buff" onchange="updateConditions()"> 📜 Guidance (+1d4 Check)</label>
+ <hr style="border-color:var(--border-color); margin:4px 0;">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
+ <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded</label>
+ <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened</label>
+ <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned</label>
+ <label><input type="checkbox" id="cond-stunned" value="Stunned" data-type="debuff" onchange="updateConditions()"> 💫 Stunned</label>
+ </div>
+ </div>
+ <div class="active-conditions-tags" id="active-conditions-list"></div>
+ </div>
+ </div>
+
+ <!-- ATRIBUTOS DE HABILIDAD -->
+ <div class="abilities-grid">
+ <div class="ability-box">
+ <div class="ability-name">Fuerza (STR)</div>
+ <div class="ability-score">8</div>
+ <div class="ability-mod">-1</div>
+ <div class="ability-save">Save: -1</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', -1, 'STR Check / Save', 'save')">🎲 -1</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Destreza (DEX)</div>
+ <div class="ability-score">18</div>
+ <div class="ability-mod">+4</div>
+ <div class="ability-save" style="color:var(--accent-gold); font-weight:bold;">Save: +7 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 7, 'DEX Save', 'save')">🎲 +7</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Constitución (CON)</div>
+ <div class="ability-score">14</div>
+ <div class="ability-mod">+2</div>
+ <div class="ability-save">Save: +2</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 2, 'CON Check / Save', 'save')">🎲 +2</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Inteligencia (INT)</div>
+ <div class="ability-score">10</div>
+ <div class="ability-mod">+0</div>
+ <div class="ability-save">Save: +0</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 0, 'INT Check / Save', 'save')">🎲 +0</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Sabiduría (WIS)</div>
+ <div class="ability-score">16</div>
+ <div class="ability-mod">+3</div>
+ <div class="ability-save" style="color:var(--accent-gold); font-weight:bold;">Save: +6 ★</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 6, 'WIS Save', 'save')">🎲 +6</button>
+ </div>
+ <div class="ability-box">
+ <div class="ability-name">Carisma (CHA)</div>
+ <div class="ability-score">10</div>
+ <div class="ability-mod">+0</div>
+ <div class="ability-save">Save: +0</div>
+ <button class="btn-roll" style="margin-top:6px;" onclick="rollCheckSave('d20', 0, 'CHA Check / Save', 'save')">🎲 +0</button>
+ </div>
+ </div>
+
+ <!-- RECURSOS Y CONTADORES DE CLASE -->
+ <div class="resources-bar">
+ <!-- HP TRACKER -->
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>❤️ Puntos de Golpe (HP)</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('hp-cur', -1)">-</button>
+ <span id="hp-cur" class="cnt-val">52</span>
+ <span class="cnt-max">/ 52</span>
+ <button class="btn-cnt" onclick="changeVal('hp-cur', 1)">+</button>
+ </div>
+ </div>
+ <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+ <span style="font-size:0.9rem; color:var(--text-muted);">HP Temporal:</span>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeInputVal('hp-temp-input', -1)">-</button>
+ <input type="number" id="hp-temp-input" class="editable-cnt-val" value="0" min="0" onchange="saveToFirebase()">
+ <button class="btn-cnt" onclick="changeInputVal('hp-temp-input', 1)">+</button>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size: 0.8rem; color: var(--text-muted);">Dados de Golpe (Hit Dice): 7d8</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="hd-1" onchange="saveToFirebase()"> HD 1</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-2" onchange="saveToFirebase()"> HD 2</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-3" onchange="saveToFirebase()"> HD 3</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-4" onchange="saveToFirebase()"> HD 4</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-5" onchange="saveToFirebase()"> HD 5</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-6" onchange="saveToFirebase()"> HD 6</label>
+ <label class="check-box-item"><input type="checkbox" id="hd-7" onchange="saveToFirebase()"> HD 7</label>
+ </div>
+ </div>
+ </div>
+
+ <!-- PUNTOS DE KI Y CANALIZAR DIVINIDAD -->
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>🔥 Puntos de Ki & Recargas Cortas</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('ki-cur', -1)">-</button>
+ <span id="ki-cur" class="cnt-val">5</span>
+ <span class="cnt-max">/ 5</span>
+ <button class="btn-cnt" onclick="changeVal('ki-cur', 1)">+</button>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Channel Divinity (1 / Descanso):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="cd-use-1" onchange="saveToFirebase()"> Radiance of the Dawn</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Blinding Light (Braces of the Sun Fury):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="blinding-1" onchange="saveToFirebase()"> Uso 1</label>
+ <label class="check-box-item"><input type="checkbox" id="blinding-2" onchange="saveToFirebase()"> Uso 2 (2/Short Rest)</label>
+ </div>
+ </div>
+ </div>
+
+ <!-- SPELL SLOTS & RECURSOS RACIALES -->
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>✨ Spell Slots & Conjuros Raciales</h3>
+ </div>
+ <div style="margin-top: 4px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 1 (3 Slots / Long Rest):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-1-1" onchange="saveToFirebase()"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-2" onchange="saveToFirebase()"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-3" onchange="saveToFirebase()"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Warding Flare (3 / Long Rest):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="wf-1" onchange="saveToFirebase()"> U1</label>
+ <label class="check-box-item"><input type="checkbox" id="wf-2" onchange="saveToFirebase()"> U2</label>
+ <label class="check-box-item"><input type="checkbox" id="wf-3" onchange="saveToFirebase()"> U3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 6px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-light);">Reach to the Blaze (Usos Gratis 1/LR):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="racial-burning-hands" onchange="saveToFirebase()"> Burning Hands</label>
+ <label class="check-box-item"><input type="checkbox" id="racial-flame-blade" onchange="saveToFirebase()"> Flame Blade</label>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- SECCIÓN 1: ATAQUES Y HABILIDADES -->
+ <details open>
+ <summary>⚔️ 1. Ataques, Acciones Especiales y Habilidades</summary>
+ <div class="section-content">
+ <h3>Ataques Principales y Especiales</h3>
+ <table>
+ <thead>
+ <tr>
+ <th>Ataque / Acción</th>
+ <th>Bono / DC</th>
+ <th>Daño / Efecto</th>
+ <th>Propiedades y Notas</th>
+ <th>Lanzar Dados</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><strong>Unarmed Strike</strong></td>
+ <td>+7</td>
+ <td>1d6 + 4 Bludg. + 1d6 Radiant</td>
+ <td>Martial Arts (DEX) + Braces of Sun Fury (+1d6 Rad)</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(7, 'Unarmed Strike')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Unarmed Bludgeoning')">💥 1d6+4</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Sun Fury Radiant')">☀️ 1d6 Rad</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Shortsword</strong></td>
+ <td>+7</td>
+ <td>1d6 + 4 Piercing</td>
+ <td>Finesse, Light, MonkWpn</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(7, 'Shortsword Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Shortsword Damage')">💥 1d6+4</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Radiant Sun Bolt</strong></td>
+ <td>+7</td>
+ <td>1d6 + 4 Radiant</td>
+ <td>Rango 30 ft; Spell Attack con DEX. (1 Ki: 2 bolts como Bonus Action)</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(7, 'Radiant Sun Bolt Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Radiant Sun Bolt Damage')">☀️ 1d6+4</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Flame Blade</strong> (Conjuro Racial)</td>
+ <td>+6</td>
+ <td>3d6 Fire</td>
+ <td>Melee Spell Attack (WIS), Concentración 10 min. No material.</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'Flame Blade Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Flame Blade Fire')">🔥 3d6</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Sunfire Fist</strong> (Special Attack)</td>
+ <td>1 Ki</td>
+ <td>Bonus Action: 2 ataques a distancia (30 ft)</td>
+ <td>Realiza 2 ataques con Radiant Sun Bolt como Bonus Action.</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(7, 'Sunfire Bolt 1')">🎯 Bolt 1</button>
+ <button class="btn-roll" onclick="rollAttack(7, 'Sunfire Bolt 2')">🎯 Bolt 2</button>
+ </td>
+ </tr>
+ <tr>
+ <td><strong>Stunning Strike</strong></td>
+ <td>1 Ki</td>
+ <td>CON Save DC 14</td>
+ <td>Al golpear Melee: el objetivo queda Stunned hasta el final de tu siguiente turno.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><strong>Radiance of the Dawn</strong></td>
+ <td>Channel Div.</td>
+ <td>2d10 + 2 Radiant</td>
+ <td>Disipa oscuridad a 30ft. CON Save DC 14 reduce a la mitad.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 10, 2, 'Radiance of the Dawn')">☀️ 2d10+2</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ <h3 style="margin-top:20px;">Habilidades (Skills)</h3>
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 10px;">
+ <div class="feature-card" style="border-left-color: var(--accent-gold);"><strong>Acrobatics ★:</strong> +7 <button class="btn-roll" onclick="rollCheckSave('d20', 7, 'Acrobatics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Animal Handling:</strong> +3 <button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Animal Handling', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Arcana:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Arcana', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Athletics:</strong> -1 <button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Athletics', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Deception:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Deception', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>History:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'History', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-gold);"><strong>Insight ★:</strong> +6 <button class="btn-roll" onclick="rollCheckSave('d20', 6, 'Insight', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Intimidation:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Intimidation', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Investigation:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Investigation', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Medicine:</strong> +3 <button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Medicine', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Nature:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Nature', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-gold);"><strong>Perception ★:</strong> +6 <button class="btn-roll" onclick="rollCheckSave('d20', 6, 'Perception', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-gold);"><strong>Performance ★:</strong> +3 <button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Performance', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Persuasion:</strong> +0 <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Persuasion', 'check')">🎲</button></div>
+ <div class="feature-card" style="border-left-color: var(--accent-gold);"><strong>Religion ★:</strong> +3 <button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Religion', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Sleight of Hand:</strong> +4 <button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Sleight of Hand', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Stealth:</strong> +4 <button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Stealth', 'check')">🎲</button></div>
+ <div class="feature-card"><strong>Survival:</strong> +3 <button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Survival', 'check')">🎲</button></div>
+ </div>
+
+ <div class="highlight-box" style="margin-top:15px;">
+ <strong>Competencias & Idiomas:</strong><br>
+ • <strong>Armaduras & Armas:</strong> Sin armadura (Unarmored Defense), Armas Simples, Espadas Cortas, Armaduras Ligeras/Medias y Escudos.<br>
+ • <strong>Herramientas:</strong> Herramientas de Artesano o Instrumento Musical.<br>
+ • <strong>Idiomas:</strong> Common, Primordial (Ignan).
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 2: INVENTARIO Y OBJETOS MÁGICOS -->
+ <details open>
+ <summary>🎒 2. Objetos Mágicos, Inventario y Riqueza</summary>
+ <div class="section-content">
+ <h3>🔮 Objetos Mágicos Sintonizados (Attuned)</h3>
+ <div class="feature-grid" style="margin-bottom: 20px;">
+ <div class="feature-card">
+ <h4><span class="tag">Cuello</span> Amulet of Misty Step</h4>
+ <p>• <strong>Teleportation (Acción, 1/día):</strong> Teletranspórtate hasta 1 milla a un lugar que puedas ver o conozcas.</p>
+ <p>• <strong>Resistencia:</strong> Otorga resistencia al daño de Frío (Cold Damage).</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Cuello</span> Amulet of Blood</h4>
+ <p>• <strong>Vampiric Leech (1/turno):</strong> Al hacer daño, recuperas HP igual a la mitad del daño infligido.</p>
+ <p>• <strong>Usos:</strong> Usable un número de veces por día igual al modificador de CON (+2). Se recarga en descanso largo.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Pies</span> Boots of Combustion</h4>
+ <p>• <strong>Rocket Dash (Bonus Action):</strong> Te propulsa hasta 45 ft en línea recta sin provocar ataques de oportunidad.</p>
+ <p>• <strong>Feather Fall:</strong> No recibes daño de caída desde 60 ft o menos.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Muñecas</span> Braces of the Sun Fury</h4>
+ <p>• <strong>Sun Fire Enhancement:</strong> Tus golpes sin armas (Unarmed Strikes) infligen +1d6 de daño radiante adicional.</p>
+ <p>• <strong>Blinding Light (Reacción, 2/Short Rest):</strong> Al ser alcanzado por un ataque, el atacante debe hacer un CON Save DC 15 o queda ciego hasta el final de tu siguiente turno.</p>
+ </div>
+ </div>
+
+ <h3>💰 Riqueza y Monedas</h3>
+ <div class="currency-grid">
+ <div class="currency-box"><label>CP</label><input type="number" id="cp-val" value="0" onchange="saveToFirebase()"></div>
+ <div class="currency-box"><label>SP</label><input type="number" id="sp-val" value="0" onchange="saveToFirebase()"></div>
+ <div class="currency-box"><label>EP</label><input type="number" id="ep-val" value="0" onchange="saveToFirebase()"></div>
+ <div class="currency-box"><label>GP</label><input type="number" id="gp-val" value="150" onchange="saveToFirebase()"></div>
+ <div class="currency-box"><label>PP</label><input type="number" id="pp-val" value="0" onchange="saveToFirebase()"></div>
+ </div>
+
+ <h3>🏅 Honor y Reputación</h3>
+ <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>🎖️ Honor</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('honor-cur', -1)">-</button>
+ <span id="honor-cur" class="cnt-val">0</span>
+ <button class="btn-cnt" onclick="changeVal('honor-cur', 1)">+</button>
+ </div>
+ </div>
+ </div>
+ <div class="tracker-card">
+ <div class="tracker-header">
+ <h3>🌟 Reputación</h3>
+ <div class="counter-controls">
+ <button class="btn-cnt" onclick="changeVal('rep-cur', -1)">-</button>
+ <span id="rep-cur" class="cnt-val">0</span>
+ <button class="btn-cnt" onclick="changeVal('rep-cur', 1)">+</button>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 3: RASGOS Y HABILIDADES DE CLASE -->
+ <details>
+ <summary>🔥 3. Rasgos de Monje, Clérigo y Genasi de Fuego</summary>
+ <div class="section-content">
+ <div class="feature-grid">
+ <div class="feature-card">
+ <h4><span class="tag">Monje</span> Unarmored Defense & Movement</h4>
+ <p>• <strong>AC 17:</strong> 10 + DEX (+4) + WIS (+3) mientras no lleves armadura ni escudo.</p>
+ <p>• <strong>Speed +10ft:</strong> Movimiento base total incrementado a 40 ft.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Monje</span> Martial Arts & Ki (5 Pts)</h4>
+ <p>• Usa DEX para Unarmed Strikes (1d6) y realiza un Unarmed Strike como Bonus Action tras atacar.</p>
+ <p>• <strong>Flurry of Blows:</strong> 1 Ki para 2 Unarmed Strikes como Bonus Action.</p>
+ <p>• <strong>Patient Defense:</strong> 1 Ki para Dodge como Bonus Action.</p>
+ <p>• <strong>Step of the Wind:</strong> 1 Ki para Disengage o Dash como Bonus Action, dobla distancia de salto.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Monje</span> Extra Attack & Deflect Missiles</h4>
+ <p>• Ataca dos veces al tomar la acción de Atacar.</p>
+ <p>• Reduce daño de ataques de proyectil a distancia por 1d10 + DEX (+4) + Monk Lvl (5).</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Clérigo</span> Light Domain & Warding Flare</h4>
+ <p>• <strong>Warding Flare (3/LR):</strong> Reacción cuando una criatura a 16ft te ataca para imponer desventaja en la tirada.</p>
+ <p>• <strong>Channel Divinity (1/Rest):</strong> Radiance of the Dawn dispersa oscuridad mágica y hace 2d10+2 radiant a enemigos a 30ft (CON Save DC 14 mitad).</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Raza</span> Fire Genasi Traits</h4>
+ <p>• <strong>Darkvision:</strong> 60 ft.</p>
+ <p>• <strong>Fire Resistance:</strong> Resistencia natural al daño de fuego.</p>
+ <p>• <strong>Reach to the Blaze:</strong> Produce Flame a voluntad. Burning Hands (3d6 fuego, 1/LR gratis) y Flame Blade (3d6 fuego, 1/LR gratis) usando WIS.</p>
+ </div>
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 4: CONJUROS PREPARADOS -->
+ <details open>
+ <summary>📜 4. Conjuros Preparados de Clérigo & Raciales</summary>
+ <div class="section-content">
+ <table>
+ <thead>
+ <tr>
+ <th>Nivel</th>
+ <th>Conjuro</th>
+ <th>Tiempo / Rango</th>
+ <th>Resumen y Efecto Mecánico</th>
+ <th>Tirar / Efecto</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Produce Flame</strong></td>
+ <td>1 Acc / Self (30ft)</td>
+ <td>Racial. Luz o ataque a distancia: 1d8 fuego.</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 8, 0, 'Produce Flame')">🔥 1d8 Fire</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Sacred Flame</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>DEX Save DC 14; 1d8 daño radiante (ignora cobertura).</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 8, 0, 'Sacred Flame')">☀️ 1d8 Rad</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Light</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Crea luz brillante en un objeto por 1 hora.</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">Cantrip</span></td>
+ <td><strong>Guidance</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Objetivo suma 1d4 a un ability check (Concentración).</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance (+1d4)')">🎲 1d4</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Burning Hands</strong></td>
+ <td>1 Acc / Cono 15ft</td>
+ <td>DEX Save DC 14; 3d6 daño de fuego (Dominio/Racial 1/LR gratis).</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Burning Hands')">🔥 3d6 Fire</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Guiding Bolt</strong></td>
+ <td>1 Acc / 120 ft</td>
+ <td>Spell Atk +6; 4d6 daño radiante y otorga ventaja al siguiente ataque contra el objetivo.</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'Guiding Bolt Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(4, 6, 0, 'Guiding Bolt Damage')">☀️ 4d6 Rad</button>
+ </td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Cure Wounds</strong></td>
+ <td>1 Acc / Touch</td>
+ <td>Cura 1d8 + 3 (WIS).</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Cure Wounds')">💚 1d8+3 HP</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Faerie Fire</strong></td>
+ <td>1 Acc / 60 ft</td>
+ <td>DEX Save DC 14; Ventaja en ataques contra afectados en cubo de 20ft (Concentración).</td>
+ <td>-</td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Bless</strong></td>
+ <td>1 Acc / 30 ft</td>
+ <td>Hasta 3 objetivos suman +1d4 a tiradas de ataque y salvaciones (Concentración).</td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Bless Bonus')">🎲 1d4</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Flame Blade</strong></td>
+ <td>1 B.Acc / Self</td>
+ <td>Racial 1/LR. Crea espada de fuego; Spell Atk +6 Melee inflige 3d6 fuego (Concentración).</td>
+ <td>
+ <button class="btn-roll" onclick="rollAttack(6, 'Flame Blade Atk')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Flame Blade Damage')">🔥 3d6 Fire</button>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 5: TRASFONDO, PERSONALIDAD Y DEFECTOS -->
+ <details open>
+ <summary>📖 5. Trasfondo, Personalidad y Defectos (Firelord Redmane)</summary>
+ <div class="section-content">
+ <div class="highlight-box" style="margin-bottom: 15px;">
+ <strong>Historia:</strong> Antes de llegar a Etreum, Eldur existía en el corazón del Plano del Fuego como el antorcha más ardiente de Lady Flame. Descendió envuelto en un cometa sagrado para purgar a los seguidores del Dios de la Muerte y honrar a Lady Flame venerando a toda mujer pelirroja por llevar la bendición de la diosa.
+ </div>
+ <div class="feature-grid">
+ <div class="feature-card">
+ <h4><span class="tag">Personalidad</span> Protagonista Absoluto</h4>
+ <p>Ha decidido completamente que es el personaje principal. Nombra sus ataques en voz alta (<em>"SOLAR FIST OF THE UNDYING DAWN!"</em>) y se detiene a mitad del combate para dejar que los villanos terminen su monólogo.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Personalidad</span> Presentación Solemne</h4>
+ <p>Se presenta con su título completo cada vez, a todos, incluidos enemigos a mitad de combate: <em>"Soy Eldur Redmane - FIRELORD, campeón de Lady Flame, heraldo del nuevo amanecer"</em>. Lo considera cortesía básica.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Ideal</span> Purificación por Fuego</h4>
+ <p>El fuego es la forma en que el universo dice 'inténtalo de nuevo, pero mejor'. El Dios de la Muerte evita que las cosas tengan su segunda oportunidad. Imperdonable.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Defecto 1</span> Odio Ciego a la Muerte</h4>
+ <p>Ver a un seguidor del Dios de la Muerte anula todo razonamiento superior. Los planes, el sigilo y la diplomacia quedan invalidados. El grupo ha aprendido a sujetarlo físicamente.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Defecto 2</span> Debilidad por Pelirrojas</h4>
+ <p>Las mujeres de cabello rojo lo reducen a un estado no funcional. Una vez dejó escapar a un villano porque pasó una camarera pelirroja y consideró la interacción un éxito.</p>
+ </div>
+ <div class="feature-card">
+ <h4><span class="tag">Defecto 3</span> BARDOS Y CANCIONES</h4>
+ <p>Cree genuinamente que los bardos ya están escribiendo canciones sobre él. Cuando conoce a uno que no ha oído hablar de él, asume que aún no les ha llegado la noticia y se ofrece a resumir su propia épica con efectos de sonido.</p>
+ </div>
+ </div>
+ </div>
+ </details>
+
+ <!-- SECCIÓN 6: NOTAS DE AVENTURA -->
+ <details open>
+ <summary>📝 Notas de Aventura y Campaña</summary>
+ <div class="section-content">
+ <p style="font-size: 0.9rem; color: var(--text-muted);">Escribe tus notas de sesión. Se sincronizarán automáticamente con Firebase Realtime Database:</p>
+ <textarea id="notas-personaje" style="width: 100%; height: 160px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 12px; font-size: 0.95rem; outline: none; resize: vertical; margin-top: 10px;" placeholder="Escribe tus hazañas épicas aquí..." onchange="saveToFirebase()"></textarea>
+ </div>
+ </details>
+</div>
+
+<!-- PANEL FLOTANTE DE DADOS -->
+<div class="dice-roller-panel">
+ <div class="dice-container">
+ <div>
+ <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-gold); font-size:0.9rem; margin-bottom:4px;">
+ 🎲 LANZADOR DE DADOS DE FIRELORD
+ </div>
+ <div class="dice-btns">
+ <button class="btn-dice" onclick="rollManualDice(1, 4, getMod(), 'd4')">d4</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 6, getMod(), 'd6')">d6</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 8, getMod(), 'd8')">d8</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 10, getMod(), 'd10')">d10</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 12, getMod(), 'd12')">d12</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 20, getMod(), 'd20')">d20</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 100, getMod(), 'd100')">d100</button>
+ <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
+ <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
+ <input type="number" id="dice-mod" class="dice-mod-input" value="0">
+ </div>
+ </div>
+ </div>
+
+ <div class="dice-result-box">
+ <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
+ <div class="dice-result-val" id="dice-total">0</div>
+ <div class="dice-result-details" id="dice-details">Esperando tirada...</div>
+ </div>
+ </div>
+</div>
+
+<script>
+  // Configuración real de tu proyecto
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+
+  // Inicializar Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+    // Evita que los inputs antiguos con 'saveToFirebase' den error en la consola
+  window.saveToFirebase = function() {};
+
+
+  const PERSONAJE_ID = "eldur"; 
+  let charRef;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+  const uid = "usuario_local";
+
+  if (codigoCampana) {
+    charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+  } else {
+    charRef = db.ref(`usuarios/${uid}/personajes/${PERSONAJE_ID}`);
+  }
+
+  sincronizarDatosDesdeNube();
+
+  // Función genérica para guardar un campo en la nube
+  function guardarCampo(fieldId, value) {
+    if (charRef) {
+      charRef.child('datos/' + fieldId).set(value);
+    }
+  }
+
+  // Guardar cambios automáticamente al editar campos estándar
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input, select')) {
+      const fieldId = e.target.id;
+      if (fieldId) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        guardarCampo(fieldId, val);
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="checkbox"], select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        guardarCampo(fieldId, val);
+      }
+    }
+  });
+
+  // Sincronizar en tiempo real desde la nube a la pantalla
+  function sincronizarDatosDesdeNube() {
+    charRef.child('datos').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') {
+            if (el.checked !== data[id]) el.checked = data[id];
+          } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+            if (el.innerText !== String(data[id])) {
+              el.innerText = data[id];
+              if (id === 'hp-cur') updateHPDisplay();
+            }
+          } else {
+            if (el.value !== String(data[id]) && document.activeElement !== el) {
+              el.value = data[id];
+            }
+          }
+        }
+      });
+      if (typeof recalcStats === 'function') recalcStats();
+      if (typeof updateConditions === 'function') updateConditions();
+    });
+  }
+
+  // Conservar campaña al presionar volver [1, 2]
+  const btnVolver = document.querySelector('a[href="index.html"]');
+  if (btnVolver && codigoCampana) {
+    btnVolver.href = `index.html?campana=${codigoCampana}`;
+  }
+
+  // --- LÓGICA DE JUEGO Y DADOS ---
+  function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
+  
+  function updateHPDisplay() {
+    const cur = document.getElementById('hp-cur').innerText;
+    document.getElementById('hp-summary').innerText = `${cur} / 52`;
+  }
+
+  function changeVal(id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let val = Math.max(0, (parseInt(el.innerText) || 0) + delta);
+    el.innerText = val;
+    if (id === 'hp-cur') updateHPDisplay();
+    guardarCampo(id, val);
+  }
+
+  function changeInputVal(id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let val = Math.max(0, (parseInt(el.value) || 0) + delta);
+    el.value = val;
+    guardarCampo(id, val);
+  }
+
+  function recalcStats() {
+    const acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
+    const atkBuff = parseInt(document.getElementById('atk-buff').value) || 0;
+    document.getElementById('ac-total').innerText = 17 + acBuff;
+    document.getElementById('atk-total').innerText = (7 + atkBuff >= 0 ? '+' : '') + (7 + atkBuff);
+  }
+
+  function restShort() {
+    document.getElementById('ki-cur').innerText = 5;
+    guardarCampo('ki-cur', 5);
+    const b1 = document.getElementById('blinding-1');
+    const b2 = document.getElementById('blinding-2');
+    const cd = document.getElementById('cd-use-1');
+    if (b1) { b1.checked = false; guardarCampo('blinding-1', false); }
+    if (b2) { b2.checked = false; guardarCampo('blinding-2', false); }
+    if (cd) { cd.checked = false; guardarCampo('cd-use-1', false); }
+    alert("Descanso Corto completado: ¡Ki, Blinding Light y Channel Divinity restaurados!");
+  }
+
+  function restLong() {
+    document.getElementById('hp-cur').innerText = 52;
+    document.getElementById('ki-cur').innerText = 5;
+    document.getElementById('hp-temp-input').value = 0;
+    updateHPDisplay();
+    guardarCampo('hp-cur', 52);
+    guardarCampo('ki-cur', 5);
+    guardarCampo('hp-temp-input', 0);
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      if (cb.id) guardarCampo(cb.id, false);
+    });
+    alert("Descanso Largo completado.");
+  }
+
+  function rollManualDice(num, sides, mod, label) {
+    let rolls = []; let total = 0;
+    for (let i = 0; i < num; i++) {
+      let r = Math.floor(Math.random() * sides) + 1;
+      rolls.push(r); total += r;
+    }
+    showDiceResult(label, total + mod, `[${rolls.join(', ')}] Mod: ${mod}`);
+  }
+
+  function rollAttack(bonus, name) {
+    const adv = document.getElementById('adv-attack').value;
+    const totalBonus = bonus + (parseInt(document.getElementById('atk-buff').value) || 0);
+    let d1 = Math.floor(Math.random() * 20) + 1;
+    let d2 = Math.floor(Math.random() * 20) + 1;
+    let chosen = adv === 'advantage' ? Math.max(d1, d2) : (adv === 'disadvantage' ? Math.min(d1, d2) : d1);
+    showDiceResult(`Atk: ${name}`, chosen + totalBonus, `Dado: ${chosen} (de [${d1}, ${d2}])`);
+  }
+
+  function rollGenericDamage(num, sides, mod, label) { rollManualDice(num, sides, mod, label); }
+  function rollCheckSave(dice, mod, label, type) { rollManualDice(1, 20, mod, label); }
+  function rollConcentrationSave() {
+    const adv = document.getElementById('adv-conc').value;
+    let d1 = Math.floor(Math.random() * 20) + 1;
+    let d2 = Math.floor(Math.random() * 20) + 1;
+    let chosen = adv === 'advantage' ? Math.max(d1, d2) : (adv === 'disadvantage' ? Math.min(d1, d2) : d1);
+    showDiceResult("CON Save (Concentración)", chosen + 2, `Dado: ${chosen} | Mod CON: +2`);
+  }
+
+  function showDiceResult(label, total, details) {
+    document.getElementById('dice-label').innerText = label;
+    document.getElementById('dice-total').innerText = total;
+    document.getElementById('dice-details').innerText = details;
+  }
+
+  function toggleConditionsDropdown() {
+    const dd = document.getElementById('conditions-dropdown');
+    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function updateConditions() {
+    const container = document.getElementById('active-conditions-list');
+    container.innerHTML = '';
+    const checkboxes = document.querySelectorAll('#conditions-dropdown input[type="checkbox"]:checked');
+    checkboxes.forEach(cb => {
+      const span = document.createElement('span');
+      span.className = `cond-tag ${cb.dataset.type}`;
+      span.innerText = cb.value;
+      container.appendChild(span);
+    });
+  }
+
+  window.onclick = function(event) {
+    if (!event.target.matches('.select-box') && !event.target.matches('.select-box *')) {
+      const dd = document.getElementById('conditions-dropdown');
+      if (dd && dd.style.display === 'block') dd.style.display = 'none';
+    }
+  };
+</script>
+
+</body>
+</html>

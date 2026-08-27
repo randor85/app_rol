@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet - Dane</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* VARIABLES DE COLOR (sistema unificado Fiona-style) */
+        :root {
+            --bg-primary: #0d1a19;
+            --bg-card: #142726;
+            --bg-card-header: #1c3634;
+            --accent-teal: #2b8a83;
+            --accent-gold: #d4af37;
+            --accent-light: #5fc2ba;
+            --accent-hover: #3aa89f;
+            --text-light: #e8f3f2;
+            --text-muted: #9db8b5;
+            --border-color: #24413f;
+            --danger-color: #c94a4a;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            --surface-soft: rgba(0,0,0,0.2);
+            --surface-mid: rgba(0,0,0,0.3);
+            --surface-strong: rgba(0,0,0,0.45);
+            --text-on-surface: #fff;
+        }
+
+        body.light-mode {
+            --bg-primary: #eef4f3;
+            --bg-card: #ffffff;
+            --bg-card-header: #d9e8e6;
+            --text-light: #1a2e2c;
+            --text-muted: #5c7572;
+            --border-color: #c3d8d5;
+            --shadow: 0 4px 15px rgba(43,138,131,0.15);
+            --surface-soft: rgba(26,46,44,0.05);
+            --surface-mid: rgba(26,46,44,0.08);
+            --surface-strong: rgba(26,46,44,0.13);
+            --text-on-surface: #1a2e2c;
+            --accent-light: #1f6b64;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-light);
+            padding: 20px;
+            font-size: 14px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--bg-card-header) 0%, var(--bg-primary) 100%);
+            color: var(--text-light);
+            padding: 24px;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 20px -30px;
+            border-bottom: 5px solid var(--accent-gold);
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        .header::before { content: "🏹"; position: absolute; right: 20px; top: 0; font-size: 7rem; opacity: 0.08; pointer-events: none; }
+        .header h1 {
+            font-family: 'Cinzel', serif;
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-gold);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        body.light-mode .header h1 { text-shadow: none; }
+        .info-table { width: 100%; border-collapse: collapse; position: relative; }
+        .info-table td { padding: 5px 0; color: var(--text-light); opacity: 0.85; }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-teal);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        body.light-mode h2 { color: var(--accent-teal); }
+
+        /* BOTÓN VOLVER */
+        .btn-volver {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--bg-card-header);
+            color: var(--accent-gold);
+            text-decoration: none;
+            border: 1px solid var(--accent-gold);
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* BOTÓN DE TEMA (reutilizado como .theme-toggle-btn) */
+        .theme-toggle-btn {
+            background: var(--bg-card-header);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-toggle-btn:hover { background: var(--accent-gold); color: var(--bg-primary); }
+
+        /* POPOVER DE XP (portado del patrón usado en eldur.html) */
+        .xp-popover-wrap { position: relative; display: inline-block; }
+        .xp-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+        .xp-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 10px; z-index: 60; min-width: 170px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+        .xp-popover-panel.open { display: flex; flex-direction: column; gap: 6px; }
+        .xp-popover-panel .stat-badge { display: flex; flex-direction: column; gap: 2px; }
+        .xp-popover-panel .stat-badge label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .xp-popover-panel .stat-badge input { background: var(--surface-soft); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 4px 6px; font-size: 0.85rem; width: 100%; }
+
+        /* MOTOR DE SUBIDA DE NIVEL (oculto) — popover de nivel */
+        .nivel-popover-wrap { position: relative; display: inline-block; }
+        .nivel-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-teal); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+        .nivel-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-teal); border-radius: 8px; padding: 12px; z-index: 60; min-width: 280px; max-width: 340px; max-height: 400px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+        .nivel-popover-panel.open { display: block; }
+        .nivel-hab-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+        .nivel-hab-item:last-child { border-bottom: none; }
+        .nivel-hab-item h5 { color: var(--accent-teal); font-size: 0.85rem; margin-bottom: 3px; }
+
+        .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
+        .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-teal); list-style: none; font-size: 0.9rem; }
+        .bitacora-section > summary::-webkit-details-marker { display: none; }
+        .bitacora-section > summary::before { content: '▶'; display: inline-block; margin-right: 8px; font-size: 0.7em; transition: transform 0.2s; }
+        .bitacora-section[open] > summary::before { transform: rotate(90deg); }
+        .bitacora-section-content { padding: 0 14px 14px; }
+        .bitacora-section-content input[type="text"], .bitacora-section-content textarea { width: 100%; box-sizing: border-box; background: #0f0f12; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 8px; font-size: 0.85rem; margin-bottom: 8px; font-family: inherit; }
+        .bitacora-section-content .bf-entrada { border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.8rem; }
+        .bitacora-section-content .bf-entrada:last-child { border-bottom: none; }
+        .bitacora-section-content .bf-fecha { color: var(--accent-teal); font-size: 0.72rem; }
+        .bitacora-section-label { margin: 0 0 8px; font-weight: 700; color: var(--accent-teal); font-size: 0.85rem; }
+        #bitacora-ficha-lista { max-height: 260px; overflow-y: auto; }
+        .nivel-hab-item p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+        .nivel-hab-item button { background: var(--accent-teal); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-weight: 700; }
+        .nivel-hab-item.agregada { opacity: 0.5; }
+        .nivel-hab-item.agregada button { display: none; }
+
+        /* GRID DE FEATURE CARDS (para insertar rasgos nuevos vía el motor de nivel) */
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+        .feature-card { background: var(--surface-mid); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 12px; border-radius: 6px; }
+        .feature-card h4 { font-size: 0.9rem; margin-bottom: 6px; color: var(--accent-light); }
+        .feature-card p { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* BARRA STICKY DE COMBATE */
+        .sticky-combat-bar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: linear-gradient(145deg, rgba(20,39,38,.98), rgba(13,26,25,.98));
+            border: 1px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+        }
+        body.light-mode .sticky-combat-bar { background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(217,232,230,.98)); }
+        .sticky-combat-bar .scb-name { font-family: 'Cinzel', serif; color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+        .sticky-combat-bar .scb-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+        .scb-stat { text-align: center; min-width: 46px; }
+        .scb-stat .scb-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .scb-stat .scb-value { font-size: 1rem; font-weight: 800; color: var(--accent-gold); }
+        @media (max-width: 700px) { .sticky-combat-bar { justify-content: center; } }
+
+        /* HP TRACKER Y RODILLO DE DADOS */
+        .resources-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .tracker-card { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; }
+        .tracker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+        .tracker-header h3 { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--accent-teal); }
+
+        .hp-section { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .hp-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .hp-box input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            border-bottom: 1px dashed var(--accent-teal);
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-light);
+            background: transparent;
+            margin-left: 5px;
+            outline: none;
+        }
+        .hp-box input.temp {
+            color: #3498db;
+            border-bottom: 1px dashed #3498db;
+        }
+
+        .roller-section { flex-grow: 1; min-width: 250px; }
+        .roll-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            background: var(--bg-card);
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .roll-controls label {
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+        .roll-controls input[type="radio"] { accent-color: var(--accent-teal); }
+        .roll-history {
+            background: #10201f;
+            color: #d7ede9;
+            border-radius: 6px;
+            height: 80px;
+            overflow-y: auto;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .log-entry { border-bottom: 1px solid #24413f; padding: 3px 0; display: flex; justify-content: space-between; align-items: center; }
+        .log-entry:last-child { border-bottom: none; }
+        .log-entry b { font-size: 16px; color: var(--accent-gold); margin-left: 10px; }
+        .log-calc { color: #7fa39d; font-size: 12px; }
+        .clear-btn { background-color: var(--danger-color); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; width: 100%; }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .stat-box { background-color: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; text-align: center; padding: 15px; }
+        .stat-box .val { font-size: 24px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--text-on-surface); }
+        .stat-box .lbl { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; letter-spacing: 0.5px; }
+
+        table.data { width: 100%; border-collapse: collapse; margin-bottom: 15px; text-align: center; }
+        table.data th, table.data td { border: 1px solid var(--border-color); padding: 10px; }
+        table.data th { background-color: var(--surface-strong); color: var(--accent-gold); font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.5px; }
+        table.data tr:hover td { background: rgba(43, 138, 131, 0.08); }
+
+        .box-container { background-color: var(--surface-mid); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .highlight-box { background-color: var(--surface-mid); padding: 15px; border-left: 4px solid var(--accent-gold); border-radius: 6px; margin-bottom: 15px; }
+        .highlight-box h3 { margin-top: 0; color: var(--accent-gold); font-family: 'Cinzel', serif; font-size: 15px; margin-bottom: 10px; }
+
+        .dice-btn { background-color: var(--accent-teal); color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-top: 5px; transition: background-color 0.2s; }
+        .dice-btn:hover { background-color: var(--accent-hover); }
+        .dice-btn-small { background-color: var(--accent-teal); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 3px 6px; display: inline-flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
+        .dice-btn-small:hover { background-color: var(--accent-hover); }
+
+        ul { margin-top: 0; padding-left: 20px; }
+        li { margin-bottom: 6px; }
+
+        .spell-slots { display: flex; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .spell-slots input[type="checkbox"] { width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: var(--accent-teal); }
+
+        .equipment-list dt { font-weight: bold; margin-top: 10px; display: flex; align-items: center; color: var(--text-light); }
+        .equipment-list dd { margin-left: 0; margin-bottom: 10px; font-size: 13px; color: var(--text-muted); padding-left: 28px; border-left: 2px solid var(--border-color); }
+        .equip-check { width: 16px; height: 16px; margin-right: 8px; cursor: pointer; accent-color: var(--accent-teal); }
+
+        .gold-box { display: flex; align-items: center; border: 1px solid var(--accent-gold); background-color: var(--surface-mid); padding: 8px 15px; border-radius: 6px; font-weight: bold; color: var(--accent-gold); margin-top: 10px; width: fit-content; }
+        .gold-input { background: transparent; border: none; border-bottom: 1px dashed var(--accent-gold); color: var(--text-light); font-weight: bold; font-size: 14px; width: 70px; text-align: center; margin-left: 8px; outline: none; }
+
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 15px; font-size: 13px; }
+        .skill-item { display: flex; align-items: center; border-bottom: 1px dashed var(--border-color); padding: 4px 0; }
+        .skill-name { flex-grow: 1; margin-left: 8px; color: var(--text-light); }
+        .skill-tag { color: var(--text-muted); font-size: 11px; margin-right: 5px; font-style: italic; }
+        .skill-mod { font-weight: bold; width: 20px; text-align: right; color: var(--accent-light); }
+
+        .readonly-banner {
+            display: none;
+            background-color: var(--accent-gold);
+            color: #1a1a1a;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .readonly-mode input, .readonly-mode textarea, .readonly-mode select {
+            pointer-events: none;
+            opacity: 0.75;
+        }
+        .readonly-mode button:not(#btn-compartir):not(.btn-volver):not(.theme-toggle-btn) {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .container { padding: 15px; }
+            .header { margin: -15px -15px 15px -15px; padding: 15px; }
+            .hp-section { justify-content: space-between; width: 100%; }
+            .hp-box { flex-grow: 1; justify-content: center; }
+            .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 15px; }
+            .info-table td { display: block; width: 100% !important; padding: 2px 0; }
+            table.data th, table.data td { padding: 6px 2px; font-size: 12px; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .roll-controls { flex-direction: column; gap: 8px; }
+            .roller-section { width: 100%; }
+        }
+    
+/* === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) === */
+.inventory-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.inventory-item { background: var(--surface-mid, var(--bg-card, rgba(255,255,255,0.04))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); border-radius: 6px; padding: 10px 12px; }
+.inventory-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.inventory-item-name { font-weight: bold; color: var(--text-light, #eee); font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+.inventory-item-name input[type="checkbox"] { cursor: pointer; }
+.inventory-item-meta { font-size: 0.72rem; color: var(--text-muted, #999); font-family: inherit; white-space: nowrap; }
+.inventory-item-desc { font-size: 0.8rem; color: var(--text-muted, #999); margin-top: 4px; }
+.inventory-item-actions { display: flex; gap: 4px; }
+.inventory-item-actions button { background: var(--surface-soft, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); color: var(--text-light, #eee); border-radius: 4px; padding: 2px 7px; font-size: 0.75rem; cursor: pointer; }
+.inventory-item-actions button:hover { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; }
+.inventory-add-btn { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; border: none; border-radius: 6px; padding: 7px 12px; font-weight: bold; font-size: 0.8rem; cursor: pointer; margin-bottom: 10px; }
+.inventory-form { background: var(--surface-strong, var(--bg-card-header, rgba(255,255,255,0.06))); border: 1px dashed var(--accent-gold, var(--accent-silver, #d4af37)); border-radius: 6px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+.inventory-form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.inventory-form-row label { font-size: 0.7rem; color: var(--text-muted, #999); display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 100px; }
+.inventory-form-row input, .inventory-form-row textarea { background: var(--surface-soft, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); color: var(--text-light, #eee); border-radius: 4px; padding: 5px 7px; font-size: 0.82rem; font-family: inherit; }
+.inventory-form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.inventory-form-actions button { background: var(--surface-soft, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color, rgba(255,255,255,0.15)); color: var(--text-light, #eee); border-radius: 4px; padding: 6px 14px; font-size: 0.8rem; cursor: pointer; }
+.inventory-form-actions button:last-child { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; font-weight: bold; border: none; }
+.inventory-total { font-size: 0.78rem; color: var(--accent-gold, var(--accent-silver, #d4af37)); font-weight: bold; margin-bottom: 8px; min-height: 1em; }
+.inventory-empty { font-size: 0.8rem; color: var(--text-muted, #999); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div id="readonly-banner" class="readonly-banner">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
+
+    <!-- NAV: VOLVER, TEMA Y COMPARTIR -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <a href="index.html" class="btn-volver">⬅ Volver al Menú</a>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
+            <button id="btn-compartir" style="display: none; padding: 8px 16px; background-color: #3a7d44; color: white; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;"></button>
+        </div>
+    </div>
+
+    <!-- BARRA STICKY DE COMBATE -->
+    <div class="sticky-combat-bar">
+        <div class="scb-name">🏹 Dane</div>
+        <div class="scb-stats">
+            <div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">0/0</div></div>
+            <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value">15</div></div>
+            <div class="scb-stat"><div class="scb-label">⚔️ Atq</div><div class="scb-value">+12/+7</div></div>
+        </div>
+    </div>
+
+    <details class="bitacora-section" id="bitacora-section">
+        <summary>📜 Bitácora de la Campaña</summary>
+        <div class="bitacora-section-content">
+            <p class="bitacora-section-label">Nueva entrada</p>
+            <input type="text" id="bitacora-ficha-titulo" placeholder="Título (opcional)">
+            <textarea id="bitacora-ficha-texto" rows="3" placeholder="Qué pasó..."></textarea>
+            <button type="button" onclick="guardarEntradaBitacoraFicha()">Guardar Entrada</button>
+            <p class="bitacora-section-label" style="margin-top:10px;border-top:1px solid var(--border-color);padding-top:8px;">Últimas entradas</p>
+            <div id="bitacora-ficha-lista"></div>
+        </div>
+    </details>
+
+    <div class="header">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+            <h1 style="margin-bottom:0;">Dane</h1>
+            <div style="display:flex; gap:8px; align-items:center; position:relative; z-index:1;">
+                <div class="xp-popover-wrap">
+                    <button class="xp-popover-btn" onclick="toggleXpPopover()" type="button">⭐ XP</button>
+                    <div class="xp-popover-panel" id="xp-popover-panel">
+                        <div class="stat-badge">
+                            <label>XP Actual</label>
+                            <input type="number" id="xp-val" value="70000" step="100">
+                        </div>
+                        <div class="stat-badge">
+                            <label>XP Próximo Lvl</label>
+                            <input type="number" id="xp-next" value="81500" step="500">
+                        </div>
+                    </div>
+                </div>
+                <div class="nivel-popover-wrap">
+                    <button class="nivel-popover-btn" onclick="toggleNivelPopover()" type="button">📖 Nivel <span id="nivel-actual-display">—</span></button>
+                    <div class="nivel-popover-panel" id="nivel-popover-panel">
+                        <div id="nivel-hab-lista"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="info-table">
+            <tr>
+                <td style="width: 50%;"><strong>Class & Level:</strong> Ranger (Gloom Stalker) 5 / Rogue (Assassin) 4</td>
+                <td><strong>Race:</strong> Winged Tiefling</td>
+            </tr>
+            <tr>
+                <td><strong>Background:</strong> Criminal</td>
+                <td><strong>Alignment:</strong> Neutral</td>
+            </tr>
+            <tr>
+                <td><strong>Professions:</strong> Blacksmith, Pilot</td>
+                <td><strong>Total Level:</strong> 9</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- HP TRACKER Y RODILLO DE DADOS -->
+    <div class="resources-bar">
+        <div class="tracker-card">
+            <div class="tracker-header"><h3>❤️ Puntos de Golpe</h3></div>
+            <div class="hp-section">
+                <div class="hp-box">
+                    <label for="hp-current">HP:</label>
+                    <input type="number" id="hp-current" value="73">
+                    <span style="margin: 0 5px; color: var(--text-muted);">/</span>
+                    <input type="number" id="hp-max" value="73" style="width:40px; border-bottom: none;">
+                </div>
+                <div class="hp-box">
+                    <label for="hp-temp" style="color:#3498db;">Temp HP:</label>
+                    <input type="number" id="hp-temp" class="temp" value="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="tracker-card roller-section">
+            <div class="tracker-header"><h3>🎲 Sistema de Tiradas</h3></div>
+            <div class="roll-controls">
+                <label><input type="radio" name="rollType" value="normal" checked> Normal</label>
+                <label><input type="radio" name="rollType" value="advantage"> Advantage</label>
+                <label><input type="radio" name="rollType" value="disadvantage"> Disadvantage</label>
+            </div>
+            <div class="roll-history" id="rollHistory">
+                <!-- Dice results -->
+            </div>
+            <button class="clear-btn" onclick="clearDiceHistory()">Clear History</button>
+        </div>
+
+        <div class="tracker-card">
+            <div class="tracker-header"><h3>🏹 Favored Foe (4 / descanso largo)</h3></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; font-size:13px;">
+                <label><input type="checkbox" id="favfoe-1"> Uso 1</label>
+                <label><input type="checkbox" id="favfoe-2"> Uso 2</label>
+                <label><input type="checkbox" id="favfoe-3"> Uso 3</label>
+                <label><input type="checkbox" id="favfoe-4"> Uso 4</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-3" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="stat-box">
+            <div class="val">16</div>
+            <div class="lbl">Armor Class (18 w/ Haste)</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">+7 <button class="dice-btn-small" style="font-size: 14px; padding: 4px 8px;" onclick="rollAttack('Initiative', 7)">🎲</button></div>
+            <div class="lbl">Initiative</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">30 ft <span style="font-size:0.6em;">/ 🦇30 Fly</span></div>
+            <div class="lbl">Speed (Winged Tiefling)</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">21</div>
+            <div class="lbl">Passive Perception</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <!-- LEFT COLUMN -->
+        <div>
+            <h2>Attributes & Saves</h2>
+            <table class="data">
+                <tr><th>STR</th><th>DEX</th><th>CON</th><th>INT</th><th>WIS</th><th>CHA</th></tr>
+                <tr>
+                    <td><strong>8</strong><br><small>(-1)</small><br><button class="dice-btn" onclick="rollAttack('STR Save', 3)">🎲 Save +3</button></td>
+                    <td><strong>18</strong><br><small>(+4)</small><br><button class="dice-btn" onclick="rollAttack('DEX Save', 8)">🎲 Save +8</button></td>
+                    <td><strong>14</strong><br><small>(+2)</small><br><button class="dice-btn" onclick="rollAttack('CON Save', 2)">🎲 Save +2</button></td>
+                    <td><strong>10</strong><br><small>(+0)</small><br><button class="dice-btn" onclick="rollAttack('INT Save', 0)">🎲 Save +0</button></td>
+                    <td><strong>16</strong><br><small>(+3)</small><br><button class="dice-btn" onclick="rollAttack('WIS Save', 3)">🎲 Save +3</button></td>
+                    <td><strong>10</strong><br><small>(+0)</small><br><button class="dice-btn" onclick="rollAttack('CHA Save', 0)">🎲 Save +0</button></td>
+                </tr>
+            </table>
+
+            <h2>Proficiencies & Skills <small>(PB: +4)</small></h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>Armor:</strong> Light Armor, Medium Armor, Shields</p>
+                <p><strong>Weapons:</strong> Simple Weapons, Martial Weapons</p>
+                <p><strong>Saving Throws:</strong> Strength, Dexterity</p>
+                <p><strong>Tools:</strong> Blacksmith's Tools, Thieves' Tools, Disguise Kit, Poisoner's Kit</p>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+
+                <p style="margin-bottom: 8px;"><strong>All Skills:</strong></p>
+                <div class="skills-grid">
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Acrobatics', 8)">🎲</button><span class="skill-name"><strong>Acrobatics</strong></span><span class="skill-tag">(Prof)</span><span class="skill-mod">+8</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Animal Handling', 3)">🎲</button><span class="skill-name"><strong>Animal Handling</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Arcana', 0)">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Athletics', -1)">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Deception', 4)">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-tag">(Prof)</span><span class="skill-mod">+4</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('History', 0)">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Insight', 7)">🎲</button><span class="skill-name"><strong>Insight</strong></span><span class="skill-tag">(Prof)</span><span class="skill-mod">+7</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Intimidation', 0)">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Investigation', 0)">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Medicine', 3)">🎲</button><span class="skill-name"><strong>Medicine</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Nature', 0)">🎲</button><span class="skill-name"><strong>Nature</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Perception', 11)">🎲</button><span class="skill-name"><strong>Perception</strong></span><span class="skill-tag">(Exp)</span><span class="skill-mod">+11</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Performance', 0)">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Persuasion', 0)">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Religion', 0)">🎲</button><span class="skill-name"><strong>Religion</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Sleight of Hand', 12)">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-tag">(Exp)</span><span class="skill-mod">+12</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Stealth', 12)">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-tag">(Exp)</span><span class="skill-mod">+12</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAttack('Survival', 3)">🎲</button><span class="skill-name"><strong>Survival</strong></span><span class="skill-mod">+3</span></div>
+                </div>
+            </div>
+
+            <h2>Ranger Spells</h2>
+            <div class="box-container">
+                <div class="spell-slots">
+                    <strong style="width: 150px;">1st Level (4 Slots):</strong>
+                    <input type="checkbox" id="chk-slot1-1" title="Slot 1">
+                    <input type="checkbox" id="chk-slot1-2" title="Slot 2">
+                    <input type="checkbox" id="chk-slot1-3" title="Slot 3">
+                    <input type="checkbox" id="chk-slot1-4" title="Slot 4">
+                </div>
+                <ul style="font-size: 13px; margin-bottom: 15px;">
+                    <li><strong>Hunter's Mark</strong> <em>(Bonus Action, +1d6 extra dmg, Conc.)</em></li>
+                    <li><strong>Absorb Elements</strong> <em>(Reaction: Resistance. Upcast: +1d6 extra melee dmg per slot above 1st)</em></li>
+                    <li><strong>Cure Wounds</strong> <em>(1d8 + 3 healing, Touch. Upcast: +1d8 healing per slot above 1st)</em></li>
+                    <li><strong>Disguise Self</strong> <em>(Gloom Stalker Feature)</em></li>
+                </ul>
+
+                <div class="spell-slots">
+                    <strong style="width: 150px;">2nd Level (2 Slots):</strong>
+                    <input type="checkbox" id="chk-slot2-1" title="Slot 1">
+                    <input type="checkbox" id="chk-slot2-2" title="Slot 2">
+                </div>
+                <ul style="font-size: 13px; margin-bottom: 0;">
+                    <li><strong>Pass without Trace</strong> <em>(+10 Stealth to party, Conc.)</em></li>
+                    <li><strong>Rope Trick</strong> <em>(Gloom Stalker Feature)</em></li>
+                </ul>
+            </div>
+
+            <h2>Magical Equipment & Inventory</h2>
+            <div class="box-container equipment-list">
+                <div class="inventory-total" id="inventario-total"></div>
+<button type="button" class="inventory-add-btn" onclick="mostrarFormularioInventario()">➕ Agregar Ítem</button>
+<div id="inventario-form-container"></div>
+<div class="inventory-list" id="inventario-lista"></div>
+<input type="hidden" id="inventario-json" value="">
+
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+                <p style="margin-bottom: 5px; font-size: 13px;"><strong>Armor:</strong> Studded Leather Armor</p>
+                <p style="margin-bottom: 10px; font-size: 13px;"><strong>Tools:</strong> Blacksmith's Tools</p>
+
+                <div class="gold-box">
+                    <label for="gold-input">Gold (GP):</label>
+                    <input type="number" id="gold-input" class="gold-input" value="0" min="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+            <h2>Attacks & Weapons</h2>
+            <table class="data">
+                <tr>
+                    <th style="text-align:left;">Weapon / Attack</th>
+                    <th>Atk Bonus</th>
+                    <th>Damage & Type</th>
+                </tr>
+                <tr>
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong>Hyperborean Crossbow</strong><br><small>Normal</small>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollAttack('Crossbow (Normal) Atk', 12)">🎲</button> +12
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollGenericDamage('Crossbow (Normal) Dmg', 1, 8, 6)">🎲</button> 1d8 + 6
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong>Hyperborean Crossbow</strong><br><small>Sharpshooter</small>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollAttack('Crossbow (SS) Atk', 7)">🎲</button> +7
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollGenericDamage('Crossbow (SS) Dmg', 1, 8, 16)">🎲</button> 1d8 + 16
+                    </td>
+                </tr>
+                <!-- EXTRA DAMAGES ADDED TO THE TABLE -->
+                <tr style="background-color: var(--surface-mid);">
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong style="color: var(--accent-gold);">Hunter's Mark</strong><br><small>Bonus Action</small>
+                    </td>
+                    <td style="vertical-align: middle;">-</td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollGenericDamage('Hunter\'s Mark Dmg', 1, 6, 0)">🎲</button> 1d6
+                    </td>
+                </tr>
+                <tr style="background-color: var(--surface-mid);">
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong style="color: var(--accent-gold);">Sneak Attack</strong><br><small>1/Turn (Adv or Ally 5ft)</small>
+                    </td>
+                    <td style="vertical-align: middle;">-</td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollGenericDamage('Sneak Attack Dmg', 2, 6, 0)">🎲</button> 2d6
+                    </td>
+                </tr>
+            </table>
+
+            <h2>Damage Calculation Breakdown</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>To Hit (+12):</strong> +4 (Dexterity) +4 (Proficiency) +2 (Archery Style) +1 (Magic Weapon) +1 (Blacksmith).</p>
+                <p><strong>To Hit w/ Sharpshooter (+7):</strong> 12 (Base) - 5 (Penalty).</p>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+                <p><strong>Damage (+6):</strong> +4 (Dexterity) +1 (Magic Weapon) +1 (Blacksmith).</p>
+                <p style="margin-bottom: 0;"><strong>Damage w/ Sharpshooter (+16):</strong> 6 (Base) + 10 (Sharpshooter Bonus).</p>
+            </div>
+
+            <h2>Nova Strike Summary (Turn 1)</h2>
+            <div class="highlight-box">
+                <h3>With Haste & Hunter's Mark Active</h3>
+                <p style="font-size: 13px; margin-bottom: 10px;"><em>Assuming target hasn't acted (Advantage) and you use Sharpshooter. If target is surprised, all dice below become their maximum value + Piercer Extra Die.</em></p>
+                <ul style="font-size: 13px;">
+                    <li><strong>Attack 1 (Action):</strong> 1d8 + 16 + 1d6 <em>(Mark)</em> + 2d6 <em>(Sneak Attack)</em></li>
+                    <li><strong>Attack 2 (Extra Attack):</strong> 1d8 + 16 + 1d6 <em>(Mark)</em></li>
+                    <li><strong>Attack 3 (Dread Ambusher):</strong> 1d8 + 1d8 <em>(Ambusher Bonus)</em> + 16 + 1d6 <em>(Mark)</em></li>
+                    <li><strong>Attack 4 (Haste Action):</strong> 1d8 + 16 + 1d6 <em>(Mark)</em></li>
+                </ul>
+                <p style="margin-top: 10px; font-weight: bold; border-top: 1px dashed var(--accent-gold); padding-top: 10px; margin-bottom: 0;">
+                    Total Dice: 5d8 + 5d6 | Fixed Damage: +64
+                </p>
+            </div>
+
+            <h2>Feats & Optional Features</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>Sharpshooter (Ranger Level 4)</strong></p>
+                <ul style="margin-bottom: 10px;">
+                    <li>Attacking at long range doesn't impose disadvantage.</li>
+                    <li>Attacks ignore half cover and three-quarters cover.</li>
+                    <li>Take -5 penalty to attack roll to add +10 to the attack's damage.</li>
+                </ul>
+
+                <p style="margin-top: 0;"><strong>Piercer (Rogue Level 4)</strong></p>
+                <ul style="margin-bottom: 10px;">
+                    <li>Once per turn, you can reroll one of your damage dice that deals piercing damage (you must use the new roll).</li>
+                    <li>When you score a critical hit that deals piercing damage to a creature, you can roll one additional damage die when determining the extra piercing damage.</li>
+                </ul>
+
+                <p style="margin-top: 0;"><strong>Deft Explorer: Canny (Ranger Level 1)</strong></p>
+                <ul style="margin-bottom: 0;">
+                    <li>Double proficiency bonus for one skill (Perception).</li>
+                    <li>Learn two additional languages <em>(Update with DM)</em>.</li>
+                </ul>
+            </div>
+
+            <h2>Features & Traits</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>Profession (Blacksmith):</strong> Your weapons have a +1 bonus to attack rolls. Using a forge and materials, you can upgrade your party members' weapons to add this same +1 bonus.</p>
+                <p><strong>Profession (Pilot):</strong> You have expertise in piloting any vehicle (airships, sea vessels, land transports). You possess a supernatural intuition for navigation, plotting flawless courses by reading stars and wind currents, ensuring you never lose direction even in treacherous hazards.</p>
+                <p><strong>Dread Ambusher:</strong> +WIS mod to initiative. +10ft speed on first turn. 1 extra attack on first turn Attack action (+1d8 dmg).</p>
+                <p><strong>Extra Attack & Cunning Action:</strong> Attack twice. Bonus action to Dash, Disengage, or Hide.</p>
+                <p><strong>Favored Foe (Ranger 1, 4 usos/descanso largo):</strong> Cuando impactás a una criatura con un ataque, podés marcarla como enemigo predilecto durante 1 minuto (sin gastar acción, como concentración). La primera vez en cada uno de tus turnos que le pegás a ese enemigo, le hacés +1d4 de daño extra.</p>
+                <p><strong>Primeval Awareness (Ranger 3):</strong> Acción + 1 espacio de conjuro para detectar, dentro de 1 milla (6 en terreno favorito), si hay aberraciones, celestiales, dragones, elementales, feéricos, infernales o no-muertos en la zona, durante 1 minuto por nivel del espacio gastado.</p>
+                <p><strong>Hellish Resistance (Tiefling):</strong> Resistencia al daño de fuego.</p>
+                <p><strong>Fly Speed 30ft (Winged Tiefling):</strong> Alas tipo murciélago; volás a 30 ft mientras no lleves armadura pesada. Reemplaza el rasgo racial Infernal Legacy (Dane no tiene Thaumaturgy/Hellish Rebuke/Darkness raciales).</p>
+                <div class="feature-grid" id="nuevas-habilidades-grid"></div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>⚠️ Tactical Reminders</h3>
+                <ul style="margin-bottom: 0; padding-left: 15px; font-size: 13px;">
+                    <li><strong>🌑 Umbral Sight:</strong> In total darkness, you are <strong>INVISIBLE</strong> to creatures relying on Darkvision (Advantage on attacks, Disadvantage to be hit). 90 ft darkvision range.</li>
+                    <li><strong>💨 Cunning Action:</strong> Bonus Action to Dash, Disengage, or Hide.</li>
+                    <li><strong>🗡️ Assassinate:</strong> Advantage on attacks against any creature that hasn't taken a turn. Surprised targets take auto-critical hits.</li>
+                    <li><strong>🎯 Piercer:</strong> Reroll one low piercing damage die once per turn (must use the new roll).</li>
+                    <li><strong>🏃 Dread Ambusher:</strong> +10 ft of movement during your first turn of combat.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="habilidades-agregadas-nivel" value="">
+</div>
+
+<!-- LIBRERÍAS DE COMPATIBILIDAD DE FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<!-- SCRIPTS -->
+<script>
+       // --- CONFIGURACIÓN DE FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+        authDomain: "personajes-rol.firebaseapp.com",
+        databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+        projectId: "personajes-rol",
+        storageBucket: "personajes-rol.appspot.com",
+        messagingSenderId: "81108671440",
+        appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    const PERSONAJE_ID = "dane";
+    const NOMBRE_PERSONAJE_FICHA = "Dane";
+    const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
+    let charRef = null;
+    let bitacoraCampanaListener = null;
+
+    // Obtener campaña desde la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const codigoCampana = urlParams.get('campana');
+
+    // Hacer que el botón "Volver" recuerde tu campaña activa al regresar
+    const btnVolver = document.querySelector('a[href="index.html"]');
+    if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
+
+    // --- 1. SISTEMA DE MODO DÍA/NOCHE (mismo mecanismo, adaptado a las variables CSS nuevas) ---
+    function applyTheme(isDark) {
+        document.body.classList.toggle('light-mode', !isDark);
+        const btn = document.getElementById('theme-toggle');
+        if (btn) btn.innerText = isDark ? '☀️ Modo Día' : '🌙 Modo Noche';
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.classList.contains('light-mode');
+        applyTheme(isDark);
+        localStorage.setItem(`${PERSONAJE_ID}_theme`, isDark ? 'dark' : 'light');
+    }
+
+    function initTheme() {
+        const savedTheme = localStorage.getItem(`${PERSONAJE_ID}_theme`);
+        if (savedTheme) {
+            applyTheme(savedTheme === 'dark');
+        } else {
+            const hour = new Date().getHours();
+            applyTheme(hour >= 19 || hour < 7);
+        }
+    }
+
+    // --- 2. BARRA STICKY DE COMBATE ---
+    function syncStickyBar() {
+        const cur = document.getElementById('hp-current');
+        const max = document.getElementById('hp-max');
+        const scbHp = document.getElementById('scb-hp');
+        if (scbHp && cur && max) scbHp.innerText = `${cur.value || 0}/${max.value || 0}`;
+    }
+    document.getElementById('hp-current').addEventListener('input', syncStickyBar);
+    document.getElementById('hp-max').addEventListener('input', syncStickyBar);
+
+    // ============================================
+    // SISTEMA DE SUBIDA DE NIVEL (oculto) — tabla de XP homebrew de la campaña
+    // ============================================
+    const TABLA_XP_NIVELES = [
+        {nivel:1, xp:0}, {nivel:2, xp:1500}, {nivel:3, xp:4500}, {nivel:4, xp:9500},
+        {nivel:5, xp:16500}, {nivel:6, xp:25500}, {nivel:7, xp:36500}, {nivel:8, xp:49500},
+        {nivel:9, xp:64500}, {nivel:10, xp:81500}, {nivel:11, xp:100500}, {nivel:12, xp:121500},
+        {nivel:13, xp:144500}, {nivel:14, xp:169500}, {nivel:15, xp:196500}, {nivel:16, xp:225500},
+        {nivel:17, xp:256500}, {nivel:18, xp:289500}, {nivel:19, xp:324500}, {nivel:20, xp:361500}
+    ];
+
+    // Rasgos futuros de Dane (multiclase Ranger/Rogue) — nivel es el nivel DE ESA CLASE, no el total.
+    const PROXIMAS_HABILIDADES = [
+        // --- RANGER (Gloom Stalker) ---
+        {nivel: 6, clase: "Ranger", nombre: "Roving", descripcion: "Tu velocidad aumenta 3 m (10 ft) mientras no lleves armadura pesada. Además obtenés velocidad de Nado y de Escalada iguales a tu velocidad caminando. ⚠️ (posible equivalente 2024 de Land's Stride — verificar redacción exacta en el PHB)"},
+        {nivel: 7, clase: "Ranger", nombre: "Iron Mind (Gloom Stalker)", descripcion: "Ganás competencia en salvaciones de Sabiduría. Si ya tenías esa competencia, ganás competencia en salvaciones de Inteligencia o Carisma en su lugar (elegís vos cuál)."},
+        {nivel: 9, clase: "Ranger", nombre: "Pericia (Expertise)", descripcion: "Elegís dos de tus competencias en habilidades (o una habilidad y Herramientas de Ladrón) para duplicar tu bonificador de competencia en esas pruebas. ⚠️ (nivel exacto en la tabla 2024 a confirmar)"},
+        {nivel: 10, clase: "Ranger", nombre: "Tireless", descripcion: "Como acción adicional, podés otorgarte puntos de golpe temporales igual a 1d8 + tu modificador de Sabiduría (se recupera con un descanso corto tras usarlo). Al terminar un descanso corto, reducís tu nivel de agotamiento en 1. ⚠️ (posible equivalente 2024 de Hide in Plain Sight — verificar)"},
+        {nivel: 11, clase: "Ranger", nombre: "Stalker's Flurry (Gloom Stalker)", descripcion: "Una vez en cada uno de tus turnos, cuando fallás un ataque con arma, podés hacer otro ataque con arma como parte de la misma acción."},
+        {nivel: 14, clase: "Ranger", nombre: "Vanish", descripcion: "Podés esconderte (Hide) como acción adicional. Además, no podés ser rastreado por medios no mágicos a menos que decidas dejar un rastro."},
+        {nivel: 15, clase: "Ranger", nombre: "Shadowy Dodge (Gloom Stalker)", descripcion: "Cuando una criatura que podés ver te ataca, podés usar tu reacción para imponer desventaja en esa tirada de ataque. ⚠️ (verificar redacción exacta 2024)"},
+        {nivel: 18, clase: "Ranger", nombre: "Feral Senses", descripcion: "Ganás conciencia de la ubicación de criaturas invisibles dentro de 9 m (30 ft), siempre que no estén ocultas de vos y no estés cegado ni sordo. Ya no tenés desventaja al atacar criaturas invisibles que podés percibir así. ⚠️ (distancia exacta 2024 a confirmar)"},
+        {nivel: 19, clase: "Ranger", nombre: "Don Épico (Epic Boon)", descripcion: "A nivel 19 elegís un Don Épico del PHB 2024 (p. ej. Don de Destreza en Combate, Don de la Velocidad, etc.). ⚠️ (confirmar si aplica igual para variantes multiclase)"},
+        {nivel: 20, clase: "Ranger", nombre: "Foe Slayer", descripcion: "Una vez en cada uno de tus turnos, podés sumar tu modificador de Sabiduría a una tirada de ataque o de daño hecha contra una criatura. ⚠️ (redacción exacta 2024 — en 2014 estaba limitado a tu Enemigo Predilecto)"},
+
+        // --- ROGUE (Assassin) ---
+        {nivel: 5, clase: "Rogue", nombre: "Evasión de Ataque (Uncanny Dodge)", descripcion: "Cuando un atacante que podés ver te impacta con un ataque, podés usar tu reacción para reducir el daño de ese ataque a la mitad."},
+        {nivel: 5, clase: "Rogue", nombre: "Ataque Furtivo mejora a 3d6", descripcion: "El dado de Ataque Furtivo aumenta de 2d6 a 3d6."},
+        {nivel: 6, clase: "Rogue", nombre: "Pericia (Expertise) — segunda aplicación", descripcion: "Elegís dos competencias más (habilidades o Herramientas de Ladrón) para duplicar tu bonificador de competencia en esas pruebas."},
+        {nivel: 7, clase: "Rogue", nombre: "Evasión (Evasion)", descripcion: "Cuando sos sometido a un efecto que permite una tirada de salvación de Destreza para recibir la mitad de daño, no recibís nada de daño con un resultado exitoso y solo la mitad con un fallo."},
+        {nivel: 7, clase: "Rogue", nombre: "Ataque Furtivo mejora a 4d6", descripcion: "El dado de Ataque Furtivo aumenta a 4d6."},
+        {nivel: 9, clase: "Rogue", nombre: "Infiltration Expertise (Assassin)", descripcion: "Podés pasar 25 po y 7 días para crear un documento de identidad falsa completo (nombre, antecedentes, etc.). Los objetos y la ropa que llevás puestos quedan ocultos como parte de un disfraz que uses. ⚠️ (verificar redacción exacta 2024)"},
+        {nivel: 9, clase: "Rogue", nombre: "Ataque Furtivo mejora a 5d6", descripcion: "El dado de Ataque Furtivo aumenta a 5d6."},
+        {nivel: 11, clase: "Rogue", nombre: "Talento Confiable (Reliable Talent)", descripcion: "Cuando hacés una prueba de habilidad para la que tenés competencia, podés tratar cualquier resultado de 9 o menos en el d20 como un 10."},
+        {nivel: 11, clase: "Rogue", nombre: "Ataque Furtivo mejora a 6d6", descripcion: "El dado de Ataque Furtivo aumenta a 6d6."},
+        {nivel: 13, clase: "Rogue", nombre: "Envenom Weapons (Assassin)", descripcion: "Como acción, aplicás veneno a hasta tres armas o piezas de munición. Un objetivo impactado debe superar una salvación de Constitución o sufrir daño de veneno adicional y quedar Envenenado hasta el final de tu próximo turno. Usos limitados por descanso largo (igual a tu modificador de Destreza, mínimo 1). ⚠️ (cantidad de daño y usos exactos a confirmar en el PHB 2024)"},
+        {nivel: 13, clase: "Rogue", nombre: "Ataque Furtivo mejora a 7d6", descripcion: "El dado de Ataque Furtivo aumenta a 7d6."},
+        {nivel: 14, clase: "Rogue", nombre: "Blindsense", descripcion: "Si podés oír, sos consciente de la ubicación de cualquier criatura escondida o invisible dentro de 3 m (10 ft) de vos."},
+        {nivel: 15, clase: "Rogue", nombre: "Mente Escurridiza (Slippery Mind)", descripcion: "Ganás competencia en salvaciones de Sabiduría. ⚠️ (en 2024 podría incluir también Carisma — verificar)"},
+        {nivel: 15, clase: "Rogue", nombre: "Ataque Furtivo mejora a 8d6", descripcion: "El dado de Ataque Furtivo aumenta a 8d6."},
+        {nivel: 17, clase: "Rogue", nombre: "Rasgo de subclase Assassin (Nvl 17)", descripcion: "Rasgo adicional de la subclase pendiente de confirmar — nombre y efecto exacto a revisar en el manual (posible mejora de Death Strike o del daño de veneno). ⚠️"},
+        {nivel: 17, clase: "Rogue", nombre: "Ataque Furtivo mejora a 9d6", descripcion: "El dado de Ataque Furtivo aumenta a 9d6."},
+        {nivel: 18, clase: "Rogue", nombre: "Elusivo (Elusive)", descripcion: "Ninguna tirada de ataque tiene ventaja contra vos mientras no estés incapacitado."},
+        {nivel: 19, clase: "Rogue", nombre: "Don Épico (Epic Boon)", descripcion: "A nivel 19 elegís un Don Épico del PHB 2024. ⚠️ (confirmar si aplica igual para variantes multiclase)"},
+        {nivel: 19, clase: "Rogue", nombre: "Ataque Furtivo mejora a 10d6", descripcion: "El dado de Ataque Furtivo aumenta a 10d6."},
+        {nivel: 20, clase: "Rogue", nombre: "Golpe de Suerte (Stroke of Luck)", descripcion: "Si tu tirada de ataque falla o fallás una prueba de habilidad, podés convertirla en un éxito. Alternativamente, si no fallás una tirada de característica, podés tratarla como si hubieras sacado un 20 natural. Uso limitado a una vez por descanso corto o largo."}
+    ];
+
+    function nivelPorXP(xpTotal) {
+        let nivel = 1;
+        for (const fila of TABLA_XP_NIVELES) if (xpTotal >= fila.xp) nivel = fila.nivel;
+        return nivel;
+    }
+    function proximoUmbralXP(xpTotal) {
+        return TABLA_XP_NIVELES.find(f => f.xp > xpTotal) || null;
+    }
+
+    function actualizarNivelYProximaXP() {
+        const xpInput = document.getElementById('xp-val');
+        if (!xpInput) return;
+        const xpActual = parseInt(xpInput.value) || 0;
+        const nivel = nivelPorXP(xpActual);
+        document.querySelectorAll('#nivel-actual-display').forEach(el => el.innerText = nivel);
+        const umbral = proximoUmbralXP(xpActual);
+        const nextInput = document.getElementById('xp-next');
+        if (nextInput) {
+            nextInput.value = umbral ? umbral.xp : xpActual;
+            nextInput.readOnly = true;
+            nextInput.style.opacity = '0.7';
+        }
+        renderizarProximasHabilidades(nivel);
+    }
+
+    function insertarFeatureCard(h) {
+        const grid = document.querySelector('.feature-grid');
+        if (!grid) return;
+        const yaExiste = Array.from(grid.querySelectorAll('.feature-card h4')).some(el => el.innerText.includes(h.nombre));
+        if (yaExiste) return;
+        const card = document.createElement('div');
+        card.className = 'feature-card';
+        card.innerHTML = `<h4>🆕 ${h.nombre} <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400;">(Nvl ${h.nivel}${h.clase ? ' — ' + h.clase : ''})</span></h4><p>${h.descripcion}</p>`;
+        grid.appendChild(card);
+    }
+
+    function obtenerHabilidadesAgregadas() {
+        try {
+            const raw = document.getElementById('habilidades-agregadas-nivel')?.value || '[]';
+            return JSON.parse(raw);
+        } catch(e) { return []; }
+    }
+
+    function restaurarHabilidadesAgregadas() {
+        const nombres = obtenerHabilidadesAgregadas();
+        if (!nombres.length || typeof PROXIMAS_HABILIDADES === 'undefined') return;
+        nombres.forEach(n => {
+            const h = PROXIMAS_HABILIDADES.find(x => x.nombre === n);
+            if (h) insertarFeatureCard(h);
+        });
+    }
+
+    function renderizarProximasHabilidades(nivelActual) {
+        const cont = document.getElementById('nivel-hab-lista');
+        if (!cont || typeof PROXIMAS_HABILIDADES === 'undefined') return;
+        const agregadas = obtenerHabilidadesAgregadas();
+        cont.innerHTML = '';
+        if (!PROXIMAS_HABILIDADES.length) {
+            cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">No hay más habilidades registradas.</p>';
+            return;
+        }
+        PROXIMAS_HABILIDADES.forEach((h, idx) => {
+            const item = document.createElement('div');
+            const agregada = agregadas.includes(h.nombre);
+            item.className = 'nivel-hab-item' + (agregada ? ' agregada' : '');
+            item.innerHTML = `
+                <h5>${agregada ? '✅' : '🔒'} Nvl ${h.nivel}${h.clase ? ' (' + h.clase + ')' : ''} — ${h.nombre}</h5>
+                <p>${h.descripcion}</p>
+                ${!agregada ? `<button type="button" data-idx="${idx}">➕ Agregar a la ficha</button>` : ''}
+            `;
+            cont.appendChild(item);
+        });
+        cont.querySelectorAll('button[data-idx]').forEach(btn => {
+            btn.onclick = () => agregarHabilidadANivel(parseInt(btn.dataset.idx));
+        });
+    }
+
+    function agregarHabilidadANivel(idx) {
+        const h = PROXIMAS_HABILIDADES[idx];
+        if (!h) return;
+        insertarFeatureCard(h);
+        const actuales = obtenerHabilidadesAgregadas();
+        if (!actuales.includes(h.nombre)) {
+            actuales.push(h.nombre);
+            const hiddenInput = document.getElementById('habilidades-agregadas-nivel');
+            if (hiddenInput) hiddenInput.value = JSON.stringify(actuales);
+            if (typeof guardarCampo === 'function') guardarCampo('habilidades-agregadas-nivel', JSON.stringify(actuales));
+        }
+        renderizarProximasHabilidades(nivelPorXP(parseInt(document.getElementById('xp-val')?.value) || 0));
+    }
+
+    function toggleNivelPopover() {
+        const p = document.getElementById('nivel-popover-panel');
+        if (p) p.classList.toggle('open');
+    }
+    function toggleXpPopover() {
+        const p = document.getElementById('xp-popover-panel');
+        if (p) p.classList.toggle('open');
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nivel-popover-wrap')) {
+            const p = document.getElementById('nivel-popover-panel');
+            if (p) p.classList.remove('open');
+        }
+        if (!e.target.closest('.xp-popover-wrap')) {
+            const p = document.getElementById('xp-popover-panel');
+            if (p) p.classList.remove('open');
+        }
+    });
+
+    // === BITÁCORA DESDE LA FICHA ===
+    function renderizarBitacoraFicha(logs) {
+        const cont = document.getElementById('bitacora-ficha-lista');
+        if (!cont) return;
+        const entradas = Object.values(logs || {}).sort((a, b) => (b.fecha || 0) - (a.fecha || 0)).slice(0, 8);
+        if (!entradas.length) {
+            cont.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);">Sin entradas todavía.</p>';
+            return;
+        }
+        cont.innerHTML = entradas.map(log => `
+            <div class="bf-entrada">
+                <div class="bf-fecha">${log.fecha ? new Date(log.fecha).toLocaleString() : ''}${log.personaje ? ' · ' + log.personaje : ''}</div>
+                ${log.titulo ? `<strong>${log.titulo}</strong>` : ''}
+                <p style="white-space:pre-wrap;margin:2px 0 0;">${log.texto || ''}</p>
+            </div>
+        `).join('');
+    }
+    function guardarEntradaBitacoraFicha() {
+        if (!codigoCampana) { alert('Esta ficha no está asociada a ninguna campaña.'); return; }
+        const tituloEl = document.getElementById('bitacora-ficha-titulo');
+        const textoEl = document.getElementById('bitacora-ficha-texto');
+        const texto = (textoEl.value || '').trim();
+        if (!texto) return;
+        db.ref(`campanas/${codigoCampana}/bitacora`).push({
+            titulo: (tituloEl.value || '').trim(),
+            texto: texto,
+            fecha: firebase.database.ServerValue.TIMESTAMP,
+            personaje: NOMBRE_PERSONAJE_FICHA
+        }).then(() => {
+            tituloEl.value = '';
+            textoEl.value = '';
+        }).catch(err => alert('No se pudo guardar la entrada en la bitácora: ' + err.message));
+    }
+    document.getElementById('xp-val')?.addEventListener('input', actualizarNivelYProximaXP);
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); }, 800);
+    });
+
+    // --- 3. DICE ROLLER SYSTEM ---
+    function rollAttack(name, modifier) {
+        const rollType = document.querySelector('input[name="rollType"]:checked').value;
+        const d1 = Math.floor(Math.random() * 20) + 1;
+        const d2 = Math.floor(Math.random() * 20) + 1;
+
+        let result = 0;
+        let calc = "";
+
+        if (rollType === 'advantage') {
+            result = Math.max(d1, d2) + modifier;
+            calc = `[d20: max(${d1}, ${d2}) + ${modifier}]`;
+        } else if (rollType === 'disadvantage') {
+            result = Math.min(d1, d2) + modifier;
+            calc = `[d20: min(${d1}, ${d2}) + ${modifier}]`;
+        } else {
+            result = d1 + modifier;
+            calc = `[d20: ${d1} + ${modifier}]`;
+        }
+        displayRollResult(name, result, calc);
+    }
+
+    function rollGenericDamage(name, count, size, modifier) {
+        let total = 0;
+        let rolls = [];
+        for (let i = 0; i < count; i++) {
+            let r = Math.floor(Math.random() * size) + 1;
+            rolls.push(r);
+            total += r;
+        }
+        total += modifier;
+        const calc = `[${count}d${size}: (${rolls.join('+')}) + ${modifier}]`;
+        displayRollResult(name, total, calc);
+    }
+
+    function displayRollResult(name, result, calc) {
+        const history = document.getElementById('rollHistory');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span>${name} <span class="log-calc">${calc}</span></span> <b>${result}</b>`;
+        history.appendChild(entry);
+        history.scrollTop = history.scrollHeight;
+
+        if (typeof codigoCampana !== 'undefined' && codigoCampana) {
+            db.ref(`campanas/${codigoCampana}/tiradas`).push({
+                personaje: "Dane",
+                tipo: name,
+                resultado: result,
+                fecha: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+    }
+
+    function clearDiceHistory() {
+        document.getElementById('rollHistory').innerHTML = '';
+    }
+
+    // --- 4. AUTENTICACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL CON FIREBASE ---
+    document.addEventListener("DOMContentLoaded", () => {
+        initTheme();
+        syncStickyBar();
+    });
+
+    function dbKeyFor(id) {
+        // Mapeo especial para HP actual con el panel del GM
+        return id === 'hp-current' ? 'hp-cur' : id;
+    }
+
+    let modoLectura = false; // Guardia en cliente (defensa en profundidad, además de las reglas de Firebase)
+    let ownerReparado = false; // Evita repetir el auto-reclamo de owner en cada snapshot
+
+    function guardarCampo(fieldId, value) {
+        if (modoLectura) return;
+        if (charRef) charRef.child('datos/' + dbKeyFor(fieldId)).set(value);
+    }
+
+    function aplicarModoLectura(soloLectura) {
+        const container = document.querySelector('.container');
+        const banner = document.getElementById('readonly-banner');
+        if (!container) return;
+        modoLectura = soloLectura;
+        container.classList.toggle('readonly-mode', soloLectura);
+        if (banner) banner.style.display = soloLectura ? 'block' : 'none';
+        container.querySelectorAll('input, select, textarea').forEach(el => {
+            el.disabled = soloLectura;
+        });
+    }
+
+    function sincronizarDatosDesdeNube() {
+        if (!charRef) return;
+        charRef.child('datos').on('value', (snapshot) => {
+            const datos = snapshot.val();
+            if (!datos) return;
+            document.querySelectorAll('input').forEach(el => {
+                if (!el.id || el.type === 'radio') return;
+                const dbKey = dbKeyFor(el.id);
+                if (datos[dbKey] !== undefined) {
+                    if (el.type === 'checkbox') {
+                        if (el.checked !== datos[dbKey]) el.checked = datos[dbKey];
+                    } else if (document.activeElement !== el && el.value !== String(datos[dbKey])) {
+                        el.value = datos[dbKey];
+                    }
+                }
+            });
+            syncStickyBar();
+        });
+    }
+
+    // Guardar automáticamente al cambiar cualquier campo
+    document.addEventListener('change', (e) => {
+        if (e.target.matches('input') && e.target.id && e.target.type !== 'radio') {
+            const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+            guardarCampo(e.target.id, val);
+        }
+    });
+
+    // Bloquea la carga de la ficha si la campaña ya tiene asignado un sistema de juego
+    // distinto al de este personaje (ej. abrir una ficha de D&D dentro de una campaña de CoC).
+    function bloquearPorSistemaIncorrecto(sistemaCampana) {
+        document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
+            <div style="font-size:3rem;">⚠️</div>
+            <h1 style="font-size:1.3rem;color:#e0b84a;">Ficha fuera de sistema</h1>
+            <p style="max-width:420px;color:#94a3b8;">Esta ficha es de <strong>${SISTEMA_PERSONAJE_PROPIO === 'coc' ? 'Call of Cthulhu' : 'D&D'}</strong> y la campaña seleccionada es de <strong>${sistemaCampana === 'coc' ? 'Call of Cthulhu' : 'D&D'}</strong>. No se puede abrir esta ficha desde esa campaña.</p>
+            <a href="index.html?campana=${codigoCampana}" style="color:#e0b84a;text-decoration:underline;">← Volver al selector de personajes</a>
+        </div>`;
+    }
+
+    // 1. SINCRONIZACIÓN ASÍNCRONA CON FIREBASE AUTH
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            console.log("Sesión activa detectada en la ficha de Dane:", user.uid);
+
+            if (codigoCampana) {
+                const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
+                const sistemaCampana = sistemaSnap.val();
+                if (sistemaCampana && sistemaCampana !== SISTEMA_PERSONAJE_PROPIO) {
+                    bloquearPorSistemaIncorrecto(sistemaCampana);
+                    return;
+                }
+            }
+
+            if (codigoCampana) {
+                charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+            } else {
+                charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+            }
+
+            sincronizarDatosDesdeNube();
+
+            if (codigoCampana) {
+                bitacoraCampanaListener = db.ref(`campanas/${codigoCampana}/bitacora`);
+                bitacoraCampanaListener.on('value', snap => renderizarBitacoraFicha(snap.val() || {}));
+            } else {
+                const bitacoraWrap = document.getElementById('bitacora-section');
+                if (bitacoraWrap) bitacoraWrap.style.display = 'none';
+            }
+
+            const gmRefPromise = codigoCampana
+                ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+                : Promise.resolve(true);
+
+            // Control del botón de compartir y del modo de solo lectura
+            gmRefPromise.then(soyElGM => {
+            charRef.on('value', snap => {
+                const p = snap.val();
+                if (!p) return;
+
+                // Auto-reparación: personaje activo sin owner (dato legacy) -> quien lo abre lo reclama.
+                if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+                    ownerReparado = true;
+                    charRef.child('owner').set(user.uid);
+                    return;
+                }
+
+                const esMio = codigoCampana ? (p.owner === user.uid) : true;
+                const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+                aplicarModoLectura(soloLectura);
+
+                const btnCompartir = document.getElementById('btn-compartir');
+
+                if (btnCompartir && esMio) {
+                    btnCompartir.style.display = 'inline-block';
+                    btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+                    btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+
+                    btnCompartir.onclick = () => {
+                        charRef.child('publico').set(!p.publico);
+                    };
+                } else if (btnCompartir) {
+                    btnCompartir.style.display = 'none';
+                }
+            });
+            });
+        } else {
+            console.warn("Ficha sin sesión activa. Redirigiendo...");
+            window.location.href = "index.html";
+        }
+    });
+
+
+const INVENTARIO_INICIAL = [
+  { nombre: `Amulet of the Linked Minds`, descripcion: `Telepathic communication across any distance/plane with its twin. Shares thoughts/emotions exclusively.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Hyperborean Crossbow`, descripcion: `+1 Weapon. Deals damage -> DC 15 Con save or speed halved. Can target a surface for 5ft radius frozen difficult terrain (1 min).`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Mindmugger Mitts`, descripcion: `Advantage on Sleight of Hand. (3/day) Bonus Action touch: DC 10 + 1/2 level Wis save or target forgets the entire round.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Phantom Steps`, descripcion: `Move silently, leave no trace, bypass floor traps. (1/day) Click heels to move through creatures/objects until end of turn.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Ring of the Smiling Sphinx`, descripcion: `Immune to mind/emotion reading and Divination (Scrying). Disadvantage on Insight checks against you. Can store 1 perfect memory.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `The Corpse Mask`, descripcion: `(2/day) For 1 hour, take the appearance of a humanoid you saw die while wearing the mask (stores up to 5 faces).`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Potion of Choice`, descripcion: `Drink to gain Advantage on one check/save/attack within 10 mins, OR reroll one and use the new result.`, cantidad: 1, precio: 0, equipado: false },
+  { nombre: `Reveal (Mask)`, descripcion: `Passively reveals AC of creatures within 60ft. Advantage on perception/surprise initiative. (Prof. Bonus/day) Advantage on a check, save, or attack.`, cantidad: 1, precio: 0, equipado: false }
+];
+
+// === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) ===
+let inventario = [];
+let editandoIdxInventario = null;
+
+function cargarInventarioInicialSiVacio() {
+  if (!inventario.length && typeof INVENTARIO_INICIAL !== 'undefined') {
+    inventario = INVENTARIO_INICIAL.map(it => ({...it}));
+  }
+}
+
+function guardarInventario() {
+  const json = JSON.stringify(inventario);
+  const hidden = document.getElementById('inventario-json');
+  if (hidden) hidden.value = json;
+  if (typeof guardarCampo === 'function') {
+    guardarCampo('inventario-json', json);
+  } else if (hidden) {
+    hidden.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+function renderizarInventario() {
+  const cont = document.getElementById('inventario-lista');
+  const totalEl = document.getElementById('inventario-total');
+  if (!cont) return;
+  cont.innerHTML = '';
+  if (!inventario.length) {
+    cont.innerHTML = '<p class="inventory-empty">No hay ítems en el inventario.</p>';
+  }
+  let valorTotal = 0;
+  inventario.forEach((item, idx) => {
+    const cant = parseFloat(item.cantidad) || 1;
+    const precio = parseFloat(item.precio) || 0;
+    valorTotal += cant * precio;
+    const div = document.createElement('div');
+    div.className = 'inventory-item';
+    div.innerHTML = `
+      <div class="inventory-item-top">
+        <div class="inventory-item-name">
+          <input type="checkbox" ${item.equipado ? 'checked' : ''} onchange="toggleEquipadoInventario(${idx}, this.checked)" title="Equipado / Portado">
+          ${item.nombre || '(sin nombre)'}
+          <span class="inventory-item-meta">${cant != 1 ? '×' + cant : ''} ${precio ? '· ' + precio + ' po' : ''}</span>
+        </div>
+        <div class="inventory-item-actions">
+          <button type="button" onclick="editarItemInventario(${idx})">✏️ Editar</button>
+          <button type="button" onclick="eliminarItemInventario(${idx})">🗑️</button>
+        </div>
+      </div>
+      ${item.descripcion ? `<div class="inventory-item-desc">${item.descripcion}</div>` : ''}
+    `;
+    cont.appendChild(div);
+  });
+  if (totalEl) totalEl.textContent = valorTotal > 0 ? `💰 Valor total estimado: ${valorTotal} po` : '';
+}
+
+function toggleEquipadoInventario(idx, checked) {
+  if (!inventario[idx]) return;
+  inventario[idx].equipado = checked;
+  guardarInventario();
+}
+
+function mostrarFormularioInventario(idx) {
+  editandoIdxInventario = (typeof idx === 'number') ? idx : null;
+  const item = (editandoIdxInventario !== null) ? inventario[editandoIdxInventario] : { nombre: '', descripcion: '', cantidad: 1, precio: 0, equipado: false };
+  const cont = document.getElementById('inventario-form-container');
+  if (!cont) return;
+  cont.innerHTML = `
+    <div class="inventory-form">
+      <div class="inventory-form-row">
+        <label>Nombre<input type="text" id="inv-form-nombre" value="${(item.nombre || '').replace(/"/g,'&quot;')}"></label>
+        <label>Cantidad<input type="number" id="inv-form-cantidad" value="${item.cantidad ?? 1}" min="1"></label>
+        <label>Precio (po)<input type="number" id="inv-form-precio" value="${item.precio ?? 0}" min="0"></label>
+      </div>
+      <div class="inventory-form-row">
+        <label style="flex: 1 1 100%;">Descripción / Notas<textarea id="inv-form-descripcion" rows="2">${item.descripcion || ''}</textarea></label>
+      </div>
+      <div class="inventory-form-row">
+        <label style="flex-direction: row; align-items: center; gap: 6px;"><input type="checkbox" id="inv-form-equipado" ${item.equipado ? 'checked' : ''}> Equipado / Portado</label>
+      </div>
+      <div class="inventory-form-actions">
+        <button type="button" onclick="cerrarFormularioInventario()">Cancelar</button>
+        <button type="button" onclick="guardarItemDesdeFormulario()">💾 Guardar</button>
+      </div>
+    </div>
+  `;
+}
+
+function cerrarFormularioInventario() {
+  editandoIdxInventario = null;
+  const cont = document.getElementById('inventario-form-container');
+  if (cont) cont.innerHTML = '';
+}
+
+function guardarItemDesdeFormulario() {
+  const nombreEl = document.getElementById('inv-form-nombre');
+  const nombre = nombreEl ? nombreEl.value.trim() : '';
+  if (!nombre) { alert('El ítem necesita un nombre.'); return; }
+  const descEl = document.getElementById('inv-form-descripcion');
+  const cantEl = document.getElementById('inv-form-cantidad');
+  const precioEl = document.getElementById('inv-form-precio');
+  const equipEl = document.getElementById('inv-form-equipado');
+  const nuevoItem = {
+    nombre: nombre,
+    descripcion: descEl ? descEl.value.trim() : '',
+    cantidad: cantEl ? (parseInt(cantEl.value) || 1) : 1,
+    precio: precioEl ? (parseFloat(precioEl.value) || 0) : 0,
+    equipado: equipEl ? equipEl.checked : false
+  };
+  if (editandoIdxInventario !== null) {
+    inventario[editandoIdxInventario] = nuevoItem;
+  } else {
+    inventario.push(nuevoItem);
+  }
+  cerrarFormularioInventario();
+  guardarInventario();
+  renderizarInventario();
+}
+
+function editarItemInventario(idx) {
+  mostrarFormularioInventario(idx);
+}
+
+function eliminarItemInventario(idx) {
+  if (!inventario[idx]) return;
+  if (!confirm('¿Eliminar "' + inventario[idx].nombre + '" del inventario?')) return;
+  inventario.splice(idx, 1);
+  guardarInventario();
+  renderizarInventario();
+}
+
+function restaurarInventarioDesdeDatos(json) {
+  try {
+    const parsed = JSON.parse(json);
+    if (Array.isArray(parsed) && parsed.length) {
+      inventario = parsed;
+    } else {
+      cargarInventarioInicialSiVacio();
+    }
+  } catch(e) {
+    cargarInventarioInicialSiVacio();
+  }
+  renderizarInventario();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const raw = (document.getElementById('inventario-json') || {}).value || '[]';
+    restaurarInventarioDesdeDatos(raw);
+  }, 900);
+});
+
+</script>
+
+</body>
+</html>

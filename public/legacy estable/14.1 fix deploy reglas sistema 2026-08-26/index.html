@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Personaje - D&D</title>
+    <style>
+        :root {
+            --bg-color: #0f0f12;
+            --card-bg: #1a1a24;
+            --card-hover: #242433;
+            --accent-gold: #664d1b;
+            --accent-gold-bright: #7a6d23;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2e2e3e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 30%, #1e1b2e 0%, #0f0f12 70%);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(201, 160, 80, 0.3);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .character-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            border-color: var(--accent-gold);
+            box-shadow: 0 8px 25px rgba(201, 160, 80, 0.25);
+        }
+
+        .character-card:hover::before {
+            opacity: 1;
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #2a2a3c;
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--accent-gold);
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .character-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .btn-open {
+            margin-top: auto;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-gold-bright);
+            border: 1px solid var(--accent-gold);
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .character-card:hover .btn-open {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .seccion-campana {
+            margin: 20px auto 30px auto;
+            max-width: 450px;
+            background: rgba(26, 26, 36, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px dashed var(--accent-gold);
+        }
+        .campana-input {
+            width: 70%;
+            padding: 8px 12px;
+            background: #0f0f12;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            outline: none;
+            font-size: 0.9rem;
+            text-align-last: center;
+            cursor: pointer;
+        }
+        .campana-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        /* PANEL GM */
+        .panel-gm-container {
+            display: none;
+            margin: 0 auto 30px auto;
+            max-width: 800px;
+            text-align: left;
+            background: rgba(201, 160, 80, 0.05);
+            border: 2px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .panel-gm-title {
+            font-family: Georgia, serif;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ENCABEZADO Y CONTROL DE ACCESO -->
+        <header>
+            <h1>Fichas de Personaje</h1>
+            <p class="subtitle" id="user-welcome">Cargando estado...</p>
+            <button id="btn-login" class="btn-open" style="margin-top: 15px; background: #db4437; color: white; border-color: #db4437; cursor: pointer;">🔐 Entrar con Google</button>
+            <button id="btn-logout" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">🚪 Cerrar Sesión</button>
+            
+            <!-- Formulario para ingreso con Correo dummy -->
+<div id="login-email-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px; max-width: 250px; margin: 15px auto 0 auto;">
+    <input type="email" id="login-email" placeholder="Correo electrónico" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: #0f0f12; color: white; font-size: 0.9rem;">
+    <input type="password" id="login-password" placeholder="Contraseña" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: #0f0f12; color: white; font-size: 0.9rem;">
+    <button id="btn-login-email" class="btn-open" style="cursor: pointer; background: var(--accent-gold); color: #000; font-size: 0.8rem;">✉️ Entrar con Correo</button>
+</div>
+        </header>
+
+        <!-- 1. SELECTOR DE CAMPAÑA -->
+        <div class="seccion-campana" id="campana-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase;">Campañas Compartidas</p>
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                <select id="codigo-campana" class="campana-input"></select>
+                <button id="btn-reclamar-gm" class="btn-open" style="display: none;">👑 Modo GM</button>
+            </div>
+            <p id="badge-sistema-campana" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;"></p>
+        </div>
+
+        <!-- 1.5 SISTEMA DE JUEGO DE LA CAMPAÑA (D&D / CoC) -->
+        <div class="seccion-campana" id="sistema-campana-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">⚠️ Esta campaña todavía no tiene un sistema de juego asignado. Elegilo una vez (queda guardado para siempre):</p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="btn-sistema-dnd" class="btn-open" style="cursor:pointer;">⚔️ D&D</button>
+                <button id="btn-sistema-coc" class="btn-open" style="cursor:pointer;">🐙 Call of Cthulhu</button>
+            </div>
+        </div>
+
+        <!-- 2. CREAR / ELEGIR PERSONAJE -->
+<div class="seccion-campana" id="crear-personaje-container" style="display: none;">
+    <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">Añadir Personaje a la Campaña</p>
+    <select id="select-template-personaje" class="campana-input"></select>
+</div>
+        
+
+        <!-- 3. PANTALLA DEL DIRECTOR (GM) -->
+        <div class="panel-gm-container" id="panel-gm" style="display: none;">
+            <h2 class="panel-gm-title">🧙‍♂️ Pantalla del Director (GM)</h2>
+            <div id="grid-vitales-gm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;"></div>
+            <!-- Notas exclusivas de GM -->
+            <div style="margin-top: 25px;">
+                <p style="color: var(--accent-gold);">📝 Notas Secretas GM:</p>
+                <textarea id="notas-gm-area" style="width: 100%; height: 100px; background: #0f0f12; color: white; border-radius: 6px; padding: 8px; border: 1px solid var(--border-color);"></textarea>
+            </div>
+            <!-- Historial de Dados -->
+            <div style="margin-top: 25px; display: flex; justify-content: space-between;">
+                <p style="color: var(--accent-gold);">🎲 Historial de Tiradas:</p>
+                <button id="btn-limpiar-tiradas" class="btn-open">🗑️ Limpiar</button>
+            </div>
+            <div id="lista-tiradas-gm" style="max-height: 150px; overflow-y: auto; background: #0f0f12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace;"></div>
+        </div>
+
+        <!-- 4. BITÁCORA DE SESIÓN -->
+        <div class="seccion-campana" id="bitacora-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">📜 Bitácora e Historial</p>
+            <input type="text" id="titulo-entrada" style="width: 100%; margin-bottom: 8px; padding: 8px; background: #0f0f12; color: white; border: 1px solid var(--border-color); border-radius: 6px;" placeholder="Título del suceso...">
+            <textarea id="nueva-entrada" style="width: 100%; height: 80px; background: #0f0f12; color: white; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px;" placeholder="Escribe la historia..."></textarea>
+            <button id="btn-add-log" class="btn-open" style="margin-top: 8px;">Guardar Entrada</button>
+            <input type="text" id="buscar-bitacora" style="width: 100%; margin-top: 15px; padding: 8px; background: #0f0f12; color: white; border-radius: 6px; border: 1px solid var(--border-color);" placeholder="🔍 Filtrar bitácora...">
+            <div id="lista-bitacora" style="margin-top: 15px; max-height: 180px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- 5. REJILLA DE PERSONAJES ACTIVOS -->
+        <div class="character-grid" style="display: none;"></div>
+
+        <footer>
+            <p>Sincronización en tiempo real vía Firebase</p>
+        </footer>
+    </div>
+
+    <!-- SDKS DE FIREBASE (Compat v9) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN E INSTANCIAS DE FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+            authDomain: "personajes-rol.firebaseapp.com",
+            databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+            projectId: "personajes-rol"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ELEMENTOS DOM
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const welcomeText = document.getElementById('user-welcome');
+        const campanaContainer = document.getElementById('campana-container');
+        const selectCampana = document.getElementById('codigo-campana');
+        const gridPersonajes = document.querySelector('.character-grid');
+        const crearPersonajeContainer = document.getElementById('crear-personaje-container');
+        const selectTemplatePersonaje = document.getElementById('select-template-personaje');
+        const btnReclamarGM = document.getElementById('btn-reclamar-gm');
+        const panelGm = document.getElementById('panel-gm');
+        const gridVitalesGm = document.getElementById('grid-vitales-gm');
+        const textareaNotasGM = document.getElementById('notas-gm-area');
+        const bitacoraContainer = document.getElementById('bitacora-container');
+        const nuevaEntrada = document.getElementById('nueva-entrada');
+        const btnAddLog = document.getElementById('btn-add-log');
+        const listaBitacora = document.getElementById('lista-bitacora');
+        const buscarBitacora = document.getElementById('buscar-bitacora');
+        const loginEmailForm = document.getElementById('login-email-form');
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const btnLoginEmail = document.getElementById('btn-login-email');
+        const sistemaCampanaContainer = document.getElementById('sistema-campana-container');
+        const badgeSistemaCampana = document.getElementById('badge-sistema-campana');
+        const btnSistemaDnd = document.getElementById('btn-sistema-dnd');
+        const btnSistemaCoc = document.getElementById('btn-sistema-coc');
+
+
+        let miUidActual = null;
+        let esDirector = false;
+        let personajesListener = null, notasGmListener = null, bitacoraListener = null, tiradasListener = null, sistemaCampanaListener = null;
+        // Estado de sistema de juego (D&D / CoC) de la campaña abierta, y último snapshot de
+        // personajes recibido — se guardan acá para poder re-renderizar la grilla tanto cuando
+        // cambian los personajes como cuando cambia (o recién llega) el sistema de la campaña.
+        let sistemaCampanaActual = null;
+        let ultimoPersonajesSnap = null;
+        let soyElGMActual = false;
+
+        // Sistema de juego al que pertenece cada personaje (independiente de en qué campaña
+        // termine cargado). Se usa para que una campaña de D&D no pueda sumar personajes de
+        // Call of Cthulhu y viceversa. Actualizar acá al sumar un personaje nuevo.
+        const SISTEMA_PERSONAJE = {
+            fiona_faraway: 'dnd',
+            nevada_jones: 'coc',
+            myrklogi_mangarisonn: 'dnd',
+            dane: 'dnd',
+            eldur: 'dnd',
+            ulreek: 'dnd',
+            muldar: 'dnd',
+            hannoghar: 'dnd',
+            sporium: 'dnd'
+        };
+        const NOMBRE_SISTEMA = { dnd: 'D&D', coc: 'Call of Cthulhu' };
+
+        // PLANTILLAS POR DEFECTO
+        const plantillasPersonajes = {
+            fiona_faraway: { nombre: "Fiona Faraway", clase: "Druida Shepherd 8", datos: { "hp-cur": 59, "hp-max": 70 } },
+            nevada_jones: { nombre: "Nevada Jones", clase: "Arqueólogo", datos: { "hp-cur": 50, "hp-max": 50 } },
+            myrklogi_mangarisonn: { nombre: "Myrklogi Mangarisonn", clase: "Wizard 9", datos: { "hp-cur": 70, "hp-max": 70 } },
+            dane: { nombre: "Dane", clase: "Ranger / Rogue", datos: { "hp-cur": 70, "hp-max": 70 } },
+            eldur: { nombre: "Eldur Redmane", clase: "Monje / Clérigo", datos: { "hp-cur": 52, "hp-max": 70 } },
+            ulreek: { nombre: "Ulreek", clase: "Hechicero", datos: { "hp-cur": 70, "hp-max": 70 } },
+            muldar: { nombre: "Muldar", clase: "Bárbaro", datos: { "hp-cur": 70, "hp-max": 70 } },
+            hannoghar: { nombre: "Hannoghar", clase: "Paladín", datos: { "hp-cur": 66, "hp-max": 66 } },
+            sporium: { nombre: "Sporium", clase: "druida callampero 8", datos: { "hp-cur": 70, "hp-max": 70 } }
+
+        };
+
+        // ==========================================
+        // CONTROL DE SESIÓN (AUTH STATE CHANGED) [1]
+        // ==========================================
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            miUidActual = user.uid;
+            welcomeText.innerText = `¡Hola, ${user.displayName || user.email}!`; // Muestra el correo si no hay nombre
+            btnLogin.style.display = 'none';
+            loginEmailForm.style.display = 'none'; // <-- OCULTAR FORMULARIO AL LOGUEARSE
+            btnLogout.style.display = 'inline-block';
+            campanaContainer.style.display = 'block';
+            cargarCampanas();
+          } else {
+            miUidActual = null;
+            welcomeText.innerText = "Inicia sesión para jugar";
+            btnLogin.style.display = 'inline-block';
+            loginEmailForm.style.display = 'flex'; // <-- MOSTRAR FORMULARIO AL DESLOGUEARSE
+            btnLogout.style.display = 'none';
+            ocultarModulos();
+          }
+        });
+
+
+        btnLogin.onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
+
+        btnLogout.onclick = () => firebase.auth().signOut();
+
+        // Login con Correo y Contraseña
+btnLoginEmail.onclick = () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || !password) return alert('Por favor, completa todos los campos.');
+
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(() => {
+      // Limpia los campos tras un login exitoso
+      emailInput.value = '';
+      passwordInput.value = '';
+    })
+    .catch(error => alert('Error al iniciar sesión: ' + error.message));
+};
+
+
+        // ==========================================
+        // GESTIÓN DE CAMPAÑAS
+        // ==========================================
+        function cargarCampanas() {
+    // Cambiado 'campanas' por 'lista_campanas'
+    db.ref('lista_campanas').once('value', (snap) => {
+        const campanas = snap.val();
+        selectCampana.innerHTML = '<option value="">-- Selecciona Campaña --</option>';
+        if (campanas) {
+            Object.keys(campanas).forEach(codigo => {
+                const opt = document.createElement('option');
+                opt.value = codigo;
+                opt.innerText = campanas[codigo].nombre || codigo;
+                selectCampana.appendChild(opt);
+            });
+        }
+
+        // --- NUEVO: Detectar campaña activa en la URL y cargarla al instante ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlCampana = urlParams.get('campana');
+        
+        // Si hay una campaña en la URL y existe en la lista, la seleccionamos
+        if (urlCampana && selectCampana.querySelector(`option[value="${urlCampana}"]`)) {
+            selectCampana.value = urlCampana;
+            // Disparamos el evento de cambio para activar la sincronización
+            selectCampana.dispatchEvent(new Event('change'));
+        }
+    });
+}
+
+
+
+        selectCampana.addEventListener('change', (e) => {
+            const campanaId = e.target.value;
+
+            // Remover listeners previos para optimizar performance [2]
+            if (personajesListener) personajesListener.off();
+            if (notasGmListener) notasGmListener.off();
+            if (bitacoraListener) bitacoraListener.off();
+            if (tiradasListener) tiradasListener.off();
+            if (sistemaCampanaListener) sistemaCampanaListener.off();
+
+            panelGm.style.display = 'none';
+            esDirector = false;
+            btnReclamarGM.innerText = '👑 Modo GM';
+
+            // Reset del estado de sistema/personajes al cambiar de campaña, para no arrastrar
+            // el badge o los datos de la campaña anterior mientras carga la nueva.
+            sistemaCampanaActual = null;
+            ultimoPersonajesSnap = null;
+            soyElGMActual = false;
+            sistemaCampanaContainer.style.display = 'none';
+            badgeSistemaCampana.innerText = '';
+
+            if (campanaId) {
+                activarSincronizacionCampana(campanaId);
+            } else {
+                ocultarModulos();
+            }
+        });
+
+        // ==========================================
+        // SINCRONIZACIÓN EN TIEMPO REAL (RTDB) [2]
+        // ==========================================
+        // ==========================================
+        // RENDERIZADO DE LA GRILLA DE PERSONAJES
+        // ==========================================
+        // Extraído a función aparte (antes vivía inline dentro del listener de personajes) para
+        // poder volver a pintar la grilla tanto cuando cambian los personajes como cuando llega
+        // o cambia el sistema de juego de la campaña (sistemaCampanaActual) — ambos listeners
+        // llaman a esta misma función.
+        function renderizarGrid(campanaId) {
+            const personajes = ultimoPersonajesSnap;
+            const soyElGM = soyElGMActual;
+            gridPersonajes.innerHTML = '';
+            gridVitalesGm.innerHTML = '';
+            actualizarSelectorPlantillas(personajes);
+
+            if (!personajes) return;
+
+            Object.keys(personajes).forEach(id => {
+    const p = personajes[id];
+    // Antes esto solo ocultaba cuando 'activo' era exactamente false. Un personaje con
+    // datos pero SIN el campo 'activo' (dato suelto/manual) pasaba el filtro igual.
+    if (!p.activo) return;
+
+    // Separación por sistema de juego (D&D / CoC): si la campaña ya tiene un sistema
+    // asignado y este personaje pertenece a otro, no se muestra. Si además soy su dueño
+    // o el GM, se aprovecha para autocorregir el dato desactivándolo (owner:null,
+    // activo:false, publico:false) — esto limpia casos legacy donde un personaje quedó
+    // cargado en la campaña equivocada (p.ej. por el bug que permitía elegirlo desde el
+    // selector sin importar el sistema).
+    const sistemaPersonaje = SISTEMA_PERSONAJE[id];
+    if (sistemaCampanaActual && sistemaPersonaje && sistemaPersonaje !== sistemaCampanaActual) {
+        if (soyElGM || p.owner === miUidActual) {
+            db.ref(`campanas/${campanaId}/personajes/${id}`).update({ owner: null, activo: false, publico: false });
+        }
+        return;
+    }
+
+    const esMio = p.owner === miUidActual;
+    const tieneDueño = !!p.owner;
+    const esPublico = p.publico === true;
+
+    // Regla de Visibilidad (para quien no es dueño ni GM):
+    //  - Si tiene dueño y no es público, se oculta (ficha privada de otro jugador).
+    //  - Si NO tiene dueño, también se oculta: es un personaje "huérfano" (activo pero
+    //    sin owner asignado, típicamente dato legacy) — solo el GM debe verlo y decidir
+    //    qué hacer, para que ningún jugador lo reclame por accidente con solo mirarlo.
+    if (!esMio && !soyElGM) {
+        if (tieneDueño && !esPublico) return;
+        if (!tieneDueño) return;
+    }
+
+    // Identificar si entro como invitado (es de otro pero es público)
+    const esInvitado = tieneDueño && !esMio && !soyElGM && esPublico;
+
+    const card = document.createElement('div');
+    card.className = 'character-card';
+    card.innerHTML = `
+        <div class="avatar-placeholder">🛡️</div>
+        <div class="character-name">${p.nombre || 'Héroe'}</div>
+        <div class="character-title">
+            ${p.clase}
+            ${esInvitado ? '<br><span style="font-size:0.75rem; background:#4a5568; padding:2px 6px; border-radius:4px; color:#fff;">👁️ Invitado</span>' : ''}
+        </div>
+
+        ${esInvitado ? `<div style="margin: 6px 0; font-size:0.7rem; color:var(--text-muted);">👁️ Viendo en modo lectura</div>` : ''}
+
+        <button class="btn-open btn-ficha" style="margin-bottom:8px;">📂 Ficha</button>
+        <button class="btn-open btn-tirar" style="margin-bottom:8px; background: rgba(201,160,80,0.1);">🎲 Tirar d20</button>
+        ${(esMio || soyElGM) ? `<button class="btn-quitar" style="background:transparent; border:none; color:#c94a4a; cursor:pointer; margin-top:8px;">❌ Quitar de mi lista</button>` : ''}
+    `;
+
+                    const btnFicha = card.querySelector('.btn-ficha');
+    if (btnFicha) {
+        btnFicha.onclick = () => {
+            let destino = "index.html";
+            const name = p.nombre.toLowerCase();
+                            if (name.includes("fiona")) destino = "fiona_faraway.html";
+                            if (name.includes("eldur")) destino = "eldur.html";
+                            if (name.includes("dane")) destino = "dane.html";
+                            if (name.includes("hannoghar")) destino = "hannoghar.html";
+                            if (name.includes("myrklogi")) destino = "myrklogi_mangarisonn.html";
+                            if (name.includes("nevada")) destino = "nevada_jones.html";
+                            if (name.includes("muldar")) destino = "muldar.html";
+                            if (name.includes("sporium")) destino = "sporium.html";
+                            window.location.href = `${destino}?campana=${campanaId}`;
+                        };
+                    }
+
+                    card.querySelector('.btn-tirar').onclick = () => {
+                        const result = Math.floor(Math.random() * 20) + 1;
+                        db.ref(`campanas/${campanaId}/tiradas`).push({
+                            personaje: p.nombre || "Héroe Misterioso",
+                            resultado: result,
+                            fecha: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    };
+
+                    const quiBtn = card.querySelector('.btn-quitar');
+                    if (quiBtn) {
+                        quiBtn.onclick = () => {
+                            if (confirm(`¿Quitar a ${p.nombre} de tu lista? Quedará libre para que cualquiera lo tome de nuevo.`)) {
+                                db.ref(`campanas/${campanaId}/personajes/${id}`).update({
+                                    owner: null,
+                                    activo: false,
+                                    publico: false
+                                });
+                            }
+                        };
+                    }
+
+                    gridPersonajes.appendChild(card);
+
+                    if (soyElGM) {
+    const hpCur = p.datos?.['hp-cur'] || 0;
+    const hpMax = p.datos?.['hp-max'] || 70;
+    const pct = Math.min((hpCur / hpMax) * 100, 100);
+
+    // 1. Buscamos qué condiciones tiene activas Fiona en Firebase
+    const datos = p.datos || {};
+    const condicionesActivas = Object.keys(datos)
+        .filter(key => (key.startsWith('cond-') || key.startsWith('buff-') || key.startsWith('debuff-')) && datos[key] === true)
+        .map(key => {
+            // Reemplazamos los IDs técnicos por emojis bonitos
+            return key.replace('cond-', '🛑 ').replace('buff-', '✨ ').replace('debuff-', '⚡ ');
+        });
+
+    const vital = document.createElement('div');
+    vital.style = "background: rgba(0,0,0,0.2); padding: 10px; border-radius:6px; border:1px solid var(--border-color);";
+    vital.innerHTML = `
+        <p style="font-weight:bold; color:var(--accent-gold);">${p.nombre || "Héroe"}</p>
+        <div style="background:#0f0f12; height:8px; border-radius:4px; overflow:hidden;">
+            <div style="background:${pct < 30 ? '#c94a4a' : 'var(--accent-gold)'}; width:${pct}%; height:100%;"></div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">HP: ${hpCur}/${hpMax}</p>
+
+        <!-- 2. Mostramos las condiciones activas en la pantalla del GM -->
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
+            ${condicionesActivas.map(cond => `<span style="font-size:0.7rem; background:#2a2a3c; padding:2px 6px; border-radius:4px; color:#fff; border:1px solid #444;">${cond}</span>`).join('')}
+        </div>
+    `;
+    gridVitalesGm.appendChild(vital);
+}
+
+                });
+        }
+
+        function activarSincronizacionCampana(campanaId) {
+    crearPersonajeContainer.style.display = 'block';
+    bitacoraContainer.style.display = 'block';
+    gridPersonajes.style.display = 'grid';
+    btnReclamarGM.style.display = 'inline-block';
+
+    // ==========================================
+    // SISTEMA DE JUEGO DE LA CAMPAÑA (D&D / CoC)
+    // ==========================================
+    // Se guarda en lista_campanas/{campanaId}/sistema. Mientras no esté asignado, se muestra
+    // el selector para que el primer usuario que abra esta campaña lo defina una sola vez
+    // (después, según las reglas de Firebase, solo el GM puede cambiarlo). Cada vez que este
+    // valor cambia (o llega por primera vez) se vuelve a pintar la grilla de personajes, para
+    // que el filtro por sistema se aplique apenas se conoce el dato.
+    sistemaCampanaListener = db.ref(`lista_campanas/${campanaId}/sistema`);
+    sistemaCampanaListener.on('value', sysSnap => {
+        sistemaCampanaActual = sysSnap.val() || null;
+
+        if (sistemaCampanaActual) {
+            sistemaCampanaContainer.style.display = 'none';
+            badgeSistemaCampana.innerText = `Sistema: ${NOMBRE_SISTEMA[sistemaCampanaActual] || sistemaCampanaActual}`;
+        } else {
+            sistemaCampanaContainer.style.display = 'block';
+            badgeSistemaCampana.innerText = '';
+        }
+
+        renderizarGrid(campanaId);
+    });
+
+    btnSistemaDnd.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('dnd');
+    btnSistemaCoc.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('coc');
+
+    db.ref(`campanas/${campanaId}/gm`).on('value', gmSnap => {
+        const campanaGmUid = gmSnap.val();
+        const soyElGM = miUidActual === campanaGmUid;
+        soyElGMActual = soyElGM;
+        const tieneGM = !!campanaGmUid;
+        console.log("TU UID ACTUAL:", miUidActual, "UID DEL GM EN DB:", campanaGmUid);
+
+        const prevBtn = document.getElementById('btn-liberar-gm');
+        if (prevBtn) prevBtn.remove();
+
+        if (!tieneGM) {
+            btnReclamarGM.style.display = 'inline-block';
+            btnReclamarGM.innerText = '👑 Reclamar Puesto GM';
+            db.ref(`campanas/${campanaId}/gm_password`).once('value', (passSnap) => {
+                const gmPasswordDb = passSnap.val();
+
+                if (!gmPasswordDb) {
+                    btnReclamarGM.innerText = '👑 Definir Clave y ser GM';
+                    btnReclamarGM.onclick = () => {
+                        const nuevaClave = prompt("Crea una contraseña para proteger el puesto de GM:");
+                        if (nuevaClave) {
+                            db.ref(`campanas/${campanaId}/gm`).set(miUidActual)
+                                .then(() => {
+                                    return db.ref(`campanas/${campanaId}/gm_password`).set(nuevaClave);
+                                })
+                                .then(() => {
+                                    console.log("Puesto de GM y clave guardados con éxito.");
+                                })
+                                .catch(error => {
+                                    console.error("Error al reclamar puesto inicialmente:", error);
+                                });
+                        }
+                    };
+                } else {
+                    btnReclamarGM.innerText = '🔑 Reclamar GM (Vacante)';
+                    btnReclamarGM.onclick = () => {
+                        const pass = prompt("Introduce la contraseña de GM para reclamar el puesto:");
+                        if (pass === gmPasswordDb) {
+                            db.ref(`campanas/${campanaId}/gm`).set(miUidActual);
+                        } else if (pass !== null) {
+                            alert("Contraseña incorrecta.");
+                        }
+                    };
+                }
+            });
+
+        } else if (soyElGM) {
+            btnReclamarGM.style.display = 'inline-block';
+            btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '👑 Modo GM';
+            
+            btnReclamarGM.onclick = () => {
+                esDirector = !esDirector;
+                panelGm.style.display = esDirector ? 'block' : 'none';
+                btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '👑 Modo GM';
+            };
+
+            const prevBtnGm = document.getElementById('btn-liberar-gm');
+            if (prevBtnGm) prevBtnGm.remove();
+
+            const btnLiberarGM = document.createElement('button');
+            btnLiberarGM.id = 'btn-liberar-gm';
+            btnLiberarGM.innerText = '⚠️ Dejar puesto de GM (Resetea Clave)';
+            btnLiberarGM.style = "background:#c94a4a; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-top:15px; width:100%; font-weight:bold;";
+            btnLiberarGM.onclick = () => {
+                if (confirm("¿Estás seguro de que quieres dejar de ser GM? Se borrará el puesto y la contraseña.")) {
+                    db.ref(`campanas/${campanaId}/gm_password`).set(null)
+                        .then(() => {
+                            return db.ref(`campanas/${campanaId}/gm`).set(null);
+                        })
+                        .then(() => {
+                            panelGm.style.display = 'none';
+                            esDirector = false;
+                            console.log("GM y contraseña reseteados exitosamente.");
+                        })
+                        .catch(error => {
+                            console.error("Error al liberar puesto secuencialmente:", error);
+                        });
+                }
+            };
+            panelGm.appendChild(btnLiberarGM);
+
+        } else {
+            btnReclamarGM.style.display = 'none';
+            panelGm.style.display = 'none';
+            esDirector = false;
+        }
+
+        if (personajesListener) personajesListener.off();
+
+        personajesListener = db.ref(`campanas/${campanaId}/personajes`);
+        personajesListener.on('value', snap => {
+            ultimoPersonajesSnap = snap.val();
+            renderizarGrid(campanaId);
+        });
+    });
+
+    bitacoraListener = db.ref(`campanas/${campanaId}/bitacora`);
+    bitacoraListener.on('value', snap => {
+        const logs = snap.val() || {};
+        renderizarLogs(logs, campanaId);
+    });
+
+    tiradasListener = db.ref(`campanas/${campanaId}/tiradas`);
+    tiradasListener.on('value', snap => {
+        const tiradas = snap.val() || {};
+        const listaTiradas = document.getElementById('lista-tiradas-gm');
+        if (!listaTiradas) return;
+
+        listaTiradas.innerHTML = '';
+        Object.keys(tiradas).reverse().forEach(key => {
+            const t = tiradas[key];
+            const fecha = new Date(t.fecha).toLocaleTimeString();
+            const div = document.createElement('div');
+            div.style = "border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.85rem; color: white;";
+            div.innerHTML = `<strong>[${fecha}] ${t.personaje}:</strong> sacó un 🎲 <strong>${t.resultado}</strong> ${t.tipo || ''}`;
+            listaTiradas.appendChild(div);
+        });
+    });
+
+    // === BOTÓN DE LIMPIAR HISTORIAL ANIDADO DENTRO DE LA FUNCIÓN === [1.1.2]
+    const btnLimpiarTiradas = document.getElementById('btn-limpiar-tiradas');
+    if (btnLimpiarTiradas) {
+        btnLimpiarTiradas.onclick = () => {
+            if (confirm("¿Estás seguro de que deseas vaciar el historial de tiradas de esta campaña?")) {
+                db.ref(`campanas/${campanaId}/tiradas`).remove();
+            }
+        };
+    }
+} // <--- LLAVE QUE CIERRA CORRECTAMENTE LA FUNCIÓN activarSincronizacionCampana [1.1.2]
+
+
+        // ==========================================
+        // FUNCIONES AUXILIARES Y RENDERIZADO
+        // ==========================================
+        function actualizarSelectorPlantillas(personajesActivos) {
+            selectTemplatePersonaje.innerHTML = '<option value="">-- Elige un Héroe --</option>';
+            Object.keys(plantillasPersonajes).forEach(id => {
+                const estaActivo = personajesActivos && personajesActivos[id] && personajesActivos[id].activo;
+                if (estaActivo) return;
+                // Si la campaña ya tiene un sistema de juego asignado, solo se puede sumar
+                // personajes de ese mismo sistema (evita mezclar D&D con Call of Cthulhu).
+                const sistemaPersonaje = SISTEMA_PERSONAJE[id];
+                if (sistemaCampanaActual && sistemaPersonaje && sistemaPersonaje !== sistemaCampanaActual) return;
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.innerText = plantillasPersonajes[id].nombre;
+                selectTemplatePersonaje.appendChild(opt);
+            });
+        }
+
+                selectTemplatePersonaje.addEventListener('change', () => {
+    const campanaId = selectCampana.value;
+    const plantillaId = selectTemplatePersonaje.value;
+    if (!campanaId || !plantillaId) return;
+
+    const ref = db.ref(`campanas/${campanaId}/personajes/${plantillaId}`);
+
+    // Transacción: solo asigna el personaje si sigue libre en ese instante.
+    // Esto evita que dos jugadores tomen el mismo personaje al mismo tiempo.
+    ref.transaction((actual) => {
+        if (actual && actual.activo) {
+            return; // ya lo tomó otro usuario justo antes -> abortamos
+        }
+        return {
+            ...plantillasPersonajes[plantillaId],
+            owner: miUidActual,
+            activo: true,
+            publico: false // Privado por defecto al asignarse
+        };
+    }, (error, committed) => {
+        selectTemplatePersonaje.value = ''; // Resetea el selector siempre
+        if (error) {
+            console.error('Error al asignar personaje:', error);
+            alert('Ocurrió un error al asignar el personaje. Intenta de nuevo.');
+        } else if (!committed) {
+            alert('Ese personaje acaba de ser tomado por otro jugador. Elige otro.');
+        }
+    });
+});
+
+
+
+        btnAddLog.onclick = () => {
+            const campanaId = selectCampana.value;
+            const tit = document.getElementById('titulo-entrada').value.trim();
+            const txt = nuevaEntrada.value.trim();
+            if (!campanaId || !txt) return;
+
+            db.ref(`campanas/${campanaId}/bitacora`).push({
+                titulo: tit,
+                texto: txt,
+                fecha: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                document.getElementById('titulo-entrada').value = '';
+                nuevaEntrada.value = '';
+            });
+        };
+
+        function renderizarLogs(logs, campanaId) {
+            listaBitacora.innerHTML = '';
+            const filtro = buscarBitacora.value.toLowerCase().trim();
+            
+            Object.keys(logs).reverse().forEach(key => {
+                const log = logs[key];
+                const fecha = new Date(log.fecha).toLocaleString();
+                
+                if (filtro && !log.texto.toLowerCase().includes(filtro) && !log.titulo.toLowerCase().includes(filtro)) return;
+
+                const div = document.createElement('div');
+                div.style = "border-bottom: 1px solid var(--border-color); padding: 8px 0; display: flex; justify-content: space-between;";
+                div.innerHTML = `
+                    <div>
+                        <small style="color:var(--accent-gold);">${fecha}</small>
+                        ${log.titulo ? `<h4>${log.titulo}</h4>` : ''}
+                        <p style="white-space: pre-wrap; font-size:0.85rem; margin-top:4px;">${log.texto}</p>
+                    </div>
+                    <button class="btn-borrar-log" style="background:none; border:none; color:#c94a4a; cursor:pointer;">❌</button>
+                `;
+
+                div.querySelector('.btn-borrar-log').onclick = () => {
+                    if (confirm('¿Eliminar registro?')) db.ref(`campanas/${campanaId}/bitacora/${key}`).remove();
+                };
+                listaBitacora.appendChild(div);
+            });
+        }
+
+        buscarBitacora.oninput = () => {
+            const campanaId = selectCampana.value;
+            if (campanaId) {
+                db.ref(`campanas/${campanaId}/bitacora`).once('value', snap => renderizarLogs(snap.val() || {}, campanaId));
+            }
+        };
+
+                function ocultarModulos() {
+            campanaContainer.style.display = 'none';
+            crearPersonajeContainer.style.display = 'none';
+            bitacoraContainer.style.display = 'none';
+            gridPersonajes.style.display = 'none';
+            panelGm.style.display = 'none';
+            btnReclamarGM.style.display = 'none';
+            sistemaCampanaContainer.style.display = 'none';
+            badgeSistemaCampana.innerText = '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Personaje - D&D</title>
+    <style>
+        :root {
+            --bg-color: #0f0f12;
+            --card-bg: #1a1a24;
+            --card-hover: #242433;
+            --accent-gold: #c9a050;
+            --accent-gold-bright: #ffd700;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2e2e3e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 30%, #1e1b2e 0%, #0f0f12 70%);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(201, 160, 80, 0.3);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .character-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            border-color: var(--accent-gold);
+            box-shadow: 0 8px 25px rgba(201, 160, 80, 0.25);
+        }
+
+        .character-card:hover::before {
+            opacity: 1;
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #2a2a3c;
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--accent-gold);
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .character-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .btn-open {
+            margin-top: auto;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-gold-bright);
+            border: 1px solid var(--accent-gold);
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .character-card:hover .btn-open {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .seccion-campana {
+            margin: 20px auto 30px auto;
+            max-width: 450px;
+            background: rgba(26, 26, 36, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px dashed var(--accent-gold);
+        }
+        .campana-input {
+            width: 70%;
+            padding: 8px 12px;
+            background: #0f0f12;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            outline: none;
+            font-size: 0.9rem;
+            text-align-last: center;
+            cursor: pointer;
+        }
+        .campana-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        /* PANEL GM */
+        .panel-gm-container {
+            display: none;
+            margin: 0 auto 30px auto;
+            max-width: 800px;
+            text-align: left;
+            background: rgba(201, 160, 80, 0.05);
+            border: 2px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .panel-gm-title {
+            font-family: Georgia, serif;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Fichas de Personaje</h1>
+            <p class="subtitle" id="user-welcome">Por favor, inicia sesión para ver tus personajes</p>
+            
+            <!-- Botones de Control de Sesión -->
+            <button id="btn-login" class="btn-open" style="margin-top: 15px; background: #db4437; color: white; border-color: #db4437; cursor: pointer;">🔐 Entrar con Google</button>
+            <button id="btn-logout" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">🚪 Cerrar Sesión</button>
+        </header>
+
+        <!-- SECCIÓN: SELECTOR DE CAMPAÑA DESPLEGABLE -->
+        <div class="seccion-campana" id="campana-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Campañas Compartidas</p>
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; align-items: center;">
+                <select id="codigo-campana" class="campana-input">
+                    <option value="">-- Selecciona una Campaña --</option>
+                </select>
+                
+                <!-- Botón para alternar rol GM / Jugador -->
+                <button id="btn-reclamar-gm" class="btn-open" style="padding: 8px 16px; font-size: 0.8rem; cursor: pointer; display: none; background: rgba(201, 160, 80, 0.2); border-color: var(--accent-gold);">👑 Modo GM</button>
+            </div>
+        </div>
+
+        <!-- NUEVO: SELECTOR PARA AÑADIR UN PERSONAJE A LA CAMPAÑA -->
+        <div class="seccion-campana" id="crear-personaje-container" style="display: none; border-color: var(--accent-light); background: rgba(255,255,255,0.02);">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">➕ Añadir Personaje a esta Campaña</p>
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; align-items: center;">
+                <select id="select-template-personaje" class="campana-input" style="width: 60%;">
+                    <option value="">-- Selecciona un Héroe --</option>
+                    <option value="fiona_faraway">🌿 Fiona Faraway (Druida)</option>
+                    <option value="nevada_jones">🤠 Nevada Jones (Arqueólogo)</option>
+                    <option value="myrklogi_mangarisonn">🧙‍♂️ Myrklogi Mangarisonn (Mago)</option>
+                    <option value="dane">🏹 Dane (Ranger/Rogue)</option>
+                    <option value="eldur">🔥 Eldur Redmane (Monje/Clérigo)</option>
+                    <option value="ulreekr">🌀 Ulreek (Hechicero)</option>
+                    <option value="muldar">🪓 Muldar (Bárbaro)</option>
+                    <option value="hannogar">🛡️ Hannogar (Paladín)</option>
+                </select>
+
+                <button id="btn-crear-personaje" class="btn-open" style="padding: 8px 16px; font-size: 0.8rem; cursor: pointer;">Añadir</button>
+            </div>
+        </div>
+
+        <!-- PANEL DEL DIRECTOR DE JUEGO (GM) -->
+<div class="panel-gm-container" id="panel-gm">
+    <h2 class="panel-gm-title">🧙‍♂️ Pantalla del Director (GM)</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Estás dirigiendo esta campaña...</p>
+    <div id="grid-vitales-gm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;"></div>
+
+    <!-- Bitácora Secreta -->
+    <div style="margin-top: 25px; border-top: 1px dashed var(--accent-gold); padding-top: 15px;">
+        <p style="color: var(--accent-gold); font-size: 0.95rem; margin-bottom: 8px; text-transform: uppercase; font-weight: bold;">📝 Bitácora Secreta:</p>
+        <textarea id="notas-gm-area" ...></textarea>
+    </div>
+
+    <!-- 👇 MUEVE TU HISTORIAL AQUÍ ADENTRO (Antes de que cierre el panel) 👇 -->
+    <div style="margin-top: 25px; border-top: 1px dashed var(--accent-gold); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <p style="color: var(--accent-gold); font-size: 0.95rem; text-transform: uppercase; font-weight: bold; margin: 0;">🎲 Historial de Tiradas en Vivo:</p>
+    <button id="btn-limpiar-tiradas" class="btn-open" style="padding: 4px 10px; font-size: 0.75rem; margin: 0; cursor: pointer; background: rgba(201, 160, 80, 0.1);">🗑️ Limpiar</button>
+</div>
+<!-- El div "lista-tiradas-gm" se queda igual justo abajo -->
+<div id="lista-tiradas-gm" style="max-height: 150px; overflow-y: auto; background: #0f0f12; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace; font-size: 0.85rem; margin-top: 8px;"></div>
+<!-- Las tiradas aparecerán aquí dinámicamente -->
+        </div>
+    </div>
+</div> <!-- Aquí cierra el #panel-gm -->
+
+                <!-- SECCIÓN: BITÁCORA Y HISTORIAL -->
+        <div class="seccion-campana" id="bitacora-container" style="display: none; border-color: var(--accent-gold);">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">📜 Bitácora e Historial de Sesión</p>
+            <div style="display: flex; gap: 8px; flex-direction: column;">
+    <!-- NUEVO: Campo de Título -->
+    <input type="text" id="titulo-entrada" style="width: 100%; padding: 8px 12px; background: #0f0f12; border: 1px solid var(--border-color); border-radius: 6px; color: white; font-size: 0.9rem;" placeholder="Título del suceso o sesión...">
+    
+    <!-- Textarea con mayor altura y redimensionable -->
+    <textarea id="nueva-entrada" style="width: 100%; height: 100px; background: #0f0f12; border: 1px solid var(--border-color); border-radius: 6px; color: white; padding: 8px; font-size: 0.9rem; resize: vertical;" placeholder="Escribe la historia o sucesos importantes..."></textarea>
+    <button id="btn-add-log" class="btn-open" style="padding: 6px 12px; font-size: 0.8rem; align-self: flex-end; cursor: pointer;">Guardar Entrada</button>
+</div>
+            
+            <!-- EL BUSCADOR QUE FALTABA (FECHAS/SESIONES/TEXTO) -->
+            <input type="text" id="buscar-bitacora" style="width: 100%; margin: 10px 0; padding: 8px; background: #0f0f12; border: 1px solid var(--border-color); color: white; border-radius: 6px; font-size: 0.85rem;" placeholder="🔍 Filtrar por sesión, fecha o texto...">
+
+            <div id="lista-bitacora" style="margin-top: 15px; text-align: left; max-height: 180px; overflow-y: auto; padding-right: 5px; font-size: 0.85rem;">
+                <!-- Las entradas con botón ❌ se cargan dinámicamente aquí -->
+            </div>
+        </div>
+
+
+        <!-- Este grid se llenará dinámicamente con los personajes de la campaña activa -->
+        <div class="character-grid" style="display: none;">
+            <!-- Las tarjetas se generan dinámicamente aquí -->
+        </div>
+
+        <footer>
+            <p>Sincronización en tiempo real vía Firebase</p>
+        </footer>
+    </div>
+
+    <!-- IMPORTACIÓN DE LIBRERÍAS DE FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+            const bitacoraContainer = document.getElementById('bitacora-container');
+      const nuevaEntrada = document.getElementById('nueva-entrada');
+      const btnAddLog = document.getElementById('btn-add-log');
+      const listaBitacora = document.getElementById('lista-bitacora');
+      const buscarBitacora = document.getElementById('buscar-bitacora'); // <-- NUEVA
+      let bitacoraListener = null;
+      let logsLocales = {}; // <-- NUEVA
+
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+        authDomain: "personajes-rol.firebaseapp.com",
+        databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+        projectId: "personajes-rol",
+        storageBucket: "personajes-rol.appspot.com",
+        messagingSenderId: "81108671440",
+        appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      const btnLogin = document.getElementById('btn-login');
+      const btnLogout = document.getElementById('btn-logout');
+      const welcomeText = document.getElementById('user-welcome');
+      const campanaContainer = document.getElementById('campana-container');
+      const selectCampana = document.getElementById('codigo-campana');
+      const gridPersonajes = document.querySelector('.character-grid');
+      const crearPersonajeContainer = document.getElementById('crear-personaje-container');
+      const selectTemplatePersonaje = document.getElementById('select-template-personaje');
+      const btnCrearPersonaje = document.getElementById('btn-crear-personaje');
+      const btnReclamarGM = document.getElementById('btn-reclamar-gm');
+      const panelGm = document.getElementById('panel-gm');
+      const gridVitalesGm = document.getElementById('grid-vitales-gm');
+      const textareaNotasGM = document.getElementById('notas-gm-area');
+
+      let esDirector = false;
+      let tiradasListener = null;
+
+
+                  const plantillasPersonajes = {
+        fiona_faraway: { 
+          nombre: "Fiona Faraway", 
+          clase: "Druida Shepherd 8", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 59, "hp-max":70} // Añadido hp-max inicial
+        },
+        nevada_jones: { 
+          nombre: "Nevada Jones", 
+          clase: "Profesor de Arqueología", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 50, "hp-max": 50 } 
+        },
+        myrklogi_mangarisonn: { 
+          nombre: "Myrklogi Mangarisonn", 
+          clase: "Wizard 9 (Chronurgy)", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 70, "hp-max": 70 } 
+        },
+        dane: { 
+          nombre: "Dane", 
+          clase: "Ranger 5 / Rogue 3 (Assassin)", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 70, "hp-max": 70 } 
+        },
+        eldur: { 
+          nombre: "Eldur Redmane", 
+          clase: "Monk 5 / Cleric 3 (light)", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 52, "hp-max": 70 } 
+        },
+        ulreekr: { 
+          nombre: "Ulreek", 
+          clase: "sorcerer 8 (wild magic)", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 70, "hp-max": 70 } 
+        },
+        muldar: { 
+          nombre: "Muldar", 
+          clase: "barbaro 7", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 70, "hp-max": 70 } 
+        },
+        hannogar: { 
+          nombre: "Hannogar", 
+          clase: "paladin 8", 
+          activo: true, // <-- NUEVO
+          datos: { "hp-cur": 70, "hp-max": 70 } 
+        }
+      };
+
+
+
+      btnLogin.style.display = 'none';
+      btnLogout.style.display = 'none';
+      welcomeText.innerText = "¡Hola, Aventurero!";
+      campanaContainer.style.display = 'block';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const campanaUrl = urlParams.get('campana');
+
+      cargarListaDeCampanas();
+
+      function cargarListaDeCampanas() {
+        db.ref('campanas').once('value', (snapshot) => {
+          const campanas = snapshot.val();
+          selectCampana.innerHTML = '<option value="">-- Selecciona una Campaña --</option>';
+          if (campanas) {
+            Object.keys(campanas).forEach(codigo => {
+              const option = document.createElement('option');
+              option.value = codigo;
+              option.innerText = campanas[codigo].nombre || codigo;
+              selectCampana.appendChild(option);
+            });
+            if (campanaUrl && campanas[campanaUrl]) {
+              selectCampana.value = campanaUrl;
+              selectCampana.dispatchEvent(new Event('change'));
+            }
+          }
+        });
+      }
+
+      let personajesListener = null;
+      let notasGmListener = null;
+
+      btnReclamarGM.addEventListener('click', () => {
+        esDirector = !esDirector;
+        panelGm.style.display = esDirector ? 'block' : 'none';
+        btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '👑 Modo GM';
+        btnReclamarGM.style.background = esDirector ? 'var(--accent-gold)' : 'rgba(201, 160, 80, 0.2)';
+        btnReclamarGM.style.color = esDirector ? '#000' : 'var(--accent-gold)';
+      });
+
+          selectCampana.addEventListener('change', (e) => {
+        const campanaSeleccionada = e.target.value;
+        if (personajesListener) personajesListener.off();
+        if (notasGmListener) notasGmListener.off(); // Limpiamos directo la variable correcta
+        if (bitacoraListener) bitacoraListener.off(); 
+        if (tiradasListener) tiradasListener.off();
+        panelGm.style.display = 'none';
+        esDirector = false;
+        btnReclamarGM.innerText = '👑 Modo GM';
+
+        if (campanaSeleccionada) {
+          const listaTiradasGm = document.getElementById('lista-tiradas-gm');
+tiradasListener = db.ref(`campanas/${campanaSeleccionada}/tiradas`).limitToLast(10);
+tiradasListener.on('value', (snapshot) => {
+  listaTiradasGm.innerHTML = '';
+  const tiradas = snapshot.val();
+  if (tiradas) {
+    Object.keys(tiradas).reverse().forEach(key => {
+      const t = tiradas[key];
+      const hora = new Date(t.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+      const esCritico = t.resultado === 20 ? 'style="color: #ffd700; font-weight: bold;"' : (t.resultado === 1 ? 'style="color: #c94a4a; font-weight: bold;"' : '');
+      
+      // ✅ REEMPLÁZALO POR ESTO:
+listaTiradasGm.innerHTML += `
+  <div style="border-bottom: 1px solid var(--border-color); padding: 4px 0; text-align: left;">
+    <span style="color: var(--text-muted); font-size: 0.75rem;">[${hora}]</span> 
+    <strong>${t.personaje}</strong> sacó un <span ${esCritico}>${t.resultado}</span> en <strong>${t.tipo || 'd20'}</strong>
+  </div>`;
+
+    });
+  } else {
+    listaTiradasGm.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Esperando tiradas...</p>';
+  }
+});
+
+// Lógica para el botón de limpiar historial de dados
+const btnLimpiarTiradas = document.getElementById('btn-limpiar-tiradas');
+btnLimpiarTiradas.onclick = () => {
+  if (confirm('¿Deseas borrar permanentemente el historial de tiradas de esta campaña?')) {
+    db.ref(`campanas/${campanaSeleccionada}/tiradas`).remove();
+  }
+};
+
+          crearPersonajeContainer.style.display = 'block';
+          bitacoraContainer.style.display = 'block'; 
+          gridPersonajes.style.display = 'grid';
+          btnReclamarGM.style.display = 'inline-block';
+
+          // 1. Notas GM
+          notasGmListener = db.ref(`campanas/${campanaSeleccionada}/notesGM`);
+          notasGmListener.on('value', (snapshot) => { textareaNotasGM.value = snapshot.val() || ''; });
+          textareaNotasGM.oninput = (evt) => { db.ref(`campanas/${campanaSeleccionada}/notesGM`).set(evt.target.value); };
+
+                    // 2. Personajes (Limpio y corregido)
+          personajesListener = db.ref(`campanas/${campanaSeleccionada}/personajes`);
+          personajesListener.on('value', (snapshot) => {
+            const personajes = snapshot.val();
+            gridPersonajes.innerHTML = ''; 
+            gridVitalesGm.innerHTML = '';
+
+            if (personajes) {
+              Object.keys(personajes).forEach(id => {
+                const personaje = personajes[id];
+               // NUEVO: Si el personaje fue retirado temporalmente, no lo dibujamos en pantalla
+                if (personaje.activo === false) return; 
+
+                
+
+ // Declaración única del elemento card
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                  <div class="avatar-placeholder">🛡️</div>
+                  <div class="character-name">${personaje.nombre}</div>
+                  <div class="character-title">${personaje.clase}</div>
+                  <button class="btn-open">Ver Ficha</button>
+                  <button class="btn-quitar">❌ Quitar</button>
+                `;
+
+                card.querySelector('.btn-open').addEventListener('click', () => {
+                  let dest = "index.html";
+                  const name = personaje.nombre.toLowerCase();
+                  if (name.includes("fiona")) dest = "fiona_faraway.html";
+                  else if (name.includes("myrklogi")) dest = "myrklogi_mangarisonn.html";
+                  else if (name.includes("dane")) dest = "dane.html";
+                  else if (name.includes("eldur")) dest = "eldur.html";
+                  window.location.href = `${dest}?campana=${campanaSeleccionada}`;
+                });
+
+                 card.querySelector('.btn-quitar').addEventListener('click', () => {
+                  if (confirm(`¿Retirar temporalmente a ${personaje.nombre}? Su progreso se guardará en la nube.`)) {
+                    // CAMBIADO: No borra, solo desactiva
+                    db.ref(`campanas/${campanaSeleccionada}/personajes/${id}`).update({ activo: false });
+                  }
+                });
+
+                // Busca donde creas la 'card' y antes de 'gridPersonajes.appendChild(card);' agrega:
+const btnTirar = document.createElement('button');
+btnTirar.className = 'btn-open';
+btnTirar.style.marginTop = '10px';
+btnTirar.innerText = '🎲 Tirar d20';
+btnTirar.onclick = () => {
+  const d20 = Math.floor(Math.random() * 20) + 1;
+  db.ref(`campanas/${campanaSeleccionada}/tiradas`).push({
+    personaje: personaje.nombre,
+    resultado: d20,
+    fecha: firebase.database.ServerValue.TIMESTAMP
+  });
+};
+card.appendChild(btnTirar);
+
+
+                gridPersonajes.appendChild(card);
+
+                const acBuff = parseInt(personaje.datos?.['ac-buff']) || 0;
+                const acVal = personaje.datos?.['ac-val'] || 
+                              (personaje.nombre.toLowerCase().includes("fiona") ? (17 + acBuff) : 
+                              (personaje.nombre.toLowerCase().includes("eldur") ? (17 + acBuff) : 15));
+
+                const hpCur = personaje.datos?.['hp-cur'] || 0;
+                // CAMBIADO: Ahora lee dinámicamente de Firebase. Si no existe, usa 70 por defecto.
+                const hpMax = parseInt(personaje.datos?.['hp-max']) || 70; 
+                const pct = Math.min((hpCur / hpMax) * 100, 100);
+
+                const vitalDiv = document.createElement('div');
+                vitalDiv.style = "background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);";
+                vitalDiv.innerHTML = `
+                  <p style="font-weight:bold; color:var(--accent-gold);">${personaje.nombre}</p>
+                  <div style="background:#0f0f12; height:12px; border-radius:6px; overflow:hidden;">
+                    <div style="background:${pct < 30 ? '#c94a4a' : 'var(--accent-gold)'}; width:${pct}%; height:100%;"></div>
+                  </div>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">HP: ${hpCur}/${hpMax} | 🛡️ AC: ${acVal}</p>
+                `;
+                gridVitalesGm.appendChild(vitalDiv);
+              });
+            } else {
+              gridPersonajes.innerHTML = '<p>No hay personajes.</p>';
+            }
+          });
+
+                    // 3. Bitácora (Sincronización, renderizado con título y pre-wrap)
+          bitacoraListener = db.ref(`campanas/${campanaSeleccionada}/bitacora`);
+          bitacoraListener.on('value', (snapshot) => {
+            logsLocales = snapshot.val() || {};
+            renderizarBitacora();
+          });
+
+          // Escuchar escritura en la barra de búsqueda
+          buscarBitacora.oninput = () => renderizarBitacora();
+
+          function renderizarBitacora() {
+            listaBitacora.innerHTML = '';
+            const filtro = buscarBitacora.value.toLowerCase().trim();
+            const keys = Object.keys(logsLocales);
+
+            if (keys.length > 0) {
+              keys.reverse().forEach(key => {
+                const item = logsLocales[key];
+                const fecha = new Date(item.fecha).toLocaleString();
+
+                // Filtrar por texto, fecha o título
+                const coincideTitulo = item.titulo && item.titulo.toLowerCase().includes(filtro);
+                if (filtro && !item.texto.toLowerCase().includes(filtro) && !fecha.toLowerCase().includes(filtro) && !coincideTitulo) {
+                  return; 
+                }
+
+                const logDiv = document.createElement('div');
+                logDiv.style = "border-bottom: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;";
+                logDiv.innerHTML = `
+                  <div style="flex-grow: 1; text-align: left;">
+                    <small style="color:var(--accent-gold); font-size: 0.75rem;">${fecha}</small>
+                    <!-- Muestra el título solo si fue redactado -->
+                    ${item.titulo ? `<h4 style="margin: 4px 0 2px 0; color: var(--accent-gold); font-size: 1.05rem; font-family: Georgia, serif;">${item.titulo}</h4>` : ''}
+                    <!-- Aplicamos pre-wrap para que se respeten los párrafos y enter -->
+                    <p style="margin-top:4px; color:var(--text-color); font-size: 0.88rem; white-space: pre-wrap; line-height: 1.4;">${item.texto}</p>
+                  </div>
+                  <button class="btn-borrar-individual" style="background: none; border: none; color: #c94a4a; cursor: pointer; font-size: 1rem; padding: 5px;">❌</button>
+                `;
+
+                logDiv.querySelector('.btn-borrar-individual').onclick = () => {
+                  if (confirm(`¿Eliminar permanentemente este registro del historial?`)) {
+                    db.ref(`campanas/${campanaSeleccionada}/bitacora/${key}`).remove();
+                  }
+                };
+
+                listaBitacora.appendChild(logDiv);
+              });
+            }
+
+            if (listaBitacora.children.length === 0) {
+              listaBitacora.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding: 10px 0;">${filtro ? 'Sin resultados' : 'Sin registros'}</p>`;
+            }
+          }
+
+        } else {
+          crearPersonajeContainer.style.display = 'none';
+          bitacoraContainer.style.display = 'none';
+          gridPersonajes.style.display = 'none';
+          btnReclamarGM.style.display = 'none';
+        }
+      });
+
+
+       // Crear nuevo personaje (LÓGICA INTELIGENTE ANTI-SOBREESCRITURA)
+      btnCrearPersonaje.addEventListener('click', () => {
+        const campanaId = selectCampana.value;
+        const plantillaId = selectTemplatePersonaje.value;
+        if (!campanaId || !plantillaId) return alert('Selecciona campaña y héroe.');
+        
+        const refPersonaje = db.ref(`campanas/${campanaId}/personajes/${plantillaId}`);
+
+        // 1. Revisamos primero si la ficha ya existe en la base de datos de esta campaña
+        refPersonaje.once('value', (snapshot) => {
+          const personajeExistente = snapshot.val();
+
+          if (personajeExistente) {
+            // 2. Si ya existe, SOLO cambiamos su estado a activo. Su progreso ("datos") queda 100% intacto.
+            refPersonaje.update({ activo: true })
+              .then(() => { selectTemplatePersonaje.value = ''; });
+          } else {
+            // 3. Si es la primera vez que se añade a la mesa, creamos la plantilla desde cero.
+            refPersonaje.set(plantillasPersonajes[plantillaId])
+              .then(() => { selectTemplatePersonaje.value = ''; });
+          }
+        });
+      });
+
+
+
+      /// Guardar Entrada en la Bitácora con Título
+btnAddLog.addEventListener('click', () => {
+  const campanaId = selectCampana.value;
+  const tituloInput = document.getElementById('titulo-entrada');
+  const titulo = tituloInput.value.trim();
+  const texto = nuevaEntrada.value.trim();
+  
+  if (!campanaId || !texto) return alert('La descripción de la bitácora es obligatoria.');
+
+  db.ref(`campanas/${campanaId}/bitacora`).push({
+    titulo: titulo || '', // El título es opcional
+    texto: texto,
+    fecha: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    tituloInput.value = '';
+    nuevaEntrada.value = '';
+  });
+});
+
+    </script>
+</body>
+</html>

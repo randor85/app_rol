@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet - Dane</title>
+    <style>
+        /* COLOR VARIABLES FOR DAY/NIGHT MODE */
+        :root {
+            --bg-body: #e9ecef;
+            --bg-container: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --header-bg: #1a3626;
+            --header-text: #ffffff;
+            --border-color: #dcdde1;
+            --box-bg: #f8f9fa;
+            --table-header: #ecf0f1;
+            --highlight-bg: #fdf2e9;
+            --highlight-border: #e67e22;
+            --gold-bg: #fff8e1;
+            --gold-border: #b8860b;
+            --gold-text: #b8860b;
+            --input-border: #1a3626;
+            --link-hover: #27ae60;
+            --terminal-bg: #2c3e50;
+        }
+
+        body.dark-mode {
+            --bg-body: #121212;
+            --bg-container: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --header-bg: #0f1f16;
+            --header-text: #e0e0e0;
+            --border-color: #333333;
+            --box-bg: #2a2a2a;
+            --table-header: #2c3e50;
+            --highlight-bg: #3d2616;
+            --highlight-border: #d35400;
+            --gold-bg: #332b10;
+            --gold-border: #b8860b;
+            --gold-text: #d4af37;
+            --input-border: #e0e0e0;
+            --link-hover: #2ecc71;
+            --terminal-bg: #111111;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            font-size: 14px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--bg-container);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        .header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px;
+            border-radius: 6px 6px 0 0;
+            margin: -30px -30px 20px -30px;
+            border-bottom: 5px solid var(--gold-border);
+            transition: background-color 0.3s;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table td { padding: 5px 0; color: #ecf0f1; }
+        body.dark-mode .info-table td { color: #b0b0b0; }
+        
+        h2 {
+            color: var(--header-bg);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        body.dark-mode h2 { color: #2ecc71; }
+        
+        /* STICKY BLOCK: ROLLER AND HP */
+        .sticky-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--box-bg);
+            border: 2px solid var(--gold-border);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            margin-top: -10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hp-section { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .hp-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-container);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .hp-box input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            border-bottom: 1px dashed var(--input-border);
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+            background: transparent;
+            margin-left: 5px;
+            outline: none;
+        }
+        .hp-box input.temp {
+            color: #3498db;
+            border-bottom: 1px dashed #3498db;
+        }
+        .roller-section { flex-grow: 1; min-width: 250px; }
+        .roll-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            background: var(--bg-container);
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            justify-content: center;
+        }
+        .roll-controls label { cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .roll-history {
+            background: var(--terminal-bg);
+            color: #ecf0f1;
+            border-radius: 4px;
+            height: 80px;
+            overflow-y: auto;
+            padding: 8px;
+            font-family: monospace;
+            margin-bottom: 5px;
+            border: 1px solid var(--border-color);
+        }
+        .log-entry { border-bottom: 1px solid #34495e; padding: 3px 0; display: flex; justify-content: space-between; align-items: center; }
+        .log-entry:last-child { border-bottom: none; }
+        .log-entry b { font-size: 16px; color: #f1c40f; margin-left: 10px; }
+        .log-calc { color: #95a5a6; font-size: 12px; }
+        .clear-btn { background-color: #c0392b; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; width: 100%; }
+        
+        .theme-btn {
+            background-color: var(--text-main);
+            color: var(--bg-container);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .stat-box { background-color: var(--box-bg); border: 1px solid var(--border-color); border-radius: 6px; text-align: center; padding: 15px; }
+        .stat-box .val { font-size: 24px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .stat-box .lbl { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; letter-spacing: 0.5px; }
+        
+        table.data { width: 100%; border-collapse: collapse; margin-bottom: 15px; text-align: center; }
+        table.data th, table.data td { border: 1px solid var(--border-color); padding: 10px; }
+        table.data th { background-color: var(--table-header); color: var(--text-main); }
+        
+        .box-container { background-color: var(--box-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .highlight-box { background-color: var(--highlight-bg); padding: 15px; border-left: 4px solid var(--highlight-border); border-radius: 4px; margin-bottom: 15px; }
+        .highlight-box h3 { margin-top: 0; color: var(--highlight-border); font-size: 15px; margin-bottom: 10px; }
+        
+        .dice-btn { background-color: #1a3626; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-top: 5px; }
+        .dice-btn-small { background-color: #1a3626; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 3px 6px; display: inline-flex; align-items: center; justify-content: center; }
+        body.dark-mode .dice-btn, body.dark-mode .dice-btn-small { background-color: #27ae60; color: #000; }
+
+        ul { margin-top: 0; padding-left: 20px; }
+        li { margin-bottom: 6px; }
+        
+        .spell-slots { display: flex; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .spell-slots input[type="checkbox"] { width: 18px; height: 18px; margin-right: 10px; cursor: pointer; }
+        
+        .equipment-list dt { font-weight: bold; margin-top: 10px; display: flex; align-items: center; }
+        .equipment-list dd { margin-left: 0; margin-bottom: 10px; font-size: 13px; color: var(--text-muted); padding-left: 28px; border-left: 2px solid var(--border-color); }
+        .equip-check { width: 16px; height: 16px; margin-right: 8px; cursor: pointer; }
+        
+        .gold-box { display: flex; align-items: center; border: 1px solid var(--gold-border); background-color: var(--gold-bg); padding: 8px 15px; border-radius: 4px; font-weight: bold; color: var(--gold-text); margin-top: 10px; width: fit-content; }
+        .gold-input { background: transparent; border: none; border-bottom: 1px dashed var(--gold-border); color: var(--text-main); font-weight: bold; font-size: 14px; width: 70px; text-align: center; margin-left: 8px; outline: none; }
+
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 15px; font-size: 13px; }
+        .skill-item { display: flex; align-items: center; border-bottom: 1px dashed var(--border-color); padding: 4px 0; }
+        .skill-name { flex-grow: 1; margin-left: 8px; }
+        .skill-tag { color: var(--text-muted); font-size: 11px; margin-right: 5px; font-style: italic; }
+        .skill-mod { font-weight: bold; width: 20px; text-align: right; }
+
+        .save-load-panel { margin-top: 30px; text-align: center; padding: 15px; background: var(--box-bg); border-radius: 6px; border: 1px dashed var(--border-color); }
+        .save-btn { background: #2980b9; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.2s; }
+        .save-btn:hover { background: #3498db; }
+        .reset-btn { background: #c0392b; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.2s; }
+        .reset-btn:hover { background: #e74c3c; }
+
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .container { padding: 15px; }
+            .header { margin: -15px -15px 15px -15px; padding: 15px; }
+            .sticky-bar { flex-direction: column; gap: 10px; padding: 10px; margin-left: -15px; margin-right: -15px; border-radius: 0; border-left: none; border-right: none; }
+            .hp-section { justify-content: space-between; width: 100%; }
+            .hp-box { flex-grow: 1; justify-content: center; }
+            .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 15px; }
+            .info-table td { display: block; width: 100% !important; padding: 2px 0; }
+            table.data th, table.data td { padding: 6px 2px; font-size: 12px; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .roll-controls { flex-direction: column; gap: 8px; }
+            .roller-section { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- BOTÓN DE REGRESAR AL INDEX Y COMPARTIR -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <button onclick="regresarAlIndex()" class="theme-btn" style="background-color: var(--header-bg); border: 1px solid var(--gold-border); cursor: pointer;">⬅️ Regresar al Index</button>
+        <button id="btn-compartir" style="display: none; padding: 8px 16px; background-color: #3a7d44; color: white; border: 1px solid var(--gold-border); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;"></button>
+    </div>
+
+    <div class="header">
+        <h1>Dane</h1>
+        <table class="info-table">
+            <tr>
+                <td style="width: 50%;"><strong>Class & Level:</strong> Ranger (Gloom Stalker) 5 / Rogue (Assassin) 3</td>
+                <td><strong>Race:</strong> Winged Tiefling</td>
+            </tr>
+            <tr>
+                <td><strong>Background:</strong> Criminal</td>
+                <td><strong>Alignment:</strong> Neutral</td>
+            </tr>
+            <tr>
+                <td><strong>Professions:</strong> Blacksmith, Pilot</td>
+                <td><strong>Total Level:</strong> 8</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- STICKY BAR: HP, DICE ROLLER and NIGHT MODE -->
+    <div class="sticky-bar">
+        <div class="hp-section">
+            <div class="hp-box">
+                <label for="hp-current">HP:</label>
+                <input type="number" id="hp-current" value="0">
+                <span style="margin: 0 5px; color: var(--text-muted);">/</span>
+                <input type="number" id="hp-max" value="0" style="width:40px; border-bottom: none;">
+            </div>
+            <div class="hp-box">
+                <label for="hp-temp" style="color:#3498db;">Temp HP:</label>
+                <input type="number" id="hp-temp" class="temp" value="0">
+            </div>
+            <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()">🌙 Night Mode</button>
+        </div>
+
+        <div class="roller-section">
+            <div class="roll-controls">
+                <label><input type="radio" name="rollType" value="normal" checked> Normal</label>
+                <label><input type="radio" name="rollType" value="advantage"> Advantage</label>
+                <label><input type="radio" name="rollType" value="disadvantage"> Disadvantage</label>
+            </div>
+            <div class="roll-history" id="rollHistory">
+                <!-- Dice results -->
+            </div>
+            <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+        </div>
+    </div>
+
+    <div class="grid-3">
+        <div class="stat-box">
+            <div class="val">15</div>
+            <div class="lbl">Armor Class (17 w/ Haste)</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">+6 <button class="dice-btn-small" style="font-size: 14px; padding: 4px 8px;" onclick="rollAction('Initiative', 6)">🎲</button></div>
+            <div class="lbl">Initiative</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">30 ft</div>
+            <div class="lbl">Speed</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <!-- LEFT COLUMN -->
+        <div>
+            <h2>Attributes & Saves</h2>
+            <table class="data">
+                <tr><th>STR</th><th>DEX</th><th>CON</th><th>INT</th><th>WIS</th><th>CHA</th></tr>
+                <tr>
+                    <td><strong>8</strong><br><small>(-1)</small><br><button class="dice-btn" onclick="rollAction('STR Save', 2)">🎲 Save +2</button></td>
+                    <td><strong>17</strong><br><small>(+3)</small><br><button class="dice-btn" onclick="rollAction('DEX Save', 6)">🎲 Save +6</button></td>
+                    <td><strong>14</strong><br><small>(+2)</small><br><button class="dice-btn" onclick="rollAction('CON Save', 2)">🎲 Save +2</button></td>
+                    <td><strong>10</strong><br><small>(+0)</small><br><button class="dice-btn" onclick="rollAction('INT Save', 0)">🎲 Save +0</button></td>
+                    <td><strong>16</strong><br><small>(+3)</small><br><button class="dice-btn" onclick="rollAction('WIS Save', 3)">🎲 Save +3</button></td>
+                    <td><strong>8</strong><br><small>(-1)</small><br><button class="dice-btn" onclick="rollAction('CHA Save', -1)">🎲 Save -1</button></td>
+                </tr>
+            </table>
+
+            <h2>Proficiencies & Skills</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>Armor:</strong> Light Armor, Medium Armor, Shields</p>
+                <p><strong>Weapons:</strong> Simple Weapons, Martial Weapons</p>
+                <p><strong>Saving Throws:</strong> Strength, Dexterity</p>
+                <p><strong>Tools:</strong> Blacksmith's Tools, Thieves' Tools, Disguise Kit, Poisoner's Kit</p>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+                
+                <p style="margin-bottom: 8px;"><strong>All Skills:</strong></p>
+                <div class="skills-grid">
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Acrobatics', 6)">🎲</button><span class="skill-name"><strong>Acrobatics</strong></span><span class="skill-tag">(Prof)</span><span class="skill-mod">+6</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Animal Handling', 3)">🎲</button><span class="skill-name"><strong>Animal Handling</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Arcana', 0)">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Athletics', -1)">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Deception', -1)">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('History', 0)">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Insight', 3)">🎲</button><span class="skill-name"><strong>Insight</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Intimidation', -1)">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Investigation', 0)">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Medicine', 3)">🎲</button><span class="skill-name"><strong>Medicine</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Nature', 0)">🎲</button><span class="skill-name"><strong>Nature</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Perception', 9)">🎲</button><span class="skill-name"><strong>Perception</strong></span><span class="skill-tag">(Exp)</span><span class="skill-mod">+9</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Performance', -1)">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Persuasion', -1)">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Religion', 0)">🎲</button><span class="skill-name"><strong>Religion</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Sleight of Hand', 9)">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-tag">(Exp)</span><span class="skill-mod">+9</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Stealth', 9)">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-tag">(Exp)</span><span class="skill-mod">+9</span></div>
+                    <div class="skill-item"><button class="dice-btn-small" onclick="rollAction('Survival', 3)">🎲</button><span class="skill-name"><strong>Survival</strong></span><span class="skill-mod">+3</span></div>
+                </div>
+            </div>
+            
+            <h2>Ranger Spells</h2>
+            <div class="box-container">
+                <div class="spell-slots">
+                    <strong style="width: 150px;">1st Level (4 Slots):</strong>
+                    <input type="checkbox" id="chk-slot1-1" title="Slot 1">
+                    <input type="checkbox" id="chk-slot1-2" title="Slot 2">
+                    <input type="checkbox" id="chk-slot1-3" title="Slot 3">
+                    <input type="checkbox" id="chk-slot1-4" title="Slot 4">
+                </div>
+                <ul style="font-size: 13px; margin-bottom: 15px;">
+                    <li><strong>Hunter's Mark</strong> <em>(Bonus Action, 1d6 extra dmg, Conc.)</em></li>
+                    <li><strong>Absorb Elements</strong> <em>(Reaction to gain Resistance)</em></li>
+                    <li><strong>Disguise Self</strong> <em>(Gloom Stalker Feature)</em></li>
+                </ul>
+                
+                <div class="spell-slots">
+                    <strong style="width: 150px;">2nd Level (2 Slots):</strong>
+                    <input type="checkbox" id="chk-slot2-1" title="Slot 1">
+                    <input type="checkbox" id="chk-slot2-2" title="Slot 2">
+                </div>
+                <ul style="font-size: 13px; margin-bottom: 0;">
+                    <li><strong>Pass without Trace</strong> <em>(+10 Stealth to party, Conc.)</em></li>
+                    <li><strong>Spike Growth</strong> <em>(20ft radius, 2d4 piercing dmg/5ft, Conc.)</em></li>
+                    <li><strong>Rope Trick</strong> <em>(Gloom Stalker Feature)</em></li>
+                </ul>
+            </div>
+
+            <h2>Magical Equipment & Inventory</h2>
+            <div class="box-container equipment-list">
+                <dl style="margin: 0;">
+                    <dt><input type="checkbox" id="eq-amulet" class="equip-check" checked> Amulet of the Linked Minds</dt>
+                    <dd>Telepathic communication across any distance/plane with its twin. Shares thoughts/emotions exclusively.</dd>
+                    
+                    <dt><input type="checkbox" id="eq-crossbow" class="equip-check" checked> Hyperborean Crossbow</dt>
+                    <dd>+1 Weapon. Deals damage -> DC 15 Con save or speed halved. Can target a surface for 5ft radius frozen difficult terrain (1 min).</dd>
+
+                    <dt><input type="checkbox" id="eq-mitts" class="equip-check" checked> Mindmugger Mitts</dt>
+                    <dd>Advantage on Sleight of Hand. (3/day) Bonus Action touch: DC 10 + 1/2 level Wis save or target forgets the entire round.</dd>
+
+                    <dt><input type="checkbox" id="eq-steps" class="equip-check" checked> Phantom Steps</dt>
+                    <dd>Move silently, leave no trace, bypass floor traps. (1/day) Click heels to move through creatures/objects until end of turn.</dd>
+
+                    <dt><input type="checkbox" id="eq-ring" class="equip-check" checked> Ring of the Smiling Sphinx</dt>
+                    <dd>Immune to mind/emotion reading and Divination (Scrying). Disadvantage on Insight checks against you. Can store 1 perfect memory.</dd>
+
+                    <dt><input type="checkbox" id="eq-mask" class="equip-check" checked> The Corpse Mask</dt>
+                    <dd>(2/day) For 1 hour, take the appearance of a humanoid you saw die while wearing the mask (stores up to 5 faces).</dd>
+
+                    <dt><input type="checkbox" id="eq-potion" class="equip-check"> Potion of Choice</dt>
+                    <dd>Drink to gain Advantage on one check/save/attack within 10 mins, OR reroll one and use the new result.</dd>
+
+                    <dt><input type="checkbox" id="eq-reveal" class="equip-check"> Reveal (Mask)</dt>
+                    <dd>Passively reveals AC of creatures within 60ft. Advantage on perception/surprise initiative. (Prof. Bonus/day) Advantage on a check, save, or attack.</dd>
+                </dl>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+                <p style="margin-bottom: 5px; font-size: 13px;"><strong>Armor:</strong> Studded Leather Armor</p>
+                <p style="margin-bottom: 10px; font-size: 13px;"><strong>Tools:</strong> Blacksmith's Tools</p>
+                
+                <div class="gold-box">
+                    <label for="gold-input">Gold (GP):</label>
+                    <input type="number" id="gold-input" class="gold-input" value="0" min="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+            <h2>Attacks & Weapons</h2>
+            <table class="data">
+                <tr>
+                    <th style="text-align:left;">Weapon / Attack</th>
+                    <th>Atk Bonus</th>
+                    <th>Damage & Type</th>
+                </tr>
+                <tr>
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong>Hyperborean Crossbow</strong><br><small>Normal</small>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollAction('Crossbow (Normal) Atk', 10)">🎲</button> +10
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollDamage('Crossbow (Normal) Dmg', 1, 8, 5)">🎲</button> 1d8 + 5
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong>Hyperborean Crossbow</strong><br><small>Sharpshooter</small>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollAction('Crossbow (SS) Atk', 5)">🎲</button> +5
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollDamage('Crossbow (SS) Dmg', 1, 8, 15)">🎲</button> 1d8 + 15
+                    </td>
+                </tr>
+                <!-- EXTRA DAMAGES ADDED TO THE TABLE -->
+                <tr style="background-color: var(--highlight-bg);">
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong style="color: var(--highlight-border);">Hunter's Mark</strong><br><small>Bonus Action</small>
+                    </td>
+                    <td style="vertical-align: middle;">-</td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollDamage('Hunter\'s Mark Dmg', 1, 6, 0)">🎲</button> 1d6
+                    </td>
+                </tr>
+                <tr style="background-color: var(--highlight-bg);">
+                    <td style="text-align:left; vertical-align: middle;">
+                        <strong style="color: var(--highlight-border);">Sneak Attack</strong><br><small>1/Turn (Adv or Ally 5ft)</small>
+                    </td>
+                    <td style="vertical-align: middle;">-</td>
+                    <td style="vertical-align: middle;">
+                        <button class="dice-btn-small" onclick="rollDamage('Sneak Attack Dmg', 2, 6, 0)">🎲</button> 2d6
+                    </td>
+                </tr>
+            </table>
+
+            <h2>Damage Calculation Breakdown</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>To Hit (+10):</strong> +3 (Dexterity) +3 (Proficiency) +2 (Archery Style) +1 (Magic Weapon) +1 (Blacksmith).</p>
+                <p><strong>To Hit w/ Sharpshooter (+5):</strong> 10 (Base) - 5 (Penalty).</p>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+                <p><strong>Damage (+5):</strong> +3 (Dexterity) +1 (Magic Weapon) +1 (Blacksmith).</p>
+                <p style="margin-bottom: 0;"><strong>Damage w/ Sharpshooter (+15):</strong> 5 (Base) + 10 (Sharpshooter Bonus).</p>
+            </div>
+
+            <h2>Nova Strike Summary (Turn 1)</h2>
+            <div class="highlight-box">
+                <h3>With Haste & Hunter's Mark Active</h3>
+                <p style="font-size: 13px; margin-bottom: 10px;"><em>Assuming target hasn't acted (Advantage) and you use Sharpshooter. If target is surprised, all dice below become their maximum value.</em></p>
+                <ul style="font-size: 13px;">
+                    <li><strong>Attack 1 (Action):</strong> 1d8 + 15 + 1d6 <em>(Mark)</em> + 2d6 <em>(Sneak Attack)</em></li>
+                    <li><strong>Attack 2 (Extra Attack):</strong> 1d8 + 15 + 1d6 <em>(Mark)</em></li>
+                    <li><strong>Attack 3 (Dread Ambusher):</strong> 1d8 + 1d8 <em>(Ambusher Bonus)</em> + 15 + 1d6 <em>(Mark)</em></li>
+                    <li><strong>Attack 4 (Haste Action):</strong> 1d8 + 15 + 1d6 <em>(Mark)</em></li>
+                </ul>
+                <p style="margin-top: 10px; font-weight: bold; border-top: 1px dashed var(--highlight-border); padding-top: 10px; margin-bottom: 0;">
+                    Total Dice: 5d8 + 5d6 | Fixed Damage: +60
+                </p>
+            </div>
+
+            <h2>Feats Acquired</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>Sharpshooter (Ranger Level 4)</strong></p>
+                <ul style="margin-bottom: 0;">
+                    <li>Attacking at long range doesn't impose disadvantage.</li>
+                    <li>Attacks ignore half cover and three-quarters cover.</li>
+                    <li>Take -5 penalty to attack roll to add +10 to the attack's damage.</li>
+                </ul>
+            </div>
+
+            <h2>Features & Traits</h2>
+            <div class="box-container" style="font-size: 13px;">
+                <p style="margin-top: 0;"><strong>Profession (Blacksmith):</strong> Your weapons have a +1 bonus to attack rolls. Using a forge and materials, you can upgrade your party members' weapons to add this same +1 bonus.</p>
+                <p><strong>Profession (Pilot):</strong> You have expertise in piloting any vehicle (airships, sea vessels, land transports). You possess a supernatural intuition for navigation, plotting flawless courses by reading stars and wind currents, ensuring you never lose direction even in treacherous hazards.</p>
+                <p><strong>Assassinate:</strong> Advantage on attacks vs creatures that haven't taken a turn. Hits against surprised targets are crits <em>(House rule: max damage)</em>.</p>
+                <p><strong>Dread Ambusher:</strong> +WIS mod to initiative. +10ft speed on first turn. 1 extra attack on first turn Attack action (+1d8 dmg).</p>
+                <p><strong>Extra Attack & Cunning Action:</strong> Attack twice. Bonus action to Dash, Disengage, or Hide.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FILE SYSTEM API AND SAVE BUTTONS -->
+    <div class="save-load-panel">
+        <p style="margin-top:0; font-size: 12px; color: var(--text-muted);">💡 Your progress (Gold, HP, Spells) is saved automatically in the browser.<br>Download your game data to use on another device or wipe it completely.</p>
+        <button class="save-btn" onclick="saveToFile()">💾 Download (.json)</button>
+        <button class="save-btn" onclick="document.getElementById('file-input').click()">📂 Load Game</button>
+        <button class="reset-btn" onclick="resetSheet()">🗑️ Reset Sheet</button>
+        <input type="file" id="file-input" style="display:none;" accept=".json" onchange="loadFromFile(event)">
+    </div>
+</div>
+
+<!-- LIBRERÍAS DE COMPATIBILIDAD DE FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<!-- SCRIPTS -->
+<script>
+       // --- CONFIGURACIÓN DE FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+        authDomain: "personajes-rol.firebaseapp.com",
+        databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+        projectId: "personajes-rol",
+        storageBucket: "personajes-rol.appspot.com",
+        messagingSenderId: "81108671440",
+        appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    const PERSONAJE_ID = "dane";
+    let charRef = null;
+
+    // Obtener campaña desde la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const campanaId = urlParams.get('campana');
+
+    
+function regresarAlIndex() {
+  if (typeof campanaId !== 'undefined' && campanaId) {
+    window.location.href = `index.html?campana=${campanaId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+
+    // --- 1. DAY/NIGHT THEME SYSTEM ---
+    function applyTheme(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('theme-toggle').innerText = '☀️ Day Mode';
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.getElementById('theme-toggle').innerText = '🌙 Night Mode';
+        }
+    }
+
+    function toggleTheme() {
+        const isDark = !document.body.classList.contains('dark-mode');
+        applyTheme(isDark);
+        localStorage.setItem('dane_theme', isDark ? 'dark' : 'light');
+    }
+
+    function initTheme() {
+        const savedTheme = localStorage.getItem('dane_theme');
+        if (savedTheme) {
+            applyTheme(savedTheme === 'dark');
+        } else {
+            const hour = new Date().getHours();
+            applyTheme(hour >= 19 || hour < 7);
+        }
+    }
+
+        // --- 2. DICE ROLLER SYSTEM ---
+    function rollAction(name, modifier) {
+        const rollType = document.querySelector('input[name="rollType"]:checked').value;
+        const d1 = Math.floor(Math.random() * 20) + 1;
+        const d2 = Math.floor(Math.random() * 20) + 1;
+        
+        let result = 0;
+        let calc = "";
+        
+        if (rollType === 'advantage') {
+            result = Math.max(d1, d2) + modifier;
+            calc = `[d20: max(${d1}, ${d2}) + ${modifier}]`;
+        } else if (rollType === 'disadvantage') {
+            result = Math.min(d1, d2) + modifier;
+            calc = `[d20: min(${d1}, ${d2}) + ${modifier}]`;
+        } else {
+            result = d1 + modifier;
+            calc = `[d20: ${d1} + ${modifier}]`;
+        }
+        appendLog(name, result, calc);
+    }
+
+    function rollDamage(name, count, size, modifier) {
+        let total = 0;
+        let rolls = [];
+        for (let i = 0; i < count; i++) {
+            let r = Math.floor(Math.random() * size) + 1;
+            rolls.push(r);
+            total += r;
+        }
+        total += modifier;
+        const calc = `[${count}d${size}: (${rolls.join('+')}) + ${modifier}]`;
+        appendLog(name, total, calc);
+    }
+
+    function appendLog(name, result, calc) {
+    const history = document.getElementById('rollHistory');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `<span>${name} <span class="log-calc">${calc}</span></span> <b>${result}</b>`;
+    history.appendChild(entry);
+    history.scrollTop = history.scrollHeight;
+
+    // ✅ Un solo envío limpio con la etiqueta 'tipo'
+    if (typeof campanaId !== 'undefined' && campanaId) {
+        db.ref(`campanas/${campanaId}/tiradas`).push({
+            personaje: "Dane",
+            tipo: name, 
+            resultado: result,
+            fecha: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+}
+
+
+
+    function clearHistory() {
+        document.getElementById('rollHistory').innerHTML = '';
+    }
+
+
+    // --- 3. AUTENTICACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL CON FIREBASE ---
+    document.addEventListener("DOMContentLoaded", () => {
+        initTheme();
+    });
+
+    function dbKeyFor(id) {
+        // Mapeo especial para HP actual con el panel del GM
+        return id === 'hp-current' ? 'hp-cur' : id;
+    }
+
+    function guardarCampo(fieldId, value) {
+        if (charRef) charRef.child('datos/' + dbKeyFor(fieldId)).set(value);
+    }
+
+    function sincronizarDatosDesdeNube() {
+        if (!charRef) return;
+        charRef.child('datos').on('value', (snapshot) => {
+            const datos = snapshot.val();
+            if (!datos) return;
+            document.querySelectorAll('input').forEach(el => {
+                if (!el.id || el.type === 'radio' || el.type === 'file') return;
+                const dbKey = dbKeyFor(el.id);
+                if (datos[dbKey] !== undefined) {
+                    if (el.type === 'checkbox') {
+                        if (el.checked !== datos[dbKey]) el.checked = datos[dbKey];
+                    } else if (document.activeElement !== el && el.value !== String(datos[dbKey])) {
+                        el.value = datos[dbKey];
+                    }
+                }
+            });
+        });
+    }
+
+    // Guardar automáticamente al cambiar cualquier campo
+    document.addEventListener('change', (e) => {
+        if (e.target.matches('input') && e.target.id && e.target.type !== 'radio' && e.target.type !== 'file') {
+            const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+            guardarCampo(e.target.id, val);
+        }
+    });
+
+    // 1. SINCRONIZACIÓN ASÍNCRONA CON FIREBASE AUTH
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            console.log("Sesión activa detectada en la ficha de Dane:", user.uid);
+
+            if (campanaId) {
+                charRef = db.ref(`campanas/${campanaId}/personajes/${PERSONAJE_ID}`);
+            } else {
+                charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+            }
+
+            sincronizarDatosDesdeNube();
+
+            // Control del botón de compartir (solo visible para el dueño legítimo)
+            charRef.on('value', snap => {
+                const p = snap.val();
+                if (!p) return;
+                const esMio = p.owner === user.uid;
+                const btnCompartir = document.getElementById('btn-compartir');
+
+                if (btnCompartir && esMio) {
+                    btnCompartir.style.display = 'inline-block';
+                    btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+                    btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+
+                    btnCompartir.onclick = () => {
+                        charRef.child('publico').set(!p.publico);
+                    };
+                }
+            });
+        } else {
+            console.warn("Ficha sin sesión activa. Redirigiendo...");
+            window.location.href = "index.html";
+        }
+    });
+
+    // --- 4. EXPORT/IMPORT/RESET MEMORY ---
+    function saveToFile() {
+        const data = {};
+        document.querySelectorAll('input').forEach(el => {
+            if (!el.id || el.type === 'radio' || el.type === 'file') return;
+            data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+        });
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Dane_SaveData.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function loadFromFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                const updates = {};
+                for (const key in data) {
+                    const el = document.getElementById(key);
+                    if (el) {
+                        if (el.type === 'checkbox') el.checked = data[key];
+                        else el.value = data[key];
+                        localStorage.setItem(key, data[key]);
+                        let dbKey = key === 'hp-current' ? 'hp-cur' : key;
+                        updates[dbKey] = data[key];
+                    }
+                }
+                if (charRef) {
+                    charRef.child('datos').update(updates);
+                }
+                alert("Game loaded successfully!");
+            } catch (err) {
+                alert("Error loading file.");
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = ''; 
+    }
+
+    function resetSheet() {
+        if (confirm("Are you sure you want to completely reset the sheet?")) {
+            localStorage.clear();
+            if (charRef) {
+                charRef.child('datos').remove();
+            }
+            location.reload(); 
+        }
+    }
+
+</script>
+
+</body>
+</html>
