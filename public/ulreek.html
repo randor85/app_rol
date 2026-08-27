@@ -1105,21 +1105,21 @@
 <span>▼</span>
 </div>
 <div class="checkboxes-dropdown" id="conditions-dropdown">
-<label><input onchange="updateConditions()" type="checkbox" value="Cegado"/> Cegado (Blinded)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Encantado"/> Encantado (Charmed)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Sordo"/> Sordo (Deafened)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Asustado"/> Asustado (Frightened)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Apresado"/> Apresado (Grappled)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Incapacitado"/> Incapacitado (Incapacitated)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Inviable"/> Invisible (Invisible)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Paralizado"/> Paralizado (Paralyzed)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Petrificado"/> Petrificado (Petrified)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Envenenado"/> Envenenado (Poisoned)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Derribado"/> Derribado (Prone)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Restringido"/> Restringido (Restrained)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Aturdido"/> Aturdido (Stunned)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Inconsciente"/> Inconsciente (Unconscious)</label>
-<label><input onchange="updateConditions()" type="checkbox" value="Agotamiento"/> Agotamiento (Exhaustion)</label>
+<label><input id="cond-blinded" onchange="updateConditions()" type="checkbox" value="Cegado"/> Cegado (Blinded)</label>
+<label><input id="cond-charmed" onchange="updateConditions()" type="checkbox" value="Encantado"/> Encantado (Charmed)</label>
+<label><input id="cond-deafened" onchange="updateConditions()" type="checkbox" value="Sordo"/> Sordo (Deafened)</label>
+<label><input id="cond-frightened" onchange="updateConditions()" type="checkbox" value="Asustado"/> Asustado (Frightened)</label>
+<label><input id="cond-grappled" onchange="updateConditions()" type="checkbox" value="Apresado"/> Apresado (Grappled)</label>
+<label><input id="cond-incapacitated" onchange="updateConditions()" type="checkbox" value="Incapacitado"/> Incapacitado (Incapacitated)</label>
+<label><input id="cond-invisible" onchange="updateConditions()" type="checkbox" value="Invisible"/> Invisible (Invisible)</label>
+<label><input id="cond-paralyzed" onchange="updateConditions()" type="checkbox" value="Paralizado"/> Paralizado (Paralyzed)</label>
+<label><input id="cond-petrified" onchange="updateConditions()" type="checkbox" value="Petrificado"/> Petrificado (Petrified)</label>
+<label><input id="cond-poisoned" onchange="updateConditions()" type="checkbox" value="Envenenado"/> Envenenado (Poisoned)</label>
+<label><input id="cond-prone" onchange="updateConditions()" type="checkbox" value="Derribado"/> Derribado (Prone)</label>
+<label><input id="cond-restrained" onchange="updateConditions()" type="checkbox" value="Restringido"/> Restringido (Restrained)</label>
+<label><input id="cond-stunned" onchange="updateConditions()" type="checkbox" value="Aturdido"/> Aturdido (Stunned)</label>
+<label><input id="cond-unconscious" onchange="updateConditions()" type="checkbox" value="Inconsciente"/> Inconsciente (Unconscious)</label>
+<label><input id="cond-exhaustion" onchange="updateConditions()" type="checkbox" value="Agotamiento"/> Agotamiento (Exhaustion)</label>
 </div>
 </div>
 <div class="active-conditions-tags" id="active-conditions-list"></div>
@@ -2188,13 +2188,27 @@
     rollManualDice(1, sides, getMod(), `d${sides}`);
   }
 
+  // Ataques: desventaja automática si Ulreek está Cegado o Envenenado (igual que el resto de la flota)
   function rollAttack(bonus, label) {
-    const adv = document.getElementById('adv-attack').value;
-    rollD20WithMechanics(bonus, label, adv, true);
+    let adv = document.getElementById('adv-attack').value;
+    const estaCegado = document.getElementById('cond-blinded')?.checked;
+    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
+    if (estaCegado || estaEnvenenado) {
+      adv = 'disadvantage';
+      label += " 🛑 (Desventaja por Condición)";
+    }
+    const totalBonus = bonus + (parseInt(document.getElementById('atk-buff')?.value) || 0);
+    rollD20WithMechanics(totalBonus, label, adv, true);
   }
 
+  // Checks/Saves: el envenenamiento da desventaja solo en checks (igual que el resto de la flota)
   function rollCheckSave(diceStr, mod, label, type) {
-    const adv = document.getElementById('adv-save').value;
+    let adv = document.getElementById('adv-save').value;
+    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
+    if (estaEnvenenado && type === 'check') {
+      adv = 'disadvantage';
+      label += " 🛑 (Desventaja: Envenenado)";
+    }
     rollD20WithMechanics(mod, label, adv, type === 'save');
   }
 
