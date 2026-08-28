@@ -1411,11 +1411,11 @@
 </tr>
 <tr>
 <td><strong>Sleep</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-sleep">90 ft, V/S/M. 5d8 HP de criaturas dormidas, 1 min.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(5, 8, 0, 'Sleep (5d8 HP afectados)'); gastarSlotContador(1)">💤 5d8</button></td>
+<td><button class="btn-roll" onclick="rollGenericDamage(5, 8, 0, 'Sleep (5d8 HP afectados)')">💤 5d8</button></td>
 </tr>
 <tr>
 <td><strong>Disonant whisper</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-disonant-whisper">60 ft, V. WIS save; 3d6 psíquico (mitad si salva) y el objetivo huye.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Dissonant Whispers (3d6)'); gastarSlotContador(1)">🧠 3d6</button></td>
+<td><button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Dissonant Whispers (3d6)')">🧠 3d6</button></td>
 </tr>
 <tr>
 <td><strong>Armor of Agathys</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-armor-of-agathys">Self, V/S/M. 5 HP temp; quien te golpee cuerpo a cuerpo recibe 5 frío.</td>
@@ -1439,7 +1439,7 @@
 </tr>
 <tr>
 <td><strong>Fireball</strong></td><td>Nivel 3</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-fireball">150 ft / esfera 20ft, V/S/M. DEX save DC 16; 8d6 fuego (mitad si salva).</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(8, 6, 0, 'Fireball (8d6)'); gastarSlotContador(3)">🔥 8d6</button></td>
+<td><button class="btn-roll" onclick="rollGenericDamage(8, 6, 0, 'Fireball (8d6)')">🔥 8d6</button></td>
 </tr>
 <tr>
 <td><strong>Haste</strong></td><td>Nivel 3</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-haste">30 ft, V/S/M, Conc. Doble velocidad, +2 CA, ventaja en DEX save, acción extra, 1 min.</td>
@@ -2121,21 +2121,6 @@
   }
 
   function rollGenericDamage(num, sides, mod, label) { rollManualDice(num, sides, mod, label); }
-
-  // === GASTO AUTOMÁTICO DE ESPACIO AL LANZAR UN HECHIZO CON DAÑO ===
-  // Por defecto descuenta del pool compartido de Sorcerer (slot-N-cur). Si el hechizo se
-  // lanzó en realidad con Pact Magic (Warlock), hay que corregirlo a mano: -1 en el botón
-  // de Pact Magic y +1 acá, ya que la ficha no distingue todavía qué hechizos son de la
-  // lista de Warlock vs de Sorcerer.
-  function gastarSlotContador(nivel) {
-    const id = `slot-${nivel}-cur`;
-    const el = document.getElementById(id);
-    if (!el) return;
-    const actual = parseInt(el.innerText) || 0;
-    if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivel} (Sorcerer) disponibles.`); return; }
-    changeVal(id, -1);
-    registrarUsoRecurso(`Espacio de Nivel ${nivel}` + (nivel === 1 ? ' (Sorcerer)' : ''));
-  }
 
   // === REGISTRO DE USO DE RECURSOS (bugs.md 26 ago): checkboxes de recursos/HD y gasto de slots pushean al historial y panel de GM ===
   function obtenerEtiquetaRecurso(cb) {

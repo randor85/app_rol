@@ -556,12 +556,20 @@
  </div>
  </div>
 
- <!-- RECURSOS RACIALES (Spell Slots se movieron a la tarjeta de Conjuros, estilo Ulreek) -->
+ <!-- SPELL SLOTS & RECURSOS RACIALES -->
  <div class="tracker-card">
  <div class="tracker-header">
- <h3>✨ Conjuros Raciales</h3>
+ <h3>✨ Spell Slots & Conjuros Raciales</h3>
  </div>
  <div style="margin-top: 4px;">
+ <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 1 (3 Slots / Long Rest):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="slot-1-1"> S1</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-2"> S2</label>
+ <label class="check-box-item"><input type="checkbox" id="slot-1-3"> S3</label>
+ </div>
+ </div>
+ <div style="margin-top: 8px;">
  <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Warding Flare (3 / Long Rest):</label>
  <div class="checkbox-group">
  <label class="check-box-item"><input type="checkbox" id="wf-1"> U1</label>
@@ -703,16 +711,6 @@
  <details class="v2-section" id="section-spells" open>
  <summary>📜 3. Conjuros Preparados de Clérigo & Raciales</summary>
  <div class="section-content">
- <div class="resources-bar" style="margin-bottom: 15px;">
- <div class="tracker-card">
- <h4>Nivel 1</h4>
- <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
- <button class="btn-cnt" onclick="changeVal('slot-1-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 1')">-1</button>
- <span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
- <button class="btn-cnt" onclick="changeVal('slot-1-cur', 1)">+1</button>
- </div>
- </div>
- </div>
  <table>
  <thead>
  <tr>
@@ -1475,7 +1473,6 @@
       cb.checked = false;
       if (cb.id) guardarCampo(cb.id, false);
     });
-    changeVal('slot-1-cur', 3 - (parseInt(document.getElementById('slot-1-cur')?.innerText) || 0));
     if (typeof updateConditions === 'function') updateConditions();
     alert("🌙 Descanso Largo completado.");
   }
@@ -1520,7 +1517,7 @@
   };
   function maxNivelSlotDisponible() {
     let max = 0;
-    for (let n = 1; n <= 9; n++) { if (document.getElementById(`slot-${n}-cur`)) max = n; }
+    for (let n = 1; n <= 9; n++) { if (document.getElementById(`slot-${n}-1`)) max = n; }
     return max;
   }
   function inicializarSelectoresUpcast() {
@@ -1600,30 +1597,12 @@
   }
 
   // === AUTO-MARCADO DE SLOT AL USAR UN HECHIZO ===
-  // === REGISTRO GENÉRICO DE USO DE RECURSO (contadores +/-, no checkbox — estilo Ulreek) ===
-  function registrarUsoRecursoGenerico(etiqueta) {
-    rollHistory.unshift(`🔧 ${etiqueta}: <strong>Usado</strong>`);
-    if (rollHistory.length > 10) rollHistory.pop();
-    const hist = document.getElementById('dice-history');
-    if (hist) hist.innerHTML = rollHistory.join('<br>');
-    if (codigoCampana) {
-      db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
-        tipo: `🔧 ${etiqueta}`,
-        resultado: 'Usado',
-        fecha: firebase.database.ServerValue.TIMESTAMP
-      });
-    }
-  }
-
-  // === AUTO-DESCUENTO DE SLOT AL USAR UN HECHIZO (contador, no checkbox, desde 28 ago) ===
   function gastarSlot(nivel) {
-    const el = document.getElementById(`slot-${nivel}-cur`);
-    if (!el) return;
-    const actual = parseInt(el.innerText) || 0;
-    if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivel} disponibles.`); return; }
-    changeVal(`slot-${nivel}-cur`, -1);
-    registrarUsoRecursoGenerico(`Espacio de Nivel ${nivel}`);
+    const checkboxes = Array.from(document.querySelectorAll(`input[id^="slot-${nivel}-"]`));
+    const libre = checkboxes.find(cb => !cb.checked);
+    if (!libre) { alert(`⚠️ No te quedan espacios de nivel ${nivel} disponibles.`); return; }
+    libre.checked = true;
+    libre.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
   // Ataques: desventaja automática si Eldur está Cegado o Envenenado

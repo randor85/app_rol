@@ -1333,12 +1333,44 @@
 </div>
 </div>
 </div>
-<!-- FEY-TOUCHED (los Spell Slots se movieron a la tarjeta de Conjuros, estilo Ulreek) -->
+<!-- SPELL SLOTS & FEY-TOUCHED -->
 <div class="tracker-card">
 <div class="tracker-header">
-<h3>✨ Fey-Touched</h3>
+<h3>✨ Ranuras de Conjuro (Spell Slots)</h3>
 </div>
 <div style="margin-top: 4px;">
+<label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 1 (4 Slots):</label>
+<div class="checkbox-group" id="slots-lvl1">
+<label class="check-box-item"><input id="slot-1-1" type="checkbox"/> S1</label>
+<label class="check-box-item"><input id="slot-1-2" type="checkbox"/> S2</label>
+<label class="check-box-item"><input id="slot-1-3" type="checkbox"/> S3</label>
+<label class="check-box-item"><input id="slot-1-4" type="checkbox"/> S4</label>
+</div>
+</div>
+<div style="margin-top: 8px;">
+<label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 2 (3 Slots):</label>
+<div class="checkbox-group" id="slots-lvl2">
+<label class="check-box-item"><input id="slot-2-1" type="checkbox"/> S1</label>
+<label class="check-box-item"><input id="slot-2-2" type="checkbox"/> S2</label>
+<label class="check-box-item"><input id="slot-2-3" type="checkbox"/> S3</label>
+</div>
+</div>
+<div style="margin-top: 8px;">
+<label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 3 (3 Slots):</label>
+<div class="checkbox-group" id="slots-lvl3">
+<label class="check-box-item"><input id="slot-3-1" type="checkbox"/> S1</label>
+<label class="check-box-item"><input id="slot-3-2" type="checkbox"/> S2</label>
+<label class="check-box-item"><input id="slot-3-3" type="checkbox"/> S3</label>
+</div>
+</div>
+<div style="margin-top: 8px;">
+<label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Nivel 4 (2 Slots):</label>
+<div class="checkbox-group" id="slots-lvl4">
+<label class="check-box-item"><input id="slot-4-1" type="checkbox"/> S1</label>
+<label class="check-box-item"><input id="slot-4-2" type="checkbox"/> S2</label>
+</div>
+</div>
+<div style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 6px;">
 <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-light);">Fey-Touched Free Casts:</label>
 <div class="checkbox-group" id="group-feytouched">
 <label class="check-box-item"><input id="fey-misty" type="checkbox"/> Misty Step</label>
@@ -1531,40 +1563,6 @@
 </details><details class="v2-section" id="section-spells">
 <summary>📜 3. Conjuros Preparados y Referencia Rápida</summary>
 <div class="section-content">
-<div class="resources-bar" style="margin-bottom: 15px;">
-<div class="tracker-card">
-<h4>Nivel 1</h4>
-<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-<button class="btn-cnt" onclick="changeVal('slot-1-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 1')">-1</button>
-<span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">4</span> / 4
-<button class="btn-cnt" onclick="changeVal('slot-1-cur', 1)">+1</button>
-</div>
-</div>
-<div class="tracker-card">
-<h4>Nivel 2</h4>
-<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-<button class="btn-cnt" onclick="changeVal('slot-2-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 2')">-1</button>
-<span id="slot-2-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
-<button class="btn-cnt" onclick="changeVal('slot-2-cur', 1)">+1</button>
-</div>
-</div>
-<div class="tracker-card">
-<h4>Nivel 3</h4>
-<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-<button class="btn-cnt" onclick="changeVal('slot-3-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 3')">-1</button>
-<span id="slot-3-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
-<button class="btn-cnt" onclick="changeVal('slot-3-cur', 1)">+1</button>
-</div>
-</div>
-<div class="tracker-card">
-<h4>Nivel 4</h4>
-<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-<button class="btn-cnt" onclick="changeVal('slot-4-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 4')">-1</button>
-<span id="slot-4-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">2</span> / 2
-<button class="btn-cnt" onclick="changeVal('slot-4-cur', 1)">+1</button>
-</div>
-</div>
-</div>
 <table>
 <thead>
 <tr>
@@ -2592,7 +2590,7 @@
         let el = document.getElementById(id);
         if (!el) return;
         let val = parseInt(el.innerText) + delta;
-        if (['healer-kit-cur', 'honor-cur', 'rep-cur', 'slot-1-cur', 'slot-2-cur', 'slot-3-cur', 'slot-4-cur'].includes(id)) val = Math.max(0, val);
+        if (['healer-kit-cur', 'honor-cur', 'rep-cur'].includes(id)) val = Math.max(0, val);
         el.innerText = val;
         if (charRef) charRef.child('datos/' + id).set(val);
     }
@@ -2639,10 +2637,6 @@
                 cb.checked = false;
                 cb.dispatchEvent(new Event('change', { bubbles: true }));
             });
-            changeVal('slot-1-cur', 4 - (parseInt(document.getElementById('slot-1-cur')?.innerText) || 0));
-            changeVal('slot-2-cur', 3 - (parseInt(document.getElementById('slot-2-cur')?.innerText) || 0));
-            changeVal('slot-3-cur', 3 - (parseInt(document.getElementById('slot-3-cur')?.innerText) || 0));
-            changeVal('slot-4-cur', 2 - (parseInt(document.getElementById('slot-4-cur')?.innerText) || 0));
             updateConditions();
             syncStickyBar();
             alert("🌙 Descanso Largo completado.");
@@ -2713,31 +2707,13 @@
         displayRollResult(total, 'Dado de Golpe (1d8+2 CON)', `[${tirada}] + 2`);
     }
 
-    // === REGISTRO GENÉRICO DE USO DE RECURSO (para los contadores +/- que no son checkbox,
-    // como los Spell Slots desde 28 ago — estilo Ulreek) ===
-    function registrarUsoRecursoGenerico(etiqueta) {
-        const entry = `🔧 ${etiqueta}: <strong>Usado</strong>`;
-        rollHistory.unshift(entry);
-        if (rollHistory.length > 10) rollHistory.pop();
-        document.getElementById('dice-history').innerHTML = rollHistory.join('<br>');
-        if (codigoCampana) {
-            db.ref(`campanas/${codigoCampana}/tiradas`).push({
-                personaje: "Fiona Faraway",
-                tipo: `🔧 ${etiqueta}`,
-                resultado: 'Usado',
-                fecha: firebase.database.ServerValue.TIMESTAMP
-            });
-        }
-    }
-
-    // === AUTO-DESCUENTO DE SLOT AL USAR UN HECHIZO (contador, no checkbox, desde 28 ago) ===
+    // === AUTO-MARCADO DE SLOT AL USAR UN HECHIZO ===
     function gastarSlot(nivel) {
-        const el = document.getElementById(`slot-${nivel}-cur`);
-        if (!el) return;
-        const actual = parseInt(el.innerText) || 0;
-        if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivel} disponibles.`); return; }
-        changeVal(`slot-${nivel}-cur`, -1);
-        registrarUsoRecursoGenerico(`Espacio de Nivel ${nivel}`);
+        const checkboxes = Array.from(document.querySelectorAll(`input[id^="slot-${nivel}-"]`));
+        const libre = checkboxes.find(cb => !cb.checked);
+        if (!libre) { alert(`⚠️ No te quedan espacios de nivel ${nivel} disponibles.`); return; }
+        libre.checked = true;
+        libre.dispatchEvent(new Event('change', { bubbles: true }));
     }
     function rollManualDice(count, sides, mod, label) {
         let rolls = [];
@@ -2762,7 +2738,7 @@
     };
     function maxNivelSlotDisponible() {
         let max = 0;
-        for (let n = 1; n <= 9; n++) { if (document.getElementById(`slot-${n}-cur`)) max = n; }
+        for (let n = 1; n <= 9; n++) { if (document.getElementById(`slot-${n}-1`)) max = n; }
         return max;
     }
     function inicializarSelectoresUpcast() {
