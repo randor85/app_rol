@@ -47,7 +47,6 @@
             background-color: var(--bg-primary);
             color: var(--text-light);
             padding: 20px;
-            padding-bottom: 280px;
             font-size: 14px;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -295,18 +294,6 @@
 
         .btn-roll { background-color: var(--accent-teal); color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-top: 5px; transition: background-color 0.2s; }
         .btn-roll:hover { background-color: var(--accent-hover); }
-
-        /* PANEL FLOTANTE DE DADOS (bugs.md 26 ago: réplica del lanzador de dados del resto de la flota) */
-        .dice-roller-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-header); border-top: 3px solid var(--accent-teal); box-shadow: 0 -6px 20px rgba(0,0,0,0.5); padding: 12px 20px; z-index: 1000; }
-        .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
-        .dice-container { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; }
-        .dice-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .btn-dice { background: var(--bg-card-header); border: 1px solid var(--accent-teal); color: var(--accent-teal); font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.95rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .btn-dice:hover { background: var(--accent-teal); color: #fff; transform: translateY(-2px); }
-        .dice-mod-input { width: 60px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 6px; text-align: center; }
-        .dice-result-box { background: var(--surface-strong); border: 1px solid var(--accent-teal); border-radius: 8px; padding: 8px 16px; min-width: 220px; text-align: center; }
-        .dice-result-val { font-size: 1.8rem; font-weight: 800; color: var(--accent-teal); line-height: 1; }
-        .dice-result-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
         .btn-roll-sm { background-color: var(--accent-teal); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 3px 6px; display: inline-flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
         .btn-roll-sm:hover { background-color: var(--accent-hover); }
 
@@ -349,13 +336,12 @@
         }
 
         @media (max-width: 768px) {
-            body { padding: 5px; padding-bottom: 340px; }
+            body { padding: 5px; }
             .container { padding: 15px; }
             .header { margin: -15px -15px 15px -15px; padding: 15px; }
             .hp-section { justify-content: space-between; width: 100%; }
             .hp-box { flex-grow: 1; justify-content: center; }
             .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 15px; }
-            .dice-container { flex-direction: column; align-items: stretch; }
             .info-table td { display: block; width: 100% !important; padding: 2px 0; }
             table.data th, table.data td { padding: 6px 2px; font-size: 12px; }
             .skills-grid { grid-template-columns: 1fr; }
@@ -899,35 +885,6 @@
     <input type="hidden" id="habilidades-agregadas-nivel" value="">
 </div>
 
-<!-- PANEL FLOTANTE DE DADOS -->
-<div class="dice-roller-panel">
-    <div class="dice-container">
-        <div>
-            <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-teal); font-size:0.9rem; margin-bottom:4px;">
-                🎲 LANZADOR DE DADOS DE DANE
-            </div>
-            <div class="dice-btns">
-                <button class="btn-dice" onclick="rollManualDice(1, 4, getMod(), 'd4')">d4</button>
-                <button class="btn-dice" onclick="rollManualDice(1, 6, getMod(), 'd6')">d6</button>
-                <button class="btn-dice" onclick="rollManualDice(1, 8, getMod(), 'd8')">d8</button>
-                <button class="btn-dice" onclick="rollManualDice(1, 10, getMod(), 'd10')">d10</button>
-                <button class="btn-dice" onclick="rollManualDice(1, 12, getMod(), 'd12')">d12</button>
-                <button class="btn-dice" onclick="rollManualDice(1, 20, getMod(), 'd20')">d20</button>
-                <button class="btn-dice" onclick="rollManualDice(1, 100, getMod(), 'd100')">d100</button>
-                <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
-                    <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
-                    <input type="number" id="dice-mod" class="dice-mod-input" value="0">
-                </div>
-            </div>
-        </div>
-        <div class="dice-result-box">
-            <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
-            <div class="dice-result-val" id="dice-total">0</div>
-            <div class="dice-result-details" id="dice-details">Esperando tirada...</div>
-        </div>
-    </div>
-</div>
-
 <!-- LIBRERÍAS DE COMPATIBILIDAD DE FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -1223,10 +1180,7 @@
         aplicarBarrasFijas(!off);
     }
     function initBarrasFijas() {
-        // Por defecto sueltas (sin fijar) para que nada quede tapado al hacer scroll sin que
-        // el jugador tenga que tocar nada; solo quedan "fijas" si el jugador lo eligió antes.
-        const guardado = localStorage.getItem(`${PERSONAJE_ID}_barras_off`);
-        aplicarBarrasFijas(guardado === null ? true : guardado === '1');
+        aplicarBarrasFijas(localStorage.getItem(`${PERSONAJE_ID}_barras_off`) === '1');
     }
     document.addEventListener('DOMContentLoaded', initBarrasFijas);
     document.addEventListener('click', (e) => {
@@ -1321,14 +1275,6 @@
         history.appendChild(entry);
         history.scrollTop = history.scrollHeight;
 
-        // Panel flotante de dados (bugs.md 26 ago) — mismos ids que el resto de la flota
-        const totalEl = document.getElementById('dice-total');
-        const labelEl = document.getElementById('dice-label');
-        const detailsEl = document.getElementById('dice-details');
-        if (totalEl) totalEl.innerText = result;
-        if (labelEl) labelEl.innerText = name;
-        if (detailsEl) detailsEl.innerText = calc;
-
         if (typeof codigoCampana !== 'undefined' && codigoCampana) {
             db.ref(`campanas/${codigoCampana}/tiradas`).push({
                 personaje: "Dane",
@@ -1337,17 +1283,6 @@
                 fecha: firebase.database.ServerValue.TIMESTAMP
             });
         }
-    }
-
-    // === LANZADOR DE DADOS MANUAL (d4-d100 + Mod) — réplica del panel flotante del resto de la flota ===
-    function getMod() { return parseInt(document.getElementById('dice-mod')?.value) || 0; }
-    function rollManualDice(num, sides, mod, label) {
-        let rolls = []; let total = 0;
-        for (let i = 0; i < num; i++) {
-            let r = Math.floor(Math.random() * sides) + 1;
-            rolls.push(r); total += r;
-        }
-        displayRollResult(label, total + mod, `[${rolls.join(', ')}] Mod: ${mod}`);
     }
 
     function clearDiceHistory() {

@@ -2415,10 +2415,7 @@
         aplicarBarrasFijas(!off);
     }
     function initBarrasFijas() {
-        // Por defecto sueltas (sin fijar) para que nada quede tapado al hacer scroll sin que
-        // el jugador tenga que tocar nada; solo quedan "fijas" si el jugador lo eligió antes.
-        const guardado = localStorage.getItem(`${PERSONAJE_ID}_barras_off`);
-        aplicarBarrasFijas(guardado === null ? true : guardado === '1');
+        aplicarBarrasFijas(localStorage.getItem(`${PERSONAJE_ID}_barras_off`) === '1');
     }
     window.addEventListener('DOMContentLoaded', initBarrasFijas);
     window.addEventListener('click', e => {
