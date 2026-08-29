@@ -227,18 +227,6 @@
         .check-box-item { display: flex; align-items: center; gap: 6px; background: var(--surface-soft); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem; cursor: pointer; user-select: none; }
         .check-box-item input[type="checkbox"] { accent-color: var(--accent-teal); width: 16px; height: 16px; cursor: pointer; }
 
-        /* CONDICIONES Y EFECTOS (bugs.md 29 ago: a Dane le faltaba, igual que el resto de la flota) */
-        .multiselect-container { position: relative; width: 100%; }
-        .select-box { background: var(--bg-card-header); border: 1px solid var(--accent-teal); color: var(--text-light); font-weight: 700; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-        .checkboxes-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--accent-teal); border-radius: 6px; max-height: 220px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.9); padding: 6px; margin-top: 4px; text-align: left; }
-        .checkboxes-dropdown label { display: flex; align-items: center; gap: 8px; padding: 4px 6px; font-size: 0.8rem; text-transform: none; color: var(--text-light); cursor: pointer; font-weight: normal; border-radius: 4px; }
-        .checkboxes-dropdown label:hover { background: rgba(43, 138, 131, 0.2); }
-        .checkboxes-dropdown input[type="checkbox"] { accent-color: var(--accent-teal); width: 14px; height: 14px; }
-        .active-conditions-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-height: 20px; }
-        .cond-tag { background: var(--danger-color); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .cond-tag.buff { background: var(--accent-teal); }
-        .cond-tag.debuff { background: var(--danger-color); }
-
         .ability-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; }
         .ability-table th, .ability-table td { border: 1px solid var(--border-color); padding: 8px 6px; }
         .ability-table th { background: var(--bg-card-header); color: var(--accent-gold); font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -522,31 +510,16 @@
                     <label class="check-box-item"><input type="checkbox" id="ds-f3"> 3</label>
                 </div>
                 <button class="btn-roll" onclick="rollDeathSave()" style="margin-top:8px;">🎲 Tirar Salvación de Muerte</button>
-                <label style="font-size:0.8rem; color:var(--text-muted); font-weight:bold; display:block; margin-top:14px; border-top:1px solid var(--border-color); padding-top:10px;">✨ Condiciones y Efectos</label>
-                <div class="multiselect-container">
-                    <div class="select-box" onclick="toggleConditionsDropdown()">
-                        <span>Seleccionar...</span>
-                        <span>▼</span>
-                    </div>
-                    <div class="checkboxes-dropdown" id="conditions-dropdown">
-                        <strong style="display:block; font-size:0.7rem; color:var(--accent-teal); margin-bottom:4px;">EFECTOS Y BUFFS</strong>
-                        <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
-                        <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
-                        <hr style="border-color:var(--border-color); margin:4px 0;">
-                        <strong style="display:block; font-size:0.7rem; color:var(--accent-teal); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
-                        <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded</label>
-                        <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened</label>
-                        <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned</label>
-                        <label><input type="checkbox" id="cond-stunned" value="Stunned" data-type="debuff" onchange="updateConditions()"> 💫 Stunned</label>
-                    </div>
-                </div>
-                <div class="active-conditions-tags" id="active-conditions-list"></div>
             </div>
         </div>
 
         <div class="tracker-card roller-section">
             <div class="tracker-header"><h3>🎲 Sistema de Tiradas</h3></div>
-            <!-- Ventaja/Desventaja unificada en el lanzador de dados (bugs.md 29 ago) -->
+            <div class="roll-controls">
+                <label><input type="radio" name="rollType" value="normal" checked> Normal</label>
+                <label><input type="radio" name="rollType" value="advantage"> Advantage</label>
+                <label><input type="radio" name="rollType" value="disadvantage"> Disadvantage</label>
+            </div>
             <div class="roll-history" id="rollHistory">
                 <!-- Dice results -->
             </div>
@@ -942,23 +915,15 @@
                 <button class="btn-dice" onclick="rollPanelDice(20, 'd20')">d20</button>
                 <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
                 <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
-                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+                <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
                     <label style="font-size:0.75rem; color:var(--text-muted);">Cant:</label>
                     <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:45px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
                 </div>
-                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+                <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
                     <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
                     <input type="number" id="dice-mod" class="dice-mod-input" value="0">
                 </div>
-                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
-                    <label style="font-size:0.75rem; color:var(--text-muted);">Próx. Ataque:</label>
-                    <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;" title="Ventaja/Desventaja para el próximo ataque — un solo selector para toda la ficha">
-                        <option value="normal">Normal</option>
-                        <option value="advantage">🟢 Ventaja</option>
-                        <option value="disadvantage">🔴 Desventaja</option>
-                    </select>
-                </div>
-                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+                <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
                     <label style="font-size:0.75rem; color:var(--text-muted);">Quitar:</label>
                     <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:40px;" title="Cuántos dados descartar de la tirada (0 = ninguno). Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
                     <select id="dice-drop-mode" class="dice-mod-input" style="width:auto; padding:6px 4px;">
@@ -966,7 +931,7 @@
                         <option value="high">mejores</option>
                     </select>
                 </div>
-                <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+                <div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
                     <label style="font-size:0.75rem; color:var(--text-muted);">Custom:</label>
                     <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:55px;" title="Caras del dado custom">
                     <button class="btn-dice" onclick="rollCustomDice()">🎲 Tirar</button>
@@ -1332,18 +1297,8 @@
     });
 
     // --- 3. DICE ROLLER SYSTEM ---
-    // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados, igual que el resto de la flota) ===
-    function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
-
-    // Ataques: desventaja automática si Dane está Cegado o Envenenado (igual que el resto de la flota)
     function rollAttack(name, modifier) {
-        let rollType = getAdvantage();
-        const estaCegado = document.getElementById('cond-blinded')?.checked;
-        const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-        if (estaCegado || estaEnvenenado) {
-            rollType = 'disadvantage';
-            name += " 🛑 (Desventaja por Condición)";
-        }
+        const rollType = document.querySelector('input[name="rollType"]:checked').value;
         const d1 = Math.floor(Math.random() * 20) + 1;
         const d2 = Math.floor(Math.random() * 20) + 1;
 
@@ -1360,10 +1315,6 @@
             result = d1 + modifier;
             calc = `[d20: ${d1} + ${modifier}]`;
         }
-        const bless = document.getElementById('buff-bless');
-        const bane = document.getElementById('debuff-bane');
-        if (bless && bless.checked) { const r = Math.floor(Math.random() * 4) + 1; result += r; calc += ` + Bless: ${r}`; }
-        if (bane && bane.checked) { const r = Math.floor(Math.random() * 4) + 1; result -= r; calc += ` - Bane: ${r}`; }
         displayRollResult(name, result, calc);
     }
 
@@ -1459,29 +1410,6 @@
 
     function clearDiceHistory() {
         document.getElementById('rollHistory').innerHTML = '';
-    }
-
-    // === CONDICIONES Y EFECTOS (bugs.md 29 ago: a Dane le faltaba, igual que el resto de la flota) ===
-    function toggleConditionsDropdown() {
-        const dd = document.getElementById('conditions-dropdown');
-        if (dd) dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
-    }
-    document.addEventListener('click', e => {
-        if (!e.target.closest('.multiselect-container')) {
-            const d = document.getElementById('conditions-dropdown');
-            if (d) d.style.display = 'none';
-        }
-    });
-    function updateConditions() {
-        const container = document.getElementById('active-conditions-list');
-        if (!container) return;
-        container.innerHTML = '';
-        document.querySelectorAll('#conditions-dropdown input[type="checkbox"]:checked').forEach(cb => {
-            const span = document.createElement('span');
-            span.className = `cond-tag ${cb.getAttribute('data-type') || 'debuff'}`;
-            span.innerText = cb.value;
-            container.appendChild(span);
-        });
     }
 
     // === REGISTRO DE USO DE RECURSOS (bugs.md 26 ago): checkboxes de recursos/slots (no HD) pushean al historial y panel de GM ===

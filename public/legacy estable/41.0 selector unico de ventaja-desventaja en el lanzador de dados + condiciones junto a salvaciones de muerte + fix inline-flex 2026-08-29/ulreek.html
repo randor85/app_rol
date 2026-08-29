@@ -1074,11 +1074,58 @@
 </div>
 </header>
 
-<!-- VENTAJA/DESVENTAJA: unificada en el lanzador de dados; CONDICIONES: movidas junto a Salvaciones de Muerte (bugs.md 29 ago) -->
 <div class="advantage-bar">
+<div class="adv-card">
+<label>🎲 Próximo Ataque</label>
+<select id="adv-attack">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+</div>
+<div class="adv-card">
+<label>🛡️ Próxima Salvación</label>
+<select id="adv-save">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+</div>
 <div class="adv-card" style="border-color: var(--accent-light);">
 <label>🧘 Save Concentración</label>
+<select id="adv-conc" style="margin-bottom:6px;">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
 <button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (+5)</button>
+</div>
+<div class="adv-card">
+<label>✨ Condiciones y Efectos</label>
+<div class="multiselect-container">
+<div class="select-box" onclick="toggleConditionsDropdown()">
+<span id="cond-select-text">0 seleccionadas</span>
+<span>▼</span>
+</div>
+<div class="checkboxes-dropdown" id="conditions-dropdown">
+<label><input id="cond-blinded" onchange="updateConditions()" type="checkbox" value="Cegado"/> Cegado (Blinded)</label>
+<label><input id="cond-charmed" onchange="updateConditions()" type="checkbox" value="Encantado"/> Encantado (Charmed)</label>
+<label><input id="cond-deafened" onchange="updateConditions()" type="checkbox" value="Sordo"/> Sordo (Deafened)</label>
+<label><input id="cond-frightened" onchange="updateConditions()" type="checkbox" value="Asustado"/> Asustado (Frightened)</label>
+<label><input id="cond-grappled" onchange="updateConditions()" type="checkbox" value="Apresado"/> Apresado (Grappled)</label>
+<label><input id="cond-incapacitated" onchange="updateConditions()" type="checkbox" value="Incapacitado"/> Incapacitado (Incapacitated)</label>
+<label><input id="cond-invisible" onchange="updateConditions()" type="checkbox" value="Invisible"/> Invisible (Invisible)</label>
+<label><input id="cond-paralyzed" onchange="updateConditions()" type="checkbox" value="Paralizado"/> Paralizado (Paralyzed)</label>
+<label><input id="cond-petrified" onchange="updateConditions()" type="checkbox" value="Petrificado"/> Petrificado (Petrified)</label>
+<label><input id="cond-poisoned" onchange="updateConditions()" type="checkbox" value="Envenenado"/> Envenenado (Poisoned)</label>
+<label><input id="cond-prone" onchange="updateConditions()" type="checkbox" value="Derribado"/> Derribado (Prone)</label>
+<label><input id="cond-restrained" onchange="updateConditions()" type="checkbox" value="Restringido"/> Restringido (Restrained)</label>
+<label><input id="cond-stunned" onchange="updateConditions()" type="checkbox" value="Aturdido"/> Aturdido (Stunned)</label>
+<label><input id="cond-unconscious" onchange="updateConditions()" type="checkbox" value="Inconsciente"/> Inconsciente (Unconscious)</label>
+<label><input id="cond-exhaustion" onchange="updateConditions()" type="checkbox" value="Agotamiento"/> Agotamiento (Exhaustion)</label>
+</div>
+</div>
+<div class="active-conditions-tags" id="active-conditions-list"></div>
 </div>
 </div>
 
@@ -1180,31 +1227,6 @@
 <label class="check-box-item"><input id="ds-f3" type="checkbox"/> 3</label>
 </div>
 <button class="btn-roll" onclick="rollDeathSave()" style="margin-top:8px;">🎲 Tirar Salvación de Muerte</button>
-<label style="font-size:0.8rem; color:var(--text-muted); font-weight:bold; display:block; margin-top:14px; border-top:1px solid var(--border-color); padding-top:10px;">✨ Condiciones y Efectos</label>
-<div class="multiselect-container">
-<div class="select-box" onclick="toggleConditionsDropdown()">
-<span id="cond-select-text">0 seleccionadas</span>
-<span>▼</span>
-</div>
-<div class="checkboxes-dropdown" id="conditions-dropdown">
-<label><input id="cond-blinded" onchange="updateConditions()" type="checkbox" value="Cegado"/> Cegado (Blinded)</label>
-<label><input id="cond-charmed" onchange="updateConditions()" type="checkbox" value="Encantado"/> Encantado (Charmed)</label>
-<label><input id="cond-deafened" onchange="updateConditions()" type="checkbox" value="Sordo"/> Sordo (Deafened)</label>
-<label><input id="cond-frightened" onchange="updateConditions()" type="checkbox" value="Asustado"/> Asustado (Frightened)</label>
-<label><input id="cond-grappled" onchange="updateConditions()" type="checkbox" value="Apresado"/> Apresado (Grappled)</label>
-<label><input id="cond-incapacitated" onchange="updateConditions()" type="checkbox" value="Incapacitado"/> Incapacitado (Incapacitated)</label>
-<label><input id="cond-invisible" onchange="updateConditions()" type="checkbox" value="Invisible"/> Invisible (Invisible)</label>
-<label><input id="cond-paralyzed" onchange="updateConditions()" type="checkbox" value="Paralizado"/> Paralizado (Paralyzed)</label>
-<label><input id="cond-petrified" onchange="updateConditions()" type="checkbox" value="Petrificado"/> Petrificado (Petrified)</label>
-<label><input id="cond-poisoned" onchange="updateConditions()" type="checkbox" value="Envenenado"/> Envenenado (Poisoned)</label>
-<label><input id="cond-prone" onchange="updateConditions()" type="checkbox" value="Derribado"/> Derribado (Prone)</label>
-<label><input id="cond-restrained" onchange="updateConditions()" type="checkbox" value="Restringido"/> Restringido (Restrained)</label>
-<label><input id="cond-stunned" onchange="updateConditions()" type="checkbox" value="Aturdido"/> Aturdido (Stunned)</label>
-<label><input id="cond-unconscious" onchange="updateConditions()" type="checkbox" value="Inconsciente"/> Inconsciente (Unconscious)</label>
-<label><input id="cond-exhaustion" onchange="updateConditions()" type="checkbox" value="Agotamiento"/> Agotamiento (Exhaustion)</label>
-</div>
-</div>
-<div class="active-conditions-tags" id="active-conditions-list"></div>
 </div>
 </div>
 
@@ -1524,34 +1546,26 @@
 <button class="btn-dice" onclick="rollDice(20)">d20</button>
 <button class="btn-dice" onclick="rollDice(100)">d100</button>
 <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:10px;">
+<div style="display:flex; flex-direction:column; align-items:center; margin-left:10px;">
 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">CANT.</label>
 <input class="dice-mod-input" id="dice-qty" type="number" value="1" min="1" style="width:45px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)"/>
 </div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:10px;">
+<div style="display:flex; flex-direction:column; align-items:center; margin-left:10px;">
 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">MODIFICADOR</label>
 <input class="dice-mod-input" id="dice-mod" type="number" value="0"/>
 </div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:10px;">
-<label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">ATAQUE/SALV.</label>
-<select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">
-<option value="normal">Normal</option>
-<option value="advantage">🟢 Ventaja</option>
-<option value="disadvantage">🔴 Desventaja</option>
-</select>
-</div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:10px;">
+<div style="display:flex; flex-direction:column; align-items:center; margin-left:10px;">
 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">QUITAR</label>
 <input class="dice-mod-input" id="dice-drop-count" type="number" value="0" min="0" style="width:40px;" title="Cuántos dados descartar de la tirada (0 = ninguno). Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores."/>
 </div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:2px;">
+<div style="display:flex; flex-direction:column; align-items:center; margin-left:2px;">
 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">&nbsp;</label>
 <select id="dice-drop-mode" class="dice-mod-input" style="width:auto; padding:6px 4px;">
 <option value="low">peores</option>
 <option value="high">mejores</option>
 </select>
 </div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:10px;">
+<div style="display:flex; flex-direction:column; align-items:center; margin-left:10px;">
 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">CUSTOM</label>
 <input class="dice-mod-input" id="dice-custom-sides" type="number" value="20" min="2" style="width:55px;" title="Caras del dado custom"/>
 </div>
@@ -2339,12 +2353,9 @@
     displayRollResult(`🪙 ${cara}`, 'Moneda del Destino', `[${r}]`);
   }
 
-  // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
-  function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
-
   // Ataques: desventaja automática si Ulreek está Cegado o Envenenado (igual que el resto de la flota)
   function rollAttack(bonus, label) {
-    let adv = getAdvantage();
+    let adv = document.getElementById('adv-attack').value;
     const estaCegado = document.getElementById('cond-blinded')?.checked;
     const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
     if (estaCegado || estaEnvenenado) {
@@ -2357,7 +2368,7 @@
 
   // Checks/Saves: el envenenamiento da desventaja solo en checks (igual que el resto de la flota)
   function rollCheckSave(diceStr, mod, label, type) {
-    let adv = getAdvantage();
+    let adv = document.getElementById('adv-save').value;
     const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
     if (estaEnvenenado && type === 'check') {
       adv = 'disadvantage';
@@ -2367,7 +2378,7 @@
   }
 
   function rollConcentrationSave() {
-    rollD20WithMechanics(5, 'Concentración CON Save', getAdvantage(), true);
+    rollD20WithMechanics(5, 'Concentración CON Save', document.getElementById('adv-conc').value, true);
   }
 
   function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {

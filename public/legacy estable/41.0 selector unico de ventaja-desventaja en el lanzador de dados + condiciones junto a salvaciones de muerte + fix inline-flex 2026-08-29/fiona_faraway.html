@@ -1124,12 +1124,66 @@
 </div>
 </div>
 </header>
-<!-- VENTAJA/DESVENTAJA: unificada en el lanzador de dados (bugs.md 29 ago) -->
+<!-- BARRA DE SELECTORES DE VENTAJAS Y CONDICIONES MÚLTIPLES -->
 <div class="advantage-bar">
+<div class="adv-card">
+<label>🎲 Próximo Ataque</label>
+<select id="adv-attack">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+</div>
+<div class="adv-card">
+<label>🛡️ Próxima Salvación</label>
+<select id="adv-save">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
+</div>
 <!-- MÓDULO DE SALVACIÓN DE CONCENTRACIÓN -->
 <div class="adv-card" style="border-color: var(--accent-light);">
 <label>🧘 Save Concentración</label>
+<select id="adv-conc" style="margin-bottom:6px;">
+<option value="normal">Normal</option>
+<option value="advantage">🟢 Ventaja (Warcaster/Totem)</option>
+<option value="disadvantage">🔴 Desventaja</option>
+</select>
 <button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (+2)</button>
+</div>
+<!-- SELECTOR MÚLTIPLE DE CONDICIONES Y BUFFS/DEBUFFS -->
+<div class="adv-card">
+<label>✨ Condiciones y Efectos</label>
+<div class="multiselect-container">
+<div class="select-box" onclick="toggleConditionsDropdown()">
+<span>Seleccionar...</span>
+<span>▼</span>
+</div>
+<div class="checkboxes-dropdown" id="conditions-dropdown">
+<strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS / BUFFS &amp; DEBUFFS</strong>
+<label><input data-type="buff" id="buff-bless" onchange="updateConditions()" type="checkbox" value="Bless"/> ✨ Bless (+1d4 Atk/Saves)</label>
+<label><input data-type="debuff" id="debuff-bane" onchange="updateConditions()" type="checkbox" value="Bane"/> 💀 Bane (-1d4 Atk/Saves)</label>
+<label><input data-type="buff" id="buff-guidance" onchange="updateConditions()" type="checkbox" value="Guidance"/> 📜 Guidance (+1d4 Check)</label>
+<label><input data-type="buff" id="buff-haste" onchange="updateConditions()" type="checkbox" value="Haste"/> ⚡ Haste (+2 AC, Doble Vel.)</label>
+<hr style="border-color:var(--border-color); margin:4px 0;"/>
+<strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&amp;D 5E</strong>
+<label><input data-type="debuff" id="cond-blinded" onchange="updateConditions()" type="checkbox" value="Blinded"/> 👁️ Blinded (Cegado)</label>
+<label><input data-type="debuff" id="cond-charmed" onchange="updateConditions()" type="checkbox" value="Charmed"/> ❤️ Charmed (Encantado)</label>
+<label><input data-type="debuff" id="cond-deafened" onchange="updateConditions()" type="checkbox" value="Deafened"/> 👂 Deafened (Ensordecido)</label>
+<label><input data-type="debuff" id="cond-frightened" onchange="updateConditions()" type="checkbox" value="Frightened"/> 😱 Frightened (Asustado)</label>
+<label><input data-type="debuff" id="cond-grappled" onchange="updateConditions()" type="checkbox" value="Grappled"/> 🤼 Grappled (Agarrado)</label>
+<label><input data-type="debuff" id="cond-incapacitated" onchange="updateConditions()" type="checkbox" value="Incapacitated"/> 😵 Incapacitated</label>
+<label><input data-type="buff" id="cond-invisible" onchange="updateConditions()" type="checkbox" value="Invisible"/> 👻 Invisible</label>
+<label><input data-type="debuff" id="cond-paralyzed" onchange="updateConditions()" type="checkbox" value="Paralyzed"/> ⚡ Paralyzed (Paralizado)</label>
+<label><input data-type="debuff" id="cond-petrified" onchange="updateConditions()" type="checkbox" value="Petrified"/> 🗿 Petrified (Petrificado)</label>
+<label><input data-type="debuff" id="cond-poisoned" onchange="updateConditions()" type="checkbox" value="Poisoned"/> ☣️ Poisoned (Envenenado)</label>
+<label><input data-type="debuff" id="cond-prone" onchange="updateConditions()" type="checkbox" value="Prone"/> 🛌 Prone (Derribado)</label>
+<label><input data-type="debuff" id="cond-restrained" onchange="updateConditions()" type="checkbox" value="Restrained"/> 🕸️ Restrained (Apresado)</label>
+<label><input data-type="debuff" id="cond-stunned" onchange="updateConditions()" type="checkbox" value="Stunned"/> 💫 Stunned (Aturdido)</label>
+</div>
+</div>
+<div class="active-conditions-tags" id="active-conditions-list"></div>
 </div>
 </div>
 <!-- CARACTERÍSTICAS Y SALVAGUARDAS (tabla compacta: Check + Save por separado) -->
@@ -1235,36 +1289,6 @@
 <label class="check-box-item"><input type="checkbox" id="ds-f3"> 3</label>
 </div>
 <button class="btn-roll" onclick="rollDeathSave()" style="margin-top:8px;">🎲 Tirar Salvación de Muerte</button>
-<label style="font-size:0.8rem; color:var(--text-muted); font-weight:bold; display:block; margin-top:14px; border-top:1px solid var(--border-color); padding-top:10px;">✨ Condiciones y Efectos</label>
-<div class="multiselect-container">
-<div class="select-box" onclick="toggleConditionsDropdown()">
-<span>Seleccionar...</span>
-<span>▼</span>
-</div>
-<div class="checkboxes-dropdown" id="conditions-dropdown">
-<strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS / BUFFS &amp; DEBUFFS</strong>
-<label><input data-type="buff" id="buff-bless" onchange="updateConditions()" type="checkbox" value="Bless"/> ✨ Bless (+1d4 Atk/Saves)</label>
-<label><input data-type="debuff" id="debuff-bane" onchange="updateConditions()" type="checkbox" value="Bane"/> 💀 Bane (-1d4 Atk/Saves)</label>
-<label><input data-type="buff" id="buff-guidance" onchange="updateConditions()" type="checkbox" value="Guidance"/> 📜 Guidance (+1d4 Check)</label>
-<label><input data-type="buff" id="buff-haste" onchange="updateConditions()" type="checkbox" value="Haste"/> ⚡ Haste (+2 AC, Doble Vel.)</label>
-<hr style="border-color:var(--border-color); margin:4px 0;"/>
-<strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&amp;D 5E</strong>
-<label><input data-type="debuff" id="cond-blinded" onchange="updateConditions()" type="checkbox" value="Blinded"/> 👁️ Blinded (Cegado)</label>
-<label><input data-type="debuff" id="cond-charmed" onchange="updateConditions()" type="checkbox" value="Charmed"/> ❤️ Charmed (Encantado)</label>
-<label><input data-type="debuff" id="cond-deafened" onchange="updateConditions()" type="checkbox" value="Deafened"/> 👂 Deafened (Ensordecido)</label>
-<label><input data-type="debuff" id="cond-frightened" onchange="updateConditions()" type="checkbox" value="Frightened"/> 😱 Frightened (Asustado)</label>
-<label><input data-type="debuff" id="cond-grappled" onchange="updateConditions()" type="checkbox" value="Grappled"/> 🤼 Grappled (Agarrado)</label>
-<label><input data-type="debuff" id="cond-incapacitated" onchange="updateConditions()" type="checkbox" value="Incapacitated"/> 😵 Incapacitated</label>
-<label><input data-type="buff" id="cond-invisible" onchange="updateConditions()" type="checkbox" value="Invisible"/> 👻 Invisible</label>
-<label><input data-type="debuff" id="cond-paralyzed" onchange="updateConditions()" type="checkbox" value="Paralyzed"/> ⚡ Paralyzed (Paralizado)</label>
-<label><input data-type="debuff" id="cond-petrified" onchange="updateConditions()" type="checkbox" value="Petrified"/> 🗿 Petrified (Petrificado)</label>
-<label><input data-type="debuff" id="cond-poisoned" onchange="updateConditions()" type="checkbox" value="Poisoned"/> ☣️ Poisoned (Envenenado)</label>
-<label><input data-type="debuff" id="cond-prone" onchange="updateConditions()" type="checkbox" value="Prone"/> 🛌 Prone (Derribado)</label>
-<label><input data-type="debuff" id="cond-restrained" onchange="updateConditions()" type="checkbox" value="Restrained"/> 🕸️ Restrained (Apresado)</label>
-<label><input data-type="debuff" id="cond-stunned" onchange="updateConditions()" type="checkbox" value="Stunned"/> 💫 Stunned (Aturdido)</label>
-</div>
-</div>
-<div class="active-conditions-tags" id="active-conditions-list"></div>
 </div>
 </div>
 <!-- RECURSOS DE CLASE, EQUIPO Y RAZA -->
@@ -2166,23 +2190,15 @@
 <button class="btn-dice" onclick="rollPanelDice(20, 'd20')">d20</button>
 <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
 <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
-<div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+<div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
 <label style="font-size:0.75rem; color:var(--text-muted);">Cant:</label>
 <input class="dice-mod-input" id="dice-qty" type="number" value="1" min="1" style="width:45px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)"/>
 </div>
-<div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+<div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
 <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
 <input class="dice-mod-input" id="dice-mod" type="number" value="0"/>
 </div>
-<div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
-<label style="font-size:0.75rem; color:var(--text-muted);">Próx. Ataque/Salv:</label>
-<select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">
-<option value="normal">Normal</option>
-<option value="advantage">🟢 Ventaja</option>
-<option value="disadvantage">🔴 Desventaja</option>
-</select>
-</div>
-<div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+<div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
 <label style="font-size:0.75rem; color:var(--text-muted);">Quitar:</label>
 <input class="dice-mod-input" id="dice-drop-count" type="number" value="0" min="0" style="width:40px;" title="Cuántos dados descartar de la tirada (0 = ninguno). Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores."/>
 <select id="dice-drop-mode" class="dice-mod-input" style="width:auto; padding:6px 4px;">
@@ -2190,7 +2206,7 @@
 <option value="high">mejores</option>
 </select>
 </div>
-<div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+<div style="display:flex; align-items:center; gap:4px; margin-left:8px;">
 <label style="font-size:0.75rem; color:var(--text-muted);">Custom:</label>
 <input class="dice-mod-input" id="dice-custom-sides" type="number" value="20" min="2" style="width:55px;" title="Caras del dado custom"/>
 <button class="btn-dice" onclick="rollCustomDice()">🎲 Tirar</button>
@@ -2933,21 +2949,19 @@
     }
     document.addEventListener('DOMContentLoaded', inicializarSelectoresUpcast);
 
-    // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
-    function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
     function rollAttack(baseMod, attackLabel) {
         const totalFlatMod = baseMod + (parseInt(document.getElementById('atk-buff').value) || 0);
-        rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
+        rollD20WithMechanics(totalFlatMod, attackLabel, document.getElementById('adv-attack').value, true);
     }
     function rollSpellAttack(attackLabel) {
         const totalFlatMod = 8 + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
-        rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
+        rollD20WithMechanics(totalFlatMod, attackLabel, document.getElementById('adv-attack').value, true);
     }
     function rollCheckSave(sides, baseMod, label, mode) {
-        rollD20WithMechanics(baseMod, label, getAdvantage(), mode === 'save');
+        rollD20WithMechanics(baseMod, label, document.getElementById('adv-save').value, mode === 'save');
     }
     function rollConcentrationSave() {
-        rollD20WithMechanics(2, 'Save Concentración', getAdvantage(), true);
+        rollD20WithMechanics(2, 'Save Concentración', document.getElementById('adv-conc').value, true);
     }
     function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
     let finalAdv = advState;

@@ -1058,48 +1058,7 @@
  </div>
  </header>
 
- <!-- VENTAJAS Y CONDICIONES -->
- <div class="advantage-bar">
- <div class="adv-card">
- <label>🎲 Próximo Ataque</label>
- <select id="adv-attack">
- <option value="normal">Normal</option>
- <option value="advantage">🟢 Ventaja</option>
- <option value="disadvantage">🔴 Desventaja</option>
- </select>
- </div>
- <div class="adv-card">
- <label>🛡️ Próxima Salvación</label>
- <select id="adv-save">
- <option value="normal">Normal</option>
- <option value="advantage">🟢 Ventaja</option>
- <option value="disadvantage">🔴 Desventaja</option>
- </select>
- </div>
-
- <div class="adv-card">
- <label>✨ Condiciones y Efectos</label>
- <div class="multiselect-container">
- <div class="select-box" onclick="toggleConditionsDropdown()">
- <span>Seleccionar...</span>
- <span>▼</span>
- </div>
- <div class="checkboxes-dropdown" id="conditions-dropdown">
- <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS / BUFFS</strong>
- <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
- <label><input type="checkbox" id="buff-watchers" value="Watcher's Will" data-type="buff" onchange="updateConditions()"> 🛡️ Watcher's Will (Adv INT/WIS/CHA)</label>
- <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
- <hr style="border-color:var(--border-color); margin:4px 0;">
- <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
- <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded</label>
- <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened</label>
- <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned</label>
- <label><input type="checkbox" id="cond-prone" value="Prone" data-type="debuff" onchange="updateConditions()"> 🛌 Prone</label>
- </div>
- </div>
- <div class="active-conditions-tags" id="active-conditions-list"></div>
- </div>
- </div>
+ <!-- VENTAJA/DESVENTAJA: unificada en el lanzador de dados; CONDICIONES: movidas junto a Salvaciones de Muerte (bugs.md 29 ago) -->
 
  <!-- ATRIBUTOS DE HABILIDAD (tabla compacta: Check + Save por separado) -->
  <table class="ability-table">
@@ -1205,6 +1164,26 @@
  <label class="check-box-item"><input type="checkbox" id="ds-f3"> 3</label>
  </div>
  <button class="btn-roll" onclick="rollDeathSave()" style="margin-top:8px;">🎲 Tirar Salvación de Muerte</button>
+ <label style="font-size:0.8rem; color:var(--text-muted); font-weight:bold; display:block; margin-top:14px; border-top:1px solid var(--border-color); padding-top:10px;">✨ Condiciones y Efectos</label>
+ <div class="multiselect-container">
+ <div class="select-box" onclick="toggleConditionsDropdown()">
+ <span>Seleccionar...</span>
+ <span>▼</span>
+ </div>
+ <div class="checkboxes-dropdown" id="conditions-dropdown">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS / BUFFS</strong>
+ <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="buff-watchers" value="Watcher's Will" data-type="buff" onchange="updateConditions()"> 🛡️ Watcher's Will (Adv INT/WIS/CHA)</label>
+ <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
+ <hr style="border-color:var(--border-color); margin:4px 0;">
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
+ <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded</label>
+ <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened</label>
+ <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned</label>
+ <label><input type="checkbox" id="cond-prone" value="Prone" data-type="debuff" onchange="updateConditions()"> 🛌 Prone</label>
+ </div>
+ </div>
+ <div class="active-conditions-tags" id="active-conditions-list"></div>
  </div>
  </div>
 
@@ -1613,15 +1592,23 @@
  <button class="btn-dice" onclick="rollPanelDice(20, 'd20')">d20</button>
  <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
  <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
- <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:8px;">
  <span style="font-size:0.7rem; color:var(--text-muted);">Cant.</span>
  <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:45px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
  </div>
- <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:8px;">
  <span style="font-size:0.7rem; color:var(--text-muted);">Modif.</span>
  <input type="number" id="dice-mod" class="dice-mod-input" value="0">
  </div>
- <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:8px;">
+ <span style="font-size:0.7rem; color:var(--text-muted);">Ataque/Salv.</span>
+ <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">
+ <option value="normal">Normal</option>
+ <option value="advantage">🟢 Ventaja</option>
+ <option value="disadvantage">🔴 Desventaja</option>
+ </select>
+ </div>
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:8px;">
  <span style="font-size:0.7rem; color:var(--text-muted);">Quitar</span>
  <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:40px;" title="Cuántos dados descartar de la tirada (0 = ninguno). Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
  </div>
@@ -1632,7 +1619,7 @@
  <option value="high">mejores</option>
  </select>
  </div>
- <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:8px;">
  <span style="font-size:0.7rem; color:var(--text-muted);">Custom</span>
  <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:55px;" title="Caras del dado custom">
  </div>
@@ -2282,9 +2269,12 @@
     registrarUsoRecursoGenerico(`Espacio de Nivel ${nivel}`);
   }
 
+  // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
+  function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
+
   // Ataques: desventaja automática si Hannoghar está Cegado
   function rollAttack(bonus, name) {
-    let adv = document.getElementById('adv-attack').value;
+    let adv = getAdvantage();
     if (document.getElementById('cond-blinded')?.checked) {
       adv = 'disadvantage';
       name += " 🛑 (Desventaja: Cegado)";
@@ -2294,15 +2284,12 @@
   }
 
   function rollCheckSave(dice, bonus, name, type) {
-    const advSelect = (type === 'save') ? 'adv-save' : 'adv-attack';
-    const adv = document.getElementById(advSelect).value;
-    rollD20WithMechanics(bonus, name, adv, type === 'save');
+    rollD20WithMechanics(bonus, name, getAdvantage(), type === 'save');
   }
 
   function rollSpellAttack(name) {
     let spellBonus = parseInt(document.getElementById('spell-atk-total').innerText.replace('+', '')) || 5;
-    let adv = document.getElementById('adv-attack').value;
-    rollD20WithMechanics(spellBonus, name, adv, true);
+    rollD20WithMechanics(spellBonus, name, getAdvantage(), true);
   }
 
   function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
