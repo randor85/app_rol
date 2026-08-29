@@ -603,7 +603,6 @@
  width: 60px;
  background: var(--bg-card);
  border: 1px solid var(--border-color);
- -moz-appearance: textfield;
  color: #fff;
  padding: 6px;
  border-radius: 6px;
@@ -611,18 +610,13 @@
  font-size: 1rem;
  font-weight: bold;
  }
- .dice-mod-input::-webkit-outer-spin-button,
- .dice-mod-input::-webkit-inner-spin-button {
- -webkit-appearance: none;
- margin: 0;
- }
 
  .dice-result-box {
  background: var(--surface-strong);
  border: 1px solid var(--accent-silver);
  border-radius: 8px;
  padding: 8px 16px;
- min-width: 150px;
+ min-width: 220px;
  text-align: center;
  }
 
@@ -1329,31 +1323,34 @@
          <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
  <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
 
-         <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
-         <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">×</label>
-         <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:32px;">
+         <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Cant:</label>
+         <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:45px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
          </div>
-         <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Modificador aplicado a la próxima tirada">
-         <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">±</label>
-         <input type="number" id="dice-mod" class="dice-mod-input" value="0" style="width:32px;">
+         <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Mod:</label>
+         <input type="number" id="dice-mod" class="dice-mod-input" value="0">
          </div>
-         <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;">
-         <label style="font-size:0.8rem; color:var(--text-muted);" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">🎯</label>
-         <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;">
+         <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Próx. Ataque/Salv:</label>
+         <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">
          <option value="normal">Normal</option>
          <option value="advantage">🟢 Ventaja</option>
          <option value="disadvantage">🔴 Desventaja</option>
          </select>
          </div>
-         <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados descartar de la tirada (0 = ninguno) y si se descartan los peores o los mejores. Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
-         <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">−</label>
-         <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:28px;">
-         <button type="button" id="dice-drop-mode" value="low" class="btn-dice" style="padding:6px 6px; font-size:0.8rem;" onclick="toggleDropMode()">▼</button>
+         <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Quitar:</label>
+         <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:40px;" title="Cuántos dados descartar de la tirada (0 = ninguno). Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
+         <select id="dice-drop-mode" class="dice-mod-input" style="width:auto; padding:6px 4px;">
+         <option value="low">peores</option>
+         <option value="high">mejores</option>
+         </select>
          </div>
-         <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Dado custom: caras del dado">
-         <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">d</label>
-         <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:38px;">
-         <button class="btn-dice" onclick="rollCustomDice()" title="Tirar el dado custom">🎲</button>
+         <div style="display:inline-flex; align-items:center; gap:4px; margin-left:8px;">
+         <label style="font-size:0.75rem; color:var(--text-muted);">Custom:</label>
+         <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:55px;" title="Caras del dado custom">
+         <button class="btn-dice" onclick="rollCustomDice()">🎲 Tirar</button>
          </div>
          </div>
          </div>
@@ -1568,14 +1565,6 @@
   function getCantidad() { return Math.max(1, parseInt(document.getElementById('dice-qty')?.value) || 1); }
   function getDropCount() { return Math.max(0, parseInt(document.getElementById('dice-drop-count')?.value) || 0); }
   function getDropMode() { return document.getElementById('dice-drop-mode')?.value || 'low'; }
-  function toggleDropMode() {
-      const btn = document.getElementById('dice-drop-mode');
-      if (!btn) return;
-      const nuevo = btn.value === 'low' ? 'high' : 'low';
-      btn.value = nuevo;
-      btn.textContent = nuevo === 'low' ? '▼' : '▲';
-      btn.title = nuevo === 'low' ? 'Descartando los PEORES — click para cambiar a mejores' : 'Descartando los MEJORES — click para cambiar a peores';
-  }
 
   // === TIRADA DEL PANEL FLOTANTE (Cantidad + Mod + Quitar N peores/mejores) ===
   // No reemplaza a rollManualDice/rollGenericDamage (siguen igual para daño de hechizos, etc.),
