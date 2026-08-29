@@ -1605,27 +1605,17 @@
  🎲 LANZADOR DE DADOS DE HANNOGHAR
  </div>
  <div class="dice-btns">
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 4, getMod(), 'd4')">d4</button>
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 6, getMod(), 'd6')">d6</button>
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 8, getMod(), 'd8')">d8</button>
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 10, getMod(), 'd10')">d10</button>
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 12, getMod(), 'd12')">d12</button>
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 20, getMod(), 'd20')">d20</button>
- <button class="btn-dice" onclick="rollManualDice(getCantidad(), 100, getMod(), 'd100')">d100</button>
- <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
- <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
- <span style="font-size:0.7rem; color:var(--text-muted);">Cant.</span>
- <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:45px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
- </div>
+ <button class="btn-dice" onclick="rollManualDice(1, 4, getMod(), 'd4')">d4</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 6, getMod(), 'd6')">d6</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 8, getMod(), 'd8')">d8</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 10, getMod(), 'd10')">d10</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 12, getMod(), 'd12')">d12</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 20, getMod(), 'd20')">d20</button>
+ <button class="btn-dice" onclick="rollManualDice(1, 100, getMod(), 'd100')">d100</button>
  <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
  <span style="font-size:0.7rem; color:var(--text-muted);">Modif.</span>
  <input type="number" id="dice-mod" class="dice-mod-input" value="0">
  </div>
- <div style="display:flex; flex-direction:column; align-items:center; margin-left:8px;">
- <span style="font-size:0.7rem; color:var(--text-muted);">Custom</span>
- <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:55px;" title="Caras del dado custom">
- </div>
- <button class="btn-dice" onclick="rollCustomDice()">🎲 Tirar</button>
  </div>
  </div>
 
@@ -1826,11 +1816,6 @@
   // 3. LÓGICA DE INTERFAZ, RECURSOS Y DADOS
   // ==========================================
   function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
-  function getCantidad() { return Math.max(1, parseInt(document.getElementById('dice-qty')?.value) || 1); }
-  function rollCustomDice() {
-    const sides = Math.max(2, parseInt(document.getElementById('dice-custom-sides')?.value) || 20);
-    rollManualDice(getCantidad(), sides, getMod(), `d${sides}`);
-  }
 
   // --- MODO DÍA/NOCHE (replicado del mismo mecanismo que usa Dane) ---
   function applyTheme(isDark) {
@@ -2120,7 +2105,7 @@
       db.ref(`campanas/${codigoCampana}/tiradas`).push({
         personaje: 'Hannoghar',
         tipo: label,
-        resultado: (typeof total === 'number') ? `sacó un 🎲 ${total}` : total,
+        resultado: `sacó un 🎲 ${total}`,
         fecha: firebase.database.ServerValue.TIMESTAMP
       });
     }
@@ -2137,13 +2122,6 @@
   }
 
   function rollGenericDamage(numDice, diceSides, bonus, label) { rollManualDice(numDice, diceSides, bonus, label); }
-
-  // === MONEDA DEL DESTINO (D2) — sin Mod, muestra Cara/Cruz en vez de 1/2 ===
-  function rollCoin() {
-    const r = Math.floor(Math.random() * 2) + 1;
-    const cara = r === 1 ? 'Cara' : 'Cruz';
-    displayRollResult(`🪙 ${cara}`, 'Moneda del Destino', `[${r}]`);
-  }
 
   // === REGISTRO DE USO DE RECURSOS (bugs.md 26 ago): checkboxes de slots/recursos/HD pushean al historial y panel de GM ===
   function obtenerEtiquetaRecurso(cb) {
