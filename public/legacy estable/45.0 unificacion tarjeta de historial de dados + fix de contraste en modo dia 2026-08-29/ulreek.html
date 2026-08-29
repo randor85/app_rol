@@ -74,9 +74,6 @@
  overflow: hidden;
  }
 
- body.light-mode header { background: linear-gradient(135deg, #f9f4ff 0%, #e9def6 100%); }
- body.light-mode .char-name h1 { text-shadow: none; }
-
  header::before {
  content: "🔮";
  position: absolute;
@@ -660,8 +657,6 @@
  gap: 4px;
  }
 
- body.light-mode .btn-roll { background: linear-gradient(135deg, #d9c2f0, #c3a3e8); color: #241c33; }
-
  .btn-roll:hover {
  background: var(--accent-purple);
  box-shadow: 0 0 8px rgba(179, 136, 255, 0.5);
@@ -841,7 +836,7 @@
  .dice-history {
  font-size: 0.75rem;
  color: var(--accent-light);
- max-height: 58px;
+ max-height: 40px;
  overflow-y: auto;
  margin-top: 4px;
  }
