@@ -209,3 +209,13 @@ Contiene las 6 fichas D&D. Es el respaldo previo a un pedido del usuario sobre e
 **Dado custom**: input "Custom:" (caras) + botón "🎲 Tirar" nuevo, para tiradas de dados no estándar (dN cualquiera) — respeta tanto Cantidad como Mod.
 
 Verificado con `node --check`, balance de tags `<div>`/`<button>` en las 6 fichas, y Playwright: tirada de d20 con Cantidad=3/Mod=2 confirmando `rollManualDice(3, 20, 2, 'd20')`, dado custom d7 con los mismos valores confirmando `rollManualDice(3, 7, 2, 'd7')`, y la Moneda confirmando que ignora Cantidad/Mod y devuelve Cara/Cruz — comportamiento idéntico en las 6 fichas.
+
+## 39.0 — lanzador de dados: descartar N mejores/peores, ventaja/desventaja de varios dados (29 ago 2026)
+
+Contiene las 6 fichas D&D. Es el respaldo previo a un pedido del usuario ("se me ocurrió anoche"): poder tirar NdX y descartar los N peores o mejores antes de sumar — ej. 6d6 y quedarse con los 4 mejores, o 4d8 y descartar el mejor.
+
+Se agregó un input "Quitar:" (cantidad a descartar, 0 = ninguno) + un selector "peores/mejores" junto a Cant/Mod/Custom. La lógica vive en una función nueva (`rollPanelDice(sides, label)` en las 5 fichas estándar y en Dane; en Ulreek se reescribió directamente `rollDice(sides)`, que ya centralizaba los 7 botones fijos) — **no** se tocó `rollManualDice`/`rollGenericDamage`, que siguen igual para daño de hechizos y otros usos existentes; el descarte es exclusivo de los botones del lanzador de dados manual, para no arriesgar que un valor de "Quitar" olvidado en el campo afecte una tirada de daño real en combate.
+
+El descarte ordena los resultados individuales conservando su índice original (para manejar empates sin ambigüedad), arma el breakdown mostrando qué valores se descartaron, y clampea la cantidad a descartar a `num - 1` para nunca quedarse sin ningún dado. La Moneda del Destino (D2) queda deliberadamente afuera de este mecanismo.
+
+Verificado con `node --check`, balance de tags `<div>`/`<button>`/`<select>` en las 6 fichas, y Playwright con una secuencia de tirada fija (`[6,4,2,5,1,3]` en 6d6): descartar 2 peores da total 18 (kept 6+4+5+3, descarta 2 y 1), descartar 1 mejor da total 15 (descarta el 6), y pedir descartar 99 se clampea a quedarse con 1 solo dado (el 6) — comportamiento idéntico en las 6 fichas.
