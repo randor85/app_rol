@@ -1154,25 +1154,17 @@
 <label style="font-size:0.85rem; color:var(--text-muted);">HP Temporal:</label>
 <input class="editable-cnt-val" id="hp-temp" type="number" value="0"/>
 </div>
-<div style="margin-top: 10px;">
-<label style="font-size:0.8rem; color:var(--text-muted);">7d6 (Sorcerer):</label>
-<div class="checkbox-group">
-<label class="check-box-item"><input id="hd-1" type="checkbox"/> HD 1</label>
-<label class="check-box-item"><input id="hd-2" type="checkbox"/> HD 2</label>
-<label class="check-box-item"><input id="hd-3" type="checkbox"/> HD 3</label>
-<label class="check-box-item"><input id="hd-4" type="checkbox"/> HD 4</label>
-<label class="check-box-item"><input id="hd-5" type="checkbox"/> HD 5</label>
-<label class="check-box-item"><input id="hd-6" type="checkbox"/> HD 6</label>
-<label class="check-box-item"><input id="hd-7" type="checkbox"/> HD 7</label>
 </div>
-<button class="btn-roll" onclick="tirarHitDieSorc()" style="margin-top:6px;">🎲 Tirar HD Sorcerer (1d6+2)</button>
+
+<div class="tracker-card">
+<div class="tracker-header">
+<h3>✨ Puntos de Sorcery</h3>
+<span class="cnt-max">Máx: 7</span>
 </div>
-<div style="margin-top: 8px;">
-<label style="font-size:0.8rem; color:var(--text-muted);">1d8 (Warlock):</label>
-<div class="checkbox-group">
-<label class="check-box-item"><input id="hd-8" type="checkbox"/> HD 8</label>
-</div>
-<button class="btn-roll" onclick="tirarHitDieWarlock()" style="margin-top:6px;">🎲 Tirar HD Warlock (1d8+2)</button>
+<div class="counter-controls" style="justify-content: center; gap: 15px; margin-top: 15px;">
+<button class="btn-cnt" onclick="changeVal('sorc-pts', -1); registrarUsoRecurso('Punto de Sorcery')">-1</button>
+<span class="cnt-val" id="sorc-pts" style="font-size: 2rem; color: var(--accent-light);">7</span>
+<button class="btn-cnt" onclick="changeVal('sorc-pts', 1)">+1</button>
 </div>
 </div>
 
@@ -1219,6 +1211,32 @@
 </div>
 </div>
 <div class="active-conditions-tags" id="active-conditions-list"></div>
+</div>
+</div>
+
+<div class="tracker-card">
+<div class="tracker-header">
+<h3>🦴 Dados de Golpe (Hit Dice)</h3>
+</div>
+<div style="margin-top: 4px;">
+<label style="font-size:0.8rem; color:var(--text-muted);">7d6 (Sorcerer):</label>
+<div class="checkbox-group">
+<label class="check-box-item"><input id="hd-1" type="checkbox"/> HD 1</label>
+<label class="check-box-item"><input id="hd-2" type="checkbox"/> HD 2</label>
+<label class="check-box-item"><input id="hd-3" type="checkbox"/> HD 3</label>
+<label class="check-box-item"><input id="hd-4" type="checkbox"/> HD 4</label>
+<label class="check-box-item"><input id="hd-5" type="checkbox"/> HD 5</label>
+<label class="check-box-item"><input id="hd-6" type="checkbox"/> HD 6</label>
+<label class="check-box-item"><input id="hd-7" type="checkbox"/> HD 7</label>
+</div>
+<button class="btn-roll" onclick="tirarHitDieSorc()" style="margin-top:6px;">🎲 Tirar HD Sorcerer (1d6+2)</button>
+</div>
+<div style="margin-top: 8px;">
+<label style="font-size:0.8rem; color:var(--text-muted);">1d8 (Warlock):</label>
+<div class="checkbox-group">
+<label class="check-box-item"><input id="hd-8" type="checkbox"/> HD 8</label>
+</div>
+<button class="btn-roll" onclick="tirarHitDieWarlock()" style="margin-top:6px;">🎲 Tirar HD Warlock (1d8+2)</button>
 </div>
 </div>
 </div>
@@ -1277,15 +1295,6 @@
 <summary>📖 3. Conjuros y Espacios de Magia (Spell Slots)</summary>
 <div class="section-content">
 <div class="resources-bar" style="margin-bottom: 15px;">
-<div class="tracker-card">
-<h4>✨ Puntos de Sorcery</h4>
-<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-<button class="btn-cnt" onclick="changeVal('sorc-pts', -1); registrarUsoRecurso('Punto de Sorcery')">-1</button>
-<span id="sorc-pts" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">7</span> / 7
-<button class="btn-cnt" onclick="changeVal('sorc-pts', 1)">+1</button>
-</div>
-<p style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Se puede gastar para crear espacios de conjuro extra o convertir espacios en puntos (Font of Magic).</p>
-</div>
 <div class="tracker-card">
 <h4>Nivel 1 (Sorcerer)</h4>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
@@ -1350,7 +1359,7 @@
 </tr>
 <tr>
 <td><strong>Mage Hand</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-mage-hand">30 ft, V/S. Mano espectral, 1 min, hasta 10 lb.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Mage Hand')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Eldritch Blast</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-eldritch-blast">120 ft, V/S. Atq. a distancia; 2 rayos de 1d10 fuerza c/u (nivel de personaje 8).</td>
@@ -1358,11 +1367,11 @@
 </tr>
 <tr>
 <td><strong>Minor Illusion</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-minor-illusion">30 ft, S/M. Sonido o imagen, 1 min.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Minor Illusion')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Prestidigitation</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-prestidigitation">10 ft, V/S. Truco menor, hasta 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Prestidigitation')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Ray of Frost</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-ray-of-frost">60 ft, V/S. Atq. a distancia; 1d8 frío, -10ft veloc.</td>
@@ -1370,7 +1379,7 @@
 </tr>
 <tr>
 <td><strong>Light</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-light">Tacto, V/M. Luz brillante 20ft + tenue 20ft, 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Light')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>mind sliver</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-mind-sliver">60 ft, V. INT save; 2d6 psíquico (nivel de personaje 8) y -1d4 a próxima salvación.</td>
@@ -1378,15 +1387,15 @@
 </tr>
 <tr>
 <td><strong>Booming Blade</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-booming-blade">Self (5ft), S/M. Atq. cuerpo a cuerpo con arma; +1d8 trueno si el objetivo se mueve.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Booming Blade')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Fog Cloud</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-fog-cloud">120 ft, V/S, Conc. Esfera de niebla 20ft radio, hasta 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Fog Cloud')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Shield</strong></td><td>Nivel 1</td><td>1 Reacción</td><td class="editable-text" contenteditable="true" id="txt-spell-shield">Self, V/S. +5 CA hasta el inicio de tu próximo turno; inmune a magic missile.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Shield')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Sleep</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-sleep">90 ft, V/S/M. 5d8 HP de criaturas dormidas, 1 min.</td>
@@ -1398,7 +1407,7 @@
 </tr>
 <tr>
 <td><strong>Armor of Agathys</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-armor-of-agathys">Self, V/S/M. 5 HP temp; quien te golpee cuerpo a cuerpo recibe 5 frío.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Armor of Agathys')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Hex</strong></td><td>Nivel 1</td><td>1 Acción Adicional</td><td class="editable-text" contenteditable="true" id="txt-spell-hex">90 ft, V/S/M, Conc. +1d6 necrótico por golpe, 1h; desventaja en una característica elegida.</td>
@@ -1406,15 +1415,15 @@
 </tr>
 <tr>
 <td><strong>Misty Step</strong></td><td>Nivel 2</td><td>1 Acción Adicional</td><td class="editable-text" contenteditable="true" id="txt-spell-misty-step">Self, V. Teletransporte hasta 30ft a espacio visible.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Misty Step')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Suggestion</strong></td><td>Nivel 2</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-suggestion">30 ft, V/M, Conc. WIS save; sigue el curso de acción sugerido, hasta 8h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Suggestion')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Web</strong></td><td>Nivel 2</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-web">60 ft, V/S/M, Conc. Cubo de telaraña 20ft, DEX save o restringido, hasta 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Web')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Fireball</strong></td><td>Nivel 3</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-fireball">150 ft / esfera 20ft, V/S/M. DEX save DC 16; 8d6 fuego (mitad si salva).</td>
@@ -1422,11 +1431,11 @@
 </tr>
 <tr>
 <td><strong>Haste</strong></td><td>Nivel 3</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-haste">30 ft, V/S/M, Conc. Doble velocidad, +2 CA, ventaja en DEX save, acción extra, 1 min.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Haste')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong>Greater Invisibility</strong></td><td>Nivel 4</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-greater-invisibility">Tacto, V/S, Conc. Invisibilidad hasta 1 min, incluso en combate.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Greater Invisibility')">✅ Usar</button></td>
+<td>-</td>
 </tr>
 </tbody>
 </table>
@@ -1440,26 +1449,21 @@
 <div class="feature-card"><h4><span class="tag">Sorcerer</span> Spellcasting & Sorcerous Origin</h4><div class="editable-text" contenteditable="true" id="txt-feat-sorcerer-spellcasting-sorcerous-origin">
 <p>• <strong>Spellcasting:</strong> Carisma es tu característica de lanzamiento (Spell Save DC 16, Spell Atk +8). Conocés 9 hechizos de Sorcerer y 5 trucos a nivel 7.</p>
 <p>• <strong>Sorcerous Origin: Wild Magic.</strong></p>
-
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Spellcasting & Sorcerous Origin')" style="margin-top:6px;">✅ Usar</button></div></div>
+</div></div>
 <div class="feature-card"><h4><span class="tag">Wild Magic</span> Wild Magic Surge & Tides of Chaos (Nivel 1)</h4><div class="editable-text" contenteditable="true" id="txt-feat-wild-magic-wild-magic-surge-tides-of-chaos-nivel-1">
 <p>• <strong>Wild Magic Surge:</strong> El DM puede pedirte que tirés en la Tabla de Sobrecarga de Magia Salvaje después de lanzar un hechizo de Sorcerer de nivel 1+ (1 en d20).</p>
 <p>• <strong>Tides of Chaos:</strong> Podés gastar tu Tides of Chaos una vez antes de un descanso largo para obtener ventaja en una tirada de ataque, prueba de característica o salvación. Después de usarlo, el DM puede pedirte una tirada en la Tabla de Sobrecarga. Se recupera al gastar un punto de Sorcery para crear un espacio de conjuro, o con un descanso largo.</p>
-
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Wild Magic Surge & Tides of Chaos (Nivel 1)')" style="margin-top:6px;">✅ Usar</button></div></div>
+</div></div>
 <div class="feature-card"><h4><span class="tag">Sorcerer</span> Font of Magic (Nivel 2)</h4><div class="editable-text" contenteditable="true" id="txt-feat-sorcerer-font-of-magic-nivel-2">
 <p>Puntos de Hechicería = nivel de Sorcerer = <strong>7</strong>. Podés gastarlos como acción adicional para crear espacios de conjuro (1º=2pts, 2º=3pts, 3º=5pts, 4º=6pts, 5º=7pts, máx nivel 5), o convertir un espacio gastado en puntos (= nivel del espacio).</p>
-
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Font of Magic (Nivel 2)')" style="margin-top:6px;">✅ Usar</button></div></div>
+</div></div>
 <div class="feature-card"><h4><span class="tag">Sorcerer</span> Metamagic (Nivel 3 — 2 opciones)</h4><div class="editable-text" contenteditable="true" id="txt-feat-sorcerer-metamagic-nivel-3-2-opciones">
 <p>⚠️ <strong>A definir: elegí 2</strong> entre Careful Spell, Distant Spell, Empowered Spell, Extended Spell, Heightened Spell, Quickened Spell, Seeking Spell, Subtle Spell, Transmuted Spell o Twinned Spell. (Se agregarán las 2 opciones elegidas con su texto mecánico cuando lo confirmes; la 3ª opción llega en nivel 10 de Sorcerer.)</p>
-
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Metamagic (Nivel 3 — 2 opciones)')" style="margin-top:6px;">✅ Usar</button></div></div>
+</div></div>
 <div class="feature-card"><h4><span class="tag">Warlock</span> Otherworldly Patron & Pact Magic (Nivel 1)</h4><div class="editable-text" contenteditable="true" id="txt-feat-warlock-otherworldly-patron-pact-magic-nivel-1">
 <p>• <strong>Otherworldly Patron:</strong> ⚠️ pendiente de definir (ya anotado en la lista de pendientes de la campaña).</p>
 <p>• <strong>Pact Magic:</strong> 1 espacio de conjuro de nivel 1, exclusivo de Warlock (checkbox aparte en Recursos y en Spell Slots) — se recupera en descanso <strong>corto o largo</strong>, a diferencia de los espacios de Sorcerer.</p>
-
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Otherworldly Patron & Pact Magic (Nivel 1)')" style="margin-top:6px;">✅ Usar</button></div></div>
+</div></div>
 <div class="feature-card"><h4><span class="tag">Raza</span> Dwarf Traits (base)</h4><div class="editable-text" contenteditable="true" id="txt-feat-raza-dwarf-traits-base">
 <p>• <strong>Aumento de característica:</strong> Constitución +2.</p>
 <p>• <strong>Velocidad:</strong> 25 ft (no se reduce con armadura pesada).</p>
@@ -1468,8 +1472,7 @@
 <p>• <strong>Dwarven Combat Training:</strong> Competencia con battleaxe, handaxe, light hammer y warhammer.</p>
 <p>• <strong>Stonecunning:</strong> Ventaja en pruebas de Historia relacionadas con trabajos en piedra; se considera competente y duplica el bono en esas pruebas.</p>
 <p>• <strong>Idiomas:</strong> Común y Dwarvish (más Elvish y Halfling ya cargados de trasfondo).</p>
-
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Dwarf Traits (base)')" style="margin-top:6px;">✅ Usar</button></div></div>
+</div></div>
 </div>
 </div>
 </details>

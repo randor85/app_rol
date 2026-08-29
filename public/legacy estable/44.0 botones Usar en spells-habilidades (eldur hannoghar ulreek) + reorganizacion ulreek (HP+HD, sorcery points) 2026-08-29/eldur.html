@@ -666,7 +666,7 @@
  <td>1 Ki</td>
  <td>CON Save DC 14</td>
  <td>Al golpear Melee: el objetivo queda Stunned hasta el final de tu siguiente turno.</td>
- <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Stunning Strike')">✅ Usar</button></td>
+ <td>-</td>
  </tr>
  <tr>
  <td><strong>Radiance of the Dawn</strong></td>
@@ -726,7 +726,7 @@
  <td><strong>Light</strong></td>
  <td>1 Acc / Touch</td>
  <td class="editable-text" contenteditable="true" id="txt-spell-light">Crea luz brillante en un objeto por 1 hora.</td>
- <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Light')">✅ Usar</button></td>
+ <td>-</td>
  </tr>
  <tr>
  <td><span class="tag">Cantrip</span></td>
@@ -781,7 +781,7 @@
  <td><strong>Faerie Fire</strong></td>
  <td>1 Acc / 60 ft</td>
  <td class="editable-text" contenteditable="true" id="txt-spell-faerie-fire">DEX Save DC 14; Ventaja en ataques contra afectados en cubo de 20ft (Concentración).</td>
- <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Faerie Fire')">✅ Usar</button></td>
+ <td>-</td>
  </tr>
  <tr>
  <td><span class="tag">1st</span></td>
@@ -814,42 +814,35 @@
  <div class="feature-card"><h4><span class="tag">Monje</span> Unarmored Defense & Movement</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-unarmored-defense-movement">
  <p>• <strong>AC 17:</strong> 10 + DEX (+4) + WIS (+3) mientras no lleves armadura ni escudo.</p>
  <p>• <strong>Speed +10ft:</strong> Movimiento base total incrementado a 40 ft.</p>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Unarmored Defense & Movement')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  <div class="feature-card"><h4><span class="tag">Monje</span> Martial Arts & Ki (5 Pts)</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-martial-arts-ki-5-pts">
  <p>• Usa DEX para Unarmed Strikes (1d6) y realiza un Unarmed Strike como Bonus Action tras atacar.</p>
  <p>• <strong>Flurry of Blows:</strong> 1 Ki para 2 Unarmed Strikes como Bonus Action.</p>
  <p>• <strong>Patient Defense:</strong> 1 Ki para Dodge como Bonus Action.</p>
  <p>• <strong>Step of the Wind:</strong> 1 Ki para Disengage o Dash como Bonus Action, dobla distancia de salto.</p>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Martial Arts & Ki (5 Pts)')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  <div class="feature-card"><h4><span class="tag">Monje</span> Extra Attack & Deflect Missiles</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-extra-attack-deflect-missiles">
  <p>• Ataca dos veces al tomar la acción de Atacar.</p>
  <p>• Reduce daño de ataques de proyectil a distancia por 1d10 + DEX (+4) + Monk Lvl (5). Si el daño se reduce a 0, podés <strong>atrapar el proyectil</strong> (si entra en una mano libre) y gastar <strong>1 Ki</strong> para hacer un ataque a distancia con él como parte de la misma reacción (competencia automática, alcance 20/60 ft).</p>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Extra Attack & Deflect Missiles')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  <div class="feature-card"><h4><span class="tag">Monje</span> Stunning Strike (Nivel 5)</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-stunning-strike-nivel-5">
  <p>Al golpear con un ataque de arma cuerpo a cuerpo, podés gastar <strong>1 Ki</strong> para forzar una salvación de Constitución (<strong>DC 14</strong>). Si falla, el objetivo queda <strong>aturdido (stunned)</strong> hasta el final de tu próximo turno.</p>
  <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Stunning Strike DC14 CON (objetivo)', 'save')" style="margin-top:6px;">🎲 Recordatorio DC14 CON</button>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Stunning Strike (Nivel 5)')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  <div class="feature-card"><h4><span class="tag">Monje</span> Slow Fall (Nivel 4)</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-slow-fall-nivel-4">
  <p>Reacción al caer: reducís el daño de caída en una cantidad igual a 5 × nivel de monje = <strong>25 puntos</strong>.</p>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Slow Fall (Nivel 4)')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  <div class="feature-card"><h4><span class="tag">Clérigo</span> Light Domain & Warding Flare</h4><div class="editable-text" contenteditable="true" id="txt-feat-clerigo-light-domain-warding-flare">
  <p>• <strong>Warding Flare (3/LR):</strong> Reacción cuando una criatura visible te ataca a <strong>30 ft o menos</strong>, para imponer desventaja en la tirada mediante un destello de luz divina. Un atacante que no pueda ser cegado es inmune a este rasgo.</p>
  <p>• <strong>Channel Divinity (1/Rest, elegí una):</strong></p>
  <p style="margin-left:10px;">— <strong>Radiance of the Dawn:</strong> dispersa oscuridad mágica y hace 2d10+2 radiant a enemigos a 30ft (CON Save DC 14 mitad).</p>
  <p style="margin-left:10px;">— <strong>Turn Undead:</strong> Acción: presentás tu símbolo sagrado; cada no-muerto a 30 ft que te pueda ver/oír hace salvación de Sabiduría (DC 14) o queda espantado (turned) por 1 minuto o hasta recibir daño.</p>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Light Domain & Warding Flare')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  <div class="feature-card"><h4><span class="tag">Raza</span> Fire Genasi Traits</h4><div class="editable-text" contenteditable="true" id="txt-feat-raza-fire-genasi-traits">
  <p>• <strong>Darkvision:</strong> 60 ft.</p>
  <p>• <strong>Fire Resistance:</strong> Resistencia natural al daño de fuego.</p>
  <p>• <strong>Reach to the Blaze:</strong> Produce Flame a voluntad (usando Constitución). Burning Hands y Flame Blade gratis 1/LR — <strong>Constitución</strong> es la característica de estos usos raciales: <strong>DC 13 / Spell Atk +5</strong> (distinto del DC14/+6 de Cure Wounds/Guiding Bolt/Burning Hands/Flame Blade cuando se lanzan con espacio de Clérigo, que usan Sabiduría).</p>
- 
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Fire Genasi Traits')" style="margin-top:6px;">✅ Usar</button></div></div>
+ </div></div>
  </div>
  </div>
  </details>
