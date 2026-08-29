@@ -101,7 +101,6 @@
  .sticky-combat-bar .scb-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
  .sticky-combat-bar .scb-actions .btn-rest, .sticky-combat-bar .scb-actions .btn-roll { font-size: 0.75rem; padding: 5px 9px; }
  @media (max-width: 700px) { .sticky-combat-bar { justify-content: center; } .sticky-combat-bar .scb-actions { margin-left: 0; width: 100%; justify-content: center; } }
- .sticky-combat-bar.unstuck { position: static; box-shadow: none; }
 
  .theme-toggle-btn { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all .2s; }
  .theme-toggle-btn:hover { background: var(--accent-gold); color: var(--bg-primary); }
@@ -163,7 +162,7 @@
 
  .xp-popover-wrap { position: relative; display: inline-block; }
  .xp-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
- .xp-popover-panel { display: none; position: fixed; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 10px; z-index: 1001; width: min(170px, calc(100vw - 20px)); box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+ .xp-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 10px; z-index: 60; min-width: 170px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
  .xp-popover-panel.open { display: flex; flex-direction: column; gap: 6px; }
 
  .nivel-popover-wrap { position: relative; display: inline-block; }
@@ -740,7 +739,6 @@
  }
 
  /* FLOATING DICE ROLLER */
- .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
  .dice-roller-panel {
  position: fixed;
  bottom: 0;
@@ -954,7 +952,6 @@
     </a>
     <div style="display: flex; gap: 10px; align-items: center;">
         <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
-        <button id="barras-fijas-toggle" class="nivel-popover-btn" onclick="toggleBarrasFijas()" type="button" title="Fijar o soltar la barra superior y el lanzador de dados">📌 Barras: fijas</button>
         <button id="btn-compartir" style="display:none; padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; color: #fff; cursor: pointer;">👁️ Compartir Ficha</button>
     </div>
 </div>
@@ -1758,46 +1755,8 @@
   // --- POPOVER DE XP ---
   function toggleXpPopover() {
     const p = document.getElementById('xp-popover-panel');
-    if (!p) return;
-    if (p.classList.contains('open')) { p.classList.remove('open'); return; }
-    p.classList.add('open');
-    posicionarXpPopover(p);
+    if (p) p.classList.toggle('open');
   }
-  function posicionarXpPopover(p) {
-    const wrap = p.closest('.xp-popover-wrap');
-    if (!wrap) return;
-    const margin = 10;
-    const btnRect = wrap.getBoundingClientRect();
-    const diceBar = document.querySelector('.dice-roller-panel');
-    const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
-    const panelWidth = Math.min(p.offsetWidth || 170, window.innerWidth - margin * 2);
-    let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
-    let top = btnRect.bottom + 6;
-    if (top + 80 > limiteInferior) top = Math.max(margin, limiteInferior - 80);
-    p.style.left = left + 'px';
-    p.style.top = top + 'px';
-    p.style.maxHeight = Math.max(100, limiteInferior - top - margin) + 'px';
-  }
-  window.addEventListener('resize', () => {
-    const p = document.getElementById('xp-popover-panel');
-    if (p && p.classList.contains('open')) posicionarXpPopover(p);
-  });
-
-  // === TOGGLE DE BARRAS FIJAS (sticky combat bar + lanzador de dados) ===
-  function aplicarBarrasFijas(off) {
-    document.querySelectorAll('.sticky-combat-bar, .dice-roller-panel').forEach(el => el.classList.toggle('unstuck', off));
-    const btn = document.getElementById('barras-fijas-toggle');
-    if (btn) btn.textContent = off ? '📌 Barras: sueltas' : '📌 Barras: fijas';
-  }
-  function toggleBarrasFijas() {
-    const off = localStorage.getItem(`${PERSONAJE_ID}_barras_off`) === '1';
-    localStorage.setItem(`${PERSONAJE_ID}_barras_off`, off ? '0' : '1');
-    aplicarBarrasFijas(!off);
-  }
-  function initBarrasFijas() {
-    aplicarBarrasFijas(localStorage.getItem(`${PERSONAJE_ID}_barras_off`) === '1');
-  }
-  document.addEventListener('DOMContentLoaded', initBarrasFijas);
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.xp-popover-wrap')) {
       const p = document.getElementById('xp-popover-panel');

@@ -120,7 +120,6 @@
  .sticky-combat-bar { justify-content: center; }
  .sticky-combat-bar .scb-actions { margin-left: 0; width: 100%; justify-content: center; }
  }
- .sticky-combat-bar.unstuck { position: static; box-shadow: none; }
 
  .xp-popover-wrap { position: relative; display: inline-block; }
  .xp-popover-btn {
@@ -135,13 +134,15 @@
  }
  .xp-popover-panel {
  display: none;
- position: fixed;
+ position: absolute;
+ top: 115%;
+ right: 0;
  background: var(--bg-card, #1c2620);
  border: 1px solid var(--accent-gold);
  border-radius: 8px;
  padding: 10px;
- z-index: 1001;
- width: min(170px, calc(100vw - 20px));
+ z-index: 60;
+ min-width: 170px;
  box-shadow: 0 6px 16px rgba(0,0,0,0.6);
  }
  .xp-popover-panel.open { display: flex; flex-direction: column; gap: 6px; }
@@ -803,7 +804,6 @@
  padding: 12px 20px;
  z-index: 1000;
  }
- .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
 
  .dice-container {
  max-width: 1200px;
@@ -1007,7 +1007,6 @@
         ⬅ Volver al Menú
     </a>
 <button id="btn-compartir" style="display:none; padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; color: #fff; cursor: pointer;">👁️ Compartir Ficha</button>
-<button id="barras-fijas-toggle" class="nivel-popover-btn" onclick="toggleBarrasFijas()" type="button" title="Fijar o soltar la barra superior y el lanzador de dados">📌 Barras: fijas</button>
 </div>
 <div class="sticky-combat-bar">
 <div class="scb-name">🐾 Fiona Faraway</div>
@@ -2377,46 +2376,8 @@
     }
     function toggleXpPopover() {
         const p = document.getElementById('xp-popover-panel');
-        if (!p) return;
-        if (p.classList.contains('open')) { p.classList.remove('open'); return; }
-        p.classList.add('open');
-        posicionarXpPopover(p);
+        if (p) p.classList.toggle('open');
     }
-    function posicionarXpPopover(p) {
-        const wrap = p.closest('.xp-popover-wrap');
-        if (!wrap) return;
-        const margin = 10;
-        const btnRect = wrap.getBoundingClientRect();
-        const diceBar = document.querySelector('.dice-roller-panel');
-        const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
-        const panelWidth = Math.min(p.offsetWidth || 170, window.innerWidth - margin * 2);
-        let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
-        let top = btnRect.bottom + 6;
-        if (top + 80 > limiteInferior) top = Math.max(margin, limiteInferior - 80);
-        p.style.left = left + 'px';
-        p.style.top = top + 'px';
-        p.style.maxHeight = Math.max(100, limiteInferior - top - margin) + 'px';
-    }
-    window.addEventListener('resize', () => {
-        const p = document.getElementById('xp-popover-panel');
-        if (p && p.classList.contains('open')) posicionarXpPopover(p);
-    });
-
-    // === TOGGLE DE BARRAS FIJAS (sticky combat bar + lanzador de dados) ===
-    function aplicarBarrasFijas(off) {
-        document.querySelectorAll('.sticky-combat-bar, .dice-roller-panel').forEach(el => el.classList.toggle('unstuck', off));
-        const btn = document.getElementById('barras-fijas-toggle');
-        if (btn) btn.textContent = off ? '📌 Barras: sueltas' : '📌 Barras: fijas';
-    }
-    function toggleBarrasFijas() {
-        const off = localStorage.getItem(`${PERSONAJE_ID}_barras_off`) === '1';
-        localStorage.setItem(`${PERSONAJE_ID}_barras_off`, off ? '0' : '1');
-        aplicarBarrasFijas(!off);
-    }
-    function initBarrasFijas() {
-        aplicarBarrasFijas(localStorage.getItem(`${PERSONAJE_ID}_barras_off`) === '1');
-    }
-    window.addEventListener('DOMContentLoaded', initBarrasFijas);
     window.addEventListener('click', e => {
         if (!e.target.closest('.xp-popover-wrap')) {
             const p = document.getElementById('xp-popover-panel');
