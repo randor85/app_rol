@@ -495,7 +495,6 @@
                     <label class="check-box-item"><input type="checkbox" id="ds-f2"> 2</label>
                     <label class="check-box-item"><input type="checkbox" id="ds-f3"> 3</label>
                 </div>
-                <button class="btn-roll" onclick="rollDeathSave()" style="margin-top:8px;">🎲 Tirar Salvación de Muerte</button>
             </div>
         </div>
 
@@ -1279,7 +1278,7 @@
             db.ref(`campanas/${codigoCampana}/tiradas`).push({
                 personaje: "Dane",
                 tipo: name,
-                resultado: (typeof result === 'number') ? `sacó un 🎲 ${result}` : result,
+                resultado: result,
                 fecha: firebase.database.ServerValue.TIMESTAMP
             });
         }
@@ -1305,35 +1304,9 @@
         if (!e.target.matches('.resources-bar input[type="checkbox"], .spell-slots input[type="checkbox"]')) return;
         if (!e.target.checked) return;
         if (/^hd-\d+$/.test(e.target.id)) return; // el HD ya pushea vía displayRollResult al tirarlo
-        if (/^ds-[sf]\d+$/.test(e.target.id)) return; // las salvaciones de muerte pushean vía rollDeathSave()
         const etiqueta = obtenerEtiquetaRecurso(e.target);
-        displayRollResult(`🔧 Recurso: ${etiqueta}`, 'usó', '');
+        displayRollResult(`🔧 Recurso: ${etiqueta}`, 'Usado', '');
     });
-
-    // === SALVACIÓN DE MUERTE (bugs.md 26 ago): tira 1d20, marca el checkbox correspondiente y pushea texto claro ===
-    function rollDeathSave() {
-        const roll = Math.floor(Math.random() * 20) + 1;
-        const exito = roll >= 10;
-        const doble = (roll === 1 || roll === 20);
-        const prefijo = exito ? 'ds-s' : 'ds-f';
-        const cajas = [1, 2, 3].map(n => document.getElementById(`${prefijo}${n}`)).filter(Boolean);
-        const libres = cajas.filter(cb => !cb.checked);
-        if (libres.length === 0) {
-            alert(exito ? '⚠️ Ya tenés las 3 salvaciones de muerte con ÉXITO — tu personaje está estable.' : '⚠️ Ya tenés las 3 salvaciones de muerte FALLADAS.');
-            return;
-        }
-        libres.slice(0, doble ? 2 : 1).forEach(cb => {
-            cb.checked = true;
-            cb.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-        const totalMarcadas = cajas.filter(cb => cb.checked).length;
-        const etiqueta = exito ? 'ÉXITOS' : 'FALLOS';
-        const breakdown = doble ? `[${roll}] ${roll === 20 ? 'Natural 20 — doble éxito' : 'Natural 1 — doble fallo'}` : `[${roll}]`;
-        displayRollResult(`en tirada de salvación de muerte 💀 ${etiqueta} — ${totalMarcadas}`, roll, breakdown);
-        if (totalMarcadas >= 3) {
-            alert(exito ? '💚 3 ÉXITOS — tu personaje está estable.' : '💀 3 FALLOS — tu personaje ha muerto.');
-        }
-    }
 
     // === DADOS DE GOLPE (Hit Die) — Ranger (d10) y Rogue (d8) por separado ===
     function tirarHitDie(ids, dieSize, conMod, label) {

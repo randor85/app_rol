@@ -569,8 +569,7 @@ btnLoginEmail.onclick = () => {
                         const result = Math.floor(Math.random() * 20) + 1;
                         db.ref(`campanas/${campanaId}/tiradas`).push({
                             personaje: p.nombre || "Héroe Misterioso",
-                            resultado: `sacó un 🎲 ${result}`,
-                            tipo: '(D20 rápido)',
+                            resultado: result,
                             fecha: firebase.database.ServerValue.TIMESTAMP
                         });
                     };
@@ -776,17 +775,7 @@ btnLoginEmail.onclick = () => {
             const fecha = new Date(t.fecha).toLocaleTimeString();
             const div = document.createElement('div');
             div.style = "border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.85rem; color: white;";
-            // El texto ya viene armado desde cada ficha (p.ej. "sacó un 🎲 15" o "usó").
-            // Se mantiene compatibilidad con entradas viejas del historial (resultado numérico u "Usado" sueltos).
-            let texto;
-            if (typeof t.resultado === 'number') {
-                texto = `sacó un 🎲 <strong>${t.resultado}</strong> ${t.tipo || ''}`;
-            } else if (t.resultado === 'Usado') {
-                texto = `usó ${t.tipo || ''}`;
-            } else {
-                texto = `${t.resultado} ${t.tipo || ''}`;
-            }
-            div.innerHTML = `<strong>[${fecha}] ${t.personaje}:</strong> ${texto}`;
+            div.innerHTML = `<strong>[${fecha}] ${t.personaje}:</strong> sacó un 🎲 <strong>${t.resultado}</strong> ${t.tipo || ''}`;
             listaTiradas.appendChild(div);
         });
     });
