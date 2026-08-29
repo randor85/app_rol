@@ -482,24 +482,6 @@
                 <td><strong>Total Level:</strong> 9</td>
             </tr>
         </table>
-        <div class="grid-3" style="grid-template-columns: repeat(4, 1fr); margin-top:12px;">
-            <div class="stat-box">
-                <div class="val">16</div>
-                <div class="lbl">Armor Class (18 w/ Haste)</div>
-            </div>
-            <div class="stat-box">
-                <div class="val">+7 <button class="btn-roll-sm btn-roll" style="font-size: 14px; padding: 4px 8px;" onclick="rollAttack('Initiative', 7)">🎲</button></div>
-                <div class="lbl">Initiative</div>
-            </div>
-            <div class="stat-box">
-                <div class="val">30 ft <span style="font-size:0.6em;">/ 🦇30 Fly</span></div>
-                <div class="lbl">Speed (Winged Tiefling)</div>
-            </div>
-            <div class="stat-box">
-                <div class="val">21</div>
-                <div class="lbl">Passive Perception</div>
-            </div>
-        </div>
     </div>
 
     <!-- HP TRACKER Y RODILLO DE DADOS -->
@@ -521,27 +503,6 @@
                     <input type="number" id="hp-temp-input" class="editable-cnt-val" value="0" min="0">
                     <button class="btn-cnt" onclick="changeInputVal('hp-temp-input', 1)">+</button>
                 </div>
-            </div>
-            <div style="margin-top:10px;">
-                <label style="font-size:0.8rem; color:var(--text-muted);">Dados de Golpe — 5d10 (Ranger):</label>
-                <div class="checkbox-group">
-                    <label class="check-box-item"><input type="checkbox" id="hd-1"> HD 1</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-2"> HD 2</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-3"> HD 3</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-4"> HD 4</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-5"> HD 5</label>
-                </div>
-                <button class="btn-roll" onclick="tirarHitDieRanger()" style="margin-top:6px;">🎲 Tirar HD Ranger (1d10+2)</button>
-            </div>
-            <div style="margin-top:10px;">
-                <label style="font-size:0.8rem; color:var(--text-muted);">4d8 (Rogue):</label>
-                <div class="checkbox-group">
-                    <label class="check-box-item"><input type="checkbox" id="hd-6"> HD 6</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-7"> HD 7</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-8"> HD 8</label>
-                    <label class="check-box-item"><input type="checkbox" id="hd-9"> HD 9</label>
-                </div>
-                <button class="btn-roll" onclick="tirarHitDieRogue()" style="margin-top:6px;">🎲 Tirar HD Rogue (1d8+2)</button>
             </div>
         </div>
 
@@ -583,6 +544,15 @@
             </div>
         </div>
 
+        <div class="tracker-card roller-section">
+            <div class="tracker-header"><h3>🎲 Sistema de Tiradas</h3></div>
+            <!-- Ventaja/Desventaja unificada en el lanzador de dados (bugs.md 29 ago) -->
+            <div class="roll-history" id="rollHistory">
+                <!-- Dice results -->
+            </div>
+            <button class="clear-btn" onclick="clearDiceHistory()">Clear History</button>
+        </div>
+
         <div class="tracker-card">
             <div class="tracker-header"><h3>🏹 Favored Foe (4 / descanso largo)</h3></div>
             <div class="checkbox-group">
@@ -591,6 +561,50 @@
                 <label class="check-box-item"><input type="checkbox" id="favfoe-3"> Uso 3</label>
                 <label class="check-box-item"><input type="checkbox" id="favfoe-4"> Uso 4</label>
             </div>
+        </div>
+
+        <div class="tracker-card">
+            <div class="tracker-header"><h3>🎲 Dados de Golpe (Hit Dice)</h3></div>
+            <div style="margin-top:6px;">
+                <label style="font-size:0.8rem; color:var(--text-muted);">5d10 (Ranger):</label>
+                <div class="checkbox-group">
+                    <label class="check-box-item"><input type="checkbox" id="hd-1"> HD 1</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-2"> HD 2</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-3"> HD 3</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-4"> HD 4</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-5"> HD 5</label>
+                </div>
+                <button class="btn-roll" onclick="tirarHitDieRanger()" style="margin-top:6px;">🎲 Tirar HD Ranger (1d10+2)</button>
+            </div>
+            <div style="margin-top:10px;">
+                <label style="font-size:0.8rem; color:var(--text-muted);">4d8 (Rogue):</label>
+                <div class="checkbox-group">
+                    <label class="check-box-item"><input type="checkbox" id="hd-6"> HD 6</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-7"> HD 7</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-8"> HD 8</label>
+                    <label class="check-box-item"><input type="checkbox" id="hd-9"> HD 9</label>
+                </div>
+                <button class="btn-roll" onclick="tirarHitDieRogue()" style="margin-top:6px;">🎲 Tirar HD Rogue (1d8+2)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-3" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="stat-box">
+            <div class="val">16</div>
+            <div class="lbl">Armor Class (18 w/ Haste)</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">+7 <button class="btn-roll-sm btn-roll" style="font-size: 14px; padding: 4px 8px;" onclick="rollAttack('Initiative', 7)">🎲</button></div>
+            <div class="lbl">Initiative</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">30 ft <span style="font-size:0.6em;">/ 🦇30 Fly</span></div>
+            <div class="lbl">Speed (Winged Tiefling)</div>
+        </div>
+        <div class="stat-box">
+            <div class="val">21</div>
+            <div class="lbl">Passive Perception</div>
         </div>
     </div>
 
@@ -958,12 +972,6 @@
                     <button class="btn-dice" onclick="rollCustomDice()">🎲 Tirar</button>
                 </div>
             </div>
-        </div>
-        <div style="min-width:220px; max-width:340px; flex:1;">
-            <div class="roll-history" id="rollHistory">
-                <!-- Dice results -->
-            </div>
-            <button class="clear-btn" onclick="clearDiceHistory()">Clear History</button>
         </div>
         <div class="dice-result-box">
             <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
