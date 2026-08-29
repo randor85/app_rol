@@ -139,7 +139,7 @@
         /* MOTOR DE SUBIDA DE NIVEL (oculto) — popover de nivel */
         .nivel-popover-wrap { position: relative; display: inline-block; }
         .nivel-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-teal); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
-        .nivel-popover-panel { display: none; position: fixed; background: var(--bg-card); border: 1px solid var(--accent-teal); border-radius: 8px; padding: 12px; z-index: 1001; width: min(340px, calc(100vw - 20px)); max-height: 400px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
+        .nivel-popover-panel { display: none; position: absolute; top: 115%; right: 0; background: var(--bg-card); border: 1px solid var(--accent-teal); border-radius: 8px; padding: 12px; z-index: 60; min-width: 280px; max-width: 340px; max-height: 400px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
         .nivel-popover-panel.open { display: block; }
         .nivel-hab-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
         .nivel-hab-item:last-child { border-bottom: none; }
@@ -1114,30 +1114,8 @@
 
     function toggleNivelPopover() {
         const p = document.getElementById('nivel-popover-panel');
-        if (!p) return;
-        if (p.classList.contains('open')) { p.classList.remove('open'); return; }
-        p.classList.add('open');
-        posicionarNivelPopover(p);
+        if (p) p.classList.toggle('open');
     }
-    function posicionarNivelPopover(p) {
-        const wrap = p.closest('.nivel-popover-wrap');
-        if (!wrap) return;
-        const margin = 10;
-        const btnRect = wrap.getBoundingClientRect();
-        const diceBar = document.querySelector('.dice-roller-panel');
-        const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
-        const panelWidth = Math.min(p.offsetWidth || 300, window.innerWidth - margin * 2);
-        let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
-        let top = btnRect.bottom + 6;
-        if (top + 100 > limiteInferior) top = Math.max(margin, limiteInferior - 100);
-        p.style.left = left + 'px';
-        p.style.top = top + 'px';
-        p.style.maxHeight = Math.max(120, limiteInferior - top - margin) + 'px';
-    }
-    window.addEventListener('resize', () => {
-        const p = document.getElementById('nivel-popover-panel');
-        if (p && p.classList.contains('open')) posicionarNivelPopover(p);
-    });
     function toggleXpPopover() {
         const p = document.getElementById('xp-popover-panel');
         if (p) p.classList.toggle('open');
