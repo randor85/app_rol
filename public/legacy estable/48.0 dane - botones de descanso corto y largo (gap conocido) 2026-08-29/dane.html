@@ -321,8 +321,6 @@
         .dice-result-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
         .btn-roll-sm { background-color: var(--accent-teal); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 3px 6px; display: inline-flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
         .btn-roll-sm:hover { background-color: var(--accent-hover); }
-        .btn-rest { background: var(--bg-card-header); border: 1px solid var(--accent-teal); color: var(--accent-teal); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 11px; transition: all 0.2s; }
-        .btn-rest:hover { background: var(--accent-teal); color: #fff; }
 
         ul { margin-top: 0; padding-left: 20px; }
         li { margin-bottom: 6px; }
@@ -424,8 +422,6 @@
             <div class="scb-stat"><div class="scb-label">⚔️ Atq</div><div class="scb-value">+12/+7</div></div>
         </div>
         <div class="scb-actions">
-            <button class="btn-rest" onclick="restShort()" title="Descanso Corto">☕</button>
-            <button class="btn-rest" onclick="restLong()" title="Descanso Largo">🌙</button>
             <button class="btn-roll-sm btn-roll" onclick="document.getElementById('section-skills')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Habilidades">🧠</button>
             <button class="btn-roll-sm btn-roll" onclick="document.getElementById('section-attack')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Ataques">⚔️</button>
             <button class="btn-roll-sm btn-roll" onclick="document.getElementById('section-spells')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Conjuros">📜</button>
@@ -1549,27 +1545,6 @@
     }
     function tirarHitDieRanger() { tirarHitDie(['hd-1','hd-2','hd-3','hd-4','hd-5'], 10, 2, 'Ranger'); }
     function tirarHitDieRogue() { tirarHitDie(['hd-6','hd-7','hd-8','hd-9'], 8, 2, 'Rogue'); }
-
-    function restShort() {
-        if (!confirm("¿Efectuar Descanso Corto?")) return;
-        alert("☕ Descanso Corto completado. Ranger y Rogue (Gloom Stalker/Assassin) no tienen recursos que se restablezcan con un descanso corto — podés gastar Dados de Golpe para curarte si querés.");
-    }
-
-    function restLong() {
-        if (!confirm("¿Efectuar Descanso Largo?")) return;
-        const hpEl = document.getElementById('hp-cur');
-        if (hpEl) { hpEl.value = HP_MAX_DANE; guardarCampo('hp-cur', HP_MAX_DANE); }
-        const hpTemp = document.getElementById('hp-temp-input');
-        if (hpTemp) { hpTemp.value = 0; guardarCampo('hp-temp-input', 0); }
-        if (typeof updateHPDisplay === 'function') updateHPDisplay();
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            cb.checked = false;
-            if (cb.id) guardarCampo(cb.id, false);
-        });
-        if (typeof updateConditions === 'function') updateConditions();
-        if (typeof syncStickyBar === 'function') syncStickyBar();
-        alert("🌙 Descanso Largo completado. Puntos de Golpe, Dados de Golpe, Espacios de Conjuro y Favored Foe restablecidos.");
-    }
 
     // --- 4. AUTENTICACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL CON FIREBASE ---
     document.addEventListener("DOMContentLoaded", () => {
