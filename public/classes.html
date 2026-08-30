@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compendio de Clases — Grupo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #121018;
+  --bg-card: #1d1827;
+  --bg-card-header: #2a2238;
+  --accent-gold: #d4af37;
+  --accent-light: #b388ff;
+  --accent-hover: #9c51e0;
+  --text-light: #f3f0f7;
+  --text-muted: #a89cb5;
+  --border-color: #3b2d52;
+  --danger-color: #d94343;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  --surface-soft: rgba(0,0,0,0.2);
+  --surface-mid: rgba(0,0,0,0.3);
+  --surface-strong: rgba(0,0,0,0.45);
+  --text-on-surface: #fff;
+}
+body.light-mode {
+  --bg-primary: #f3edfa;
+  --bg-card: #fffdfb;
+  --bg-card-header: #e9def6;
+  --text-light: #241c33;
+  --text-muted: #6f6084;
+  --border-color: #d7c7ec;
+  --shadow: 0 4px 15px rgba(90,60,120,0.18);
+  --surface-soft: rgba(36,28,51,0.05);
+  --surface-mid: rgba(36,28,51,0.08);
+  --surface-strong: rgba(36,28,51,0.13);
+  --text-on-surface: #241c33;
+  --accent-light: #6a3aa8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+body { background-color: var(--bg-primary); color: var(--text-light); padding: 20px; padding-bottom: 60px; transition: background-color .3s, color .3s; }
+.container { max-width: 1100px; margin: 0 auto; }
+h1, .cinzel { font-family: 'Cinzel', serif; }
+header { background: linear-gradient(135deg, #241936 0%, #110a1c 100%); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px; box-shadow: var(--shadow); }
+body.light-mode header { background: linear-gradient(135deg, #f9f4ff 0%, #e9def6 100%); }
+header h1 { color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 4px; }
+header p { color: var(--accent-light); font-size: 0.95rem; }
+.top-actions { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+.btn-nav { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; text-decoration:none; display:inline-block; transition: all .2s; }
+.btn-nav:hover { background: var(--accent-gold); color: #1a1220; }
+
+/* --- BUSCADOR --- */
+.search-bar { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.search-bar input[type="text"] { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-strong); color: var(--text-light); font-size: 1rem; outline: none; }
+.search-bar input[type="text"]:focus { border-color: var(--accent-gold); }
+
+/* --- GRILLA DE CLASES --- */
+.class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.class-card { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: box-shadow .15s; }
+.class-card:hover { box-shadow: 0 0 0 1px var(--accent-gold); }
+.class-card.active { box-shadow: 0 0 0 2px var(--accent-gold); }
+.class-card-name { font-weight: 800; font-size: 1.05rem; color: var(--text-light); }
+.class-card-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+.class-card-badge { display:inline-block; font-size: 0.68rem; font-weight:700; background: var(--surface-strong); color: var(--accent-gold); border-radius: 4px; padding: 2px 7px; margin-top: 6px; }
+
+/* --- PANEL DE DETALLE --- */
+.class-detail { display:none; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; box-shadow: var(--shadow); }
+.class-detail.open { display:block; }
+.class-detail-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color); }
+.class-detail-head h2 { color: var(--accent-gold); font-size: 1.4rem; }
+.class-detail-head p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
+.class-detail-close { background:none; border:none; color: var(--text-muted); font-size: 1.3rem; cursor:pointer; line-height:1; }
+.class-stat-row { display:flex; flex-wrap:wrap; gap: 14px; margin-bottom: 16px; }
+.class-stat { background: var(--surface-mid); border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; }
+.class-stat strong { display:block; color: var(--accent-gold); font-size: 0.7rem; text-transform:uppercase; letter-spacing:0.4px; margin-bottom: 2px; }
+
+.class-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+.class-tab-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor:pointer; font-size: 0.8rem; font-weight: 700; }
+.class-tab-btn.active { background: var(--accent-gold); color: #1a1220; border-color: var(--accent-gold); }
+.class-tab-panel { display:none; }
+.class-tab-panel.active { display:block; }
+
+/* --- TABLA DE PROGRESIÓN --- */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 16px; }
+.progression-table { width:100%; min-width: 560px; border-collapse: collapse; font-size: 0.78rem; }
+.progression-table th, .progression-table td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: center; }
+.progression-table th { background: var(--surface-strong); color: var(--accent-gold); font-size: 0.7rem; text-transform:uppercase; letter-spacing:0.3px; }
+.progression-table td.feat-cell { text-align:left; font-size: 0.75rem; }
+.progression-table tr:nth-child(even) { background: var(--surface-soft); }
+
+/* --- LISTA DE RASGOS --- */
+.feature-list-item { border-bottom: 1px solid var(--border-color); padding: 10px 0; }
+.feature-list-item:last-child { border-bottom: none; }
+.feature-list-item h4 { font-size: 0.9rem; color: var(--text-light); margin-bottom: 3px; }
+.feature-list-item h4 .feat-level-tag { font-size: 0.68rem; font-weight:700; background: var(--surface-strong); color: var(--accent-gold); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
+.feature-list-item p { font-size: 0.82rem; color: var(--text-muted); line-height:1.4; }
+
+/* --- SUBCLASES --- */
+.subclass-picker { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 14px; }
+.subclass-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-light); padding: 8px 14px; border-radius: 8px; cursor:pointer; font-size: 0.85rem; font-weight:700; }
+.subclass-btn.active { border-color: var(--accent-gold); background: var(--surface-strong); }
+.subclass-summary { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; font-style: italic; }
+
+.no-results { text-align:center; color: var(--text-muted); padding: 40px 0; font-size: 0.95rem; }
+
+.uncertain { color: var(--danger-color); font-weight: 700; }
+
+footer { text-align:center; margin-top: 30px; font-size: 0.75rem; color: var(--text-muted); }
+footer a { color: var(--accent-light); }
+</style>
+<script src="classes_data.js"></script>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>🛡️ Compendio de Clases</h1>
+  <p>Referencia de clases, subclases y tablas de progresión (PHB 2024) — consulta de solo lectura, útil para crear personajes nuevos.</p>
+</header>
+
+<div class="top-actions">
+  <a href="index.html" class="btn-nav">⬅ Volver al Menú</a>
+  <button class="btn-nav" id="theme-toggle" onclick="toggleTheme()">🌙 Modo Noche</button>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="Buscar clase por nombre..." oninput="applyFilter()">
+</div>
+
+<div class="class-grid" id="class-grid"></div>
+<div class="no-results" id="no-results" style="display:none;">Ninguna clase coincide con la búsqueda.</div>
+
+<div class="class-detail" id="class-detail"></div>
+
+<footer>
+  Datos basados en el Player's Handbook 2024 de D&D 5e, recopilados de fuentes públicas y conocimiento verificado — texto descriptivo parafraseado, no reproducido textualmente. Donde no se pudo confirmar un detalle con una fuente pública, se marca con ⚠️. Uso interno de mesa; solo lectura por el momento.
+</footer>
+
+</div>
+
+<script>
+// ==== DATOS ====
+// (cargados desde classes_data.js, ver <script src> en <head>)
+
+// ==== TEMA DÍA/NOCHE ====
+function applyTheme(isDark) {
+  document.body.classList.toggle('light-mode', !isDark);
+  const btn = document.getElementById('theme-toggle');
+  if (btn) btn.innerText = isDark ? '☀️ Modo Día' : '🌙 Modo Noche';
+}
+function toggleTheme() {
+  const isDark = document.body.classList.contains('light-mode');
+  applyTheme(isDark);
+  localStorage.setItem('classes_theme', isDark ? 'dark' : 'light');
+}
+(function initTheme() {
+  const saved = localStorage.getItem('classes_theme');
+  if (saved) {
+    applyTheme(saved === 'dark');
+  } else {
+    const hour = new Date().getHours();
+    applyTheme(!(hour >= 7 && hour < 19));
+  }
+})();
+
+// ==== ESTADO ====
+let claseAbiertaId = null;
+let subclaseElegidaPorClase = {}; // id de clase -> nombre de subclase elegida en el panel
+
+// ==== GRILLA DE CLASES ====
+function renderClassGrid(filtro) {
+  const cont = document.getElementById('class-grid');
+  const noRes = document.getElementById('no-results');
+  const q = (filtro || '').trim().toLowerCase();
+  const lista = CLASSES.filter(c => !q || c.name.toLowerCase().includes(q) || c.nombre_es.toLowerCase().includes(q));
+  cont.innerHTML = '';
+  noRes.style.display = lista.length ? 'none' : 'block';
+  lista.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'class-card' + (claseAbiertaId === c.id ? ' active' : '');
+    card.innerHTML = `
+      <div class="class-card-name">${c.nombre_es} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem;">(${c.name})</span></div>
+      <div class="class-card-meta">Dado de Golpe: d${c.hitDie} · ${c.primaryAbility}</div>
+      <div class="class-card-badge">${c.subclassLabel} en Nivel ${c.subclassLevel}</div>
+    `;
+    card.addEventListener('click', () => toggleClassDetail(c.id));
+    cont.appendChild(card);
+  });
+}
+function applyFilter() {
+  renderClassGrid(document.getElementById('search-input').value);
+}
+
+// ==== PROGRESIÓN: bono de competencia (igual para todas las clases) ====
+function bonoCompetencia(nivel) {
+  return 2 + Math.floor((nivel - 1) / 4);
+}
+
+// ==== PANEL DE DETALLE ====
+function toggleClassDetail(id) {
+  if (claseAbiertaId === id) {
+    claseAbiertaId = null;
+    document.getElementById('class-detail').classList.remove('open');
+    document.getElementById('class-detail').innerHTML = '';
+    renderClassGrid(document.getElementById('search-input').value);
+    return;
+  }
+  claseAbiertaId = id;
+  renderClassGrid(document.getElementById('search-input').value);
+  renderClassDetail(id);
+  document.getElementById('class-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderClassDetail(id) {
+  const c = CLASSES.find(x => x.id === id);
+  const panel = document.getElementById('class-detail');
+  if (!c) { panel.classList.remove('open'); return; }
+  panel.classList.add('open');
+
+  if (!subclaseElegidaPorClase[id] && c.subclasses.length) {
+    subclaseElegidaPorClase[id] = c.subclasses[0].name;
+  }
+
+  panel.innerHTML = `
+    <div class="class-detail-head">
+      <div>
+        <h2>${c.nombre_es} <span style="color:var(--text-muted);font-weight:400;font-size:0.95rem;">(${c.name})</span></h2>
+        <p>${c.resumen || ''}</p>
+      </div>
+      <button class="class-detail-close" onclick="toggleClassDetail('${id}')" title="Cerrar">✖</button>
+    </div>
+    <div class="class-stat-row">
+      <div class="class-stat"><strong>Dado de Golpe</strong>d${c.hitDie}</div>
+      <div class="class-stat"><strong>Habilidad Principal</strong>${c.primaryAbility}</div>
+      <div class="class-stat"><strong>Salvaciones</strong>${c.savingThrows.join(', ')}</div>
+      <div class="class-stat"><strong>Subclase (${c.subclassLabel})</strong>Nivel ${c.subclassLevel}</div>
+      ${c.casterType ? `<div class="class-stat"><strong>Tipo de Lanzador</strong>${ { full:'Completo', half:'Medio', pact:'Pact Magic (Brujo)' }[c.casterType] }</div>` : ''}
+    </div>
+    <div class="class-tabs">
+      <button class="class-tab-btn active" data-tab="progresion" onclick="cambiarTabClase('${id}','progresion')">📈 Progresión</button>
+      <button class="class-tab-btn" data-tab="rasgos" onclick="cambiarTabClase('${id}','rasgos')">📜 Rasgos de Clase</button>
+      <button class="class-tab-btn" data-tab="subclases" onclick="cambiarTabClase('${id}','subclases')">🌟 Subclases</button>
+    </div>
+    <div class="class-tab-panel active" data-panel="progresion" id="panel-progresion-${id}"></div>
+    <div class="class-tab-panel" data-panel="rasgos" id="panel-rasgos-${id}"></div>
+    <div class="class-tab-panel" data-panel="subclases" id="panel-subclases-${id}"></div>
+  `;
+
+  renderProgresionTabla(c);
+  renderRasgosClase(c);
+  renderSubclases(c);
+}
+
+function cambiarTabClase(id, tab) {
+  const panel = document.getElementById('class-detail');
+  panel.querySelectorAll('.class-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  panel.querySelectorAll('.class-tab-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+}
+
+// ==== TABLA DE PROGRESIÓN ====
+function espaciosEnNivel(casterType, nivelClase) {
+  if (casterType === 'full') return SLOTS_FULL_CASTER[Math.min(nivelClase, 20)] || [];
+  if (casterType === 'half') return SLOTS_HALF_CASTER[Math.min(nivelClase, 20)] || [];
+  return null;
+}
+function renderProgresionTabla(c) {
+  const cont = document.getElementById(`panel-progresion-${c.id}`);
+  const maxNivelSlot = c.casterType === 'full' ? 9 : (c.casterType === 'half' ? 5 : 0);
+  const featuresPorNivel = {};
+  c.features.forEach(f => { (featuresPorNivel[f.nivel] = featuresPorNivel[f.nivel] || []).push(f.nombre); });
+
+  let headExtra = '';
+  if (c.casterType === 'full' || c.casterType === 'half') {
+    for (let n = 1; n <= maxNivelSlot; n++) headExtra += `<th>Esp. Nv${n}</th>`;
+  } else if (c.casterType === 'pact') {
+    headExtra += `<th>Esp. Pacto</th><th>Nivel del Espacio</th>`;
+  }
+  if (c.resourceName) headExtra += `<th>${c.resourceName}</th>`;
+
+  let rows = '';
+  for (let n = 1; n <= 20; n++) {
+    let extra = '';
+    if (c.casterType === 'full' || c.casterType === 'half') {
+      const slots = espaciosEnNivel(c.casterType, n);
+      for (let i = 0; i < maxNivelSlot; i++) extra += `<td>${slots[i] || ''}</td>`;
+    } else if (c.casterType === 'pact') {
+      const info = (SLOTS_PACT_CASTER[Math.min(n, 20)] || {});
+      extra += `<td>${info.count || ''}</td><td>${info.nivel || ''}</td>`;
+    }
+    if (c.resourceName && c.resourceProgression) {
+      extra += `<td>${c.resourceProgression[n] ?? ''}</td>`;
+    } else if (c.resourceName) {
+      extra += `<td></td>`;
+    }
+    rows += `
+      <tr>
+        <td>${n}</td>
+        <td>+${bonoCompetencia(n)}</td>
+        <td class="feat-cell">${(featuresPorNivel[n] || []).join(', ')}</td>
+        ${extra}
+      </tr>
+    `;
+  }
+
+  cont.innerHTML = `
+    <div class="table-scroll">
+      <table class="progression-table">
+        <thead>
+          <tr>
+            <th>Nivel</th>
+            <th>Bono Comp.</th>
+            <th style="text-align:left;">Rasgos</th>
+            ${headExtra}
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ==== RASGOS DE CLASE ====
+function renderRasgosClase(c) {
+  const cont = document.getElementById(`panel-rasgos-${c.id}`);
+  const ordenados = c.features.slice().sort((a, b) => a.nivel - b.nivel);
+  cont.innerHTML = ordenados.map(f => `
+    <div class="feature-list-item">
+      <h4><span class="feat-level-tag">Nvl ${f.nivel}</span>${f.nombre}${f.incierto ? ' <span class="uncertain">⚠️</span>' : ''}</h4>
+      <p>${f.desc}</p>
+    </div>
+  `).join('');
+}
+
+// ==== SUBCLASES ====
+function renderSubclases(c) {
+  const cont = document.getElementById(`panel-subclases-${c.id}`);
+  if (!c.subclasses.length) {
+    cont.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);">Sin subclases cargadas todavía.</p>';
+    return;
+  }
+  const elegida = subclaseElegidaPorClase[c.id] || c.subclasses[0].name;
+  const sub = c.subclasses.find(s => s.name === elegida) || c.subclasses[0];
+  const picker = c.subclasses.map(s => `
+    <button type="button" class="subclass-btn ${s.name === elegida ? 'active' : ''}" onclick="elegirSubclase('${c.id}','${s.name.replace(/'/g, "\\'")}')">${s.name}</button>
+  `).join('');
+  const featuresOrdenadas = sub.features.slice().sort((a, b) => a.nivel - b.nivel);
+  cont.innerHTML = `
+    <div class="subclass-picker">${picker}</div>
+    <div class="subclass-summary">${sub.resumen || ''}</div>
+    ${featuresOrdenadas.map(f => `
+      <div class="feature-list-item">
+        <h4><span class="feat-level-tag">Nvl ${f.nivel}</span>${f.nombre}${f.incierto ? ' <span class="uncertain">⚠️</span>' : ''}</h4>
+        <p>${f.desc}</p>
+      </div>
+    `).join('')}
+  `;
+}
+function elegirSubclase(claseId, nombreSubclase) {
+  subclaseElegidaPorClase[claseId] = nombreSubclase;
+  const c = CLASSES.find(x => x.id === claseId);
+  if (c) renderSubclases(c);
+}
+
+renderClassGrid('');
+</script>
+</body>
+</html>
