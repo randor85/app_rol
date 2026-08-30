@@ -2,6 +2,8 @@
 
 Las versiones 1.0 a 7.0 no tienen ningún registro de sesión de trabajo asociado: se reconstruyeron enteramente inspeccionando el contenido real de los archivos guardados en cada carpeta de "legacy estable" (nombre y tamaño en bytes de cada archivo, presencia/ausencia de marcadores técnicos vía `grep`, y diffs de contenido en los archivos más chicos — `db_rules.txt`, `db.json`/`database.json` — y en fragmentos de los HTML más grandes). Donde la evidencia de archivo es indirecta o requiere inferencia, se aclara explícitamente en el texto. Las versiones 8.0 en adelante, en cambio, corresponden a pasadas de trabajo ya documentadas en las notas de sesión del 25 y 26 de agosto de 2026, que se usaron aquí como fuente autoritativa.
 
+**Nota de poda (29 ago 2026):** a pedido del usuario, se eliminaron del repositorio (carpeta de respaldo + entrada de este log) las versiones **22.0, 23.0, 24.0, 25.0 y 42.0** — pasadas puramente estéticas/de reorganización visual, sin ningún bugfix ni mejora funcional real detrás. La numeración de las versiones restantes se dejó intacta (no se renumeró) para no invalidar referencias cruzadas ya escritas en otras entradas de este log ni en mensajes de commit — por eso hay saltos en la secuencia. Todo lo que esas 5 pasadas hicieron sigue reflejado en el estado actual de los archivos; solo se perdió el detalle narrativo paso a paso. Una excepción parcial: el fix de raza de Myrklogi que iba mezclado en la 25.0 (no era estético) quedó resumido en una nota dentro de la entrada 26.0. El resto de las versiones — incluidas varias con títulos parecidos a "compactación"/"unificación" (27.0, 41.0, 43.0, 45.0) — se conservaron a propósito porque cada una tiene al menos un bugfix real documentado mezclado con el trabajo visual.
+
 ## 1.0 — 13 ago 2026
 
 Primer checkpoint disponible. Contiene `fiona_faraway.html` (83.683 B), `eldur.html` (48.202 B), `dane.html` (40.218 B), `myrklogi_mangarisonn.html` (37.492 B), `nevada_jones.html` (35.699 B) e `index.html` (26.931 B). **No existen todavía `hannoghar.html` ni `ulreek.html`** — esos dos personajes aún no tenían ficha funcional en la app en este punto, aunque el selector "Añadir Personaje" de `index.html` ya lista plantillas para `hannogar` (con error de tipeo), `ulreekr` (ídem) y `muldar`, lo que sugiere que el plan de ocho personajes ya existía antes que sus archivos.
@@ -102,25 +104,9 @@ Contiene Myrklogi (81.528 B) y Ulreek (83.383 B) — la segunda mitad de la mism
 
 Contiene las 6 fichas D&D (Fiona 141.329 B, Eldur 99.421 B, Hannoghar 90.030 B, Myrklogi 86.806 B, Ulreek 88.837 B, Dane 81.783 B). Es el respaldo previo a: registrar en el historial/panel de GM cada uso de recurso limitado (rasgos con usos por descanso, Hit Die, spell slots); un botón de Hit Die dedicado; y el auto-marcado del spell slot correspondiente al lanzar un hechizo desde la ficha.
 
-## 22.0 — piloto de estándar visual compacto en Eldur (26 ago 2026)
-
-Contiene solo `eldur.html` (102.243 B). Es el respaldo previo al primer intento del estándar visual/mecánico compacto (tabla de atributos, skills en grilla, sticky nav, HP manual) que después se replicaría al resto de las fichas D&D — Eldur funcionó como piloto.
-
-## 23.0 — hp input unificado (sin "Set") y reorden de secciones en Eldur (26 ago 2026)
-
-Contiene un único archivo, deliberadamente renombrado `eldur.html (pre-fix HP manual row + orden viejo)` (107.106 B) — mismo patrón de nomenclatura explícita ya visto en 14.1. Es el respaldo previo a corregir el piloto de 22.0: se sacó la fila/botón "Set" de HP en favor de un input unificado con +/- y tipeo directo, y se reordenaron las secciones de la ficha.
-
-## 24.0 — unificación visual estándar: Hannoghar, Myrklogi, Ulreek, Dane (26 ago 2026)
-
-Contiene las 4 fichas que todavía no tenían el estándar visual del piloto (Hannoghar 92.921 B, Myrklogi 89.412 B, Ulreek 92.530 B, Dane 85.793 B). Es el respaldo previo a replicarles el mismo patrón validado en Eldur (22.0/23.0): tabla de atributos compacta con Check+Save separados, skills en grilla, sticky nav y HP como input unificado.
-
-## 25.0 — Fiona: compactación final + fix de raza en Myrklogi (26 ago 2026)
-
-Contiene Fiona (144.277 B) y Myrklogi (93.656 B). Es el respaldo previo a: consolidar a Fiona con el mismo estándar visual que el resto (manteniendo su propia estructura de 8 secciones, sin reordenarla como a las demás); y eliminar de Myrklogi los rasgos raciales de Humano que no le correspondían — su raza es custom ("Human like"), confirmado por el propietario del personaje.
-
 ## 26.0 — texto editable, salvaciones de muerte, secciones de Trasfondo, revisión de HP (26 ago 2026)
 
-Contiene las 6 fichas D&D (Fiona 142.376 B, Eldur 106.619 B, Hannoghar 96.844 B, Myrklogi 93.342 B, Ulreek 95.512 B, Dane 91.319 B). Es el respaldo previo a: hacer editables desde la propia ficha las descripciones de rasgos y hechizos (vía `contenteditable`, conectado al mismo autoguardado de Firebase); agregar salvaciones de muerte a las 5 fichas que no las tenían (solo Ulreek las tenía); agregar una sección de Trasfondo/Personalidad a Hannoghar, Myrklogi, Dane y Fiona (ninguna la tenía); y una revisión del HP máximo calculado contra el configurado en las 6 fichas (todas dentro de la variación normal de dados, salvo un margen de 5 puntos en Myrklogi señalado pero no corregido, siguiendo la política de no alterar datos reales de personaje sin confirmación).
+Contiene las 6 fichas D&D (Fiona 142.376 B, Eldur 106.619 B, Hannoghar 96.844 B, Myrklogi 93.342 B, Ulreek 95.512 B, Dane 91.319 B). Es el respaldo previo a: hacer editables desde la propia ficha las descripciones de rasgos y hechizos (vía `contenteditable`, conectado al mismo autoguardado de Firebase); agregar salvaciones de muerte a las 5 fichas que no las tenían (solo Ulreek las tenía); agregar una sección de Trasfondo/Personalidad a Hannoghar, Myrklogi, Dane y Fiona (ninguna la tenía); y una revisión del HP máximo calculado contra el configurado en las 6 fichas (todas dentro de la variación normal de dados, salvo un margen de 5 puntos en Myrklogi señalado pero no corregido, siguiendo la política de no alterar datos reales de personaje sin confirmación). Nota de una pasada previa eliminada de este log (ver aviso al principio del documento): en esa misma tanda de trabajo también se corrigió que Myrklogi tenía cargados rasgos raciales de Humano que no le correspondían (su raza es custom, "Human like") — confirmado por el dueño del personaje y ya reflejado en el archivo actual.
 
 ## 27.0 — Fiona: eliminación de popups "mini-detail" y unificación de la sección 2 (26 ago 2026)
 
@@ -239,20 +225,6 @@ Contiene las 6 fichas D&D. Es el respaldo previo a un pedido de unificación del
 **Bug de layout encontrado de paso**: los contenedores de Cant/Mod/Quitar/Custom (y ahora Ventaja/Desventaja) en el lanzador de dados usaban `display:flex` en vez de `display:inline-flex` — al ser `flex` un valor de `display` exterior `block`, cada contenedor caía en su propia línea en vez de fluir junto a los botones de dado, dejando el panel innecesariamente alto y apilado verticalmente. Corregido en las 6 fichas (afectaba también al campo "Mod" original, que ya tenía este problema desde antes de esta sesión).
 
 Verificado con `node --check`, balance de tags `<div>` en las 6 fichas (sin ids duplicados de `conditions-dropdown`/`active-conditions-list` tras el traslado), y Playwright: confirmé que los ids viejos (`adv-attack`/`adv-save`/`adv-conc`) desaparecieron y el nuevo `dice-adv` maneja correctamente Ventaja/Desventaja en `rollAttack` de las 6 fichas, que la desventaja automática por condición (Cegado/Envenenado) sigue funcionando donde ya existía y ahora también en Dane, que Bless/Bane se aplican en Dane, y con capturas de pantalla confirmando el panel de dados en una sola fila y la tarjeta de Salvaciones de Muerte con Condiciones y Efectos bien ubicado, en las 6 fichas.
-
-## 42.0 — Dane: reorganización de tarjetas para igualar la estructura del resto de la flota (29 ago 2026)
-
-Contiene solo `dane.html`. El usuario comparó capturas de Fiona y Dane lado a lado y señaló 3 diferencias estructurales que quedaban pendientes tras la unificación de la pasada 41.0:
-
-1. **Dados de Golpe fuera de la tarjeta de HP**: en el resto de la flota (Fiona incluida) los Hit Dice viven dentro de la misma tarjeta "❤️ Puntos de Golpe (HP)"; en Dane vivían en una tarjeta aparte "🎲 Dados de Golpe (Hit Dice)". Se movieron las dos filas (5d10 Ranger + 4d8 Rogue, con sus checkboxes y botones de tirada) adentro de la tarjeta de HP, y se eliminó la tarjeta que quedó vacía.
-
-2. **AC/Iniciativa/Velocidad/Percepción Pasiva sueltos, no en la tarjeta del nombre**: en el resto de la flota estos stats están arriba, en la misma tarjeta que el nombre del personaje; en Dane vivían en una fila de `.stat-box` aparte, debajo de toda la fila de tarjetas de recursos. Se subió ese bloque de 4 stats adentro de `.header`, justo debajo de la tabla de Class & Level/Race/Background/etc.
-
-3. **Historial de tiradas en una tarjeta aparte, vacía tras la unificación de la 41.0**: la tarjeta "🎲 Sistema de Tiradas" solo contenía el log de tiradas (`#rollHistory`) y el botón "Clear History" — el selector Normal/Advantage/Disadvantage que tenía se había sacado en la pasada 41.0 (unificado en el lanzador de dados), dejando la tarjeta con una sola función residual. Se trasladó `#rollHistory` + el botón de limpiar al panel flotante del lanzador de dados (como tercera columna, junto a los botones de dado y al recuadro de "Último Tiro"), y se eliminó la tarjeta que quedó vacía — ahora toda la actividad de tiradas de Dane (manuales y de combate) se centraliza en un solo lugar, igual que el resto de la flota.
-
-La tarjeta de recursos de Dane pasó de 5 tarjetas (HP, Salvaciones de Muerte, Sistema de Tiradas, Favored Foe, Dados de Golpe) a 3 (HP con Hit Dice adentro, Salvaciones de Muerte con Condiciones, Favored Foe) — mismo conteo que dejaría un grid de 3 columnas prolijo, sin tarjetas vacías ni fuera de lugar.
-
-Verificado con `node --check`, balance de tags `<div>` (163→160, consistente con la eliminación de 2 wrappers de tarjeta), sin ids duplicados (`hd-1`...`hd-9`, `rollHistory`, `dice-total` cada uno aparece una sola vez), y con Playwright: confirmé estructuralmente que los checkboxes de Hit Dice quedan dentro de la tarjeta de HP, los `.stat-box` de AC/Iniciativa/Velocidad/Percepción Pasiva quedan dentro de `.header`, y `#rollHistory` queda dentro de `.dice-roller-panel` — y con una captura de pantalla completa confirmando el resultado visual, ahora estructuralmente igual al resto de la flota.
 
 ## 43.0 — lanzador de dados: compactación del panel (iconos, "Quitar" unificado, result box angosto) (29 ago 2026)
 
