@@ -276,7 +276,6 @@
             <input type="text" id="titulo-entrada" style="width: 100%; margin-bottom: 8px; padding: 8px; background: #0f0f12; color: white; border: 1px solid var(--border-color); border-radius: 6px;" placeholder="Título del suceso...">
             <textarea id="nueva-entrada" style="width: 100%; height: 80px; background: #0f0f12; color: white; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px;" placeholder="Escribe la historia..."></textarea>
             <button id="btn-add-log" class="btn-open" style="margin-top: 8px;">Guardar Entrada</button>
-            <button id="btn-cancelar-log" class="btn-open" style="margin-top: 8px; display: none;">Cancelar</button>
             <input type="text" id="buscar-bitacora" style="width: 100%; margin-top: 15px; padding: 8px; background: #0f0f12; color: white; border-radius: 6px; border: 1px solid var(--border-color);" placeholder="🔍 Filtrar bitácora...">
             <div id="lista-bitacora" style="margin-top: 15px; max-height: 180px; overflow-y: auto;"></div>
         </div>
@@ -323,7 +322,6 @@
         const bitacoraContainer = document.getElementById('bitacora-container');
         const nuevaEntrada = document.getElementById('nueva-entrada');
         const btnAddLog = document.getElementById('btn-add-log');
-        const btnCancelarLog = document.getElementById('btn-cancelar-log');
         const listaBitacora = document.getElementById('lista-bitacora');
         const buscarBitacora = document.getElementById('buscar-bitacora');
         const loginEmailForm = document.getElementById('login-email-form');
@@ -338,7 +336,6 @@
 
         let miUidActual = null;
         let esDirector = false;
-        let editandoKeyLog = null; // key de Firebase de la entrada de bitácora en edición (null = agregando una nueva)
         let personajesListener = null, notasGmListener = null, bitacoraListener = null, tiradasListener = null, sistemaCampanaListener = null;
         // Estado de sistema de juego (D&D / CoC) de la campaña abierta, y último snapshot de
         // personajes recibido — se guardan acá para poder re-renderizar la grilla tanto cuando
@@ -867,16 +864,6 @@ btnLoginEmail.onclick = () => {
             const txt = nuevaEntrada.value.trim();
             if (!campanaId || !txt) return;
 
-            if (editandoKeyLog) {
-                db.ref(`campanas/${campanaId}/bitacora/${editandoKeyLog}`).update({
-                    titulo: tit,
-                    texto: txt
-                }).then(() => {
-                    cancelarEdicionLog();
-                });
-                return;
-            }
-
             db.ref(`campanas/${campanaId}/bitacora`).push({
                 titulo: tit,
                 texto: txt,
@@ -886,24 +873,6 @@ btnLoginEmail.onclick = () => {
                 nuevaEntrada.value = '';
             });
         };
-
-        function editarLog(key, log) {
-            editandoKeyLog = key;
-            document.getElementById('titulo-entrada').value = log.titulo || '';
-            nuevaEntrada.value = log.texto || '';
-            btnAddLog.textContent = '💾 Guardar Cambios';
-            if (btnCancelarLog) btnCancelarLog.style.display = 'inline-block';
-            nuevaEntrada.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function cancelarEdicionLog() {
-            editandoKeyLog = null;
-            document.getElementById('titulo-entrada').value = '';
-            nuevaEntrada.value = '';
-            btnAddLog.textContent = 'Guardar Entrada';
-            if (btnCancelarLog) btnCancelarLog.style.display = 'none';
-        }
-        if (btnCancelarLog) btnCancelarLog.onclick = cancelarEdicionLog;
 
         function renderizarLogs(logs, campanaId) {
             listaBitacora.innerHTML = '';
@@ -923,13 +892,9 @@ btnLoginEmail.onclick = () => {
                         ${log.titulo ? `<h4>${log.titulo}</h4>` : ''}
                         <p style="white-space: pre-wrap; font-size:0.85rem; margin-top:4px;">${log.texto}</p>
                     </div>
-                    <div style="display:flex; gap:6px; flex-shrink:0;">
-                        <button class="btn-editar-log" style="background:none; border:none; color:var(--accent-gold); cursor:pointer;">✏️</button>
-                        <button class="btn-borrar-log" style="background:none; border:none; color:#c94a4a; cursor:pointer;">❌</button>
-                    </div>
+                    <button class="btn-borrar-log" style="background:none; border:none; color:#c94a4a; cursor:pointer;">❌</button>
                 `;
 
-                div.querySelector('.btn-editar-log').onclick = () => editarLog(key, log);
                 div.querySelector('.btn-borrar-log').onclick = () => {
                     if (confirm('¿Eliminar registro?')) db.ref(`campanas/${campanaId}/bitacora/${key}`).remove();
                 };
