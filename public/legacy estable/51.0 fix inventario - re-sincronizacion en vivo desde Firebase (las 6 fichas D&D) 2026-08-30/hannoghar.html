@@ -3,53 +3,97 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Eldur Redmane — Firelord Sheet</title>
+ <title>Hannoghar — Paladin Sheet</title>
  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Metamorphous&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
- 
- 
-  <style>
+ <style>
  :root {
-   --bg-primary: #1a0f0d;
-   --bg-card: #2a1815;
-   --bg-card-header: #3d1e18;
-   --accent-red: #c93b2b;
-   --accent-gold: #e69a28;
-   --accent-light: #f5b06b;
-   --text-light: #fceee9;
-   --text-muted: #c29b8c;
-   --border-color: #542820;
-   --danger-color: #c94a4a;
-   --shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-   --surface-soft: rgba(0,0,0,0.2);
-   --surface-mid: rgba(0,0,0,0.3);
-   --surface-strong: rgba(0,0,0,0.45);
-   --text-on-surface: #fff;
+ --bg-primary: #12141c;
+ --bg-card: #1c1f2e;
+ --bg-card-header: #272c42;
+ --accent-blue: #3a6073;
+ --accent-gold: #d4af37;
+ --accent-light: #8faec1;
+ --accent-hover: #4e7a9b;
+ --text-light: #f0f2f4;
+ --text-muted: #a3b0b8;
+ --border-color: #2e3648;
+ --danger-color: #c94a4a;
+ --heal-color: #38a169;
+ --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+ --surface-soft: rgba(0,0,0,0.2);
+ --surface-mid: rgba(0,0,0,0.3);
+ --surface-strong: rgba(0,0,0,0.45);
+ --text-on-surface: #fff;
  }
  body.light-mode {
-   --bg-primary: #f4ecd8;
-   --bg-card: #fffdf7;
-   --bg-card-header: #ecdfc0;
-   --text-light: #2b2118;
-   --text-muted: #7a6248;
-   --border-color: #d9c9a3;
-   --shadow: 0 4px 15px rgba(120,100,70,0.18);
-   --surface-soft: rgba(43,33,24,0.05);
-   --surface-mid: rgba(43,33,24,0.08);
-   --surface-strong: rgba(43,33,24,0.13);
-   --text-on-surface: #2b2118;
-   --accent-light: #a8531c;
+ --bg-primary: #eef2f5;
+ --bg-card: #ffffff;
+ --bg-card-header: #dbe4ea;
+ --text-light: #1c2733;
+ --text-muted: #5b6b78;
+ --border-color: #c7d3dc;
+ --shadow: 0 4px 15px rgba(58,96,115,0.15);
+ --surface-soft: rgba(28,39,51,0.05);
+ --surface-mid: rgba(28,39,51,0.08);
+ --surface-strong: rgba(28,39,51,0.13);
+ --text-on-surface: #1c2733;
+ --accent-light: #2f5871;
  }
- * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
- body { background-color: var(--bg-primary); color: var(--text-light); padding: 20px; padding-bottom: 280px; transition: background-color .3s, color .3s; }
- .container { max-width: 1200px; margin: 0 auto; }
- header { background: linear-gradient(135deg, #3d1a14 0%, #170806 100%); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
- body.light-mode header { background: linear-gradient(135deg, #fff3df 0%, #f4ecd8 100%); }
- header::before { content: "🔥"; position: absolute; right: 20px; top: 10px; font-size: 8rem; opacity: 0.08; pointer-events: none; }
- h1, h2, h3, h4 { font-family: 'Cinzel', serif; color: var(--accent-gold); letter-spacing: 0.5px; }
+
+ * {
+ box-sizing: border-box;
+ margin: 0;
+ padding: 0;
+ font-family: 'Nunito', sans-serif;
+ }
+
+ body {
+ background-color: var(--bg-primary);
+ color: var(--text-light);
+ padding: 20px;
+ padding-bottom: 280px;
+ line-height: 1.5;
+ transition: background-color .3s, color .3s;
+ }
+
+ .container {
+ max-width: 1200px;
+ margin: 0 auto;
+ }
+
+ /* HEADER & IDENTITY */
+ header {
+ background: linear-gradient(135deg, #1c233a 0%, #0d111d 100%);
+ border: 2px solid var(--accent-gold);
+ border-radius: 12px;
+ padding: 24px;
+ margin-bottom: 20px;
+ box-shadow: var(--shadow);
+ position: relative;
+ overflow: hidden;
+ }
+
+ body.light-mode header { background: linear-gradient(135deg, #f4f8fb 0%, #eef2f5 100%); }
+
+ header::before {
+ content: "🐲";
+ position: absolute;
+ right: 20px;
+ top: 10px;
+ font-size: 8rem;
+ opacity: 0.05;
+ pointer-events: none;
+ }
+
+ h1, h2, h3, h4 {
+ font-family: 'Cinzel', serif;
+ color: var(--accent-gold);
+ letter-spacing: 0.5px;
+ }
 
  /* BARRA STICKY DE COMBATE */
- .sticky-combat-bar { position: sticky; top: 0; z-index: 50; background: linear-gradient(145deg, rgba(42,24,21,.98), rgba(26,15,13,.98)); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
- body.light-mode .sticky-combat-bar { background: linear-gradient(145deg, rgba(255,253,247,.98), rgba(244,236,216,.98)); }
+ .sticky-combat-bar { position: sticky; top: 0; z-index: 50; background: linear-gradient(145deg, rgba(28,31,46,.98), rgba(18,20,28,.98)); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+ body.light-mode .sticky-combat-bar { background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(238,242,245,.98)); }
  .sticky-combat-bar .scb-name { font-family: 'Cinzel', serif; color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
  .sticky-combat-bar .scb-stats { display: flex; gap: 12px; flex-wrap: wrap; }
  .scb-stat { text-align: center; min-width: 46px; }
@@ -72,6 +116,8 @@
  .nivel-popover-btn { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-gold); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
  .nivel-popover-panel { display: none; position: fixed; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 12px; z-index: 1001; width: min(340px, calc(100vw - 20px)); max-height: 400px; overflow-y: auto; box-shadow: 0 6px 16px rgba(0,0,0,0.6); }
  .nivel-popover-panel.open { display: block; }
+ .nivel-hab-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .nivel-hab-item:last-child { border-bottom: none; }
 
  .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
  .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-gold); list-style: none; font-size: 0.9rem; }
@@ -85,8 +131,6 @@
  .bitacora-section-content .bf-fecha { color: var(--accent-gold); font-size: 0.72rem; }
  .bitacora-section-label { margin: 0 0 8px; font-weight: 700; color: var(--accent-gold); font-size: 0.85rem; }
  #bitacora-ficha-lista { max-height: 260px; overflow-y: auto; }
- .nivel-hab-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
- .nivel-hab-item:last-child { border-bottom: none; }
  .nivel-hab-item h5 { color: var(--accent-gold); font-size: 0.85rem; margin-bottom: 3px; }
  .nivel-hab-item p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
  .nivel-hab-item button { background: var(--accent-gold); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-weight: 700; }
@@ -123,63 +167,552 @@
  .nivelup-feature-item:last-child { border-bottom: none; }
  .nivelup-feature-item button { margin-top: 4px; }
 
- .btn-rest { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; font-size: 0.8rem; }
- .btn-rest:hover { background: var(--accent-gold); color: var(--bg-primary); box-shadow: 0 0 10px rgba(230, 154, 40, 0.4); }
+ .character-title {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ flex-wrap: wrap;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 12px;
+ margin-bottom: 16px;
+ }
 
- .character-title { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 10px; }
- .char-name h1 { font-size: 1.9rem; color: var(--accent-gold); text-shadow: 0 2px 4px rgba(0,0,0,0.6); margin-bottom: 2px; }
+ .char-name h1 {
+ font-size: 2.4rem;
+ color: var(--accent-gold);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+ }
+
  body.light-mode .char-name h1 { text-shadow: none; }
- .char-sub { font-size: 0.95rem; color: var(--accent-light); font-weight: 600; }
 
- .grid-identity { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
- .stat-badge { background: var(--surface-strong); border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; text-align: center; }
- .stat-badge label { display: block; font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.3px; font-weight: 700; line-height: 1.15; }
- .stat-badge span { font-size: 0.9rem; font-weight: 700; color: var(--text-light); display: block; margin-top: 3px; }
+ .char-sub {
+ font-size: 1.1rem;
+ color: var(--accent-light);
+ font-weight: 600;
+ }
+
+ .btn-rest {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-gold);
+ color: var(--accent-gold);
+ padding: 8px 16px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-weight: 700;
+ transition: all 0.2s;
+ font-size: 0.9rem;
+ }
+
+ .btn-rest:hover {
+ background: var(--accent-gold);
+ color: var(--bg-primary);
+ box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+ }
+
+ /* GRID LAYOUTS */
+ .grid-identity {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+ gap: 8px;
+ }
+
+ .stat-badge {
+ background: var(--surface-strong);
+ border: 1px solid var(--border-color);
+ padding: 8px;
+ border-radius: 8px;
+ text-align: center;
+ }
+
+ .stat-badge label {
+ display: block;
+ font-size: 0.68rem;
+ text-transform: uppercase;
+ color: var(--text-muted);
+ letter-spacing: 0.3px;
+ font-weight: 700;
+ line-height: 1.15;
+ }
+
+ .stat-badge span {
+ font-size: 0.9rem;
+ font-weight: 700;
+ color: var(--text-light);
+ display: block;
+ margin-top: 3px;
+ }
+
  .stat-badge .stat-base { font-size: 0.64rem; font-weight: 600; color: var(--text-muted); display: block; margin-top: 1px; line-height: 1.2; }
  .stat-badge .buff-row { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 3px; }
  .stat-badge .stat-total { font-size: 1.05rem; color: var(--accent-gold); font-weight: 800; }
- .stat-badge input[type="number"] { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--accent-light); font-size: 0.85rem; font-weight: 700; text-align: center; width: 100%; outline: none; }
- .stat-badge .buff-row input[type="number"] { width: 38px; padding: 1px; }
- .stat-badge input:focus { border-color: var(--accent-gold); }
 
- .advantage-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; background: var(--bg-card); border: 1px solid var(--accent-gold); padding: 14px; border-radius: 10px; box-shadow: var(--shadow); }
- .adv-card { background: var(--surface-mid); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); text-align: center; }
- .adv-card label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--accent-light); text-transform: uppercase; margin-bottom: 4px; }
- .abilities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
- .ability-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s; }
- .ability-box:hover { border-color: var(--accent-light); transform: translateY(-2px); }
- .ability-name { font-size: 0.85rem; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; }
- .ability-score { font-size: 1.8rem; font-weight: 800; margin: 4px 0; color: var(--text-on-surface); }
- .ability-mod { display: inline-block; background: var(--accent-red); color: #fff; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; }
- .ability-save { margin-top: 6px; font-size: 0.8rem; color: var(--text-muted); }
- .resources-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
- .tracker-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; box-shadow: var(--shadow); }
- .tracker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
- .tracker-header h3 { font-size: 1.1rem; }
- .counter-controls { display: flex; align-items: center; gap: 8px; }
- .btn-cnt { background: var(--bg-card-header); border: 1px solid var(--accent-light); color: var(--text-light); width: 32px; height: 32px; border-radius: 6px; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
- .btn-cnt:hover { background: var(--accent-red); color: #fff; }
- .cnt-val { font-size: 1.4rem; font-weight: 800; width: 50px; text-align: center; }
- .cnt-max { font-size: 0.9rem; color: var(--text-muted); }
- details { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 16px; box-shadow: var(--shadow); overflow: hidden; transition: border-color 0.2s; }
- details[open] { border-color: var(--accent-red); }
- summary { padding: 16px 20px; font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent-gold); background: var(--bg-card-header); cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; list-style: none; transition: background 0.2s; }
- summary::-webkit-details-marker { display: none; }
- summary::after { content: "►"; font-size: 0.9rem; transition: transform 0.2s; color: var(--accent-light); }
- details[open] summary::after { transform: rotate(90deg); }
- .section-content { padding: 20px; }
- table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; font-size: 0.92rem; }
+ .stat-badge input[type="number"] {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-radius: 4px;
+ color: var(--accent-light);
+ font-size: 0.85rem;
+ font-weight: 700;
+ text-align: center;
+ width: 100%;
+ outline: none;
+ }
+ .stat-badge .buff-row input[type="number"] { width: 38px; padding: 1px; }
+
+ .stat-badge input:focus {
+ border-color: var(--accent-gold);
+ }
+
+ /* ADVANTAGE & CONDITION TRACKER BAR */
+ .advantage-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ background: var(--bg-card);
+ border: 1px solid var(--accent-gold);
+ border-radius: 10px;
+ padding: 14px;
+ box-shadow: var(--shadow);
+ }
+
+ .adv-card {
+ background: var(--surface-mid);
+ padding: 8px 12px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ text-align: center;
+ position: relative;
+ }
+
+ .adv-card label {
+ display: block;
+ font-size: 0.8rem;
+ font-weight: 700;
+ color: var(--accent-light);
+ text-transform: uppercase;
+ margin-bottom: 4px;
+ }
+
+ .adv-card select {
+ width: 100%;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-blue);
+ color: var(--text-light);
+ font-weight: 700;
+ padding: 6px;
+ border-radius: 6px;
+ outline: none;
+ cursor: pointer;
+ }
+
+ .multiselect-container {
+ position: relative;
+ width: 100%;
+ }
+
+ .select-box {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-blue);
+ color: var(--text-light);
+ font-weight: 700;
+ padding: 6px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.85rem;
+ text-align: left;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ }
+
+ .checkboxes-dropdown {
+ display: none;
+ position: absolute;
+ top: 100%;
+ left: 0;
+ right: 0;
+ background: var(--bg-card);
+ border: 1px solid var(--accent-gold);
+ border-radius: 6px;
+ max-height: 220px;
+ overflow-y: auto;
+ z-index: 100;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+ padding: 6px;
+ margin-top: 4px;
+ text-align: left;
+ }
+
+ .checkboxes-dropdown label {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ padding: 4px 6px;
+ font-size: 0.8rem;
+ text-transform: none;
+ color: var(--text-light);
+ cursor: pointer;
+ font-weight: normal;
+ border-radius: 4px;
+ }
+
+ .checkboxes-dropdown label:hover {
+ background: rgba(212, 175, 55, 0.15);
+ }
+
+ .checkboxes-dropdown input[type="checkbox"] {
+ accent-color: var(--accent-gold);
+ width: 14px;
+ height: 14px;
+ }
+
+ .active-conditions-tags {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 4px;
+ margin-top: 6px;
+ min-height: 20px;
+ }
+
+ .cond-tag {
+ background: var(--accent-blue);
+ color: #fff;
+ font-size: 0.7rem;
+ padding: 2px 6px;
+ border-radius: 4px;
+ font-weight: bold;
+ }
+
+ .cond-tag.buff { background: #2b6cb0; }
+ .cond-tag.debuff { background: #c53030; }
+
+ /* STATS & ABILITIES */
+ .abilities-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+ gap: 12px;
+ margin-bottom: 20px;
+ }
+
+ .ability-box {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 12px;
+ text-align: center;
+ box-shadow: var(--shadow);
+ position: relative;
+ transition: transform 0.2s, border-color 0.2s;
+ }
+
+ .ability-box:hover {
+ border-color: var(--accent-light);
+ transform: translateY(-2px);
+ }
+
+ .ability-name {
+ font-size: 0.85rem;
+ font-weight: 800;
+ color: var(--accent-gold);
+ text-transform: uppercase;
+ }
+
+ .ability-score {
+ font-size: 1.8rem;
+ font-weight: 800;
+ margin: 4px 0;
+ color: var(--text-on-surface);
+ }
+
+ .ability-mod {
+ display: inline-block;
+ background: var(--accent-blue);
+ color: #fff;
+ padding: 2px 10px;
+ border-radius: 12px;
+ font-weight: 700;
+ font-size: 0.95rem;
+ }
+
+ .ability-save {
+ margin-top: 6px;
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ }
+
+ /* HP & RESOURCE TRACKERS */
+ .resources-bar {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 16px;
+ margin-bottom: 20px;
+ }
+
+ .tracker-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ padding: 16px;
+ box-shadow: var(--shadow);
+ }
+
+ .tracker-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 10px;
+ border-bottom: 1px solid var(--border-color);
+ padding-bottom: 6px;
+ }
+
+ .tracker-header h3 {
+ font-size: 1.1rem;
+ }
+
+ .counter-controls {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .btn-cnt {
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-light);
+ color: var(--text-light);
+ width: 32px;
+ height: 32px;
+ border-radius: 6px;
+ font-size: 1.2rem;
+ font-weight: bold;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
+ }
+
+ .btn-cnt:hover {
+ background: var(--accent-blue);
+ color: #fff;
+ }
+
+ .cnt-val {
+ font-size: 1.4rem;
+ font-weight: 800;
+ width: 50px;
+ text-align: center;
+ }
+
+ .cnt-max {
+ font-size: 0.9rem;
+ color: var(--text-muted);
+ }
+
+ .editable-text { cursor: text; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; transition: background 0.15s; }
+ .editable-text:hover { background: var(--surface-soft, rgba(255,255,255,0.05)); }
+ .editable-text:focus { background: var(--surface-mid, rgba(255,255,255,0.08)); outline: 1px dashed var(--accent-gold, var(--accent-blue, #d4af37)); outline-offset: 2px; }
+ .editable-cnt-val {
+ background: transparent;
+ border: 1px dashed var(--accent-gold);
+ border-radius: 4px;
+ color: var(--accent-gold);
+ font-size: 1.3rem;
+ font-weight: 800;
+ width: 60px;
+ text-align: center;
+ outline: none;
+ }
+
+ .checkbox-group {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ margin-top: 8px;
+ }
+
+ .check-box-item {
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ background: var(--surface-soft);
+ padding: 6px 10px;
+ border-radius: 6px;
+ border: 1px solid var(--border-color);
+ font-size: 0.85rem;
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .check-box-item input[type="checkbox"] {
+ accent-color: var(--accent-gold);
+ width: 16px;
+ height: 16px;
+ cursor: pointer;
+ }
+
+ /* SECTIONS & COLLAPSIBLES */
+ details {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ border-radius: 10px;
+ margin-bottom: 16px;
+ box-shadow: var(--shadow);
+ overflow: hidden;
+ transition: border-color 0.2s;
+ }
+
+ details[open] {
+ border-color: var(--accent-blue);
+ }
+
+ summary {
+ padding: 16px 20px;
+ font-family: 'Cinzel', serif;
+ font-size: 1.2rem;
+ font-weight: 700;
+ color: var(--accent-gold);
+ background: var(--bg-card-header);
+ cursor: pointer;
+ user-select: none;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ list-style: none;
+ transition: background 0.2s;
+ }
+
+ summary::-webkit-details-marker {
+ display: none;
+ }
+
+ summary::after {
+ content: "►";
+ font-size: 0.9rem;
+ transition: transform 0.2s;
+ color: var(--accent-light);
+ }
+
+ details[open] summary::after {
+ transform: rotate(90deg);
+ }
+
+ summary:hover {
+ background: #2c334e;
+ }
+
+ body.light-mode summary:hover {
+ background: var(--surface-mid);
+ }
+
+ .section-content {
+ padding: 20px;
+ }
+
+ /* TABLES & EDITABLE INVENTORY */
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ font-size: 0.92rem;
+ }
  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
  .table-scroll table { min-width: 640px; }
- th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
- th { background: var(--surface-strong); color: var(--accent-gold); font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 0.5px; }
- tr:hover { background: rgba(245, 176, 107, 0.08); }
- .btn-roll { background: linear-gradient(135deg, #7a2318, #3d120c); border: 1px solid var(--accent-light); color: var(--text-light); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
- body.light-mode .btn-roll { background: linear-gradient(135deg, #f0b98c, #e0946a); color: #2b2118; }
- .btn-roll:hover { background: var(--accent-red); box-shadow: 0 0 8px rgba(245, 176, 107, 0.5); transform: scale(1.03); }
- .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
- .feature-card { background: var(--surface-mid); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 14px; border-radius: 6px; }
- .feature-card h4 { font-size: 1rem; margin-bottom: 6px; color: var(--accent-light); }
+
+ th, td {
+ padding: 10px 12px;
+ text-align: left;
+ border-bottom: 1px solid var(--border-color);
+ }
+
+ th {
+ background: var(--surface-strong);
+ color: var(--accent-gold);
+ font-family: 'Cinzel', serif;
+ font-size: 0.85rem;
+ letter-spacing: 0.5px;
+ }
+
+ tr:nth-child(even) {
+ background: rgba(255, 255, 255, 0.02);
+ }
+
+ tr:hover {
+ background: rgba(143, 174, 193, 0.08);
+ }
+
+ .input-qty {
+ background: var(--surface-strong);
+ border: 1px solid var(--border-color);
+ color: var(--accent-gold);
+ font-weight: bold;
+ text-align: center;
+ width: 60px;
+ padding: 4px;
+ border-radius: 4px;
+ outline: none;
+ }
+
+ .input-qty:focus {
+ border-color: var(--accent-gold);
+ }
+
+ .btn-roll {
+ background: linear-gradient(135deg, #2b3e4c, #1c2733);
+ border: 1px solid var(--accent-light);
+ color: var(--text-light);
+ padding: 4px 10px;
+ border-radius: 6px;
+ cursor: pointer;
+ font-size: 0.8rem;
+ font-weight: 700;
+ transition: all 0.2s;
+ display: inline-flex;
+ align-items: center;
+ gap: 4px;
+ }
+
+ body.light-mode .btn-roll { background: linear-gradient(135deg, #cddce6, #b3c8d6); color: #1c2733; }
+
+ .btn-roll:hover {
+ background: var(--accent-blue);
+ color: #fff;
+ box-shadow: 0 0 8px rgba(143, 174, 193, 0.5);
+ transform: scale(1.03);
+ }
+
+ /* FEATURE CARDS */
+ .feature-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+ gap: 16px;
+ }
+
+ .feature-card {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-left: 4px solid var(--accent-gold);
+ padding: 14px;
+ border-radius: 6px;
+ }
+
+ .feature-card h4 {
+ font-size: 1rem;
+ margin-bottom: 6px;
+ color: var(--accent-light);
+ }
+
+ .feature-card p, .feature-card ul {
+ font-size: 0.9rem;
+ color: var(--text-light);
+ line-height: 1.4;
+ }
+
+ .feature-card ul {
+ padding-left: 18px;
+ margin-top: 6px;
+ }
 
  /* === ESTÁNDAR VISUAL 26 ago: stats compactos, skills compactos, HP manual === */
  .ability-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; }
@@ -195,46 +728,183 @@
  .skill-item .skill-tag { font-size: 0.68rem; color: var(--accent-gold); font-weight: 700; margin-left: 3px; }
  .skill-item .skill-mod { font-weight: 700; min-width: 30px; text-align: right; }
  @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
- .dice-roller-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-header); border-top: 3px solid var(--accent-gold); box-shadow: 0 -6px 20px rgba(0,0,0,0.5); padding: 12px 20px; z-index: 1000; }
+
+ .tag {
+ display: inline-block;
+ background: var(--bg-card-header);
+ border: 1px solid var(--accent-blue);
+ color: var(--accent-light);
+ font-size: 0.75rem;
+ padding: 2px 8px;
+ border-radius: 4px;
+ margin-right: 6px;
+ font-weight: 700;
+ }
+
+ .spell-desc {
+ font-size: 0.85rem;
+ color: var(--text-light);
+ line-height: 1.4;
+ margin-top: 4px;
+ }
+
+ .spell-meta {
+ font-size: 0.75rem;
+ color: var(--accent-light);
+ font-weight: 600;
+ display: block;
+ margin-bottom: 4px;
+ }
+
+ .highlight-box {
+ background: rgba(212, 175, 55, 0.08);
+ border: 1px dashed var(--accent-gold);
+ padding: 12px;
+ border-radius: 8px;
+ margin: 10px 0;
+ font-size: 0.9rem;
+ }
+
+ .currency-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+ gap: 10px;
+ margin-bottom: 16px;
+ }
+
+ .currency-box {
+ background: var(--surface-mid);
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ padding: 8px;
+ text-align: center;
+ }
+
+ .currency-box label {
+ display: block;
+ font-size: 0.75rem;
+ font-weight: bold;
+ color: var(--accent-gold);
+ }
+
+ .currency-box input {
+ width: 100%;
+ background: transparent;
+ border: none;
+ color: var(--text-on-surface);
+ font-size: 1.2rem;
+ font-weight: bold;
+ text-align: center;
+ outline: none;
+ }
+
+ /* FLOATING DICE ROLLER */
+ .dice-roller-panel {
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ background: var(--bg-card-header);
+ border-top: 3px solid var(--accent-gold);
+ box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
+ padding: 12px 20px;
+ z-index: 1000;
+ }
  .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
- .dice-container { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; }
- .btn-dice { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--accent-gold); font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.95rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
- .btn-dice:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-gold); transform: translateY(-2px); }
- .adv-card select { width: 100%; background: var(--bg-card-header); border: 1px solid var(--accent-red); color: var(--text-light); font-weight: 700; padding: 6px; border-radius: 6px; outline: none; cursor: pointer; }
- .multiselect-container { position: relative; width: 100%; }
- .select-box { background: var(--bg-card-header); border: 1px solid var(--accent-red); color: var(--text-light); font-weight: 700; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; text-align: left; display: flex; justify-content: space-between; align-items: center; }
- .checkboxes-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 6px; max-height: 220px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.9); padding: 6px; margin-top: 4px; text-align: left; }
- .checkboxes-dropdown label { display: flex; align-items: center; gap: 8px; padding: 4px 6px; font-size: 0.8rem; text-transform: none; color: var(--text-light); cursor: pointer; font-weight: normal; border-radius: 4px; }
- .checkboxes-dropdown label:hover { background: rgba(230, 154, 40, 0.2); }
- .checkboxes-dropdown input[type="checkbox"] { accent-color: var(--accent-gold); width: 14px; height: 14px; }
- .active-conditions-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-height: 20px; }
- .cond-tag { background: var(--accent-red); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
- .cond-tag.buff { background: #2b6cb0; }
- .cond-tag.debuff { background: #c53030; }
- .editable-cnt-val { background: transparent; border: 1px dashed var(--accent-gold); border-radius: 4px; color: var(--accent-gold); font-size: 1.3rem; font-weight: 800; width: 60px; text-align: center; outline: none; }
- .editable-text { cursor: text; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; transition: background 0.15s; }
- .editable-text:hover { background: var(--surface-soft, rgba(255,255,255,0.05)); }
- .editable-text:focus { background: var(--surface-mid, rgba(255,255,255,0.08)); outline: 1px dashed var(--accent-gold); outline-offset: 2px; }
- .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
- .check-box-item { display: flex; align-items: center; gap: 6px; background: var(--surface-soft); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem; cursor: pointer; user-select: none; }
- .check-box-item input[type="checkbox"] { accent-color: var(--accent-gold); width: 16px; height: 16px; cursor: pointer; }
- .input-qty { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--accent-gold); font-weight: bold; text-align: center; width: 60px; padding: 4px; border-radius: 4px; outline: none; }
- .input-qty:focus { border-color: var(--accent-gold); }
- .dice-mod-input { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--accent-gold); font-weight: bold; text-align: center; padding: 6px; border-radius: 6px; -moz-appearance: textfield; }
- .dice-mod-input::-webkit-outer-spin-button, .dice-mod-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
- .dice-result-box { background: var(--surface-strong); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 8px 16px; min-width: 150px; text-align: center; }
- .dice-result-val { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); line-height: 1; }
- .dice-result-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
- .dice-history { font-size: 0.75rem; color: var(--accent-light); max-height: 58px; overflow-y: auto; margin-top: 4px; }
- .currency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 16px; }
- .currency-box { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; text-align: center; }
- .currency-box label { display: block; font-size: 0.75rem; font-weight: bold; color: var(--accent-gold); }
- .currency-box input { width: 100%; background: transparent; border: none; color: var(--text-on-surface); font-size: 1.2rem; font-weight: bold; text-align: center; outline: none; }
+
+ .dice-container {
+ max-width: 1200px;
+ margin: 0 auto;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 15px;
+ align-items: center;
+ justify-content: space-between;
+ }
+
+ .dice-btns {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ align-items: center;
+ }
+
+ .btn-dice {
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ color: var(--accent-gold);
+ font-family: 'Cinzel', serif;
+ font-weight: 800;
+ font-size: 0.95rem;
+ padding: 8px 14px;
+ border-radius: 8px;
+ cursor: pointer;
+ transition: all 0.2s;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ }
+
+ .btn-dice:hover {
+ background: var(--accent-blue);
+ color: #fff;
+ border-color: var(--accent-gold);
+ transform: translateY(-2px);
+ }
+
+ .dice-mod-input {
+ width: 60px;
+ background: var(--bg-card);
+ border: 1px solid var(--border-color);
+ -moz-appearance: textfield;
+ color: var(--text-on-surface);
+ padding: 6px;
+ border-radius: 6px;
+ text-align: center;
+ font-size: 1rem;
+ font-weight: bold;
+ }
+ .dice-mod-input::-webkit-outer-spin-button,
+ .dice-mod-input::-webkit-inner-spin-button {
+ -webkit-appearance: none;
+ margin: 0;
+ }
+
+ .dice-result-box {
+ background: var(--surface-strong);
+ border: 1px solid var(--accent-gold);
+ border-radius: 8px;
+ padding: 8px 16px;
+ min-width: 150px;
+ text-align: center;
+ }
+
+ .dice-result-val {
+ font-size: 1.8rem;
+ font-weight: 800;
+ color: var(--accent-gold);
+ line-height: 1;
+ }
+
+ .dice-result-details {
+ font-size: 0.8rem;
+ color: var(--text-muted);
+ margin-top: 4px;
+ }
+
+ .dice-history {
+ font-size: 0.75rem;
+ color: var(--accent-light);
+ max-height: 58px;
+ overflow-y: auto;
+ margin-top: 4px;
+ }
 
  @media (max-width: 768px) {
-   body { padding-bottom: 340px; }
-   .dice-container { flex-direction: column; align-items: stretch; }
-   .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+ body { padding-bottom: 340px; }
+ .dice-container { flex-direction: column; align-items: stretch; }
+ .dice-btns { justify-content: center; }
+ .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
  }
 
  /* MODO SOLO LECTURA (unificado con el resto de fichas) */
@@ -258,6 +928,7 @@
      pointer-events: none !important;
      opacity: 0.5;
  }
+
  
 /* === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) === */
 .inventory-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
@@ -281,36 +952,34 @@
 .inventory-total { font-size: 0.78rem; color: var(--accent-gold, var(--accent-silver, #d4af37)); font-weight: bold; margin-bottom: 8px; min-height: 1em; }
 .inventory-empty { font-size: 0.8rem; color: var(--text-muted, #999); font-style: italic; }
 </style>
-
 </head>
-
 <body>
 
 <div class="container">
 <div id="readonly-banner" class="readonly-banner" style="display:none;">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
-    <div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+ <div style="max-width: 1200px; margin: 10px auto; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
 
-        <!-- Enlace para volver -->
-        <a href="index.html" class="btn-volver" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header); color: var(--accent-gold); text-decoration: none; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;">
-            ⬅ Volver al Menú
-        </a>
+ <!-- Enlace para volver -->
+ <a href="index.html" class="btn-volver" style="display: inline-block; padding: 8px 16px; background-color: var(--bg-card-header); color: var(--accent-gold); text-decoration: none; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;">
+ ⬅ Volver al Menú
+ </a>
 
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
-            <button id="barras-fijas-toggle" class="nivel-popover-btn" onclick="toggleBarrasFijas()" type="button" title="Fijar o soltar la barra superior y el lanzador de dados">📌 Barras: fijas</button>
-            <!-- Botón de compartir -->
-            <button id="btn-compartir" style="display: none; padding: 8px 16px; background-color: #3a7d44; color: white; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;"></button>
-        </div>
+ <div style="display: flex; gap: 10px; align-items: center;">
+ <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Modo Noche</button>
+ <button id="barras-fijas-toggle" class="nivel-popover-btn" onclick="toggleBarrasFijas()" type="button" title="Fijar o soltar la barra superior y el lanzador de dados">📌 Barras: fijas</button>
+ <!-- Botón de compartir -->
+ <button id="btn-compartir" style="display: none; padding: 8px 16px; background-color: #3a7d44; color: white; border: 1px solid var(--accent-gold); border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer;"></button>
+ </div>
 
-    </div>
+ </div>
 
  <!-- BARRA STICKY DE COMBATE -->
  <div class="sticky-combat-bar">
- <div class="scb-name">🔥 Eldur Redmane</div>
+ <div class="scb-name">🐲 Hannoghar</div>
  <div class="scb-stats">
- <div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">52/52</div></div>
- <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value" id="scb-ac">17</div></div>
- <div class="scb-stat"><div class="scb-label">⚔️ Atq</div><div class="scb-value" id="scb-atk">+7</div></div>
+ <div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">66/66</div></div>
+ <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value" id="scb-ac">21</div></div>
+ <div class="scb-stat"><div class="scb-label">⚔️ Atq</div><div class="scb-value" id="scb-atk">+6</div></div>
  </div>
  <div class="scb-actions">
  <button class="btn-rest" onclick="restShort()" title="Descanso Corto">☕</button>
@@ -318,7 +987,7 @@
  <button class="btn-roll" onclick="document.getElementById('section-skills')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Habilidades">🧠</button>
  <button class="btn-roll" onclick="document.getElementById('section-attack')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Ataques">⚔️</button>
  <button class="btn-roll" onclick="document.getElementById('section-spells')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Conjuros">📜</button>
- <button class="btn-roll" onclick="document.getElementById('section-features')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Rasgos">🔥</button>
+ <button class="btn-roll" onclick="document.getElementById('section-features')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Rasgos">🛡️</button>
  <button class="btn-roll" onclick="document.getElementById('section-inventory')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Inventario">🎒</button>
  <button class="btn-roll" onclick="document.getElementById('section-background')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Trasfondo">📖</button>
  <button class="btn-roll" onclick="document.getElementById('section-notes')?.scrollIntoView({behavior:'smooth',block:'start'})" type="button" title="Notas">📝</button>
@@ -337,19 +1006,19 @@
  </div>
  </details>
 
- <!-- HEADER E IDENTIDAD -->
+ <!-- HEADER / IDENTIDAD -->
  <header>
  <div class="character-title">
  <div class="char-name">
- <h1>Eldur (Firelord Redmane)</h1>
- <div class="char-sub">Monk 5 / Cleric 2 (Light Domain) | Fire Genasi | Legal Bueno</div>
+ <h1>Hannoghar</h1>
+ <div class="char-sub">Paladin 7 — Oath of the Watchers | Dragonborn (Lawful Good)</div>
  </div>
  <div class="xp-popover-wrap">
  <button class="xp-popover-btn" onclick="toggleXpPopover()" type="button">⭐ XP</button>
  <div class="xp-popover-panel" id="xp-popover-panel">
  <div class="stat-badge">
  <label>XP Actual</label>
- <input type="number" id="xp-val" value="49000" step="100">
+ <input type="number" id="xp-val" value="38100" step="500">
  </div>
  <div class="stat-badge">
  <label>XP Próximo Lvl</label>
@@ -364,44 +1033,60 @@
  </div>
  </div>
  <button class="nivel-popover-btn" onclick="toggleNivelUp()" type="button" style="margin-left:6px;">⬆️ Subir de Nivel</button>
- </div>
  <input type="hidden" id="habilidades-agregadas-nivel" value="">
  <input type="hidden" id="hechizos-agregados" value="">
  <input type="hidden" id="subidas-nivel-registro" value="">
+ </div>
 
  <div class="grid-identity">
  <div class="stat-badge">
  <label>❤️ HP</label>
- <span id="hp-summary">52 / 52</span>
+ <span id="hp-summary">66 / 66</span>
  </div>
+
  <div class="stat-badge">
- <label>🛡️ AC (Unarmored)</label>
- <span class="stat-base">Base: 17 (10+DEX+WIS)</span>
+ <label>🛡️ AC (Clase Armadura)</label>
+ <span class="stat-base">Base: 21</span>
  <div class="buff-row">
  <input type="number" id="ac-buff" value="0" title="Bono Buffs" onchange="recalcStats()">
- <div class="stat-total" id="ac-total">17</div>
+ <div class="stat-total" id="ac-total">21</div>
  </div>
  </div>
+
  <div class="stat-badge">
  <label>⚔️ Bono Ataque</label>
- <span class="stat-base">Base: +7 (DEX + Prof)</span>
+ <span class="stat-base">Base: +6 (STR + Prof)</span>
  <div class="buff-row">
  <input type="number" id="atk-buff" value="0" title="Bono Buffs" onchange="recalcStats()">
- <div class="stat-total" id="atk-total">+7</div>
+ <div class="stat-total" id="atk-total">+6</div>
  </div>
  </div>
+
  <div class="stat-badge">
- <label>✨ Spell Atk / DC</label>
- <span class="stat-base">+6 / DC 14 (WIS)</span>
- <div class="stat-total" style="font-size: 1rem; margin-top: 6px;">Ki DC 14</div>
+ <label>✨ Spell Atk</label>
+ <span class="stat-base">Base: +5 (CHA + Prof)</span>
+ <div class="buff-row">
+ <input type="number" id="spell-atk-buff" value="0" title="Bono Buffs" onchange="recalcStats()">
+ <div class="stat-total" id="spell-atk-total">+5</div>
  </div>
+ </div>
+
+ <div class="stat-badge">
+ <label>📖 Spell Save DC</label>
+ <span class="stat-base">Base: 13 (8+CHA+Prof)</span>
+ <div class="buff-row">
+ <input type="number" id="spell-dc-buff" value="0" title="Bono Buffs" onchange="recalcStats()">
+ <div class="stat-total" id="spell-dc-total">13</div>
+ </div>
+ </div>
+
  <div class="stat-badge">
  <label>🎲 Iniciativa</label>
- <button class="btn-roll" style="margin-top:4px; padding:3px 8px; font-size:0.8rem;" onclick="rollCheckSave('d20', 4, 'Iniciativa', 'save')">🎲 +4</button>
+ <button class="btn-roll" style="margin-top:4px; padding:3px 8px; font-size:0.8rem;" onclick="rollCheckSave('d20', 3, 'Iniciativa (Aura of Sentinel +3)', 'save')">🎲 +3</button>
  </div>
  <div class="stat-badge">
  <label>🏃 Velocidad</label>
- <span>40 ft</span>
+ <span>30 ft</span>
  </div>
  <div class="stat-badge">
  <label>📘 Prof. Bonus</label>
@@ -409,69 +1094,63 @@
  </div>
  <div class="stat-badge">
  <label>👁️ Perc. Pasiva</label>
- <span>16</span>
+ <span>11</span>
  </div>
  </div>
  </header>
 
- <!-- CONTROLES DE VENTAJA/DESVENTAJA: unificados en el lanzador de dados (bugs.md 29 ago) -->
- <div class="advantage-bar">
- <div class="adv-card" style="border-color: var(--accent-light);">
- <label>🧘 Save Concentración</label>
- <button class="btn-roll" style="width:100%; justify-content:center;" onclick="rollConcentrationSave()">🧘 CON Save (+2)</button>
- </div>
- </div>
+ <!-- VENTAJA/DESVENTAJA: unificada en el lanzador de dados; CONDICIONES: movidas junto a Salvaciones de Muerte (bugs.md 29 ago) -->
 
  <!-- ATRIBUTOS DE HABILIDAD (tabla compacta: Check + Save por separado) -->
  <table class="ability-table">
  <tr><th>STR</th><th>DEX</th><th>CON</th><th>INT</th><th>WIS</th><th>CHA</th></tr>
  <tr>
  <td>
- <div class="ab-score">8</div><div class="ab-mod">(-1)</div>
+ <div class="ab-score">16</div><div class="ab-mod">(+3)</div>
  <div class="ab-btns">
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', -1, 'STR Check', 'check')">Check -1</button>
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', -1, 'STR Save', 'save')">Save -1</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 3, 'STR Check', 'check')">Check +3</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 8, 'STR Save', 'save')">Save +8★</button>
  </div>
  </td>
  <td>
- <div class="ab-score">18</div><div class="ab-mod">(+4)</div>
+ <div class="ab-score">10</div><div class="ab-mod">(+0)</div>
  <div class="ab-btns">
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 4, 'DEX Check', 'check')">Check +4</button>
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 7, 'DEX Save', 'save')">Save +7★</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'DEX Check', 'check')">Check +0</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'DEX Save', 'save')">Save +2</button>
  </div>
  </td>
  <td>
- <div class="ab-score">14</div><div class="ab-mod">(+2)</div>
+ <div class="ab-score">16</div><div class="ab-mod">(+3)</div>
  <div class="ab-btns">
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'CON Check', 'check')">Check +2</button>
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'CON Save', 'save')">Save +2</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 3, 'CON Check', 'check')">Check +3</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 5, 'CON Save', 'save')">Save +5</button>
  </div>
  </td>
  <td>
  <div class="ab-score">10</div><div class="ab-mod">(+0)</div>
  <div class="ab-btns">
  <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'INT Check', 'check')">Check +0</button>
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'INT Save', 'save')">Save +0</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'INT Save', 'save')">Save +2</button>
  </div>
  </td>
  <td>
- <div class="ab-score">16</div><div class="ab-mod">(+3)</div>
+ <div class="ab-score">12</div><div class="ab-mod">(+1)</div>
  <div class="ab-btns">
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 3, 'WIS Check', 'check')">Check +3</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'WIS Check', 'check')">Check +1</button>
  <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 6, 'WIS Save', 'save')">Save +6★</button>
  </div>
  </td>
  <td>
- <div class="ab-score">10</div><div class="ab-mod">(+0)</div>
+ <div class="ab-score">14</div><div class="ab-mod">(+2)</div>
  <div class="ab-btns">
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'CHA Check', 'check')">Check +0</button>
- <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'CHA Save', 'save')">Save +0</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'CHA Check', 'check')">Check +2</button>
+ <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 7, 'CHA Save', 'save')">Save +7★</button>
  </div>
  </td>
  </tr>
  </table>
 
- <!-- RECURSOS Y CONTADORES DE CLASE -->
+ <!-- RECURSOS Y CONTADORES -->
  <div class="resources-bar">
  <!-- HP TRACKER -->
  <div class="tracker-card">
@@ -479,8 +1158,8 @@
  <h3>❤️ Puntos de Golpe (HP)</h3>
  <div class="counter-controls">
  <button class="btn-cnt" onclick="changeInputVal('hp-cur', -1)">-</button>
- <input type="number" id="hp-cur" class="editable-cnt-val" value="52" min="0">
- <span class="cnt-max">/ <span id="hp-max-label">52</span></span>
+ <input type="number" id="hp-cur" class="editable-cnt-val" value="66" min="0">
+ <span class="cnt-max">/ <span id="hp-max-label">66</span></span>
  <button class="btn-cnt" onclick="changeInputVal('hp-cur', 1)">+</button>
  </div>
  </div>
@@ -493,7 +1172,7 @@
  </div>
  </div>
  <div style="margin-top: 10px;">
- <label style="font-size: 0.8rem; color: var(--text-muted);" id="hd-label">Dados de Golpe (Hit Dice): 7d8</label>
+ <label style="font-size: 0.8rem; color: var(--text-muted);" id="hd-label">Dados de Golpe (Hit Dice): 7d10</label>
  <div class="checkbox-group" id="hd-checkbox-group">
  <label class="check-box-item"><input type="checkbox" id="hd-1"> HD 1</label>
  <label class="check-box-item"><input type="checkbox" id="hd-2"> HD 2</label>
@@ -503,7 +1182,7 @@
  <label class="check-box-item"><input type="checkbox" id="hd-6"> HD 6</label>
  <label class="check-box-item"><input type="checkbox" id="hd-7"> HD 7</label>
  </div>
- <button class="btn-roll" onclick="tirarHitDie()" style="margin-top:6px;">🎲 Tirar Dado de Golpe (1d8+2)</button>
+ <button class="btn-roll" onclick="tirarHitDie()" style="margin-top:6px;">🎲 Tirar Dado de Golpe (1d10+3)</button>
  </div>
  </div>
 
@@ -513,7 +1192,7 @@
  <h3>💀 Salvaciones de Muerte</h3>
  </div>
  <div style="margin-top: 5px;">
- <label style="font-size:0.8rem; color:var(--heal-color, #38a169); font-weight:bold; display:block;">ÉXITOS</label>
+ <label style="font-size:0.8rem; color:var(--heal-color); font-weight:bold; display:block;">ÉXITOS</label>
  <div class="checkbox-group">
  <label class="check-box-item"><input type="checkbox" id="ds-s1"> 1</label>
  <label class="check-box-item"><input type="checkbox" id="ds-s2"> 2</label>
@@ -533,66 +1212,70 @@
  <span>▼</span>
  </div>
  <div class="checkboxes-dropdown" id="conditions-dropdown">
- <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS Y BUFFS</strong>
+ <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">EFECTOS / BUFFS</strong>
  <label><input type="checkbox" id="buff-bless" value="Bless" data-type="buff" onchange="updateConditions()"> ✨ Bless (+1d4 Atk/Saves)</label>
+ <label><input type="checkbox" id="buff-watchers" value="Watcher's Will" data-type="buff" onchange="updateConditions()"> 🛡️ Watcher's Will (Adv INT/WIS/CHA)</label>
  <label><input type="checkbox" id="debuff-bane" value="Bane" data-type="debuff" onchange="updateConditions()"> 💀 Bane (-1d4 Atk/Saves)</label>
- <label><input type="checkbox" id="buff-guidance" value="Guidance" data-type="buff" onchange="updateConditions()"> 📜 Guidance (+1d4 Check)</label>
  <hr style="border-color:var(--border-color); margin:4px 0;">
  <strong style="display:block; font-size:0.7rem; color:var(--accent-gold); margin-bottom:4px;">CONDICIONES D&D 5E</strong>
  <label><input type="checkbox" id="cond-blinded" value="Blinded" data-type="debuff" onchange="updateConditions()"> 👁️ Blinded</label>
  <label><input type="checkbox" id="cond-frightened" value="Frightened" data-type="debuff" onchange="updateConditions()"> 😱 Frightened</label>
  <label><input type="checkbox" id="cond-poisoned" value="Poisoned" data-type="debuff" onchange="updateConditions()"> ☣️ Poisoned</label>
- <label><input type="checkbox" id="cond-stunned" value="Stunned" data-type="debuff" onchange="updateConditions()"> 💫 Stunned</label>
+ <label><input type="checkbox" id="cond-prone" value="Prone" data-type="debuff" onchange="updateConditions()"> 🛌 Prone</label>
  </div>
  </div>
  <div class="active-conditions-tags" id="active-conditions-list"></div>
  </div>
  </div>
 
- <!-- PUNTOS DE KI Y CANALIZAR DIVINIDAD -->
+ <!-- RECURSOS DE PALADÍN -->
  <div class="tracker-card">
  <div class="tracker-header">
- <h3>🔥 Puntos de Ki & Recargas Cortas</h3>
+ <h3>✨ Recursos de Paladín</h3>
+ </div>
+ <div style="margin-top: 6px;">
+ <div style="display: flex; justify-content: space-between; align-items: center;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Lay on Hands (Pool 35 HP):</label>
  <div class="counter-controls">
- <button class="btn-cnt" onclick="changeVal('ki-cur', -1)">-</button>
- <span id="ki-cur" class="cnt-val">5</span>
- <span class="cnt-max">/ 5</span>
- <button class="btn-cnt" onclick="changeVal('ki-cur', 1)">+</button>
+ <button class="btn-cnt" onclick="changeVal('lay-hands-cur', -5)">-5</button>
+ <span id="lay-hands-cur" class="cnt-val">35</span>
+ <span class="cnt-max">/ 35</span>
+ <button class="btn-cnt" onclick="changeVal('lay-hands-cur', 5)">+5</button>
  </div>
- </div>
- <div style="margin-top: 10px;">
- <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Channel Divinity (1 / Descanso — Radiance of the Dawn o Turn Undead):</label>
- <div class="checkbox-group">
- <label class="check-box-item"><input type="checkbox" id="cd-use-1"> Uso (cualquiera de las 2)</label>
  </div>
  </div>
  <div style="margin-top: 10px;">
- <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Blinding Light (Braces of the Sun Fury):</label>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Channel Divinity (1 / descanso):</label>
  <div class="checkbox-group">
- <label class="check-box-item"><input type="checkbox" id="blinding-1"> Uso 1</label>
- <label class="check-box-item"><input type="checkbox" id="blinding-2"> Uso 2 (2/Short Rest)</label>
+ <label class="check-box-item"><input type="checkbox" id="cd-use-1"> Canalización Usada</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Divine Sense (3 / descanso largo):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="ds-use-1"> Uso 1</label>
+ <label class="check-box-item"><input type="checkbox" id="ds-use-2"> Uso 2</label>
+ <label class="check-box-item"><input type="checkbox" id="ds-use-3"> Uso 3</label>
+ </div>
+ </div>
+ <div style="margin-top: 10px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Breath Weapon Fire (1 / descanso):</label>
+ <div class="checkbox-group">
+ <label class="check-box-item"><input type="checkbox" id="bw-use-1"> Aliento Usado</label>
  </div>
  </div>
  </div>
 
- <!-- RECURSOS RACIALES (Spell Slots se movieron a la tarjeta de Conjuros, estilo Ulreek) -->
+ <!-- Ranuras de Conjuro movidas a la tarjeta de Conjuros, estilo Ulreek (28 ago) -->
  <div class="tracker-card">
  <div class="tracker-header">
- <h3>✨ Conjuros Raciales</h3>
+ <h3>📜 Divine Smite</h3>
  </div>
- <div style="margin-top: 4px;">
- <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-gold);">Warding Flare (3 / Long Rest):</label>
- <div class="checkbox-group">
- <label class="check-box-item"><input type="checkbox" id="wf-1"> U1</label>
- <label class="check-box-item"><input type="checkbox" id="wf-2"> U2</label>
- <label class="check-box-item"><input type="checkbox" id="wf-3"> U3</label>
- </div>
- </div>
- <div style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 6px;">
- <label style="font-size:0.8rem; font-weight:bold; color:var(--accent-light);">Reach to the Blaze (Usos Gratis 1/LR):</label>
- <div class="checkbox-group">
- <label class="check-box-item"><input type="checkbox" id="racial-burning-hands"> Burning Hands</label>
- <label class="check-box-item"><input type="checkbox" id="racial-flame-blade"> Flame Blade</label>
+ <div style="margin-top: 15px; padding-top: 6px;">
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Lanzar Divine Smite Directo:</label>
+ <div style="display:flex; gap:6px; margin-top:6px;">
+ <button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Divine Smite (Lvl 1 - 2d8)'); gastarSlot(1)">⚡ Smite Lvl 1 (2d8)</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 8, 0, 'Divine Smite (Lvl 2 - 3d8)'); gastarSlot(2)">⚡ Smite Lvl 2 (3d8)</button>
  </div>
  </div>
  </div>
@@ -603,35 +1286,37 @@
  <summary>🧠 1. Habilidades (Skills)</summary>
  <div class="section-content">
  <div class="skills-grid">
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 7, 'Acrobatics', 'check')">🎲</button><span class="skill-name"><strong>Acrobatics</strong><span class="skill-tag">★</span></span><span class="skill-mod">+7</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Animal Handling', 'check')">🎲</button><span class="skill-name"><strong>Animal Handling</strong></span><span class="skill-mod">+3</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Acrobatics', 'check')">🎲</button><span class="skill-name"><strong>Acrobatics</strong></span><span class="skill-mod">+0</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Animal Handling', 'check')">🎲</button><span class="skill-name"><strong>Animal Handling</strong></span><span class="skill-mod">+1</span></div>
  <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Arcana', 'check')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', -1, 'Athletics', 'check')">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">-1</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Deception', 'check')">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-mod">+0</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 6, 'Athletics', 'check')">🎲</button><span class="skill-name"><strong>Athletics</strong><span class="skill-tag">★</span></span><span class="skill-mod">+6</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Deception', 'check')">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-mod">+2</span></div>
  <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'History', 'check')">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+0</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 6, 'Insight', 'check')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+6</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Intimidation', 'check')">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+0</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Insight', 'check')">🎲</button><span class="skill-name"><strong>Insight</strong></span><span class="skill-mod">+1</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Intimidation', 'check')">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+2</span></div>
  <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Investigation', 'check')">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+0</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Medicine', 'check')">🎲</button><span class="skill-name"><strong>Medicine</strong></span><span class="skill-mod">+3</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Medicine', 'check')">🎲</button><span class="skill-name"><strong>Medicine</strong></span><span class="skill-mod">+1</span></div>
  <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Nature', 'check')">🎲</button><span class="skill-name"><strong>Nature</strong></span><span class="skill-mod">+0</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 6, 'Perception', 'check')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+6</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Performance', 'check')">🎲</button><span class="skill-name"><strong>Performance</strong><span class="skill-tag">★</span></span><span class="skill-mod">+3</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Persuasion', 'check')">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+0</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Perception', 'check')">🎲</button><span class="skill-name"><strong>Perception</strong></span><span class="skill-mod">+1</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Performance', 'check')">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+2</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Persuasion', 'check')">🎲</button><span class="skill-name"><strong>Persuasion</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
  <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Religion', 'check')">🎲</button><span class="skill-name"><strong>Religion</strong><span class="skill-tag">★</span></span><span class="skill-mod">+3</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Sleight of Hand', 'check')">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-mod">+4</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Stealth', 'check')">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-mod">+4</span></div>
- <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 3, 'Survival', 'check')">🎲</button><span class="skill-name"><strong>Survival</strong></span><span class="skill-mod">+3</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Sleight of Hand', 'check')">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-mod">+0</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Stealth', 'check')">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-mod">+0</span></div>
+ <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Survival', 'check')">🎲</button><span class="skill-name"><strong>Survival</strong></span><span class="skill-mod">+1</span></div>
  </div>
+
  <div class="highlight-box" style="margin-top:15px;">
  <strong>Competencias & Idiomas:</strong><br>
- • <strong>Armaduras & Armas:</strong> Sin armadura (Unarmored Defense), Armas Simples, Espadas Cortas, Armaduras Ligeras/Medias y Escudos.<br>
- • <strong>Herramientas:</strong> Herramientas de Artesano o Instrumento Musical.<br>
- • <strong>Idiomas:</strong> Common, Primordial (Ignan).
+ • <strong>Armaduras:</strong> Todas las armaduras, Escudos.<br>
+ • <strong>Armas:</strong> Armas Simples, Armas Marciales.<br>
+ • <strong>Herramientas:</strong> Dice set (Juego de dados).<br>
+ • <strong>Idiomas:</strong> Common, Abyssal, Draconic.
  </div>
  </div>
  </details>
 
- <!-- SECCIÓN 2: ATAQUES -->
+ <!-- SECCIÓN 2: ATAQUES Y ACCIONES ESPECIALES -->
  <details class="v2-section" id="section-attack" open>
  <summary>⚔️ 2. Ataques y Acciones Especiales</summary>
  <div class="section-content">
@@ -639,78 +1324,49 @@
  <thead>
  <tr>
  <th>Ataque / Acción</th>
- <th>Bono / DC</th>
+ <th>Bono Base</th>
  <th>Daño / Efecto</th>
- <th>Propiedades y Notas</th>
+ <th>Notas & Propiedades</th>
  <th>Lanzar Dados</th>
  </tr>
  </thead>
  <tbody>
  <tr>
- <td><strong>Unarmed Strike</strong></td>
- <td>+7</td>
- <td>1d6 + 4 Bludg. + 1d6 Radiant</td>
- <td>Martial Arts (DEX) + Braces of Sun Fury (+1d6 Rad)</td>
- <td>
- <button class="btn-roll" onclick="rollAttack(7, 'Unarmed Strike')">🎯 Atk</button>
- <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Unarmed Bludgeoning')">💥 1d6+4</button>
- <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Sun Fury Radiant')">☀️ 1d6 Rad</button>
- </td>
- </tr>
- <tr>
- <td><strong>Shortsword</strong></td>
- <td>+7</td>
- <td>1d6 + 4 Piercing</td>
- <td>Finesse, Light, MonkWpn</td>
- <td>
- <button class="btn-roll" onclick="rollAttack(7, 'Shortsword Atk')">🎯 Atk</button>
- <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Shortsword Damage')">💥 1d6+4</button>
- </td>
- </tr>
- <tr>
- <td><strong>Radiant Sun Bolt</strong></td>
- <td>+7</td>
- <td>1d6 + 4 Radiant</td>
- <td>Rango 30 ft; Spell Attack con DEX. (1 Ki: 2 bolts como Bonus Action)</td>
- <td>
- <button class="btn-roll" onclick="rollAttack(7, 'Radiant Sun Bolt Atk')">🎯 Atk</button>
- <button class="btn-roll" onclick="rollGenericDamage(1, 6, 4, 'Radiant Sun Bolt Damage')">☀️ 1d6+4</button>
- </td>
- </tr>
- <tr>
- <td><strong>Flame Blade</strong> (Conjuro Racial)</td>
+ <td><strong>Mace (Maza)</strong></td>
  <td>+6</td>
- <td>3d6 Fire</td>
- <td>Melee Spell Attack (WIS), Concentración 10 min. No material.</td>
+ <td>1d8 + 3 B</td>
+ <td>Melee, 1H. Impacto contundente cargado con tu fuerza.</td>
  <td>
- <button class="btn-roll" onclick="rollAttack(6, 'Flame Blade Atk')">🎯 Atk</button>
- <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Flame Blade Fire')">🔥 3d6</button>
+ <button class="btn-roll" onclick="rollAttack(6, 'Ataque con Maza')">🎯 Atk</button>
+ <button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Daño Maza')">💥 1d8+3</button>
  </td>
  </tr>
  <tr>
- <td><strong>Sunfire Fist</strong> (Special Attack)</td>
- <td>1 Ki</td>
- <td>Bonus Action: 2 ataques a distancia (30 ft)</td>
- <td>Realiza 2 ataques con Radiant Sun Bolt como Bonus Action.</td>
+ <td><strong>Breath Weapon (Aliento de Fuego)</strong></td>
+ <td>DC 14 Dex</td>
+ <td>3d6 Fuego</td>
+ <td>Cono de 15 ft. Las criaturas atrapadas sufren 3d6 daño de fuego (mitad con CD 14 exitosa) — daño de nivel de personaje 6-10. Se recarga con un descanso corto o largo.</td>
  <td>
- <button class="btn-roll" onclick="rollAttack(7, 'Sunfire Bolt 1')">🎯 Bolt 1</button>
- <button class="btn-roll" onclick="rollAttack(7, 'Sunfire Bolt 2')">🎯 Bolt 2</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Aliento de Fuego (3d6)')">🔥 3d6 Fuego</button>
  </td>
  </tr>
  <tr>
- <td><strong>Stunning Strike</strong></td>
- <td>1 Ki</td>
- <td>CON Save DC 14</td>
- <td>Al golpear Melee: el objetivo queda Stunned hasta el final de tu siguiente turno.</td>
- <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Stunning Strike')">✅ Usar</button></td>
+ <td><strong>Divine Smite</strong></td>
+ <td>Especial</td>
+ <td>+2d8 Radiante (+1d8 Lvl 2 / Fiend)</td>
+ <td>Al golpear con un ataque cuerpo a cuerpo, puedes gastar una ranura de conjuro para infligir +2d8 de daño radiante adicional (+1d8 por nivel superior a 1º, máx 5d8). Añade +1d8 extra contra fiends o muertos vivientes.</td>
+ <td>
+ <button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Divine Smite Lvl 1 (2d8)'); gastarSlot(1)">⚡ 2d8</button>
+ <button class="btn-roll" onclick="rollGenericDamage(3, 8, 0, 'Divine Smite Lvl 2 / Anti-Fiend (3d8)'); gastarSlot(2)">⚡ 3d8</button>
+ </td>
  </tr>
  <tr>
- <td><strong>Radiance of the Dawn</strong></td>
- <td>Channel Div.</td>
- <td>2d10 + 2 Radiant</td>
- <td>Disipa oscuridad a 30ft. CON Save DC 14 reduce a la mitad.</td>
+ <td><strong>Spell Attack</strong></td>
+ <td>+5</td>
+ <td>Según Conjuro</td>
+ <td>Mod. Carisma (+2) + Bono Competencia (+3). Usado para conjuros de toque o a distancia que requieran tirada de ataque.</td>
  <td>
- <button class="btn-roll" onclick="rollGenericDamage(2, 10, 2, 'Radiance of the Dawn')">☀️ 2d10+2</button>
+ <button class="btn-roll" onclick="rollSpellAttack('Ataque de Conjuro')">🎯 Atk Conjuro</button>
  </td>
  </tr>
  </tbody>
@@ -720,15 +1376,23 @@
 
  <!-- SECCIÓN 3: CONJUROS PREPARADOS -->
  <details class="v2-section" id="section-spells" open>
- <summary>📜 3. Conjuros Preparados de Clérigo & Raciales</summary>
+ <summary>📜 3. Conjuros Preparados y De Juramento</summary>
  <div class="section-content">
  <div class="resources-bar" style="margin-bottom: 15px;" id="conjuros-slots-bar">
  <div class="tracker-card" data-slot-nivel="1">
  <h4>Nivel 1</h4>
  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
  <button class="btn-cnt" onclick="changeVal('slot-1-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 1')">-1</button>
- <span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / <span id="slot-1-max">3</span>
+ <span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">4</span> / <span id="slot-1-max">4</span>
  <button class="btn-cnt" onclick="changeVal('slot-1-cur', 1)">+1</button>
+ </div>
+ </div>
+ <div class="tracker-card" data-slot-nivel="2">
+ <h4>Nivel 2</h4>
+ <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+ <button class="btn-cnt" onclick="changeVal('slot-2-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 2')">-1</button>
+ <span id="slot-2-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / <span id="slot-2-max">3</span>
+ <button class="btn-cnt" onclick="changeVal('slot-2-cur', 1)">+1</button>
  </div>
  </div>
  </div>
@@ -738,104 +1402,120 @@
  <th>Nivel</th>
  <th>Conjuro</th>
  <th>Tiempo / Rango</th>
- <th>Resumen y Efecto Mecánico</th>
+ <th>Resumen y Descripción Mecánica Detallada</th>
  <th>Tirar / Efecto</th>
  </tr>
  </thead>
  <tbody>
  <tr>
- <td><span class="tag">Cantrip</span></td>
- <td><strong>Produce Flame</strong></td>
- <td>1 Acc / Self (30ft)</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-produce-flame">Racial. Luz o ataque a distancia: 2d8 fuego (cantrip a nivel de personaje 7; escala a 3d8 en nivel 11 y 4d8 en nivel 17).</td>
- <td><button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Produce Flame (2d8)')">🔥 2d8 Fire</button></td>
- </tr>
- <tr>
- <td><span class="tag">Cantrip</span></td>
- <td><strong>Sacred Flame</strong></td>
- <td>1 Acc / 60 ft</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-sacred-flame">DEX Save DC 14; 2d8 daño radiante (ignora cobertura) — cantrip a nivel de personaje 7; escala a 3d8 en nivel 11 y 4d8 en nivel 17.</td>
- <td><button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Sacred Flame (2d8)')">☀️ 2d8 Rad</button></td>
- </tr>
- <tr>
- <td><span class="tag">Cantrip</span></td>
- <td><strong>Light</strong></td>
- <td>1 Acc / Touch</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-light">Crea luz brillante en un objeto por 1 hora.</td>
- <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Light')">✅ Usar</button></td>
- </tr>
- <tr>
- <td><span class="tag">Cantrip</span></td>
- <td><strong>Guidance</strong></td>
- <td>1 Acc / Touch</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-guidance">Objetivo suma 1d4 a un ability check (Concentración).</td>
- <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance (+1d4)')">🎲 1d4</button></td>
- </tr>
- <tr>
  <td><span class="tag">1st</span></td>
- <td><strong>Burning Hands</strong></td>
- <td>1 Acc / Cono 15ft</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-burning-hands">DEX Save DC 14 (espacio Clérigo/WIS) o <strong>DC 13</strong> (racial gratis 1/LR, Reach to the Blaze/CON); 3d6 daño de fuego.</td>
- <td>
- <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Burning Hands (Clérigo, DC14)'); gastarSlot(1)">🔥 3d6 Fire (DC14)</button>
- <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Burning Hands (Racial, DC13)')">🔥 3d6 Fire (DC13)</button>
- <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
- <select id="upcast-nivel-burning-hands" style="font-size:0.75rem;padding:2px 4px;background:#0f0f12;color:#fff;border:1px solid var(--border-color);border-radius:4px;"></select>
- <button class="btn-roll" onclick="tirarHechizoUpcast('burning-hands')">🎲 Tirar a nivel (Clérigo)</button>
- </div>
+ <td><strong>Alarm (Oath)</strong></td>
+ <td>1 min (Ritual) / 30 ft</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-alarm-oath">
+ <span class="spell-meta">Abjuración | Duración: 8 horas | V, S, M</span>
+ <p class="spell-desc">Estableces una protección mágica en una zona de hasta 20 ft de radio. Si una criatura Pequeña o más grande entra sin tu permiso, recibes una alerta mental (si estás a 1 milla) o suena una campana audible a 60 ft.</p>
  </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Alarm (Oath)')">✅ Usar</button></td>
  </tr>
  <tr>
  <td><span class="tag">1st</span></td>
- <td><strong>Guiding Bolt</strong></td>
- <td>1 Acc / 120 ft</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-guiding-bolt">Spell Atk +6; 4d6 daño radiante y otorga ventaja al siguiente ataque contra el objetivo.</td>
- <td>
- <button class="btn-roll" onclick="rollAttack(6, 'Guiding Bolt Atk')">🎯 Atk</button>
- <button class="btn-roll" onclick="rollGenericDamage(4, 6, 0, 'Guiding Bolt Damage'); gastarSlot(1)">☀️ 4d6 Rad</button>
- <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
- <select id="upcast-nivel-guiding-bolt" style="font-size:0.75rem;padding:2px 4px;background:#0f0f12;color:#fff;border:1px solid var(--border-color);border-radius:4px;"></select>
- <button class="btn-roll" onclick="tirarHechizoUpcast('guiding-bolt')">🎲 Tirar a nivel</button>
- </div>
+ <td><strong>Detect Magic (Oath)</strong></td>
+ <td>1 Acc (Ritual) / Personal</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-detect-magic-oath">
+ <span class="spell-meta">Adivinación | Duración: Conc. 10 min | V, S</span>
+ <p class="spell-desc">Sientes la presencia de magia a 30 pies. Puedes usar tu acción para ver una aura tenue alrededor de criaturas u objetos mágicos e identificar su escuela de magia.</p>
  </td>
- </tr>
- <tr>
- <td><span class="tag">1st</span></td>
- <td><strong>Cure Wounds</strong></td>
- <td>1 Acc / Touch</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-cure-wounds">Cura 1d8 + 3 (WIS).</td>
- <td>
- <button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Cure Wounds'); gastarSlot(1)">💚 1d8+3 HP</button>
- <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
- <select id="upcast-nivel-cure-wounds" style="font-size:0.75rem;padding:2px 4px;background:#0f0f12;color:#fff;border:1px solid var(--border-color);border-radius:4px;"></select>
- <button class="btn-roll" onclick="tirarHechizoUpcast('cure-wounds')">🎲 Tirar a nivel</button>
- </div>
- </td>
- </tr>
- <tr>
- <td><span class="tag">1st</span></td>
- <td><strong>Faerie Fire</strong></td>
- <td>1 Acc / 60 ft</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-faerie-fire">DEX Save DC 14; Ventaja en ataques contra afectados en cubo de 20ft (Concentración).</td>
- <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Faerie Fire')">✅ Usar</button></td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Detect Magic (Oath)')">✅ Usar</button></td>
  </tr>
  <tr>
  <td><span class="tag">1st</span></td>
  <td><strong>Bless</strong></td>
- <td>1 Acc / 30 ft</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-bless">Hasta 3 objetivos suman +1d4 a tiradas de ataque y salvaciones (Concentración).</td>
- <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Bless Bonus')">🎲 1d4</button></td>
+ <td>1 Acción / 60 ft</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-bless">
+ <span class="spell-meta">Encantamiento | Duración: Conc. 1 min | V, S, M</span>
+ <p class="spell-desc">Bendices a hasta 3 criaturas a tu elección. Cada vez que realicen una tirada de ataque o de salvación, tiran <strong>1d4 adicional</strong> y lo suman al resultado.</p>
+ </td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Bless Bonus (+1d4)')">🎲 +1d4</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Cure Wounds</strong></td>
+ <td>1 Acción / Toque</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-cure-wounds">
+ <span class="spell-meta">Evocación | Duración: Instantáneo | V, S</span>
+ <p class="spell-desc">Tocas a una criatura para restaurar un número de Puntos de Golpe igual a <strong>1d8 + 2</strong> (Mod. Carisma). Escalado: +1d8 extra por cada nivel de ranura superior al 1º.</p>
+ </td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(1, 8, 2, 'Cure Wounds Nivel 1'); gastarSlot(1)">💚 1d8+2</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Heroism</strong></td>
+ <td>1 Acción / Toque</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-heroism">
+ <span class="spell-meta">Encantamiento | Duración: Conc. 1 min | V, S</span>
+ <p class="spell-desc">Infundes valor en un aliado voluntario. Es inmune a estar Asustado (Frightened) y gana <strong>2 HP Temporales</strong> (igual a tu Mod. Carisma) al comienzo de cada uno de sus turnos mientras dure el conjuro.</p>
+ </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Heroism')">✅ Usar</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">1st</span></td>
+ <td><strong>Compelled Duel</strong></td>
+ <td>1 Acción Bonus / 30 ft</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-compelled-duel">
+ <span class="spell-meta">Encantamiento | Duración: Conc. 1 min | V</span>
+ <p class="spell-desc">Desafías a una criatura. Debe realizar una salvación de Sabiduría (CD 13); si falla, tiene <strong>desventaja en ataques contra cualquiera que no seas tú</strong> y debe hacer una salvación de Sabiduría para intentar moverse a más de 30 ft de ti.</p>
+ </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Compelled Duel')">✅ Usar</button></td>
  </tr>
  <tr>
  <td><span class="tag">2nd</span></td>
- <td><strong>Flame Blade</strong></td>
- <td>1 B.Acc / Self</td>
- <td class="editable-text" contenteditable="true" id="txt-spell-flame-blade">Crea espada de fuego (Concentración); Spell Atk +6 Melee (espacio Clérigo/WIS) o <strong>+5</strong> (racial gratis 1/LR, Reach to the Blaze/CON) inflige 3d6 fuego.</td>
- <td>
- <button class="btn-roll" onclick="rollAttack(6, 'Flame Blade Atk (Clérigo)')">🎯 Atk +6 (Clérigo)</button>
- <button class="btn-roll" onclick="rollAttack(5, 'Flame Blade Atk (Racial)')">🎯 Atk +5 (Racial)</button>
- <button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Flame Blade Damage')">🔥 3d6 Fire</button>
+ <td><strong>Moonbeam (Oath)</strong></td>
+ <td>1 Acción / 120 ft</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-moonbeam-oath">
+ <span class="spell-meta">Evocación | Duración: Conc. 1 min | V, S, M</span>
+ <p class="spell-desc">Un haz plateado de 5 ft de radio y 40 ft de alto hace <strong>2d10 daño radiante</strong> a cualquier criatura que entre o empiece su turno ahí (Salvación CON CD 13 reduce a la mitad). Los cambiaformas tiran con desventaja y revelan su forma real si fallan.</p>
  </td>
+ <td><button class="btn-roll" onclick="rollGenericDamage(2, 10, 0, 'Moonbeam (2d10)')">🌕 2d10 Radiante</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>See Invisibility (Oath)</strong></td>
+ <td>1 Acción / Personal</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-see-invisibility-oath">
+ <span class="spell-meta">Adivinación | Duración: 1 hora | V, S, M</span>
+ <p class="spell-desc">Ves claramente a todas las criaturas y objetos invisibles como si fueran visibles, así como la proyección en el Plano Etéreo dentro de tu línea de visión.</p>
+ </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('See Invisibility (Oath)')">✅ Usar</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Aid</strong></td>
+ <td>1 Acción / 30 ft</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-aid">
+ <span class="spell-meta">Abjuración | Duración: 8 horas | V, S, M</span>
+ <p class="spell-desc">Fortaleces la resolución de hasta 3 aliados dentro del alcance. Su vida máxima y sus Puntos de Golpe actuales <strong>aumentan en +5 HP</strong> durante toda la duración.</p>
+ </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Aid')">✅ Usar</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Magic Weapon</strong></td>
+ <td>1 Acción Bonus / Toque</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-magic-weapon">
+ <span class="spell-meta">Transmutación | Duración: Conc. 1 hora | V, S</span>
+ <p class="spell-desc">Tocas un arma no mágica. Mientras el conjuro esté activo, el arma se vuelve mágica y otorga un <strong>bono de +1 a las tiradas de ataque y daño</strong>.</p>
+ </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Magic Weapon')">✅ Usar</button></td>
+ </tr>
+ <tr>
+ <td><span class="tag">2nd</span></td>
+ <td><strong>Zone of Truth</strong></td>
+ <td>1 Acción / 60 ft</td>
+ <td class="editable-text" contenteditable="true" id="txt-spell-zone-of-truth">
+ <span class="spell-meta">Encantamiento | Duración: 10 min | V, S</span>
+ <p class="spell-desc">Creas un área mágica de 15 ft de radio. Las criaturas en la zona deben superar una salvación de Carisma (CD 13) o quedan <strong>imposibilitadas de decir mentiras deliberadas</strong> mientras permanence en ella.</p>
+ </td>
+ <td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Zone of Truth')">✅ Usar</button></td>
  </tr>
  </tbody>
  </table></div>
@@ -886,143 +1566,114 @@
 
  <!-- SECCIÓN 4: RASGOS Y HABILIDADES DE CLASE -->
  <details class="v2-section" id="section-features">
- <summary>🔥 4. Rasgos de Monje, Clérigo y Genasi de Fuego</summary>
+ <summary>🛡️ 4. Rasgos de Paladín y Juramento (Oath of Watchers)</summary>
  <div class="section-content">
- <div class="feature-grid" id="rasgos-clase-grid">
- <div class="feature-card"><h4><span class="tag">Monje</span> Unarmored Defense & Movement</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-unarmored-defense-movement">
- <p>• <strong>AC 17:</strong> 10 + DEX (+4) + WIS (+3) mientras no lleves armadura ni escudo.</p>
- <p>• <strong>Speed +10ft:</strong> Movimiento base total incrementado a 40 ft.</p>
+ <div class="feature-grid">
+ <div class="feature-card"><h4><span class="tag">Aura</span> Aura of Protection (10 ft)</h4><div class="editable-text" contenteditable="true" id="txt-feat-aura-aura-of-protection-10-ft">
+ <p>Mientras estés consciente, tú y todos los aliados a 10 pies o menos reciben un bono de <strong>+2 (tu modificador de Carisma)</strong> a todas las tiradas de salvación.</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Unarmored Defense & Movement')" style="margin-top:6px;">✅ Usar</button></div></div>
- <div class="feature-card"><h4><span class="tag">Monje</span> Martial Arts & Ki (5 Pts)</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-martial-arts-ki-5-pts">
- <p>• Usa DEX para Unarmed Strikes (1d6) y realiza un Unarmed Strike como Bonus Action tras atacar.</p>
- <p>• <strong>Flurry of Blows:</strong> 1 Ki para 2 Unarmed Strikes como Bonus Action.</p>
- <p>• <strong>Patient Defense:</strong> 1 Ki para Dodge como Bonus Action.</p>
- <p>• <strong>Step of the Wind:</strong> 1 Ki para Disengage o Dash como Bonus Action, dobla distancia de salto.</p>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Aura of Protection (10 ft)')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Aura</span> Aura of the Sentinel (10 ft)</h4><div class="editable-text" contenteditable="true" id="txt-feat-aura-aura-of-the-sentinel-10-ft">
+ <p>Emites una presencia alerta. Tú y tus aliados a 10 pies o menos obtienen un bono de <strong>+3 (tu bono de competencia)</strong> a sus tiradas de iniciativa.</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Martial Arts & Ki (5 Pts)')" style="margin-top:6px;">✅ Usar</button></div></div>
- <div class="feature-card"><h4><span class="tag">Monje</span> Extra Attack & Deflect Missiles</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-extra-attack-deflect-missiles">
- <p>• Ataca dos veces al tomar la acción de Atacar.</p>
- <p>• Reduce daño de ataques de proyectil a distancia por 1d10 + DEX (+4) + Monk Lvl (5). Si el daño se reduce a 0, podés <strong>atrapar el proyectil</strong> (si entra en una mano libre) y gastar <strong>1 Ki</strong> para hacer un ataque a distancia con él como parte de la misma reacción (competencia automática, alcance 20/60 ft).</p>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Aura of the Sentinel (10 ft)')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Watchers</span> Watcher's Will (Channel Divinity)</h4><div class="editable-text" contenteditable="true" id="txt-feat-watchers-watcher-s-will-channel-divinity">
+ <p>Como acción, manifiestas la vigilancia del juramento. Otorga a ti y a hasta 2 aliados (tu Mod. Carisma) a 30 pies <strong>Ventaja en todas las salvaciones de Inteligencia, Sabiduría y Carisma</strong> durante 1 minuto.</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Extra Attack & Deflect Missiles')" style="margin-top:6px;">✅ Usar</button></div></div>
- <div class="feature-card"><h4><span class="tag">Monje</span> Stunning Strike (Nivel 5)</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-stunning-strike-nivel-5">
- <p>Al golpear con un ataque de arma cuerpo a cuerpo, podés gastar <strong>1 Ki</strong> para forzar una salvación de Constitución (<strong>DC 14</strong>). Si falla, el objetivo queda <strong>aturdido (stunned)</strong> hasta el final de tu próximo turno.</p>
- <button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Stunning Strike DC14 CON (objetivo)', 'save')" style="margin-top:6px;">🎲 Recordatorio DC14 CON</button>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Watcher\'s Will (Channel Divinity)')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Watchers</span> Abjure the Extraplanar (Channel Divinity)</h4><div class="editable-text" contenteditable="true" id="txt-feat-watchers-abjure-the-extraplanar-channel-divinity">
+ <p>Como acción, presentas tu símbolo sagrado. Cada aberración, elemental, fey, fiend (infernal) o celestial a 30 pies que pueda oírte debe superar una salvación de Sabiduría (CD 13) o ser <strong>expulsado/ahuyentado durante 1 minuto</strong> o hasta recibir daño.</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Stunning Strike (Nivel 5)')" style="margin-top:6px;">✅ Usar</button></div></div>
- <div class="feature-card"><h4><span class="tag">Monje</span> Slow Fall (Nivel 4)</h4><div class="editable-text" contenteditable="true" id="txt-feat-monje-slow-fall-nivel-4">
- <p>Reacción al caer: reducís el daño de caída en una cantidad igual a 5 × nivel de monje = <strong>25 puntos</strong>.</p>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Abjure the Extraplanar (Channel Divinity)')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Paladín</span> Divine Sense (3/día)</h4><div class="editable-text" contenteditable="true" id="txt-feat-paladin-divine-sense-3-dia">
+ <p>Como acción, enfocas tu percepción divina. Hasta el final de tu siguiente turno, conoces la ubicación exacta de cualquier celestial, fiend o muerto viviente a 60 pies que no esté tras cobertura total, así como terrenos u objetos consagrados/desecrados.</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Slow Fall (Nivel 4)')" style="margin-top:6px;">✅ Usar</button></div></div>
- <div class="feature-card"><h4><span class="tag">Clérigo</span> Light Domain & Warding Flare</h4><div class="editable-text" contenteditable="true" id="txt-feat-clerigo-light-domain-warding-flare">
- <p>• <strong>Warding Flare (3/LR):</strong> Reacción cuando una criatura visible te ataca a <strong>30 ft o menos</strong>, para imponer desventaja en la tirada mediante un destello de luz divina. Un atacante que no pueda ser cegado es inmune a este rasgo.</p>
- <p>• <strong>Channel Divinity (1/Rest, elegí una):</strong></p>
- <p style="margin-left:10px;">— <strong>Radiance of the Dawn:</strong> dispersa oscuridad mágica y hace 2d10+2 radiant a enemigos a 30ft (CON Save DC 14 mitad).</p>
- <p style="margin-left:10px;">— <strong>Turn Undead:</strong> Acción: presentás tu símbolo sagrado; cada no-muerto a 30 ft que te pueda ver/oír hace salvación de Sabiduría (DC 14) o queda espantado (turned) por 1 minuto o hasta recibir daño.</p>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Divine Sense (3/día)')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Paladín</span> Lay on Hands</h4><div class="editable-text" contenteditable="true" id="txt-feat-paladin-lay-on-hands">
+ <p>Tienes una reserva curativa de <strong>35 Puntos de Golpe</strong> (5 x nivel). Como acción al tocar a una criatura, puedes restaurar HP de la reserva o gastar 5 HP para purificar y curar una enfermedad o veneno que la afecte.</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Light Domain & Warding Flare')" style="margin-top:6px;">✅ Usar</button></div></div>
- <div class="feature-card"><h4><span class="tag">Raza</span> Fire Genasi Traits</h4><div class="editable-text" contenteditable="true" id="txt-feat-raza-fire-genasi-traits">
- <p>• <strong>Darkvision:</strong> 60 ft.</p>
- <p>• <strong>Fire Resistance:</strong> Resistencia natural al daño de fuego.</p>
- <p>• <strong>Reach to the Blaze:</strong> Produce Flame a voluntad (usando Constitución). Burning Hands y Flame Blade gratis 1/LR — <strong>Constitución</strong> es la característica de estos usos raciales: <strong>DC 13 / Spell Atk +5</strong> (distinto del DC14/+6 de Cure Wounds/Guiding Bolt/Burning Hands/Flame Blade cuando se lanzan con espacio de Clérigo, que usan Sabiduría).</p>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Lay on Hands')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Paladín</span> Fighting Style: Defense</h4><div class="editable-text" contenteditable="true" id="txt-feat-paladin-fighting-style-defense">
+ <p>Adquieres un entrenamiento defensivo riguroso. Ganas un bono permanente de <strong>+1 a tu Clase de Armadura (AC)</strong> mientras lleves puesta cualquier armadura (ya sumado en tu AC 21).</p>
  
-<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Fire Genasi Traits')" style="margin-top:6px;">✅ Usar</button></div></div>
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Fighting Style: Defense')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Paladín</span> Divine Health & Extra Attack</h4><div class="editable-text" contenteditable="true" id="txt-feat-paladin-divine-health-extra-attack">
+ <p>• <strong>Divine Health:</strong> La magia divina en tus venas te hace totalmente inmune a las enfermedades.<br>• <strong>Extra Attack:</strong> Puedes realizar dos ataques en lugar de uno al tomar la acción de Atacar en tu turno.</p>
+ 
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Divine Health & Extra Attack')" style="margin-top:6px;">✅ Usar</button></div></div>
+
+ <div class="feature-card"><h4><span class="tag">Raza</span> Draconic Ancestry (Dragonborn Fuego)</h4><div class="editable-text" contenteditable="true" id="txt-feat-raza-draconic-ancestry-dragonborn-fuego">
+ <p>• <strong>Resistencia Dracónica:</strong> Posees resistencia natural contra el daño de Fuego (recibes la mitad de daño).<br>• <strong>Breath Weapon:</strong> Exhalas fuego en un cono de 15 ft (CD 14 DEX, 3d6 daño — escala a 4d6 en nivel 11 y 5d6 en nivel 16).</p>
+ 
+<button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('Draconic Ancestry (Dragonborn Fuego)')" style="margin-top:6px;">✅ Usar</button></div></div>
  </div>
  </div>
  </details>
 
- <!-- SECCIÓN 5: INVENTARIO Y OBJETOS MÁGICOS -->
+ <!-- SECCIÓN 5: INVENTARIO Y EQUIPO -->
  <details class="v2-section" id="section-inventory" open>
- <summary>🎒 5. Objetos Mágicos, Inventario y Riqueza</summary>
+ <summary>🎒 5. Equipo, Inventario y Riqueza</summary>
  <div class="section-content">
+ <h3>💰 Monedas y Riqueza</h3>
+ <div class="currency-grid">
+ <div class="currency-box"><label>CP</label><input type="number" id="cp-val" value="0"></div>
+ <div class="currency-box"><label>SP</label><input type="number" id="sp-val" value="0"></div>
+ <div class="currency-box"><label>EP</label><input type="number" id="ep-val" value="0"></div>
+ <div class="currency-box"><label>GP</label><input type="number" id="gp-val" value="100"></div>
+ <div class="currency-box"><label>PP</label><input type="number" id="pp-val" value="0"></div>
+ </div>
+
  <div class="inventory-total" id="inventario-total"></div>
 <button type="button" class="inventory-add-btn" onclick="mostrarFormularioInventario()">➕ Agregar Ítem</button>
 <div id="inventario-form-container"></div>
 <div class="inventory-list" id="inventario-lista"></div>
 <input type="hidden" id="inventario-json" value="">
-
- <h3>💰 Riqueza y Monedas</h3>
- <div class="currency-grid">
- <div class="currency-box"><label>CP</label><input type="number" id="cp-val" value="0"></div>
- <div class="currency-box"><label>SP</label><input type="number" id="sp-val" value="0"></div>
- <div class="currency-box"><label>EP</label><input type="number" id="ep-val" value="0"></div>
- <div class="currency-box"><label>GP</label><input type="number" id="gp-val" value="150"></div>
- <div class="currency-box"><label>PP</label><input type="number" id="pp-val" value="0"></div>
- </div>
-
- <h3>🏅 Honor y Reputación</h3>
- <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
- <div class="tracker-card">
- <div class="tracker-header">
- <h3>🎖️ Honor</h3>
- <div class="counter-controls">
- <button class="btn-cnt" onclick="changeVal('honor-cur', -1)">-</button>
- <span id="honor-cur" class="cnt-val">0</span>
- <button class="btn-cnt" onclick="changeVal('honor-cur', 1)">+</button>
- </div>
- </div>
- </div>
- <div class="tracker-card">
- <div class="tracker-header">
- <h3>🌟 Reputación</h3>
- <div class="counter-controls">
- <button class="btn-cnt" onclick="changeVal('rep-cur', -1)">-</button>
- <span id="rep-cur" class="cnt-val">0</span>
- <button class="btn-cnt" onclick="changeVal('rep-cur', 1)">+</button>
- </div>
- </div>
- </div>
- </div>
  </div>
  </details>
 
- <!-- SECCIÓN 6: TRASFONDO Y CARACTERÍSTICAS DEL PERSONAJE -->
- <details class="v2-section" id="section-background" open>
- <summary>📖 6. Trasfondo y Características del Personaje (Firelord Redmane)</summary>
+ <!-- 📖 SECCIÓN: TRASFONDO Y CARACTERÍSTICAS DEL PERSONAJE (vacía — a completar por el jugador) -->
+ <details class="v2-section" id="section-background">
+ <summary>📖 6. Trasfondo y Características del Personaje</summary>
  <div class="section-content">
- <div class="highlight-box" style="margin-bottom: 15px;">
- <strong>Historia:</strong> Antes de llegar a Etreum, Eldur existía en el corazón del Plano del Fuego como el antorcha más ardiente de Lady Flame. Descendió envuelto en un cometa sagrado para purgar a los seguidores del Dios de la Muerte y honrar a Lady Flame venerando a toda mujer pelirroja por llevar la bendición de la diosa.
- </div>
- <div class="feature-grid">
- <div class="feature-card"><h4><span class="tag">Personalidad</span> Protagonista Absoluto</h4><div class="editable-text" contenteditable="true" id="txt-feat-personalidad-protagonista-absoluto">
- <p>Ha decidido completamente que es el personaje principal. Nombra sus ataques en voz alta (<em>"SOLAR FIST OF THE UNDYING DAWN!"</em>) y se detiene a mitad del combate para dejar que los villanos terminen su monólogo.</p>
- </div></div>
- <div class="feature-card"><h4><span class="tag">Personalidad</span> Presentación Solemne</h4><div class="editable-text" contenteditable="true" id="txt-feat-personalidad-presentacion-solemne">
- <p>Se presenta con su título completo cada vez, a todos, incluidos enemigos a mitad de combate: <em>"Soy Eldur Redmane - FIRELORD, campeón de Lady Flame, heraldo del nuevo amanecer"</em>. Lo considera cortesía básica.</p>
- </div></div>
- <div class="feature-card"><h4><span class="tag">Ideal</span> Purificación por Fuego</h4><div class="editable-text" contenteditable="true" id="txt-feat-ideal-purificacion-por-fuego">
- <p>El fuego es la forma en que el universo dice 'inténtalo de nuevo, pero mejor'. El Dios de la Muerte evita que las cosas tengan su segunda oportunidad. Imperdonable.</p>
- </div></div>
- <div class="feature-card"><h4><span class="tag">Defecto 1</span> Odio Ciego a la Muerte</h4><div class="editable-text" contenteditable="true" id="txt-feat-defecto-1-odio-ciego-a-la-muerte">
- <p>Ver a un seguidor del Dios de la Muerte anula todo razonamiento superior. Los planes, el sigilo y la diplomacia quedan invalidados. El grupo ha aprendido a sujetarlo físicamente.</p>
- </div></div>
- <div class="feature-card"><h4><span class="tag">Defecto 2</span> Debilidad por Pelirrojas</h4><div class="editable-text" contenteditable="true" id="txt-feat-defecto-2-debilidad-por-pelirrojas">
- <p>Las mujeres de cabello rojo lo reducen a un estado no funcional. Una vez dejó escapar a un villano porque pasó una camarera pelirroja y consideró la interacción un éxito.</p>
- </div></div>
- <div class="feature-card"><h4><span class="tag">Defecto 3</span> BARDOS Y CANCIONES</h4><div class="editable-text" contenteditable="true" id="txt-feat-defecto-3-bardos-y-canciones">
- <p>Cree genuinamente que los bardos ya están escribiendo canciones sobre él. Cuando conoce a uno que no ha oído hablar de él, asume que aún no les ha llegado la noticia y se ofrece a resumir su propia épica con efectos de sonido.</p>
- </div></div>
- </div>
+ <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Esta sección estaba vacía en la ficha original — completala a mano cuando quieras, se guarda automáticamente.</p>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold); display:block; margin-top:10px;">Historia / Trasfondo</label>
+ <textarea id="trasfondo-historia" style="width: 100%; height: 90px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 10px; font-size: 0.9rem; outline: none; resize: vertical; margin-top: 4px;" placeholder="De dónde viene, qué lo trajo a la aventura..."></textarea>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold); display:block; margin-top:10px;">Personalidad</label>
+ <textarea id="trasfondo-personalidad" style="width: 100%; height: 70px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 10px; font-size: 0.9rem; outline: none; resize: vertical; margin-top: 4px;" placeholder="Rasgos de personalidad..."></textarea>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold); display:block; margin-top:10px;">Ideales</label>
+ <textarea id="trasfondo-ideales" style="width: 100%; height: 60px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 10px; font-size: 0.9rem; outline: none; resize: vertical; margin-top: 4px;" placeholder="Qué lo motiva..."></textarea>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold); display:block; margin-top:10px;">Vínculos</label>
+ <textarea id="trasfondo-vinculos" style="width: 100%; height: 60px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 10px; font-size: 0.9rem; outline: none; resize: vertical; margin-top: 4px;" placeholder="Personas, lugares u objetos importantes..."></textarea>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold); display:block; margin-top:10px;">Defectos</label>
+ <textarea id="trasfondo-defectos" style="width: 100%; height: 60px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 10px; font-size: 0.9rem; outline: none; resize: vertical; margin-top: 4px;" placeholder="Debilidades o vicios..."></textarea>
  </div>
  </details>
 
- <!-- NOTAS DE AVENTURA -->
+ <!-- 📝 SECCIÓN: NOTAS DE AVENTURA -->
  <details class="v2-section" id="section-notes" open>
- <summary>📝 Notas de Aventura y Campaña</summary>
+ <summary>📝 Notas de Aventura y Campaña (Nube)</summary>
  <div class="section-content">
- <p style="font-size: 0.9rem; color: var(--text-muted);">Escribe tus notas de sesión. Se sincronizarán automáticamente con Firebase Realtime Database:</p>
- <textarea id="notas-personaje" style="width: 100%; height: 160px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 12px; font-size: 0.95rem; outline: none; resize: vertical; margin-top: 10px;" placeholder="Escribe tus hazañas épicas aquí..."></textarea>
+ <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">
+ Estas notas se sincronizan automáticamente en tiempo real utilizando <strong>Firebase Realtime Database</strong>:
+ </p>
+ <textarea id="notas-personaje" style="width: 100%; height: 160px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); padding: 12px; font-size: 0.95rem; outline: none; resize: vertical; margin-top: 10px;" placeholder="Escribe tus notas de sesión..."></textarea>
  </div>
  </details>
 </div>
 
-<!-- PANEL FLOTANTE DE DADOS -->
+<!-- LANZADOR DE DADOS FLOTANTE -->
 <div class="dice-roller-panel">
  <div class="dice-container">
  <div>
  <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-gold); font-size:0.9rem; margin-bottom:4px;">
- 🎲 LANZADOR DE DADOS DE FIRELORD
+ 🎲 LANZADOR DE DADOS DE HANNOGHAR
  </div>
  <div class="dice-btns">
  <button class="btn-dice" onclick="rollPanelDice(4, 'd4')">d4</button>
@@ -1033,52 +1684,53 @@
  <button class="btn-dice" onclick="rollPanelDice(20, 'd20')">d20</button>
  <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
  <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">×</label>
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
+ <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">×</span>
  <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:32px;">
  </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Modificador aplicado a la próxima tirada">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">±</label>
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Modificador aplicado a la próxima tirada">
+ <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">±</span>
  <input type="number" id="dice-mod" class="dice-mod-input" value="0" style="width:32px;">
  </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;">
- <label style="font-size:0.8rem; color:var(--text-muted);" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">🎯</label>
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;">
+ <span style="font-size:0.75rem; color:var(--text-muted);" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">🎯</span>
  <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;">
  <option value="normal">Normal</option>
  <option value="advantage">🟢 Ventaja</option>
  <option value="disadvantage">🔴 Desventaja</option>
  </select>
  </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados descartar de la tirada (0 = ninguno) y si se descartan los peores o los mejores. Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">−</label>
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Cuántos dados descartar de la tirada (0 = ninguno) y si se descartan los peores o los mejores. Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
+ <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">−</span>
+ <div style="display:flex; gap:2px;">
  <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:28px;">
- <button type="button" id="dice-drop-mode" value="low" class="btn-dice" style="padding:6px 8px; font-size:0.85rem;" onclick="toggleDropMode()">▼</button>
+ <button type="button" id="dice-drop-mode" value="low" class="btn-dice" style="padding:6px 6px; font-size:0.8rem;" onclick="toggleDropMode()">▼</button>
  </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Dado custom: caras del dado">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">d</label>
+ </div>
+ <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Dado custom: caras del dado">
+ <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">d</span>
+ <div style="display:flex; gap:2px;">
  <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:38px;">
  <button class="btn-dice" onclick="rollCustomDice()" title="Tirar el dado custom">🎲</button>
  </div>
  </div>
  </div>
+ </div>
 
  <div class="dice-result-box">
- <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
- <div class="dice-result-val" id="dice-total">0</div>
- <div class="dice-result-details" id="dice-details">Esperando tirada...</div>
+ <div class="dice-result-val" id="dice-result-val">0</div>
+ <div class="dice-result-details" id="dice-result-details">Haz clic en un dado o ataque</div>
  <div class="dice-history" id="dice-history"></div>
  </div>
  </div>
 </div>
 
-<!-- Compendio compartido de hechizos (búsqueda/picker de "Hechizos Adicionales") -->
+<!-- FIREBASE SDKs (Compat v9) -->
 <script src="spells_data.js"></script>
 
-<!-- Firebase SDKs (Compat v9) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
 
 <script>
   // ==========================================
@@ -1098,18 +1750,16 @@
   const db = firebase.database();
   const urlParams = new URLSearchParams(window.location.search);
   const codigoCampana = urlParams.get('campana');
-  const PERSONAJE_ID = "eldur";
-  const NOMBRE_PERSONAJE_FICHA = "Eldur Redmane";
+  const PERSONAJE_ID = "hannoghar";
+  const NOMBRE_PERSONAJE_FICHA = "Hannoghar";
   const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
-  const HP_MAX_ELDUR = 52; // HP base a nivel actual (Monk 5/Cleric 2); el botón "Subir de Nivel" suma un bonus aparte, ver hpMaxActual()
+  const HP_MAX_HANNOGHAR = 66; // HP base a nivel actual (Paladin 7); el botón "Subir de Nivel" suma un bonus aparte, ver hpMaxActual()
   let charRef = null;
   let bitacoraCampanaListener = null;
 
-  // Hacer que el botón "Volver" recuerde tu campaña activa al regresar
   const btnVolver = document.querySelector('a[href="index.html"]');
   if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
 
-  // Aplica o quita el modo de solo lectura sobre toda la ficha
   let modoLectura = false; // Guardia en cliente (defensa en profundidad, además de las reglas de Firebase)
   let ownerReparado = false; // Evita repetir el auto-reclamo de owner en cada snapshot
 
@@ -1125,7 +1775,6 @@
     });
   }
 
-  // Escuchamos el estado de autenticación antes de conectar a la base de datos
   function bloquearPorSistemaIncorrecto(sistemaCampana) {
     document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
       <div style="font-size:3rem;">⚠️</div>
@@ -1137,7 +1786,7 @@
 
   firebase.auth().onAuthStateChanged(async (user) => {
     if (user) {
-      console.log("Sesión activa detectada en la ficha de Eldur:", user.uid);
+      console.log("Sesión activa detectada en la ficha de Hannoghar:", user.uid);
 
       if (codigoCampana) {
         const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
@@ -1164,7 +1813,6 @@
         if (bitacoraWrap) bitacoraWrap.style.display = 'none';
       }
 
-      // Averiguamos si somos el GM de la campaña (el GM siempre puede editar)
       const gmRefPromise = codigoCampana
         ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
         : Promise.resolve(true);
@@ -1187,7 +1835,7 @@
 
           // Sincroniza el HP máximo real (base hardcodeada + bonus por subidas de nivel) a Firebase,
           // para que la pantalla del GM en index.html muestre el valor correcto en vez de un default.
-          const hpMaxReal = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_ELDUR;
+          const hpMaxReal = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_HANNOGHAR;
           if ((esMio || soyElGM) && p.datos?.['hp-max'] !== hpMaxReal) {
             charRef.child('datos/hp-max').set(hpMaxReal);
           }
@@ -1206,7 +1854,7 @@
         });
       });
     } else {
-      console.warn("No hay una sesión activa. Redirigiendo al menú...");
+      console.warn("Ficha sin sesión activa. Redirigiendo...");
       window.location.href = "index.html";
     }
   });
@@ -1244,6 +1892,7 @@
     charRef.child('datos').on('value', (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
+
       Object.keys(data).forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -1252,21 +1901,10 @@
           } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
             if (el.innerText !== String(data[id]) && document.activeElement !== el) {
               el.innerText = data[id];
-              if (id === 'hp-cur') updateHPDisplay();
             }
-          } else {
-            if (el.value !== String(data[id]) && document.activeElement !== el) {
-              el.value = data[id];
-              if (id === 'hp-cur') updateHPDisplay();
-              // El inventario se guarda como un único blob JSON (no campo por campo como el resto de
-              // la ficha) — si no se re-sincroniza acá, una pestaña vieja abierta (o dos dispositivos)
-              // puede pisar con datos viejos un ítem agregado/editado en otro lado. Se salta mientras
-              // el formulario de agregar/editar está abierto para no perder una edición en curso.
-              if (id === 'inventario-json' && typeof restaurarInventarioDesdeDatos === 'function') {
-                const formAbierto = (document.getElementById('inventario-form-container')?.innerHTML || '').trim().length > 0;
-                if (!formAbierto) restaurarInventarioDesdeDatos(data[id]);
-              }
-            }
+          } else if (document.activeElement !== el && el.value !== String(data[id])) {
+            el.value = data[id];
+            if (id === 'hp-cur') updateHPDisplay();
           }
         }
       });
@@ -1283,12 +1921,12 @@
   function getDropCount() { return Math.max(0, parseInt(document.getElementById('dice-drop-count')?.value) || 0); }
   function getDropMode() { return document.getElementById('dice-drop-mode')?.value || 'low'; }
   function toggleDropMode() {
-    const btn = document.getElementById('dice-drop-mode');
-    if (!btn) return;
-    const nuevo = btn.value === 'low' ? 'high' : 'low';
-    btn.value = nuevo;
-    btn.textContent = nuevo === 'low' ? '▼' : '▲';
-    btn.title = nuevo === 'low' ? 'Descartando los PEORES — click para cambiar a mejores' : 'Descartando los MEJORES — click para cambiar a peores';
+      const btn = document.getElementById('dice-drop-mode');
+      if (!btn) return;
+      const nuevo = btn.value === 'low' ? 'high' : 'low';
+      btn.value = nuevo;
+      btn.textContent = nuevo === 'low' ? '▼' : '▲';
+      btn.title = nuevo === 'low' ? 'Descartando los PEORES — click para cambiar a mejores' : 'Descartando los MEJORES — click para cambiar a peores';
   }
 
   // === TIRADA DEL PANEL FLOTANTE (Cantidad + Mod + Quitar N peores/mejores) ===
@@ -1418,42 +2056,21 @@
     {nivel:17, xp:256500}, {nivel:18, xp:289500}, {nivel:19, xp:324500}, {nivel:20, xp:361500}
   ];
 
-  // Rasgos restantes de Monk (nivel de clase Monk 6-20) y Cleric/Light Domain (nivel de clase Cleric 3-20).
-  // Personaje multiclase: "nivel" es SIEMPRE el nivel dentro de esa clase específica, no el nivel total.
+  // Rasgos de Paladin (núcleo) y Oath of the Watchers, niveles 8 a 20.
+  // Base: PHB 2014 + Xanathar's Guide to Everything (Oath of the Watchers), con
+  // ajustes conocidos de PHB 2024 donde aplica. Los puntos con "⚠️" al final de
+  // la descripción no están confirmados al detalle exacto contra el texto 2024.
   const PROXIMAS_HABILIDADES = [
-    {nivel: 6, clase: "Monk", nombre: "Ki-Empowered Strikes (Empowered Strikes en PHB2024)", descripcion: "Tus golpes desarmados y armas de monje cuentan como mágicos a efectos de superar la resistencia e inmunidad a daño no mágico."},
-    {nivel: 7, clase: "Monk", nombre: "Evasion", descripcion: "Cuando debas hacer una salvación de DES para reducir daño a la mitad: si tenés éxito no recibís nada de daño, y si fallás recibís solo la mitad."},
-    {nivel: 7, clase: "Monk", nombre: "Stillness of Mind", descripcion: "Como acción, terminás un efecto sobre vos mismo que te esté causando la condición Encantado o Asustado."},
-    {nivel: 8, clase: "Monk", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos puntuaciones en +1 cada una (o tomás un Talento, según reglas de PHB2024), sin exceder 20."},
-    {nivel: 9, clase: "Monk", nombre: "Unarmored Movement (mejora) / Acrobatic Movement", descripcion: "Tu velocidad sin armadura aumenta más, y podés moverte por superficies verticales y sobre líquidos sin caer durante tu turno (debés terminar el turno en superficie sólida). ⚠️ En PHB2024 esto puede estar separado como el rasgo \"Acrobatic Movement\", verificar redacción exacta."},
-    {nivel: 10, clase: "Monk", nombre: "Purity of Body (Self-Restoration en PHB2024)", descripcion: "Sos inmune a enfermedades y venenos (incluida la condición Envenenado). ⚠️ En PHB2024 el rasgo puede haberse ampliado para curar Exhaustion también; revisar manual."},
-    {nivel: 11, clase: "Monk", nombre: "Rasgo de Tradición Monástica (subclase)", descripcion: "Rasgo otorgado por la Tradición Monástica elegida (ej. Warrior of the Open Hand, Shadow, Elemental, etc.). No es determinable sin saber la subclase de Eldur — la ficha actual no la especifica. ⚠️ Revisar con el jugador/PHB2024 qué tradición eligió."},
-    {nivel: 12, clase: "Monk", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."},
-    {nivel: 13, clase: "Monk", nombre: "Tongue of the Sun and Moon", descripcion: "Entendés todos los idiomas hablados, y cualquier criatura que entienda al menos un idioma te entiende a vos al hablarle. ⚠️ Verificar si PHB2024 renombró este rasgo."},
-    {nivel: 14, clase: "Monk", nombre: "Diamond Soul (Disciplined Survivor en PHB2024)", descripcion: "Ganás competencia en todas las tiradas de salvación. Además, si fallás una salvación podés gastar 1 punto de Ki para repetirla con el nuevo resultado. ⚠️ Verificar mecánica exacta y nombre en PHB2024."},
-    {nivel: 15, clase: "Monk", nombre: "Timeless Body", descripcion: "Ya no sufrís los efectos de la vejez y no necesitás comer ni beber (aunque seguís pudiendo consumir comida/bebida mágica para otros beneficios)."},
-    {nivel: 16, clase: "Monk", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."},
-    {nivel: 17, clase: "Monk", nombre: "Rasgo de Tradición Monástica (subclase)", descripcion: "Segundo rasgo otorgado por la Tradición Monástica elegida. No determinable sin saber la subclase de Eldur. ⚠️ Revisar con el jugador/PHB2024."},
-    {nivel: 18, clase: "Monk", nombre: "Empty Body (Superior Defense en PHB2024)", descripcion: "Gastás 4 Ki para volverte invisible por 1 minuto y ganar resistencia a todo el daño salvo el de fuerza; por 8 Ki podés lanzar Astral Projection sin componentes materiales. ⚠️ En PHB2024 este rasgo puede estar simplificado (sin gasto de Ki); revisar manual."},
-    {nivel: 19, clase: "Monk", nombre: "Mejora de Característica / Don Épico", descripcion: "Última mejora de característica del Monje, o un Don Épico según reglas de PHB2024. ⚠️ Verificar si PHB2024 lo reemplaza directamente por un Epic Boon."},
-    {nivel: 20, clase: "Monk", nombre: "Perfect Self (Body and Mind en PHB2024)", descripcion: "Si tirás iniciativa y no tenés puntos de Ki, ganás 4 puntos de Ki automáticamente. ⚠️ En PHB2024 este rasgo puede además subir FUE y DES a 25; verificar redacción."},
-
-    {nivel: 4, clase: "Cleric", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."},
-    {nivel: 5, clase: "Cleric", nombre: "Destroy Undead (CR 1/2)", descripcion: "Al usar Turn Undead, los no-muertos con Retador (CR) 1/2 o menos que fallan la salvación son destruidos automáticamente en lugar de solo huir."},
-    {nivel: 5, clase: "Cleric", nombre: "Sear Undead", descripcion: "Rasgo de PHB2024: cuando usás Turn Undead, los no-muertos que fallan la salvación sufren daño radiante igual a tu modificador de Sabiduría. ⚠️ Confirmar que este rasgo exista en PHB2024 y su nivel exacto — no estaba en la versión 2014."},
-    {nivel: 6, clase: "Cleric", nombre: "Channel Divinity (uso adicional)", descripcion: "Podés usar Channel Divinity una vez más entre descansos (total de usos según nivel de clérigo). ⚠️ Verificar si en PHB2024 el salto de usos ocurre en este nivel exacto (en 2014 era nivel 6; PHB2024 pudo adelantarlo)."},
-    {nivel: 6, clase: "Cleric", nombre: "Light Domain: Improved Warding Flare", descripcion: "Warding Flare ya no requiere que puedas ver al atacante, y ahora también podés usarlo para imponer desventaja en un ataque dirigido a un aliado a 30 pies. ⚠️ Confirmar nombre/nivel exacto en PHB2024 (Light Domain)."},
-    {nivel: 7, clase: "Cleric", nombre: "Blessed Strikes (elegís Divine Strike o Potent Spellcasting)", descripcion: "Rasgo unificado de PHB2024: elegís entre (a) Divine Strike — 1/turno tu ataque con arma inflige +1d8 de daño radiante adicional (2d8 a nivel 14); o (b) Potent Spellcasting — sumás tu modificador de Sabiduría al daño de tus cantrips de clérigo. Para Light Domain suele convenir Potent Spellcasting. ⚠️ Verificar mecánica y nivel exactos — en 2014 Potent Spellcasting era exclusivo del dominio de Luz a nivel 8, sin esta elección."},
-    {nivel: 8, clase: "Cleric", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."},
-    {nivel: 10, clase: "Cleric", nombre: "Divine Intervention", descripcion: "Rezás pidiendo ayuda divina; el DM determina el efecto (equivalente a un conjuro de clérigo de tu nivel o menor). Tras usarla con éxito, no podés volver a usarla hasta completar un descanso largo. ⚠️ Verificar nivel exacto y mecánica en PHB2024 (en 2014 era nivel 10 con % de éxito = nivel de clérigo)."},
-    {nivel: 11, clase: "Cleric", nombre: "Destroy Undead (CR 2)", descripcion: "El umbral de Destroy Undead sube: los no-muertos de Retador (CR) 2 o menos son destruidos automáticamente al fallar la salvación de Turn Undead."},
-    {nivel: 12, clase: "Cleric", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."},
-    {nivel: 14, clase: "Cleric", nombre: "Destroy Undead (CR 3)", descripcion: "El umbral de Destroy Undead sube a Retador (CR) 3 o menos."},
-    {nivel: 16, clase: "Cleric", nombre: "Mejora de Característica (ASI/Feat)", descripcion: "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20. ⚠️ Confirmar que PHB2024 mantenga una mejora de característica en este nivel para Cleric."},
-    {nivel: 17, clase: "Cleric", nombre: "Light Domain: Corona of Light", descripcion: "Como acción bonus, emanás luz brillante en 60 pies (y tenue 30 pies más) por 1 minuto; las criaturas hostiles dentro de la luz brillante tienen desventaja en salvaciones contra conjuros que hagan daño de fuego o radiante que vos lances."},
-    {nivel: 18, clase: "Cleric", nombre: "Channel Divinity (uso adicional, 3 usos)", descripcion: "Podés usar Channel Divinity una tercera vez entre descansos. ⚠️ Confirmar el número final de usos y el nivel exacto en PHB2024."},
-    {nivel: 19, clase: "Cleric", nombre: "Mejora de Característica / Don Épico", descripcion: "Última mejora de característica del Clérigo, o un Don Épico según reglas de PHB2024. ⚠️ Verificar si PHB2024 lo reemplaza directamente por un Epic Boon."},
-    {nivel: 20, clase: "Cleric", nombre: "Divine Intervention (mejorada / Greater Divine Intervention)", descripcion: "Divine Intervention ya no puede fallar: tiene éxito automático al usarla. ⚠️ Confirmar nombre exacto del rasgo y su redacción final en PHB2024."}
+    {nivel: 8, nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "Podés aumentar una puntuación de característica en 2, o dos puntuaciones en 1 cada una (máximo 20 salvo excepciones), o tomar un Talento (Feat) en su lugar."},
+    {nivel: 10, nombre: "Aura of Courage", descripcion: "Mientras estés consciente, vos y los aliados a 10 pies o menos (30 pies desde nivel 18) sois inmunes a la condición Asustado (Frightened)."},
+    {nivel: 11, nombre: "Improved Divine Smite", descripcion: "Tus ataques de arma cuerpo a cuerpo infligen +1d8 de daño radiante adicional de forma automática al impactar, sin gastar espacio de conjuro. El PHB 2024 reestructuró bastante el Divine Smite base, así que el detalle exacto de esta mejora en esa edición no está confirmado. ⚠️"},
+    {nivel: 12, nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "Podés aumentar una puntuación de característica en 2, o dos puntuaciones en 1 cada una (máximo 20 salvo excepciones), o tomar un Talento (Feat) en su lugar."},
+    {nivel: 14, nombre: "Cleansing Touch", descripcion: "Como acción, podés terminar un conjuro que te esté afectando a vos o a una criatura dispuesta que toques. Podés usar esto un número de veces igual a tu modificador de Carisma (mínimo 1) por descanso largo."},
+    {nivel: 15, nombre: "Vigilant Rebuke", descripcion: "Rasgo de Channel Divinity del Juramento de los Vigilantes: cuando vos o un aliado a 30 pies que podés ver falla una salvación contra un efecto de una criatura que no es de este plano (aberración, celestial, elemental, feérico o infernal), podés usar tu reacción para otorgarle un bono a esa tirada igual a tu modificador de Carisma, pudiendo convertir el fallo en éxito. La redacción exacta (activador y bonificador) no está confirmada al 100%, y menos aún su versión 2024. ⚠️"},
+    {nivel: 16, nombre: "Mejora de Puntuación de Característica (ASI)", descripcion: "Podés aumentar una puntuación de característica en 2, o dos puntuaciones en 1 cada una (máximo 20 salvo excepciones), o tomar un Talento (Feat) en su lugar."},
+    {nivel: 18, nombre: "Auras a 30 pies", descripcion: "El alcance de todas tus auras de Paladín y de Juramento (Aura of Protection, Aura of Courage y Aura of the Sentinel) se expande de 10 a 30 pies."},
+    {nivel: 19, nombre: "Mejora de Puntuación de Característica / Epic Boon", descripcion: "Bajo las reglas 2024, en este nivel podés elegir un Epic Boon (Don Épico) en lugar de la mejora de característica habitual — un talento especial de alto nivel con un beneficio narrativo/mecánico único. No tengo confirmado si en 2024 esta opción cae exactamente en nivel 19 o si aplica también en 20. ⚠️"},
+    {nivel: 20, nombre: "Mortal Bulwark", descripcion: "Capstone del Juramento de los Vigilantes. Obtenés Visión Verdadera (Truesight) hasta 120 pies. Además, una vez en cada uno de tus turnos, cuando dañás con un ataque o conjuro a una criatura que no es nativa del plano en el que estás, podés usar Abjure the Extraplanar sobre ella sin gastar Channel Divinity. La redacción exacta del texto (y su posible actualización 2024) no está confirmada. ⚠️"}
   ];
 
   function nivelPorXP(xpTotal) {
@@ -1482,7 +2099,7 @@
   }
 
   function insertarFeatureCard(h) {
-    const grid = document.getElementById('rasgos-clase-grid') || document.querySelector('.feature-grid');
+    const grid = document.querySelector('.feature-grid');
     if (!grid) return;
     const yaExiste = Array.from(grid.querySelectorAll('.feature-card h4')).some(el => el.innerText.includes(h.nombre));
     if (yaExiste) return;
@@ -1646,8 +2263,7 @@
   // ============================================
   const CONFIG_NIVEL = {
     clases: [
-      { nombre: 'Monk', dado: 8, nivelInicial: 5, caster: null },
-      { nombre: 'Cleric', dado: 8, nivelInicial: 2, caster: 'full' }
+      { nombre: 'Paladin', dado: 10, nivelInicial: 7, caster: 'half' }
     ]
   };
   let nivelUpEstado = { clase: null, tirada: null, modo: null, hpAplicado: false };
@@ -1665,7 +2281,7 @@
     return obtenerSubidasNivel().reduce((s, r) => s + (r.hpGanado || 0), 0);
   }
   function hpMaxActual() {
-    return HP_MAX_ELDUR + obtenerBonusHPNivel();
+    return HP_MAX_HANNOGHAR + obtenerBonusHPNivel();
   }
   function nivelClaseActual(nombreClase) {
     const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nombreClase);
@@ -1683,9 +2299,6 @@
     return parseInt(modText.replace(/[()]/g, '')) || 0;
   }
   function actualizarHPMaxDisplay() {
-    const max = hpMaxActual();
-    const label = document.getElementById('hp-max-label');
-    if (label) label.innerText = max;
     if (typeof updateHPDisplay === 'function') updateHPDisplay();
   }
   function obtenerTodosLosHD() {
@@ -1721,7 +2334,7 @@
     let tabla, maxes;
     if (cfg.caster === 'full') { tabla = SLOTS_FULL_CASTER; maxes = tabla[Math.min(nivelClase, 20)] || tabla[20]; }
     else if (cfg.caster === 'half') { tabla = SLOTS_HALF_CASTER; maxes = tabla[Math.min(nivelClase, 20)] || tabla[20]; }
-    else return; // pact se maneja aparte si hiciera falta
+    else return;
     maxes.forEach((max, i) => {
       const nivelSlot = i + 1;
       if (max <= 0) return;
@@ -1796,14 +2409,9 @@
     toggleNivelUp(false);
     toggleSpellPicker(true);
   }
-  // Re-crea en el DOM lo que ya se aplicó en sesiones anteriores (checkboxes de HD extra,
-  // tarjetas de espacios de conjuro nuevas, label de HP máximo) — las subidas en sí ya vinieron
-  // sincronizadas desde Firebase al hidden input, esto solo reconstruye la UI derivada de ellas.
   function restaurarSubidasNivel() {
     const lista = obtenerSubidasNivel();
     if (!lista.length) return;
-    // Idempotente: solo agrega los checkboxes de HD que falten, nunca duplica
-    // (por si esta función corre después de que un level-up en la misma sesión ya los agregó).
     const baseHD = 7;
     const actuales = document.querySelectorAll('#hd-checkbox-group input[type="checkbox"]').length;
     const faltantes = (baseHD + lista.length) - actuales;
@@ -1816,7 +2424,6 @@
     if (!body) return;
     let html = '';
 
-    // Paso 1: elegir clase (si es multiclase)
     if (CONFIG_NIVEL.clases.length > 1) {
       html += `<div class="nivelup-step"><h4>1️⃣ Elegí qué clase sube de nivel</h4>
         <select onchange="nivelUpElegirClase(this.value)">
@@ -1832,7 +2439,6 @@
     const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nivelUpEstado.clase);
     const nivelAntes = nivelUpEstado.nivelAntes;
 
-    // Paso 2: tirar/promediar HD y aplicar HP
     html += `<div class="nivelup-step">
       <h4>2️⃣ Dado de Golpe — ${cfg.nombre} nivel ${nivelAntes} → ${nivelAntes + 1} (1d${cfg.dado})</h4>`;
     if (!nivelUpEstado.hpAplicado) {
@@ -1855,7 +2461,6 @@
       return;
     }
 
-    // Paso 3: features de clase disponibles en el nuevo nivel
     const nuevoNivel = nivelUpEstado.nuevoNivelClase;
     const agregadas = obtenerHabilidadesAgregadas();
     const candidatas = (typeof PROXIMAS_HABILIDADES !== 'undefined' ? PROXIMAS_HABILIDADES : [])
@@ -1875,7 +2480,6 @@
     }
     html += `</div>`;
 
-    // Paso 4: espacios de conjuro (si la clase es lanzadora)
     if (cfg.caster === 'full' || cfg.caster === 'half') {
       const tabla = cfg.caster === 'full' ? SLOTS_FULL_CASTER : SLOTS_HALF_CASTER;
       const maxes = tabla[Math.min(nivelClaseActual(cfg.nombre), 20)] || [];
@@ -1885,7 +2489,6 @@
       </div>`;
     }
 
-    // Paso 5: aprender hechizos nuevos
     html += `<div class="nivelup-step"><h4>5️⃣ Aprender hechizos nuevos (opcional)</h4>
       <button class="btn-add-spell" onclick="nivelUpAbrirCompendio()">📖 Abrir Compendio de Hechizos</button>
     </div>`;
@@ -1964,102 +2567,17 @@
     setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); renderHechizosAdicionales(); restaurarSubidasNivel(); }, 800);
   });
 
-  function updateHPDisplay() {
-    const cur = document.getElementById('hp-cur').value;
-    const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_ELDUR;
-    document.getElementById('hp-summary').innerText = `${cur} / ${max}`;
-    const maxLabel = document.getElementById('hp-max-label');
-    if (maxLabel) maxLabel.innerText = max;
-    syncStickyBar();
-  }
-
-  function changeVal(id, delta) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let val = Math.max(0, (parseInt(el.innerText) || 0) + delta);
-    el.innerText = val;
-    guardarCampo(id, val);
-  }
-
-  function changeInputVal(id, delta) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let val = Math.max(0, (parseInt(el.value) || 0) + delta);
-    if (id === 'hp-cur') val = Math.min(val, (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_ELDUR);
-    el.value = val;
-    if (id === 'hp-cur') updateHPDisplay();
-    guardarCampo(id, val);
-  }
-
-  // HP admite tipeo directo (mismo input que HP Temporal) — clampea y sincroniza al salir del campo
-  document.getElementById('hp-cur')?.addEventListener('change', e => {
-    let val = parseInt(e.target.value);
-    if (isNaN(val)) val = 0;
-    const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_ELDUR;
-    val = Math.max(0, Math.min(max, val));
-    e.target.value = val;
-    updateHPDisplay();
-    guardarCampo('hp-cur', val);
-  });
-
-  function recalcStats() {
-    const acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
-    const atkBuff = parseInt(document.getElementById('atk-buff').value) || 0;
-    document.getElementById('ac-total').innerText = 17 + acBuff;
-    document.getElementById('atk-total').innerText = (7 + atkBuff >= 0 ? '+' : '') + (7 + atkBuff);
-    syncStickyBar();
-  }
-
-  function restShort() {
-    if (!confirm("¿Efectuar Descanso Corto?")) return;
-    changeVal('ki-cur', 5 - (parseInt(document.getElementById('ki-cur').innerText) || 0));
-    ['blinding-1', 'blinding-2', 'cd-use-1'].forEach(id => {
-      const cb = document.getElementById(id);
-      if (cb) { cb.checked = false; guardarCampo(id, false); }
-    });
-    alert("☕ Descanso Corto completado: ¡Ki, Blinding Light y Channel Divinity restaurados!");
-  }
-
-  function restLong() {
-    if (!confirm("¿Efectuar Descanso Largo?")) return;
-    const maxHP = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_ELDUR;
-    document.getElementById('hp-cur').value = maxHP;
-    document.getElementById('ki-cur').innerText = 5;
-    document.getElementById('hp-temp-input').value = 0;
-    updateHPDisplay();
-    guardarCampo('hp-cur', maxHP);
-    guardarCampo('ki-cur', 5);
-    guardarCampo('hp-temp-input', 0);
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.checked = false;
-      if (cb.id) guardarCampo(cb.id, false);
-    });
-    // Rellena todos los espacios de conjuro desbloqueados (nivel 1..N), no solo el nivel 1 original.
-    // Setea directo (no via changeVal) para no depender de leer innerText de una tarjeta recién creada.
-    document.querySelectorAll('#conjuros-slots-bar .tracker-card').forEach(card => {
-      const nivelSlot = card.dataset.slotNivel;
-      const maxLabel = document.getElementById(`slot-${nivelSlot}-max`);
-      const max = parseInt(maxLabel?.textContent) || 0;
-      const curEl = document.getElementById(`slot-${nivelSlot}-cur`);
-      if (curEl) { curEl.innerText = max; guardarCampo(`slot-${nivelSlot}-cur`, max); }
-    });
-    if (typeof updateConditions === 'function') updateConditions();
-    alert("🌙 Descanso Largo completado.");
-  }
-
   var rollHistory = [];
   function displayRollResult(total, label, breakdownStr) {
-    document.getElementById('dice-label').innerText = label;
-    document.getElementById('dice-total').innerText = total;
-    document.getElementById('dice-details').innerText = breakdownStr;
-    rollHistory.unshift(`<strong>${label}:</strong> ${total} <span style="color:#c29b8c;">(${breakdownStr})</span>`);
+    document.getElementById('dice-result-val').innerText = total;
+    document.getElementById('dice-result-details').innerText = `${label}: ${breakdownStr}`;
+    rollHistory.unshift(`<div>• <strong>${label}:</strong> ${total} (${breakdownStr})</div>`);
     if (rollHistory.length > 10) rollHistory.pop();
-    const hist = document.getElementById('dice-history');
-    if (hist) hist.innerHTML = rollHistory.join('<br>');
+    document.getElementById('dice-history').innerHTML = rollHistory.join('');
 
     if (codigoCampana) {
       db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
+        personaje: 'Hannoghar',
         tipo: label,
         resultado: (typeof total === 'number') ? `sacó un 🎲 ${total}` : total,
         fecha: firebase.database.ServerValue.TIMESTAMP
@@ -2073,10 +2591,11 @@
       let r = Math.floor(Math.random() * sides) + 1;
       rolls.push(r); total += r;
     }
-    displayRollResult(total + mod, label + ` (${num}d${sides})`, `[${rolls.join(', ')}] Mod: ${mod}`);
+    total += mod;
+    displayRollResult(total, label + ` (${num}d${sides})`, `[${rolls.join(', ')}] ${mod >= 0 ? '+' : ''}${mod}`);
   }
 
-  function rollGenericDamage(num, sides, mod, label) { rollManualDice(num, sides, mod, label); }
+  function rollGenericDamage(numDice, diceSides, bonus, label) { rollManualDice(numDice, diceSides, bonus, label); }
 
   // === MONEDA DEL DESTINO (D2) — sin Mod, muestra Cara/Cruz en vez de 1/2 ===
   function rollCoin() {
@@ -2084,47 +2603,6 @@
     const cara = r === 1 ? 'Cara' : 'Cruz';
     displayRollResult(`🪙 ${cara}`, 'Moneda del Destino', `[${r}]`);
   }
-
-  // === UPCAST DE HECHIZOS (nivel de slot superior al base) ===
-  // Fórmulas verificadas contra fuentes públicas de D&D 5e (roll20.net/compendium/dnd5e) el 26 ago 2026.
-  const HECHIZOS_UPCASTEABLES = {
-    'burning-hands': { nombre: 'Burning Hands', nivelBase: 1, dados: { count: 3, sides: 6, mod: 0 }, incremento: { count: 1, sides: 6, mod: 0 } },
-    'guiding-bolt': { nombre: 'Guiding Bolt', nivelBase: 1, dados: { count: 4, sides: 6, mod: 0 }, incremento: { count: 1, sides: 6, mod: 0 } },
-    'cure-wounds': { nombre: 'Cure Wounds', nivelBase: 1, dados: { count: 1, sides: 8, mod: 3 }, incremento: { count: 1, sides: 8, mod: 0 } }
-  };
-  function maxNivelSlotDisponible() {
-    let max = 0;
-    for (let n = 1; n <= 9; n++) { if (document.getElementById(`slot-${n}-cur`)) max = n; }
-    return max;
-  }
-  function inicializarSelectoresUpcast() {
-    const maxNivel = maxNivelSlotDisponible();
-    Object.keys(HECHIZOS_UPCASTEABLES).forEach(key => {
-      const h = HECHIZOS_UPCASTEABLES[key];
-      const sel = document.getElementById(`upcast-nivel-${key}`);
-      if (!sel) return;
-      sel.innerHTML = '';
-      const tope = Math.max(h.nivelBase, maxNivel);
-      for (let n = h.nivelBase; n <= tope; n++) {
-        const opt = document.createElement('option');
-        opt.value = n;
-        opt.textContent = `Nivel ${n}` + (n === h.nivelBase ? ' (base)' : '');
-        sel.appendChild(opt);
-      }
-    });
-  }
-  function tirarHechizoUpcast(key) {
-    const h = HECHIZOS_UPCASTEABLES[key];
-    if (!h) return;
-    const sel = document.getElementById(`upcast-nivel-${key}`);
-    const nivel = parseInt(sel?.value) || h.nivelBase;
-    const extra = Math.max(0, nivel - h.nivelBase);
-    const count = h.dados.count + h.incremento.count * extra;
-    const mod = h.dados.mod + h.incremento.mod * extra;
-    rollGenericDamage(count, h.dados.sides, mod, `${h.nombre} (Nivel ${nivel})`);
-    gastarSlot(nivel);
-  }
-  document.addEventListener('DOMContentLoaded', inicializarSelectoresUpcast);
 
   // === REGISTRO DE USO DE RECURSOS (bugs.md 26 ago): checkboxes de slots/recursos/HD pushean al historial y panel de GM ===
   function obtenerEtiquetaRecurso(cb) {
@@ -2141,14 +2619,12 @@
     if (/^hd-\d+$/.test(e.target.id)) return;
     if (/^ds-[sf]\d+$/.test(e.target.id)) return; // las salvaciones de muerte pushean vía rollDeathSave()
     const etiqueta = obtenerEtiquetaRecurso(e.target);
-    const entry = `<strong>🔧 Recurso:</strong> ${etiqueta}`;
-    rollHistory.unshift(entry);
+    rollHistory.unshift(`<div>• <strong>🔧 Recurso:</strong> ${etiqueta}</div>`);
     if (rollHistory.length > 10) rollHistory.pop();
-    const hist = document.getElementById('dice-history');
-    if (hist) hist.innerHTML = rollHistory.join('<br>');
+    document.getElementById('dice-history').innerHTML = rollHistory.join('');
     if (codigoCampana) {
       db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
+        personaje: 'Hannoghar',
         tipo: `🔧 ${etiqueta}`,
         resultado: 'usó',
         fecha: firebase.database.ServerValue.TIMESTAMP
@@ -2161,18 +2637,18 @@
     const dados = (typeof obtenerTodosLosHD === 'function') ? obtenerTodosLosHD() : ['hd-1','hd-2','hd-3','hd-4','hd-5','hd-6','hd-7'];
     const libre = dados.find(id => !document.getElementById(id)?.checked);
     if (!libre) { alert('⚠️ No te quedan Dados de Golpe disponibles. Se recuperan la mitad (redondeado abajo) en un descanso largo.'); return; }
-    const tirada = Math.floor(Math.random() * 8) + 1;
-    const total = tirada + 2;
+    const tirada = Math.floor(Math.random() * 10) + 1;
+    const total = tirada + 3;
     const cb = document.getElementById(libre);
     cb.checked = true;
     cb.dispatchEvent(new Event('change', { bubbles: true }));
     const hpEl = document.getElementById('hp-cur');
-    const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_ELDUR;
+    const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_HANNOGHAR;
     const nuevo = Math.min(max, (parseInt(hpEl.value) || 0) + total);
     hpEl.value = nuevo;
     updateHPDisplay();
     guardarCampo('hp-cur', nuevo);
-    displayRollResult(total, 'Dado de Golpe (1d8+2 CON)', `[${tirada}] + 2`);
+    displayRollResult(total, 'Dado de Golpe (1d10+3 CON)', `[${tirada}] + 3`);
   }
 
   // === AUTO-MARCADO DE SLOT AL USAR UN HECHIZO ===
@@ -2184,7 +2660,7 @@
     if (hist) hist.innerHTML = rollHistory.join('<br>');
     if (codigoCampana) {
       db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
+        personaje: 'Hannoghar',
         tipo: `🔧 ${etiqueta}`,
         resultado: 'usó',
         fecha: firebase.database.ServerValue.TIMESTAMP
@@ -2230,54 +2706,118 @@
   // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
   function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
 
-  // Ataques: desventaja automática si Eldur está Cegado o Envenenado
+  // Ataques: desventaja automática si Hannoghar está Cegado
   function rollAttack(bonus, name) {
     let adv = getAdvantage();
-    const estaCegado = document.getElementById('cond-blinded')?.checked;
-    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-    if (estaCegado || estaEnvenenado) {
+    if (document.getElementById('cond-blinded')?.checked) {
       adv = 'disadvantage';
-      name += " 🛑 (Desventaja por Condición)";
+      name += " 🛑 (Desventaja: Cegado)";
     }
     const totalBonus = bonus + (parseInt(document.getElementById('atk-buff').value) || 0);
-    rollD20WithMechanics(totalBonus, `Atk: ${name}`, adv, true);
+    rollD20WithMechanics(totalBonus, name, adv, true);
   }
 
-  // Checks/Saves: el envenenamiento da desventaja solo en checks
-  function rollCheckSave(dice, mod, label, type) {
-    let adv = getAdvantage();
-    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-    if (estaEnvenenado && type === 'check') {
-      adv = 'disadvantage';
-      label += " 🛑 (Desventaja: Envenenado)";
-    }
-    rollD20WithMechanics(mod, label, adv, type === 'save');
+  function rollCheckSave(dice, bonus, name, type) {
+    rollD20WithMechanics(bonus, name, getAdvantage(), type === 'save');
   }
 
-  function rollConcentrationSave() {
-    rollD20WithMechanics(2, 'CON Save (Concentración)', getAdvantage(), true);
+  function rollSpellAttack(name) {
+    let spellBonus = parseInt(document.getElementById('spell-atk-total').innerText.replace('+', '')) || 5;
+    rollD20WithMechanics(spellBonus, name, getAdvantage(), true);
   }
 
   function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
     let d1 = Math.floor(Math.random() * 20) + 1;
     let d2 = Math.floor(Math.random() * 20) + 1;
     let chosen = advState === 'advantage' ? Math.max(d1, d2) : (advState === 'disadvantage' ? Math.min(d1, d2) : d1);
-    let advText = advState === 'advantage' ? ` [Ventaja: ${d1}, ${d2} -> ${chosen}]` : (advState === 'disadvantage' ? ` [Desventaja: ${d1}, ${d2} -> ${chosen}]` : ` [d20: ${d1}]`);
+    let advText = advState === 'advantage' ? ` 🟢 (Ventaja: ${d1}, ${d2} -> ${chosen})` : (advState === 'disadvantage' ? ` 🔴 (Desventaja: ${d1}, ${d2} -> ${chosen})` : ` (d20: ${d1})`);
     let total = chosen + flatMod;
-    let b = [`Base: ${chosen}`];
-    if (flatMod !== 0) b.push(`Mod: ${flatMod > 0 ? '+' + flatMod : flatMod}`);
+    let b = [`Base: ${chosen}`, `Bono: ${flatMod >= 0 ? '+' : ''}${flatMod}`];
     if (isSaveOrAtk) {
       const bless = document.getElementById('buff-bless');
+      const watchers = document.getElementById('buff-watchers');
       const bane = document.getElementById('debuff-bane');
       if (bless && bless.checked) { let r = Math.floor(Math.random() * 4) + 1; total += r; b.push(`Bless: +${r}`); }
       if (bane && bane.checked) { let r = Math.floor(Math.random() * 4) + 1; total -= r; b.push(`Bane: -${r}`); }
+      if (watchers && watchers.checked) b.push(`Watcher's Will activo`);
     }
+    if (chosen === 20) b.push('¡CRÍTICO!');
     displayRollResult(total, label + advText, b.join(' | '));
   }
 
+  function changeVal(id, delta) {
+    let el = document.getElementById(id);
+    let newVal = Math.max(0, (parseInt(el.innerText) || 0) + delta);
+    el.innerText = newVal;
+    guardarCampo(id, newVal);
+  }
+
+  function updateHPDisplay() {
+    const cur = document.getElementById('hp-cur').value;
+    const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_HANNOGHAR;
+    document.getElementById('hp-summary').innerText = `${cur} / ${max}`;
+    const maxLabel = document.getElementById('hp-max-label');
+    if (maxLabel) maxLabel.innerText = max;
+    syncStickyBar();
+  }
+
+  function changeInputVal(id, delta) {
+    let el = document.getElementById(id);
+    let newVal = Math.max(0, (parseInt(el.value) || 0) + delta);
+    if (id === 'hp-cur') newVal = Math.min(newVal, (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_HANNOGHAR);
+    el.value = newVal;
+    if (id === 'hp-cur') updateHPDisplay();
+    guardarCampo(id, newVal);
+  }
+
+  // HP admite tipeo directo (mismo input que HP Temporal) — clampea y sincroniza al salir del campo
+  document.getElementById('hp-cur')?.addEventListener('change', e => {
+    let val = parseInt(e.target.value);
+    if (isNaN(val)) val = 0;
+    const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_HANNOGHAR;
+    val = Math.max(0, Math.min(max, val));
+    e.target.value = val;
+    updateHPDisplay();
+    guardarCampo('hp-cur', val);
+  });
+
+  function restShort() {
+    if (!confirm("¿Efectuar Descanso Corto?")) return;
+    ['cd-use-1', 'bw-use-1'].forEach(id => {
+      const cb = document.getElementById(id);
+      if (cb) { cb.checked = false; guardarCampo(id, false); }
+    });
+    alert("☕ Descanso Corto finalizado. Canalización Divina y Aliento Dracónico restaurados.");
+  }
+
+  function restLong() {
+    if (!confirm("¿Efectuar Descanso Largo?")) return;
+    const maxHP = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_HANNOGHAR;
+    document.getElementById('hp-cur').value = maxHP;
+    document.getElementById('lay-hands-cur').innerText = "35";
+    updateHPDisplay();
+    guardarCampo('hp-cur', maxHP);
+    guardarCampo('lay-hands-cur', 35);
+    document.querySelectorAll('.resources-bar input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      if (cb.id) guardarCampo(cb.id, false);
+    });
+    // Rellena todos los espacios de conjuro desbloqueados (nivel 1..N), no solo los originales.
+    // Setea directo (no via changeVal) para no depender de leer innerText de una tarjeta recién creada.
+    document.querySelectorAll('#conjuros-slots-bar .tracker-card').forEach(card => {
+      const nivelSlot = card.dataset.slotNivel;
+      const maxLabel = document.getElementById(`slot-${nivelSlot}-max`);
+      const max = parseInt(maxLabel?.textContent) || 0;
+      const curEl = document.getElementById(`slot-${nivelSlot}-cur`);
+      if (curEl) { curEl.innerText = max; guardarCampo(`slot-${nivelSlot}-cur`, max); }
+    });
+    if (typeof updateConditions === 'function') updateConditions();
+    alert("🌙 Descanso Largo completado. Puntos de Golpe, Ranuras de Conjuro y Recursos restablecidos.");
+  }
+
   function toggleConditionsDropdown() {
-    const dd = document.getElementById('conditions-dropdown');
-    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+    let drop = document.getElementById('conditions-dropdown');
+    drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
   }
   window.addEventListener('click', e => {
     if (!e.target.closest('.multiselect-container')) {
@@ -2287,22 +2827,38 @@
   });
 
   function updateConditions() {
-    const container = document.getElementById('active-conditions-list');
-    if (!container) return;
+    let container = document.getElementById('active-conditions-list');
     container.innerHTML = '';
     document.querySelectorAll('#conditions-dropdown input[type="checkbox"]:checked').forEach(cb => {
-      const span = document.createElement('span');
-      span.className = `cond-tag ${cb.getAttribute('data-type') || 'debuff'}`;
+      let span = document.createElement('span');
+      span.className = 'cond-tag ' + (cb.dataset.type || 'debuff');
       span.innerText = cb.value;
       container.appendChild(span);
     });
   }
 
+  function recalcStats() {
+    let acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
+    document.getElementById('ac-total').innerText = 21 + acBuff;
+
+    let atkBuff = parseInt(document.getElementById('atk-buff').value) || 0;
+    document.getElementById('atk-total').innerText = '+' + (6 + atkBuff);
+
+    let spellAtkBuff = parseInt(document.getElementById('spell-atk-buff').value) || 0;
+    document.getElementById('spell-atk-total').innerText = '+' + (5 + spellAtkBuff);
+
+    let spellDcBuff = parseInt(document.getElementById('spell-dc-buff').value) || 0;
+    document.getElementById('spell-dc-total').innerText = 13 + spellDcBuff;
+
+    syncStickyBar();
+  }
+
 const INVENTARIO_INICIAL = [
-  { nombre: `Amulet of Misty Step (Cuello)`, descripcion: `Teleportation (Acción, 1/día): teletranspórtate hasta 1 milla a un lugar que puedas ver o conozcas. Resistencia al daño de Frío.`, cantidad: 1, precio: 0, equipado: true },
-  { nombre: `Amulet of Blood (Cuello)`, descripcion: `Vampiric Leech (1/turno): al hacer daño, recuperas HP igual a la mitad del daño infligido. Usable veces/día = mod. CON (+2), recarga en descanso largo.`, cantidad: 1, precio: 0, equipado: true },
-  { nombre: `Boots of Combustion (Pies)`, descripcion: `Rocket Dash (Bonus Action): te propulsa hasta 45 ft en línea recta sin provocar ataques de oportunidad. Feather Fall: sin daño de caída desde 60 ft o menos.`, cantidad: 1, precio: 0, equipado: true },
-  { nombre: `Braces of the Sun Fury (Muñecas)`, descripcion: `Tus Unarmed Strikes infligen +1d6 de daño radiante adicional. Blinding Light (Reacción, 2/Short Rest): el atacante hace CON Save DC 15 o queda ciego hasta el final de tu siguiente turno.`, cantidad: 1, precio: 0, equipado: true }
+  { nombre: `Plate Armor & Shield`, descripcion: `AC 21 (18 Plate + 2 Shield + 1 Defense Style)`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Mace (Maza)`, descripcion: `Arma Principal (1d8+3 B)`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Dice Set`, descripcion: `Juego de Dados (Competencia)`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Backpack & Explorer's Pack`, descripcion: `Equipo de aventuras`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Símbolo Sagrado`, descripcion: `Foco de Lanzamiento de Conjuros`, cantidad: 1, precio: 0, equipado: true }
 ];
 
 // === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) ===
@@ -2457,7 +3013,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
 
 </body>
 </html>

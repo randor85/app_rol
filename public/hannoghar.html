@@ -1905,6 +1905,14 @@
           } else if (document.activeElement !== el && el.value !== String(data[id])) {
             el.value = data[id];
             if (id === 'hp-cur') updateHPDisplay();
+            // El inventario se guarda como un único blob JSON (no campo por campo como el resto de
+            // la ficha) — si no se re-sincroniza acá, una pestaña vieja abierta (o dos dispositivos)
+            // puede pisar con datos viejos un ítem agregado/editado en otro lado. Se salta mientras
+            // el formulario de agregar/editar está abierto para no perder una edición en curso.
+            if (id === 'inventario-json' && typeof restaurarInventarioDesdeDatos === 'function') {
+              const formAbierto = (document.getElementById('inventario-form-container')?.innerHTML || '').trim().length > 0;
+              if (!formAbierto) restaurarInventarioDesdeDatos(data[id]);
+            }
           }
         }
       });
