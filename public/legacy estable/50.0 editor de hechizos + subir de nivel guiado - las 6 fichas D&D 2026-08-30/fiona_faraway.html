@@ -170,36 +170,6 @@
  .nivel-hab-item button { background: var(--accent-gold); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-weight: 700; }
  .nivel-hab-item.agregada { opacity: 0.5; }
  .nivel-hab-item.agregada button { display: none; }
- .hechizos-adicionales-box { margin-top: 14px; background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; }
- .hechizos-adicionales-box h4 { font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
- .btn-add-spell { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
- .hechizo-adicional-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
- .hechizo-adicional-item:last-child { border-bottom: none; }
- .hechizo-adicional-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
- .hechizo-badge { font-size: 0.65rem; font-weight:700; background: var(--surface-strong); color: var(--accent-gold); border-radius: 4px; padding: 1px 6px; white-space:nowrap; }
- .hechizo-adicional-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
- .hechizo-adicional-desc { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
- .spell-picker-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:2000; align-items:center; justify-content:center; padding:16px; }
- .spell-picker-overlay.open { display:flex; }
- .spell-picker-modal { background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 16px; width:100%; max-width:520px; max-height:80vh; display:flex; flex-direction:column; box-shadow: 0 6px 20px rgba(0,0,0,0.7); }
- .spell-picker-modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
- .spell-picker-modal-head h3 { font-size: 1rem; color: var(--accent-gold); }
- .spell-picker-modal-head button { background:none; border:none; color: var(--text-muted); font-size:1.1rem; cursor:pointer; }
- .spell-picker-modal input[type="text"] { width:100%; padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); background: var(--surface-strong); color: var(--text-light); font-size:0.9rem; outline:none; margin-bottom:10px; }
- .spell-picker-filters { display:flex; gap:6px; margin-bottom:10px; }
- .spell-picker-filters select { flex:1; padding:6px 8px; border-radius:6px; border:1px solid var(--border-color); background: var(--surface-strong); color: var(--text-light); font-size:0.78rem; }
- .spell-picker-list { overflow-y:auto; flex:1; }
- .spell-picker-item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-color); }
- .spell-picker-item:last-child { border-bottom:none; }
- .spell-picker-item button { background: var(--accent-gold); color:#000; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; white-space:nowrap; }
- .nivelup-step { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
- .nivelup-step.disabled { opacity: 0.5; pointer-events: none; }
- .nivelup-step h4 { font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 8px; }
- .nivelup-step select { width:100%; padding:6px 8px; border-radius:6px; border:1px solid var(--border-color); background: var(--surface-strong); color: var(--text-light); font-size:0.85rem; }
- .nivelup-roll-result { font-size:1.1rem; font-weight:700; color: var(--accent-gold); margin: 8px 0; }
- .nivelup-feature-item { border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.82rem; }
- .nivelup-feature-item:last-child { border-bottom: none; }
- .nivelup-feature-item button { margin-top: 4px; }
 
  @media (min-width: 1400px) {
  .grid-identity { grid-template-columns: repeat(9, 1fr); }
@@ -1104,7 +1074,6 @@
 <div id="nivel-hab-lista"></div>
 </div>
 </div>
-<button class="nivel-popover-btn" onclick="toggleNivelUp()" type="button" style="margin-left:6px;">⬆️ Subir de Nivel</button>
 </div>
 <div class="grid-identity">
 <div class="stat-badge">
@@ -1228,7 +1197,7 @@
 <div class="counter-controls">
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', -1)">-</button>
 <input type="number" id="hp-cur" class="editable-cnt-val" value="59" min="0">
-<span class="cnt-max">/ <span id="hp-max-label">59</span></span>
+<span class="cnt-max">/ 59</span>
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', 1)">+</button>
 </div>
 </div>
@@ -1241,8 +1210,8 @@
 </div>
 </div>
 <div style="margin-top: 10px;">
-<label style="font-size: 0.8rem; color: var(--text-muted);" id="hd-label">Dado de Golpe (Hit Dice): 8d8</label>
-<div class="checkbox-group" id="hd-checkbox-group">
+<label style="font-size: 0.8rem; color: var(--text-muted);">Dado de Golpe (Hit Dice): 8d8</label>
+<div class="checkbox-group">
 <label class="check-box-item"><input id="hd-1" type="checkbox"/> HD 1</label>
 <label class="check-box-item"><input id="hd-2" type="checkbox"/> HD 2</label>
 <label class="check-box-item"><input id="hd-3" type="checkbox"/> HD 3</label>
@@ -1548,36 +1517,36 @@
 </details><details class="v2-section" id="section-spells">
 <summary>📜 3. Conjuros Preparados y Referencia Rápida</summary>
 <div class="section-content">
-<div class="resources-bar" style="margin-bottom: 15px;" id="conjuros-slots-bar">
-<div class="tracker-card" data-slot-nivel="1">
+<div class="resources-bar" style="margin-bottom: 15px;">
+<div class="tracker-card">
 <h4>Nivel 1</h4>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
 <button class="btn-cnt" onclick="changeVal('slot-1-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 1')">-1</button>
-<span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">4</span> / <span id="slot-1-max">4</span>
+<span id="slot-1-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">4</span> / 4
 <button class="btn-cnt" onclick="changeVal('slot-1-cur', 1)">+1</button>
 </div>
 </div>
-<div class="tracker-card" data-slot-nivel="2">
+<div class="tracker-card">
 <h4>Nivel 2</h4>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
 <button class="btn-cnt" onclick="changeVal('slot-2-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 2')">-1</button>
-<span id="slot-2-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / <span id="slot-2-max">3</span>
+<span id="slot-2-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
 <button class="btn-cnt" onclick="changeVal('slot-2-cur', 1)">+1</button>
 </div>
 </div>
-<div class="tracker-card" data-slot-nivel="3">
+<div class="tracker-card">
 <h4>Nivel 3</h4>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
 <button class="btn-cnt" onclick="changeVal('slot-3-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 3')">-1</button>
-<span id="slot-3-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / <span id="slot-3-max">3</span>
+<span id="slot-3-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">3</span> / 3
 <button class="btn-cnt" onclick="changeVal('slot-3-cur', 1)">+1</button>
 </div>
 </div>
-<div class="tracker-card" data-slot-nivel="4">
+<div class="tracker-card">
 <h4>Nivel 4</h4>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
 <button class="btn-cnt" onclick="changeVal('slot-4-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel 4')">-1</button>
-<span id="slot-4-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">2</span> / <span id="slot-4-max">2</span>
+<span id="slot-4-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">2</span> / 2
 <button class="btn-cnt" onclick="changeVal('slot-4-cur', 1)">+1</button>
 </div>
 </div>
@@ -1729,52 +1698,8 @@
 </tr>
 </tbody>
 </table></div>
-<div class="hechizos-adicionales-box">
-<h4>✨ Hechizos Adicionales Aprendidos <button type="button" class="btn-add-spell" onclick="toggleSpellPicker()">➕ Agregar Hechizo</button></h4>
-<div id="hechizos-adicionales-lista"></div>
 </div>
-</div>
-</details>
-
-<!-- PICKER DE HECHIZOS (compendio compartido, ver spells_data.js) -->
-<div class="spell-picker-overlay" id="spell-picker-overlay" onclick="if(event.target===this) toggleSpellPicker(false)">
-<div class="spell-picker-modal">
-<div class="spell-picker-modal-head">
-<h3>📖 Agregar Hechizo del Compendio</h3>
-<button type="button" onclick="toggleSpellPicker(false)">✖</button>
-</div>
-<input type="text" id="spell-picker-search" placeholder="Buscar por nombre..." oninput="renderSpellPickerList()">
-<div class="spell-picker-filters">
-<select id="spell-picker-nivel" onchange="renderSpellPickerList()">
-<option value="">Todos los niveles</option>
-<option value="0">Truco</option>
-<option value="1">Nivel 1</option>
-<option value="2">Nivel 2</option>
-<option value="3">Nivel 3</option>
-<option value="4">Nivel 4</option>
-<option value="5">Nivel 5</option>
-<option value="6">Nivel 6</option>
-<option value="7">Nivel 7</option>
-<option value="8">Nivel 8</option>
-<option value="9">Nivel 9</option>
-</select>
-</div>
-<div class="spell-picker-list" id="spell-picker-list"></div>
-</div>
-</div>
-
-<!-- PANEL GUIADO DE SUBIDA DE NIVEL -->
-<div class="spell-picker-overlay" id="nivel-up-overlay" onclick="if(event.target===this) toggleNivelUp(false)">
-<div class="spell-picker-modal" style="max-width:560px;">
-<div class="spell-picker-modal-head">
-<h3>⬆️ Subir de Nivel</h3>
-<button type="button" onclick="toggleNivelUp(false)">✖</button>
-</div>
-<div id="nivel-up-body" style="overflow-y:auto; flex:1;"></div>
-</div>
-</div>
-
-<details class="v2-section">
+</details><details class="v2-section">
 <summary>🐾 4. Familiares (Pact of the Chain) y Wild Shape</summary>
 <div class="section-content">
 <h3>Familiares Especiales (Pact of the Chain / Wild Companion)</h3>
@@ -2288,9 +2213,6 @@
 </div>
 </div>
 </div>
-<!-- Compendio compartido de hechizos (búsqueda/picker de "Hechizos Adicionales") -->
-<script src="spells_data.js"></script>
-
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -2313,7 +2235,6 @@
     const PERSONAJE_ID = "fiona_faraway";
     const NOMBRE_PERSONAJE_FICHA = "Fiona Faraway";
     const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
-    const HP_MAX_FIONA = 59; // HP base a nivel actual (Druid 8); el botón "Subir de Nivel" suma un bonus aparte, ver hpMaxActual()
     var bitacoraCampanaListener = null;
 
     // Hacer que el botón "Volver" recuerde tu campaña activa al regresar [1, 2]
@@ -2410,11 +2331,11 @@
 
                     aplicarModoLectura(soloLectura);
 
-                    // Sincroniza el HP máximo real (base hardcodeada + bonus por subidas de nivel) a Firebase,
-                    // para que la pantalla del GM en index.html muestre el valor correcto en vez de un default.
-                    const hpMaxReal = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_FIONA;
-                    if ((esMio || soyElGM) && p.datos?.['hp-max'] !== hpMaxReal) {
-                        charRef.child('datos/hp-max').set(hpMaxReal);
+                    // Sincroniza el HP máximo real (hardcodeado en esta ficha) a Firebase, para que
+                    // la pantalla del GM en index.html muestre el valor correcto en vez de un default.
+                    const HP_MAX_FIONA = 59;
+                    if ((esMio || soyElGM) && p.datos?.['hp-max'] !== HP_MAX_FIONA) {
+                        charRef.child('datos/hp-max').set(HP_MAX_FIONA);
                     }
 
                     const btnCompartir = document.getElementById('btn-compartir');
@@ -2625,337 +2546,6 @@
         renderizarProximasHabilidades(nivelPorXP(parseInt(document.getElementById('xp-val')?.value) || 0));
     }
 
-    // === EDITOR DE HECHIZOS ADICIONALES (compendio compartido, spells_data.js) ===
-    function obtenerHechizosAgregados() {
-        try {
-            const raw = document.getElementById('hechizos-agregados')?.value || '[]';
-            return JSON.parse(raw);
-        } catch(e) { return []; }
-    }
-    function guardarHechizosAgregados(lista) {
-        const hidden = document.getElementById('hechizos-agregados');
-        if (hidden) {
-            hidden.value = JSON.stringify(lista);
-            hidden.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }
-    function renderHechizosAdicionales() {
-        const cont = document.getElementById('hechizos-adicionales-lista');
-        if (!cont) return;
-        const nombres = obtenerHechizosAgregados();
-        if (!nombres.length) {
-            cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">Sin hechizos adicionales agregados todavía — usá "➕ Agregar Hechizo" para sumar uno del compendio.</p>';
-            return;
-        }
-        cont.innerHTML = nombres.map(n => {
-            const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === n) : null;
-            const nombreEsc = n.replace(/'/g, "\\'");
-            if (!s) return `<div class="hechizo-adicional-item"><div class="hechizo-adicional-head"><strong>${n}</strong><button class="btn-clear" title="Quitar" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button></div><div class="hechizo-adicional-meta">No encontrado en el compendio actual.</div></div>`;
-            return `
-                <div class="hechizo-adicional-item">
-                    <div class="hechizo-adicional-head">
-                        <span><strong>${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></span>
-                        <div style="display:flex; gap:4px; flex-shrink:0;">
-                            <button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('${nombreEsc}')" title="Registrar uso en el historial">✅ Usar</button>
-                            <button class="btn-clear" title="Quitar de la ficha" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="hechizo-adicional-meta">${s.escuela} · ${s.tiempo} · ${s.alcance} · ${s.duracion}</div>
-                    <div class="hechizo-adicional-desc">${s.desc}</div>
-                </div>
-            `;
-        }).join('');
-    }
-    function quitarHechizoAdicional(nombre) {
-        if (!confirm(`¿Quitar "${nombre}" de tus hechizos aprendidos?`)) return;
-        const lista = obtenerHechizosAgregados().filter(n => n !== nombre);
-        guardarHechizosAgregados(lista);
-        renderHechizosAdicionales();
-    }
-    function agregarHechizoDesdeCompendio(nombre) {
-        const lista = obtenerHechizosAgregados();
-        if (!lista.includes(nombre)) {
-            lista.push(nombre);
-            guardarHechizosAgregados(lista);
-            renderHechizosAdicionales();
-        }
-        toggleSpellPicker(false);
-    }
-    function toggleSpellPicker(show) {
-        const overlay = document.getElementById('spell-picker-overlay');
-        if (!overlay) return;
-        if (show === undefined) show = !overlay.classList.contains('open');
-        overlay.classList.toggle('open', show);
-        if (show) {
-            const search = document.getElementById('spell-picker-search');
-            if (search) search.value = '';
-            renderSpellPickerList();
-        }
-    }
-    function renderSpellPickerList() {
-        const cont = document.getElementById('spell-picker-list');
-        if (!cont || typeof SPELLS === 'undefined') return;
-        const q = (document.getElementById('spell-picker-search')?.value || '').trim().toLowerCase();
-        const nivelFiltro = document.getElementById('spell-picker-nivel')?.value || '';
-        const ya = obtenerHechizosAgregados();
-        let lista = SPELLS.filter(s => {
-            if (q && !s.name.toLowerCase().includes(q)) return false;
-            if (nivelFiltro !== '' && String(s.nivel) !== nivelFiltro) return false;
-            return true;
-        });
-        lista = lista.slice().sort((a, b) => a.nivel - b.nivel || a.name.localeCompare(b.name)).slice(0, 60);
-        if (!lista.length) { cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">Sin resultados.</p>'; return; }
-        cont.innerHTML = lista.map(s => {
-            const yaAgregado = ya.includes(s.name);
-            const nombreEsc = s.name.replace(/'/g, "\\'");
-            return `
-                <div class="spell-picker-item">
-                    <div>
-                        <strong>${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span>
-                        <div style="font-size:0.72rem; color:var(--text-muted);">${s.escuela} · ${s.clases.join(', ')}</div>
-                    </div>
-                    ${yaAgregado ? '<span style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">✅ Ya la tenés</span>' : `<button type="button" onclick="agregarHechizoDesdeCompendio('${nombreEsc}')">➕ Agregar</button>`}
-                </div>
-            `;
-        }).join('');
-    }
-
-    // ============================================
-    // SUBIR DE NIVEL (guiado) — HD/HP, features de clase, espacios de conjuro, hechizos
-    // Nada se aplica automáticamente: cada paso requiere confirmación explícita del jugador.
-    // ============================================
-    const CONFIG_NIVEL = {
-        clases: [
-            { nombre: 'Druid', dado: 8, nivelInicial: 8, caster: 'full' }
-        ]
-    };
-    let nivelUpEstado = { clase: null, tirada: null, modo: null, hpAplicado: false };
-
-    function obtenerSubidasNivel() {
-        try { return JSON.parse(document.getElementById('subidas-nivel-registro')?.value || '[]'); }
-        catch(e) { return []; }
-    }
-    function guardarSubidasNivel(lista) {
-        const hidden = document.getElementById('subidas-nivel-registro');
-        if (hidden) {
-            hidden.value = JSON.stringify(lista);
-            hidden.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }
-    function obtenerBonusHPNivel() {
-        return obtenerSubidasNivel().reduce((s, r) => s + (r.hpGanado || 0), 0);
-    }
-    function hpMaxActual() {
-        return HP_MAX_FIONA + obtenerBonusHPNivel();
-    }
-    function nivelClaseActual(nombreClase) {
-        const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nombreClase);
-        const base = cfg ? cfg.nivelInicial : 1;
-        const subidas = obtenerSubidasNivel().filter(s => s.clase === nombreClase).length;
-        return base + subidas;
-    }
-    function obtenerModificador(sigla) {
-        const ths = Array.from(document.querySelectorAll('.ability-table th'));
-        const idx = ths.findIndex(th => th.textContent.trim() === sigla);
-        if (idx === -1) return 0;
-        const filas = document.querySelectorAll('.ability-table tr');
-        const td = filas[1]?.children[idx];
-        const modText = td?.querySelector('.ab-mod')?.textContent || '(+0)';
-        return parseInt(modText.replace(/[()]/g, '')) || 0;
-    }
-    function actualizarHPMaxDisplay() {
-        if (typeof updateHPDisplay === 'function') updateHPDisplay();
-    }
-    function obtenerTodosLosHD() {
-        const base = ['hd-1','hd-2','hd-3','hd-4','hd-5','hd-6','hd-7','hd-8'];
-        const extra = obtenerSubidasNivel().map((_, i) => `hd-${base.length + i + 1}`);
-        return base.concat(extra);
-    }
-    function actualizarEtiquetaHD() {
-        const label = document.getElementById('hd-label');
-        if (!label) return;
-        const totalPorDado = {};
-        CONFIG_NIVEL.clases.forEach(c => { totalPorDado[c.dado] = (totalPorDado[c.dado] || 0) + c.nivelInicial; });
-        obtenerSubidasNivel().forEach(s => { totalPorDado[s.dado] = (totalPorDado[s.dado] || 0) + 1; });
-        const partes = Object.keys(totalPorDado).sort((a,b)=>b-a).map(dado => `${totalPorDado[dado]}d${dado}`);
-        label.innerText = `Dado de Golpe (Hit Dice): ${partes.join(' + ')}`;
-    }
-    function agregarCheckboxHD(dado) {
-        const cont = document.getElementById('hd-checkbox-group');
-        if (!cont) return;
-        const n = cont.querySelectorAll('input[type="checkbox"]').length + 1;
-        const label = document.createElement('label');
-        label.className = 'check-box-item';
-        label.innerHTML = `<input type="checkbox" id="hd-${n}"> HD ${n}`;
-        cont.appendChild(label);
-        actualizarEtiquetaHD();
-    }
-    function actualizarEspaciosDeConjuro() {
-        const cfg = CONFIG_NIVEL.clases.find(c => c.caster);
-        if (!cfg) return;
-        const nivelClase = nivelClaseActual(cfg.nombre);
-        const bar = document.getElementById('conjuros-slots-bar');
-        if (!bar) return;
-        let tabla, maxes;
-        if (cfg.caster === 'full') { tabla = SLOTS_FULL_CASTER; maxes = tabla[Math.min(nivelClase, 20)] || tabla[20]; }
-        else if (cfg.caster === 'half') { tabla = SLOTS_HALF_CASTER; maxes = tabla[Math.min(nivelClase, 20)] || tabla[20]; }
-        else return;
-        maxes.forEach((max, i) => {
-            const nivelSlot = i + 1;
-            if (max <= 0) return;
-            let card = bar.querySelector(`.tracker-card[data-slot-nivel="${nivelSlot}"]`);
-            if (!card) {
-                card = document.createElement('div');
-                card.className = 'tracker-card';
-                card.dataset.slotNivel = nivelSlot;
-                card.innerHTML = `
-                    <h4>Nivel ${nivelSlot}</h4>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                        <button class="btn-cnt" onclick="changeVal('slot-${nivelSlot}-cur', -1); registrarUsoRecursoGenerico('Espacio de Nivel ${nivelSlot}')">-1</button>
-                        <span id="slot-${nivelSlot}-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">${max}</span> / <span id="slot-${nivelSlot}-max">${max}</span>
-                        <button class="btn-cnt" onclick="changeVal('slot-${nivelSlot}-cur', 1)">+1</button>
-                    </div>
-                `;
-                bar.appendChild(card);
-            } else {
-                const maxLabel = document.getElementById(`slot-${nivelSlot}-max`);
-                if (maxLabel) maxLabel.innerText = max;
-            }
-        });
-    }
-
-    function toggleNivelUp(show) {
-        const overlay = document.getElementById('nivel-up-overlay');
-        if (!overlay) return;
-        if (show === undefined) show = !overlay.classList.contains('open');
-        overlay.classList.toggle('open', show);
-        if (show) {
-            const claseUnica = CONFIG_NIVEL.clases.length === 1 ? CONFIG_NIVEL.clases[0].nombre : null;
-            nivelUpEstado = { clase: claseUnica, tirada: null, modo: null, hpAplicado: false, nivelAntes: claseUnica ? nivelClaseActual(claseUnica) : null };
-            renderNivelUp();
-        }
-    }
-    function nivelUpElegirClase(nombre) {
-        nivelUpEstado = { clase: nombre, tirada: null, modo: null, hpAplicado: false, nivelAntes: nivelClaseActual(nombre) };
-        renderNivelUp();
-    }
-    function nivelUpTirarHD(modo) {
-        const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nivelUpEstado.clase);
-        if (!cfg) return;
-        nivelUpEstado.tirada = (modo === 'promedio') ? (HD_PROMEDIO[cfg.dado] || Math.ceil(cfg.dado / 2) + 1) : (Math.floor(Math.random() * cfg.dado) + 1);
-        nivelUpEstado.modo = modo;
-        renderNivelUp();
-    }
-    function nivelUpAplicarHP() {
-        const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nivelUpEstado.clase);
-        if (!cfg || nivelUpEstado.tirada == null || nivelUpEstado.hpAplicado) return;
-        const conMod = obtenerModificador('CON');
-        const hpGanado = Math.max(1, nivelUpEstado.tirada + conMod);
-        const nuevoNivelClase = nivelClaseActual(cfg.nombre) + 1;
-        const lista = obtenerSubidasNivel();
-        lista.push({ clase: cfg.nombre, nivelNuevo: nuevoNivelClase, dado: cfg.dado, tirada: nivelUpEstado.tirada, modo: nivelUpEstado.modo, hpGanado, fecha: Date.now() });
-        guardarSubidasNivel(lista);
-
-        changeInputVal('hp-cur', hpGanado);
-        agregarCheckboxHD(cfg.dado);
-        actualizarHPMaxDisplay();
-        actualizarEspaciosDeConjuro();
-        nivelUpEstado.hpAplicado = true;
-        nivelUpEstado.hpGanado = hpGanado;
-        nivelUpEstado.nuevoNivelClase = nuevoNivelClase;
-        renderNivelUp();
-    }
-    function nivelUpAbrirCompendio() {
-        toggleNivelUp(false);
-        toggleSpellPicker(true);
-    }
-    function restaurarSubidasNivel() {
-        const lista = obtenerSubidasNivel();
-        if (!lista.length) return;
-        const baseHD = 8;
-        const actuales = document.querySelectorAll('#hd-checkbox-group input[type="checkbox"]').length;
-        const faltantes = (baseHD + lista.length) - actuales;
-        for (let i = 0; i < faltantes; i++) agregarCheckboxHD();
-        actualizarHPMaxDisplay();
-        actualizarEspaciosDeConjuro();
-    }
-    function renderNivelUp() {
-        const body = document.getElementById('nivel-up-body');
-        if (!body) return;
-        let html = '';
-
-        if (CONFIG_NIVEL.clases.length > 1) {
-            html += `<div class="nivelup-step"><h4>1️⃣ Elegí qué clase sube de nivel</h4>
-                <select onchange="nivelUpElegirClase(this.value)">
-                    <option value="">— Elegí una clase —</option>
-                    ${CONFIG_NIVEL.clases.map(c => `<option value="${c.nombre}" ${nivelUpEstado.clase === c.nombre ? 'selected' : ''}>${c.nombre} (nivel actual: ${nivelClaseActual(c.nombre)})</option>`).join('')}
-                </select>
-            </div>`;
-        }
-        if (!nivelUpEstado.clase) {
-            body.innerHTML = html || '<p style="font-size:0.85rem;color:var(--text-muted);">Elegí una clase para continuar.</p>';
-            return;
-        }
-        const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nivelUpEstado.clase);
-        const nivelAntes = nivelUpEstado.nivelAntes;
-
-        html += `<div class="nivelup-step">
-            <h4>2️⃣ Dado de Golpe — ${cfg.nombre} nivel ${nivelAntes} → ${nivelAntes + 1} (1d${cfg.dado})</h4>`;
-        if (!nivelUpEstado.hpAplicado) {
-            html += `<div style="display:flex; gap:8px; margin-bottom:6px;">
-                <button class="btn-roll" onclick="nivelUpTirarHD('tirar')">🎲 Tirar 1d${cfg.dado}</button>
-                <button class="btn-roll" onclick="nivelUpTirarHD('promedio')">📊 Usar Promedio (${HD_PROMEDIO[cfg.dado]})</button>
-            </div>`;
-            if (nivelUpEstado.tirada != null) {
-                const conMod = obtenerModificador('CON');
-                html += `<div class="nivelup-roll-result">🎲 ${nivelUpEstado.tirada} + ${conMod} (CON) = ${Math.max(1, nivelUpEstado.tirada + conMod)} HP</div>
-                    <button class="btn-add-spell" onclick="nivelUpAplicarHP()">✅ Aplicar HD y HP</button>`;
-            }
-        } else {
-            html += `<div class="nivelup-roll-result">✅ Aplicado: +${nivelUpEstado.hpGanado} HP (nuevo máximo: ${hpMaxActual()})</div>`;
-        }
-        html += `</div>`;
-
-        if (!nivelUpEstado.hpAplicado) {
-            body.innerHTML = html;
-            return;
-        }
-
-        const nuevoNivel = nivelUpEstado.nuevoNivelClase;
-        const agregadas = obtenerHabilidadesAgregadas();
-        const candidatas = (typeof PROXIMAS_HABILIDADES !== 'undefined' ? PROXIMAS_HABILIDADES : [])
-            .map((h, idx) => ({ h, idx }))
-            .filter(x => (!x.h.clase || x.h.clase === cfg.nombre) && x.h.nivel === nuevoNivel);
-        html += `<div class="nivelup-step"><h4>3️⃣ Rasgos de clase desbloqueados en ${cfg.nombre} ${nuevoNivel}</h4>`;
-        if (!candidatas.length) {
-            html += `<p style="font-size:0.8rem;color:var(--text-muted);">No hay rasgos nuevos registrados para este nivel.</p>`;
-        } else {
-            candidatas.forEach(({h, idx}) => {
-                const yaAgregada = agregadas.includes(h.nombre);
-                html += `<div class="nivelup-feature-item">
-                    <strong>${yaAgregada ? '✅' : ''} ${h.nombre}</strong><br>${h.descripcion}
-                    ${!yaAgregada ? `<br><button type="button" class="btn-add-spell" onclick="agregarHabilidadANivel(${idx}); renderNivelUp();">➕ Agregar a la ficha</button>` : ''}
-                </div>`;
-            });
-        }
-        html += `</div>`;
-
-        if (cfg.caster === 'full' || cfg.caster === 'half') {
-            const tabla = cfg.caster === 'full' ? SLOTS_FULL_CASTER : SLOTS_HALF_CASTER;
-            const maxes = tabla[Math.min(nivelClaseActual(cfg.nombre), 20)] || [];
-            const resumen = maxes.map((m, i) => m > 0 ? `Nvl ${i+1}: ${m}` : null).filter(Boolean).join(' · ') || 'Sin espacios todavía';
-            html += `<div class="nivelup-step"><h4>4️⃣ Espacios de conjuro</h4>
-                <p style="font-size:0.82rem;">Espacios actualizados en la ficha: ${resumen}</p>
-            </div>`;
-        }
-
-        html += `<div class="nivelup-step"><h4>5️⃣ Aprender hechizos nuevos (opcional)</h4>
-            <button class="btn-add-spell" onclick="nivelUpAbrirCompendio()">📖 Abrir Compendio de Hechizos</button>
-        </div>`;
-
-        body.innerHTML = html;
-    }
-
     function toggleNivelPopover() {
         const p = document.getElementById('nivel-popover-panel');
         if (!p) return;
@@ -3062,11 +2652,8 @@
     }
     function updateHPDisplay() {
         const cur = document.getElementById('hp-cur').value;
-        const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_FIONA;
         const s = document.getElementById('hp-summary');
-        if (s) s.innerText = `${cur} / ${max}`;
-        const maxLabel = document.getElementById('hp-max-label');
-        if (maxLabel) maxLabel.innerText = max;
+        if (s) s.innerText = `${cur} / 59`;
         syncStickyBar();
     }
     function changeVal(id, delta) {
@@ -3083,7 +2670,7 @@
         let input = document.getElementById(id);
         if (!input) return;
         let val = Math.max(0, (parseInt(input.value) || 0) + delta);
-        if (id === 'hp-cur') val = Math.min(val, (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_FIONA);
+        if (id === 'hp-cur') val = Math.min(val, 59);
         input.value = val;
         input.dispatchEvent(new Event('input', { bubbles: true }));
         if (id === 'hp-cur') updateHPDisplay();
@@ -3093,8 +2680,7 @@
         if (modoLectura) return;
         let val = parseInt(e.target.value);
         if (isNaN(val)) val = 0;
-        const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_FIONA;
-        val = Math.max(0, Math.min(max, val));
+        val = Math.max(0, Math.min(59, val));
         e.target.value = val;
         updateHPDisplay();
         if (charRef) charRef.child('datos/hp-cur').set(val);
@@ -3112,10 +2698,9 @@
     function restLong() {
         if (modoLectura) return;
         if (confirm("¿Efectuar Descanso Largo?")) {
-            const maxHP = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_FIONA;
             const h = document.getElementById('hp-cur');
-            if (h) h.value = String(maxHP);
-            if (charRef) charRef.child('datos/hp-cur').set(maxHP);
+            if (h) h.value = '59';
+            if (charRef) charRef.child('datos/hp-cur').set(59);
             let hpTemp = document.getElementById('hp-temp-input');
             if (hpTemp) { hpTemp.value = '0'; hpTemp.dispatchEvent(new Event('input', { bubbles: true })); }
             updateHPDisplay();
@@ -3123,15 +2708,10 @@
                 cb.checked = false;
                 cb.dispatchEvent(new Event('change', { bubbles: true }));
             });
-            // Rellena todos los espacios de conjuro desbloqueados (nivel 1..N), no solo los originales.
-            // Setea directo (no via changeVal) para no depender de leer innerText de una tarjeta recién creada.
-            document.querySelectorAll('#conjuros-slots-bar .tracker-card').forEach(card => {
-                const nivelSlot = card.dataset.slotNivel;
-                const maxLabel = document.getElementById(`slot-${nivelSlot}-max`);
-                const max = parseInt(maxLabel?.textContent) || 0;
-                const curEl = document.getElementById(`slot-${nivelSlot}-cur`);
-                if (curEl) { curEl.innerText = max; if (charRef) charRef.child('datos/slot-' + nivelSlot + '-cur').set(max); }
-            });
+            changeVal('slot-1-cur', 4 - (parseInt(document.getElementById('slot-1-cur')?.innerText) || 0));
+            changeVal('slot-2-cur', 3 - (parseInt(document.getElementById('slot-2-cur')?.innerText) || 0));
+            changeVal('slot-3-cur', 3 - (parseInt(document.getElementById('slot-3-cur')?.innerText) || 0));
+            changeVal('slot-4-cur', 2 - (parseInt(document.getElementById('slot-4-cur')?.innerText) || 0));
             updateConditions();
             syncStickyBar();
             alert("🌙 Descanso Largo completado.");
@@ -3232,7 +2812,7 @@
 
     // === DADO DE GOLPE (Hit Die) — botón de tirar que suba HP y marque el dado usado ===
     function tirarHitDie() {
-        const dados = (typeof obtenerTodosLosHD === 'function') ? obtenerTodosLosHD() : ['hd-1','hd-2','hd-3','hd-4','hd-5','hd-6','hd-7','hd-8'];
+        const dados = ['hd-1','hd-2','hd-3','hd-4','hd-5','hd-6','hd-7','hd-8'];
         const libre = dados.find(id => !document.getElementById(id)?.checked);
         if (!libre) { alert('⚠️ No te quedan Dados de Golpe disponibles. Se recuperan la mitad (redondeado abajo) en un descanso largo.'); return; }
         const tirada = Math.floor(Math.random() * 8) + 1;
@@ -3458,15 +3038,11 @@
             // ya están actualizados en el DOM en este punto).
             if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();
             if (typeof restaurarHabilidadesAgregadas === 'function') restaurarHabilidadesAgregadas();
-            if (typeof renderHechizosAdicionales === 'function') renderHechizosAdicionales();
-            if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
         });
     }
 
     // Primer pintado inmediato (usa el valor por defecto de xp-val hasta que llegue el sync real)
     if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();
-    if (typeof renderHechizosAdicionales === 'function') renderHechizosAdicionales();
-    if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
 
 
 const INVENTARIO_INICIAL = [
@@ -3646,7 +3222,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </script>
 <input type="hidden" id="habilidades-agregadas-nivel" value="">
-<input type="hidden" id="hechizos-agregados" value="">
-<input type="hidden" id="subidas-nivel-registro" value="">
 </body>
 </html>
