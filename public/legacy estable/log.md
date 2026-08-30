@@ -276,3 +276,24 @@ Contiene las 6 fichas D&D. El usuario probó la pasada 44.0 y mandó 3 capturas 
 **Bug encontrado y corregido durante la verificación**: al reestructurar la caja de historial de Fiona, el primer intento de edición dejó `.dice-roller-panel` sin su `</div>` de cierre — el reemplazo del bloque viejo (que terminaba cerrando tanto la caja de historial como `.dice-container`, un ancestro) por el nuevo bloque compacto se quedó corto un `</div>`. Detectado con un parser real (`html.parser` de Python, rastreando la pila de `<div>` abiertos sin cerrar en todo el documento, no solo el conteo de apariciones) que señaló la línea exacta del `.dice-roller-panel` huérfano; corregido agregando el `</div>` faltante y reverificado con el mismo parser en las 6 fichas (0 divs sin cerrar).
 
 Verificado con `node --check` en las 6 fichas, balance de tags `<div>`/`<button>` contra `git show HEAD`, y — a raíz del bug de Fiona — una pasada extra con un parser HTML real (no solo conteo de apariciones) confirmando 0 tags sin cerrar en las 6 fichas; con Playwright: estructura confirmada (historial siempre anidado dentro de `.dice-result-box`, sin columnas sueltas remanentes), tirada + limpieza de historial funcionando sin errores en Fiona (con stub de `firebase`), y capturas de pantalla en Modo Día real (vía el botón de toggle, no el auto-detect por hora que quedó bloqueado por la misma limitación de sandbox sin internet) confirmando Check/Save de Myrklogi legibles, panel de dados de Myrklogi ya claro, y header + panel de Ulreek ya claros y legibles.
+
+## 46.0 — fix de XP vs Nivel según la tabla de XP custom (Fiona, Myrklogi, Ulreek) (29 ago 2026)
+
+Contiene `fiona_faraway.html`, `myrklogi_mangarisonn.html` y `ulreek.html`. El usuario reportó que la XP de Fiona no correspondía a su nivel (8) según la tabla de XP homebrew (`TABLA_XP_NIVELES`, la misma tabla en las 6 fichas D&D desde la pasada 9.0) y pidió ajustar la XP al nivel, y de paso revisar el resto de la flota con el mismo criterio.
+
+Se recalculó `nivelPorXP(xp)` a mano para las 6 fichas D&D contra su nivel total real (sumando clases en los multiclase) y su XP actual:
+
+| Ficha | Nivel (clases) | XP antes | Nivel que da esa XP | ¿Correspondía? |
+|---|---|---|---|---|
+| Fiona | Druid 8 | 34.000 | 6 | ❌ (2 niveles de diferencia) |
+| Eldur | Monk 5 / Cleric 2 = 7 | 49.000 | 7 | ✅ |
+| Hannoghar | Paladin 7 | 38.100 | 7 | ✅ |
+| Myrklogi | Mago 9 | 60.875 | 8 | ❌ |
+| Ulreek | Sorcerer 7 / Warlock 1 = 8 | 41.000 | 7 | ❌ |
+| Dane | Ranger 5 / Rogue 4 = 9 | 70.000 | 9 | ✅ |
+
+Antes de tocar nada se verificó contra la base de datos real (`firebase database:get .../datos/xp-val`) que ninguna de las 6 fichas tiene este campo escrito en Firebase todavía (las 6 devuelven `null` — nunca se tocó el input de XP en partida real, confirmado también contra un campo que sí existe, `hp-cur`, para descartar un error de ruta); es decir, el valor que ve cualquier jugador hoy es exactamente el `value` hardcodeado en el HTML, sin ningún override guardado que pudiera quedar desincronizado tras este fix.
+
+Se corrigió la XP de las 3 fichas con discrepancia, subiéndola al umbral mínimo exacto de la tabla para su nivel real (no se inventó un número intermedio, para no asumir cuánta XP de "sobra" tendría cada personaje sin dato real): Fiona 34.000→49.500 (nivel 8), Myrklogi 60.875→64.500 (nivel 9), Ulreek 41.000→49.500 (nivel 8). Eldur, Hannoghar y Dane quedaron sin tocar por ya corresponder.
+
+Verificado con `node --check` en las 3 fichas editadas (cambio de una sola línea cada una) y con Playwright, invocando `nivelPorXP()` real de cada archivo (con el mismo stub de `firebase` usado en pasadas anteriores para sortear la limitación de sandbox sin internet): las 6 fichas devuelven ahora el nivel esperado a partir de su XP actual.
