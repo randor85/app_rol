@@ -618,8 +618,11 @@ btnLoginEmail.onclick = () => {
 
     if (SISTEMA_PERSONAJE[id] === 'chicle') {
         // "El Último Chicle" no tiene HP: el recurso a mostrar es la cantidad de chicles (0-8).
-        const gumCur = p.datos?.['gum-cur'];
-        const gum = Number.isInteger(gumCur) ? Math.max(0, Math.min(8, gumCur)) : 8;
+        // gum-cur puede llegar como string (viene de un <input type="hidden">, cuyo .value
+        // siempre es texto) o como number (semilla de la plantilla al reclamar) -> parseInt
+        // cubre los dos casos, Number.isInteger solo cubría el segundo.
+        const gumCurParsed = parseInt(p.datos?.['gum-cur'], 10);
+        const gum = Number.isInteger(gumCurParsed) ? Math.max(0, Math.min(8, gumCurParsed)) : 8;
         const pctGum = (gum / 8) * 100;
         vital.innerHTML = `
         <p style="font-weight:bold; color:var(--accent-gold);">${p.nombre || "Superviviente"}</p>
