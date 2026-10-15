@@ -244,6 +244,7 @@
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button id="btn-sistema-dnd" class="btn-open" style="cursor:pointer;">⚔️ D&D</button>
                 <button id="btn-sistema-coc" class="btn-open" style="cursor:pointer;">🐙 Call of Cthulhu</button>
+                <button id="btn-sistema-chicle" class="btn-open" style="cursor:pointer;">🍬 El Último Chicle</button>
             </div>
         </div>
 
@@ -335,6 +336,7 @@
         const badgeSistemaCampana = document.getElementById('badge-sistema-campana');
         const btnSistemaDnd = document.getElementById('btn-sistema-dnd');
         const btnSistemaCoc = document.getElementById('btn-sistema-coc');
+        const btnSistemaChicle = document.getElementById('btn-sistema-chicle');
 
 
         let miUidActual = null;
@@ -360,9 +362,15 @@
             ulreek: 'dnd',
             muldar: 'dnd',
             hannoghar: 'dnd',
-            sporium: 'dnd'
+            sporium: 'dnd',
+            chicle1: 'chicle',
+            chicle2: 'chicle',
+            chicle3: 'chicle',
+            chicle4: 'chicle',
+            chicle5: 'chicle',
+            chicle6: 'chicle'
         };
-        const NOMBRE_SISTEMA = { dnd: 'D&D', coc: 'Call of Cthulhu' };
+        const NOMBRE_SISTEMA = { dnd: 'D&D', coc: 'Call of Cthulhu', chicle: 'El Último Chicle' };
 
         // PLANTILLAS POR DEFECTO
         const plantillasPersonajes = {
@@ -374,8 +382,16 @@
             ulreek: { nombre: "Ulreek", clase: "Hechicero", datos: { "hp-cur": 70, "hp-max": 70 } },
             muldar: { nombre: "Muldar", clase: "Bárbaro", datos: { "hp-cur": 70, "hp-max": 70 } },
             hannoghar: { nombre: "Hannoghar", clase: "Paladín", datos: { "hp-cur": 66, "hp-max": 66 } },
-            sporium: { nombre: "Sporium", clase: "druida callampero 8", datos: { "hp-cur": 70, "hp-max": 70 } }
-
+            sporium: { nombre: "Sporium", clase: "druida callampero 8", datos: { "hp-cur": 70, "hp-max": 70 } },
+            // Las 6 fichas de "El Último Chicle" no tienen nombre propio: el jugador lo elige
+            // recién al reclamar la ficha (ver chicle.html). "nombre" acá es solo el valor
+            // provisorio que se ve en el selector y en la grilla hasta que lo cambien.
+            chicle1: { nombre: "Superviviente 1 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle2: { nombre: "Superviviente 2 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle3: { nombre: "Superviviente 3 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle4: { nombre: "Superviviente 4 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle5: { nombre: "Superviviente 5 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle6: { nombre: "Superviviente 6 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } }
         };
 
         // ==========================================
@@ -558,19 +574,17 @@ btnLoginEmail.onclick = () => {
                     const btnFicha = card.querySelector('.btn-ficha');
     if (btnFicha) {
         btnFicha.onclick = () => {
-            let destino = "index.html";
-            const name = p.nombre.toLowerCase();
-                            if (name.includes("fiona")) destino = "fiona_faraway.html";
-                            if (name.includes("eldur")) destino = "eldur.html";
-                            if (name.includes("dane")) destino = "dane.html";
-                            if (name.includes("hannoghar")) destino = "hannoghar.html";
-                            if (name.includes("myrklogi")) destino = "myrklogi_mangarisonn.html";
-                            if (name.includes("ulreek")) destino = "ulreek.html";
-                            if (name.includes("nevada")) destino = "nevada_jones.html";
-                            if (name.includes("muldar")) destino = "muldar.html";
-                            if (name.includes("sporium")) destino = "sporium.html";
-                            window.location.href = `${destino}?campana=${campanaId}`;
-                        };
+            // Ruteo por id de personaje (no por substring del nombre): el nombre de las
+            // fichas de "El Último Chicle" lo elige cada jugador, así que no se puede
+            // seguir adivinando el archivo de destino a partir del texto de p.nombre.
+            let destino = `${id}.html`;
+            if (SISTEMA_PERSONAJE[id] === 'chicle') {
+                const numeroJugador = id.replace('chicle', '');
+                destino = `chicle.html?jugador=${numeroJugador}`;
+            }
+            const separador = destino.includes('?') ? '&' : '?';
+            window.location.href = `${destino}${separador}campana=${campanaId}`;
+        };
                     }
 
                     card.querySelector('.btn-tirar').onclick = () => {
@@ -599,6 +613,25 @@ btnLoginEmail.onclick = () => {
                     gridPersonajes.appendChild(card);
 
                     if (soyElGM) {
+    const vital = document.createElement('div');
+    vital.style = "background: rgba(0,0,0,0.2); padding: 10px; border-radius:6px; border:1px solid var(--border-color);";
+
+    if (SISTEMA_PERSONAJE[id] === 'chicle') {
+        // "El Último Chicle" no tiene HP: el recurso a mostrar es la cantidad de chicles (0-8).
+        const gumCur = p.datos?.['gum-cur'];
+        const gum = Number.isInteger(gumCur) ? Math.max(0, Math.min(8, gumCur)) : 8;
+        const pctGum = (gum / 8) * 100;
+        vital.innerHTML = `
+        <p style="font-weight:bold; color:var(--accent-gold);">${p.nombre || "Superviviente"}</p>
+        <div style="background:#0f0f12; height:8px; border-radius:4px; overflow:hidden;">
+            <div style="background:${gum === 0 ? '#c94a4a' : '#a6f079'}; width:${pctGum}%; height:100%;"></div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">🍬 Chicles: ${gum}/8</p>
+        `;
+        gridVitalesGm.appendChild(vital);
+        return;
+    }
+
     const hpCur = p.datos?.['hp-cur'] || 0;
     const hpMax = p.datos?.['hp-max'] || 70;
     const pct = Math.min((hpCur / hpMax) * 100, 100);
@@ -612,8 +645,6 @@ btnLoginEmail.onclick = () => {
             return key.replace('cond-', '🛑 ').replace('buff-', '✨ ').replace('debuff-', '⚡ ');
         });
 
-    const vital = document.createElement('div');
-    vital.style = "background: rgba(0,0,0,0.2); padding: 10px; border-radius:6px; border:1px solid var(--border-color);";
     vital.innerHTML = `
         <p style="font-weight:bold; color:var(--accent-gold);">${p.nombre || "Héroe"}</p>
         <div style="background:#0f0f12; height:8px; border-radius:4px; overflow:hidden;">
@@ -668,6 +699,8 @@ btnLoginEmail.onclick = () => {
     btnSistemaDnd.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('dnd')
         .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
     btnSistemaCoc.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('coc')
+        .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
+    btnSistemaChicle.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('chicle')
         .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
 
     db.ref(`campanas/${campanaId}/gm`).on('value', gmSnap => {
