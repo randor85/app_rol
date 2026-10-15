@@ -601,7 +601,11 @@
     if (normal && !success && gumFinal === 0) info += ' ¡Te has quedado sin chicles!';
     showResult(d, success ? '¡Éxito!' : '¡Fallaste!', info, success ? 'success' : 'fail');
     render();
-    registrarTirada(action, d);
+    // Se etiqueta éxito/fallo en el tipo (mismo criterio que usa Nevada Jones con sus
+    // tiradas de habilidad) para que el panel del GM no muestre un número pelado sin
+    // poder saber si la acción salió bien o mal.
+    const etiquetaResultado = success ? 'ÉXITO' : ('FALLO' + (normal ? ' · −1 chicle' : ''));
+    registrarTirada(`${action} [${etiquetaResultado}]`, d);
   }
 
   function spend() {
