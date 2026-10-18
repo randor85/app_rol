@@ -363,6 +363,16 @@ function elegirSubclase(claseId, nombreSubclase) {
 }
 
 renderClassGrid('');
+
+// Deep-link desde las fichas de personaje: classes.html?clase=wizard abre directo el
+// detalle de esa clase (pestaña Progresión, que ya es la que arranca activa) y hace
+// scroll hasta ahí, en vez de forzar a buscarla a mano en la grilla.
+(function abrirClaseDesdeURL() {
+  const claseUrl = new URLSearchParams(window.location.search).get('clase');
+  if (claseUrl && CLASSES.some(c => c.id === claseUrl)) {
+    toggleClassDetail(claseUrl);
+  }
+})();
 </script>
 </body>
 </html>
