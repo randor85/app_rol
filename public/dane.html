@@ -1362,6 +1362,10 @@
         guardarHechizosAgregados(lista);
         renderHechizosAdicionales();
     }
+    // Nota: a diferencia del resto de la flota, acá "✅ Usar" se deja como solo registro
+    // (registrarUsoRecursoGenerico), sin intentar descontar un espacio — Dane es la única
+    // ficha cuyos espacios de conjuro son checkboxes sueltos en prosa en vez de un contador
+    // slot-N-cur, así que no hay ningún elemento numérico del que descontar automáticamente.
     function agregarHechizoDesdeCompendio(nombre) {
         const lista = obtenerHechizosAgregados();
         if (!lista.includes(nombre)) {

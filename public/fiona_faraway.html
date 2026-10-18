@@ -2680,7 +2680,7 @@
                     <div class="hechizo-adicional-head">
                         <span><strong>${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></span>
                         <div style="display:flex; gap:4px; flex-shrink:0;">
-                            <button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('${nombreEsc}')" title="Registrar uso en el historial">✅ Usar</button>
+                            <button class="btn-roll btn-roll-sm" onclick="usarHechizoAdicional('${nombreEsc}', ${s.nivel})" title="${s.nivel === 0 ? 'Registrar uso en el historial' : 'Gasta un espacio de nivel ' + s.nivel + ' y lo registra'}">✅ Usar</button>
                             <button class="btn-clear" title="Quitar de la ficha" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button>
                         </div>
                     </div>
@@ -2695,6 +2695,20 @@
         const lista = obtenerHechizosAgregados().filter(n => n !== nombre);
         guardarHechizosAgregados(lista);
         renderHechizosAdicionales();
+    }
+    // "Usar" un hechizo adicional del compendio gasta un espacio de conjuro real (igual que
+    // los conjuros de la tabla fija) en vez de solo anotarlo en el historial sin efecto.
+    // Los trucos (nivel 0) no gastan espacio, como corresponde.
+    function usarHechizoAdicional(nombre, nivel) {
+        if (nivel > 0) {
+            const el = document.getElementById(`slot-${nivel}-cur`);
+            if (el) {
+                const actual = parseInt(el.textContent) || 0;
+                if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivel} disponibles.`); return; }
+                changeVal(`slot-${nivel}-cur`, -1);
+            }
+        }
+        registrarUsoRecursoGenerico(nombre);
     }
     function agregarHechizoDesdeCompendio(nombre) {
         const lista = obtenerHechizosAgregados();
@@ -3171,9 +3185,13 @@
         if (modoLectura) return;
         let el = document.getElementById(id);
         if (!el) return;
-        let val = parseInt(el.innerText) + delta;
+        // .textContent (no .innerText): .innerText depende del layout y devuelve vacío si el
+        // elemento está dentro de una sección colapsada (<details> sin "open"), como pasa con
+        // los slot-N-cur cuando se los toca desde fuera de "Conjuros Preparados" (p.ej. el botón
+        // "Usar" de Hechizos Adicionales).
+        let val = (parseInt(el.textContent) || 0) + delta;
         if (['healer-kit-cur', 'honor-cur', 'rep-cur', 'slot-1-cur', 'slot-2-cur', 'slot-3-cur', 'slot-4-cur'].includes(id)) val = Math.max(0, val);
-        el.innerText = val;
+        el.textContent = val;
         if (charRef) charRef.child('datos/' + id).set(val);
     }
     function changeInputVal(id, delta) {
