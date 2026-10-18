@@ -857,7 +857,18 @@
  </table></div>
  <div class="hechizos-adicionales-box">
  <h4>✨ Hechizos Adicionales Aprendidos <button type="button" class="btn-add-spell" onclick="toggleSpellPicker()">➕ Agregar Hechizo</button></h4>
- <div id="hechizos-adicionales-lista"></div>
+ <div class="table-scroll"><table>
+ <thead>
+ <tr>
+ <th>Nivel</th>
+ <th>Conjuro</th>
+ <th>Tiempo / Rango</th>
+ <th>Resumen y Efecto Mecánico</th>
+ <th>Tirar / Efecto</th>
+ </tr>
+ </thead>
+ <tbody id="hechizos-adicionales-lista"></tbody>
+ </table></div>
  </div>
  </div>
  </details>
@@ -1583,30 +1594,37 @@
     if (hidden) hidden.value = JSON.stringify(lista);
     if (typeof guardarCampo === 'function') guardarCampo('hechizos-agregados', JSON.stringify(lista));
   }
+  function etiquetaNivelConjuro(nivel) {
+    if (nivel === 0) return 'Cantrip';
+    const sufijo = nivel === 1 ? 'st' : nivel === 2 ? 'nd' : nivel === 3 ? 'rd' : 'th';
+    return nivel + sufijo;
+  }
+  // Se renderiza como filas de tabla (mismas columnas que la tabla de conjuros fija) en vez
+  // de tarjetas sueltas, para que los hechizos del compendio se vean integrados en vez de en
+  // una lista aparte. El "✨" en el nivel es la única marca de que es un hechizo adicional.
   function renderHechizosAdicionales() {
     const cont = document.getElementById('hechizos-adicionales-lista');
     if (!cont) return;
     const nombres = obtenerHechizosAgregados();
     if (!nombres.length) {
-      cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">Sin hechizos adicionales agregados todavía — usá "➕ Agregar Hechizo" para sumar uno del compendio.</p>';
+      cont.innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);font-size:0.85rem;">Sin hechizos adicionales agregados todavía — usá "➕ Agregar Hechizo" para sumar uno del compendio.</td></tr>';
       return;
     }
     cont.innerHTML = nombres.map(n => {
       const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === n) : null;
       const nombreEsc = n.replace(/'/g, "\\'");
-      if (!s) return `<div class="hechizo-adicional-item"><div class="hechizo-adicional-head"><strong>${n}</strong><button class="btn-clear" title="Quitar" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button></div><div class="hechizo-adicional-meta">No encontrado en el compendio actual.</div></div>`;
+      if (!s) return `<tr><td colspan="4">${n} <span style="color:var(--text-muted);font-size:0.8rem;">(no encontrado en el compendio actual)</span></td><td><button class="btn-clear" title="Quitar" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button></td></tr>`;
       return `
-        <div class="hechizo-adicional-item">
-          <div class="hechizo-adicional-head">
-            <span><strong>${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></span>
-            <div style="display:flex; gap:4px; flex-shrink:0;">
-              <button class="btn-roll btn-roll-sm" onclick="usarHechizoAdicional('${nombreEsc}', ${s.nivel})" title="${s.nivel === 0 ? 'Registrar uso en el historial' : 'Gasta un espacio de nivel ' + s.nivel + ' y lo registra'}">✅ Usar</button>
-              <button class="btn-clear" title="Quitar de la ficha" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button>
-            </div>
-          </div>
-          <div class="hechizo-adicional-meta">${s.escuela} · ${s.tiempo} · ${s.alcance} · ${s.duracion}</div>
-          <div class="hechizo-adicional-desc">${s.desc}</div>
-        </div>
+        <tr>
+          <td><span class="tag">✨ ${etiquetaNivelConjuro(s.nivel)}</span></td>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.tiempo} / ${s.alcance}</td>
+          <td>${s.desc} <em>(${s.duracion})</em></td>
+          <td style="display:flex; gap:4px; flex-wrap:wrap;">
+            <button class="btn-roll btn-roll-sm" onclick="usarHechizoAdicional('${nombreEsc}', ${s.nivel})" title="${s.nivel === 0 ? 'Registrar uso en el historial' : 'Gasta un espacio de nivel ' + s.nivel + ' y lo registra'}">✅ Usar</button>
+            <button class="btn-clear" title="Quitar de la ficha" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button>
+          </td>
+        </tr>
       `;
     }).join('');
   }
