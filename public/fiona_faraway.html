@@ -196,6 +196,17 @@
  .spell-picker-item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-color); }
  .spell-picker-item:last-child { border-bottom:none; }
  .spell-picker-item button { background: var(--accent-gold); color:#000; border:none; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+ .spell-picker-item .spell-picker-name { cursor:pointer; }
+ .spell-picker-item .spell-picker-name:hover { text-decoration: underline; }
+ .spell-preview-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:2100; align-items:center; justify-content:center; padding:16px; }
+ .spell-preview-overlay.open { display:flex; }
+ .spell-preview-card { background: var(--bg-card); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 18px; width:100%; max-width:420px; max-height:80vh; overflow-y:auto; box-shadow: 0 8px 28px rgba(0,0,0,0.8); }
+ .spell-preview-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+ .spell-preview-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; line-height:1.5; }
+ .spell-preview-desc { font-size: 0.88rem; color: var(--text-light); white-space: pre-wrap; margin-bottom: 16px; }
+ .spell-preview-actions { display:flex; justify-content:flex-end; gap:8px; }
+ .spell-preview-actions button { padding:6px 12px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer; border:1px solid var(--border-color); background:none; color:var(--text-muted); }
+ .spell-preview-actions button.add { background: var(--accent-gold); color:#000; border:none; }
  .nivelup-step { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
  .nivelup-step.disabled { opacity: 0.5; pointer-events: none; }
  .nivelup-step h4 { font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 8px; }
@@ -1768,6 +1779,11 @@
 </div>
 </div>
 
+<!-- Vista previa de un hechizo del compendio, antes de agregarlo a la ficha -->
+<div class="spell-preview-overlay" id="spell-preview-overlay" onclick="if(event.target===this) cerrarPreviewHechizo()">
+<div class="spell-preview-card" id="spell-preview-card"></div>
+</div>
+
 <!-- PANEL GUIADO DE SUBIDA DE NIVEL -->
 <div class="spell-picker-overlay" id="nivel-up-overlay" onclick="if(event.target===this) toggleNivelUp(false)">
 <div class="spell-picker-modal" style="max-width:560px;">
@@ -2716,13 +2732,38 @@
             return `
                 <div class="spell-picker-item">
                     <div>
-                        <strong>${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span>
+                        <strong class="spell-picker-name" title="Ver detalle" onclick="previsualizarHechizo('${nombreEsc}')">👁️ ${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span>
                         <div style="font-size:0.72rem; color:var(--text-muted);">${s.escuela} · ${s.clases.join(', ')}</div>
                     </div>
                     ${yaAgregado ? '<span style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">✅ Ya la tenés</span>' : `<button type="button" onclick="agregarHechizoDesdeCompendio('${nombreEsc}')">➕ Agregar</button>`}
                 </div>
             `;
         }).join('');
+    }
+
+    // Vista previa (ventana emergente) de un hechizo antes de agregarlo: se dispara al
+    // tocar el nombre en la lista del compendio, sin cerrar el picker de fondo.
+    function previsualizarHechizo(nombre) {
+        const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === nombre) : null;
+        const card = document.getElementById('spell-preview-card');
+        const overlay = document.getElementById('spell-preview-overlay');
+        if (!s || !card || !overlay) return;
+        const yaAgregado = obtenerHechizosAgregados().includes(s.name);
+        const nombreEsc = s.name.replace(/'/g, "\\'");
+        card.innerHTML = `
+            <h3>${s.name} <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></h3>
+            <div class="spell-preview-meta">${s.escuela} · ${s.clases.join(', ')}<br>${s.tiempo} · ${s.alcance} · ${s.duracion}</div>
+            <div class="spell-preview-desc">${s.desc}</div>
+            <div class="spell-preview-actions">
+                <button type="button" onclick="cerrarPreviewHechizo()">Cerrar</button>
+                ${yaAgregado ? '' : `<button type="button" class="add" onclick="agregarHechizoDesdeCompendio('${nombreEsc}'); cerrarPreviewHechizo();">➕ Agregar este hechizo</button>`}
+            </div>
+        `;
+        overlay.classList.add('open');
+    }
+    function cerrarPreviewHechizo() {
+        const overlay = document.getElementById('spell-preview-overlay');
+        if (overlay) overlay.classList.remove('open');
     }
 
     // ============================================
