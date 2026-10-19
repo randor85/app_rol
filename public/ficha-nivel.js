@@ -22,8 +22,11 @@
  *   tablaXP      [{nivel, xp}]   (por defecto la de la campaña)
  *   hpMax, conMod                funciones (por defecto hpMaxActual() / FichaAtributos.modDe('CON'))
  *   rasgosExtra  [{nivel, nombre, descripcion, clase?}]   rasgos propios de la ficha (se mezclan con los de classes_data)
+ *   rasgosDeFicha  ['Paladin']  clases cuyos rasgos salen SOLO de rasgosExtra (la ficha ya tiene su propia lista, p. ej. 2014)
  *   skills       el MISMO array de skills que se le pasó a FichaComun.iniciarAtributos (para expertise)
- *   recursos     [{ clase, id, campoId, contenedorId }]   contadores declarativos (PROGRESION_CLASES[..].recursos)
+ *   recursos     [{ clase, id, campoId, contenedorId }]   contadores declarativos (PROGRESION_CLASES[..].recursos).
+ *                Si ya existe #campoId (con #campoId-max y #campoId-etq) solo se actualizan los máximos;
+ *                si no, se genera el contador dentro de #contenedorId.
  *   contenedorRasgos  selector de la grilla de tarjetas (por defecto '.feature-grid')
  *   boton        selector del botón "Subir de nivel" (por defecto '[data-fn-abrir]')
  *   abrirCompendio, alAplicar(ctx), alDeshacer(ctx), agregarHD(dado), quitarHD()   ganchos opcionales
@@ -72,7 +75,7 @@
     try { const a = JSON.parse((($(campoRegistro()) || {}).value) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; }
   }
   function escribirRegistro(lista) {
-    const s = JSON.stringify(lista);
+    const s = lista.length ? JSON.stringify(lista) : '';
     const h = $(campoRegistro());
     if (h) h.value = s;
     if (window.FichaComun) FichaComun.guardarCampo(campoRegistro(), s);
@@ -173,7 +176,7 @@
           card.dataset.slotNivel = n;
           card.dataset.fnCreada = '1';
           card.innerHTML = `<h4>Nivel ${n}</h4><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-            <button class="btn-cnt" onclick="changeVal('slot-${n}-cur', -1)">-1</button>
+            <button class="btn-cnt" onclick="changeVal('slot-${n}-cur', -1); if (window.registrarUsoRecursoGenerico) registrarUsoRecursoGenerico('Espacio de Nivel ${n}')">-1</button>
             <span id="slot-${n}-cur" style="font-size:1.4rem; font-weight:bold; color:var(--accent-gold)">${max}</span> / <span id="slot-${n}-max">${max}</span>
             <button class="btn-cnt" onclick="changeVal('slot-${n}-cur', 1)">+1</button></div>`;
           bar.appendChild(card);
@@ -217,7 +220,7 @@
     (cfg.recursos || []).forEach((r) => {
       const def = defRecurso(r);
       const cont = $(r.contenedorId);
-      if (!def || !cont) return;
+      if (!def || (!cont && !$(r.campoId))) return;
       const max = maxRecurso(r);
       if (!$(r.campoId)) {
         const p = def.paso || 1;
@@ -266,7 +269,8 @@
       vistos.add(k);
       out.push({ nombre: f.nombre, desc: f.desc || f.descripcion || '', nivel: f.nivel, clase: nombreClase, origen, incierto: !!f.incierto });
     };
-    if (d) d.features.filter((f) => f.nivel === nivel && !esAsi(f) && !esSubclaseGenerico(f)).forEach((f) => push(f, 'Clase'));
+    const deFicha = (cfg.rasgosDeFicha || []).includes(nombreClase);
+    if (d && !deFicha) d.features.filter((f) => f.nivel === nivel && !esAsi(f) && !esSubclaseGenerico(f)).forEach((f) => push(f, 'Clase'));
     const sc = d && subNombre ? d.subclasses.find((s) => s.name === subNombre) : null;
     if (sc) sc.features.filter((f) => retroSub ? (f.nivel <= nivel && f.nivel >= d.subclassLevel) : f.nivel === nivel).forEach((f) => push(f, subNombre));
     (cfg.rasgosExtra || []).filter((h) => h.nivel === nivel && (!h.clase || h.clase === nombreClase) && !esAsi({ nombre: h.nombre }))
@@ -603,8 +607,8 @@
       if (e.tipo === 'expertise') {
         const sk = skillsConfig();
         lista = e.restringido ? e.restringido : SKILLS;
-        if (sk.length) dis = lista.filter((n) => { const s = sk.find((x) => x.clave === n); return s && (s.expertise || false); });
-        h += '<p class="fn-nota">Elegí habilidades en las que ya tengas competencia: duplican el bono de competencia.</p>';
+        if (sk.length) dis = lista.filter((n) => { const s = sk.find((x) => x.clave === n); return !s || !s.competente || s.expertise; });
+        h += '<p class="fn-nota">Elegí habilidades en las que ya tengas competencia: duplican el bono de competencia.' + (sk.length ? ' Las que no tienen competencia o ya tienen expertise aparecen deshabilitadas.' : '') + '</p>';
       } else if (e.tipo === 'estilo') {
         lista = (typeof ESTILOS_COMBATE !== 'undefined' ? ESTILOS_COMBATE : []).filter((x) => !x.clases || x.clases.includes(info.d.id));
       } else if (e.tipo === 'metamagia') {
@@ -1036,8 +1040,14 @@
     } else av.hidden = true;
   }
 
+  let refrescando = false;
   function refrescarTodo() {
-    if (!cfg) return;
+    // guardarCampo() dispara 'ficha:datos-sincronizados' en el mismo tick: sin esta guarda se reentra.
+    if (!cfg || refrescando) return;
+    refrescando = true;
+    try { refrescarTodoInterno(); } finally { refrescando = false; }
+  }
+  function refrescarTodoInterno() {
     asegurarClases();
     renderRasgos();
     aplicarExpertise();
