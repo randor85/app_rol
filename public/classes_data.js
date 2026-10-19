@@ -530,3 +530,151 @@ const CLASSES = [
 },
 
 ];
+
+// ============================================================
+// DATOS ADICIONALES PARA EL ASISTENTE DE SUBIDA DE NIVEL (ficha-nivel.js) — solo se AGREGAN
+// constantes nuevas; CLASSES no se modifica. PHB 2024. Lo marcado incierto:true no se pudo
+// confirmar contra el libro y el asistente lo muestra como orientación (nunca como límite duro).
+// ============================================================
+
+// Tablas "escalonadas": la clave es el nivel de clase desde el cual rige el valor.
+// prerrequisitos: puntuaciones que deben ser >= 13 para multiclasear (a la clase nueva Y a las que ya se tienen).
+// preparados/invocaciones: lista de 20 valores (índice 0 = nivel 1).
+// elecciones: decisiones que el asistente pide al subir a ese nivel de clase.
+// recursos: contadores declarativos (max = factor x nivel de clase | tabla escalonada), con su descanso.
+const PROGRESION_CLASES = {
+  monk: { prerrequisitos: ['DEX', 'WIS'], elecciones: [] },
+  cleric: {
+    prerrequisitos: ['WIS'],
+    cantrips: { 1: 3, 4: 4, 10: 5 },
+    preparados: [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22],
+    elecciones: []
+  },
+  druid: {
+    prerrequisitos: ['WIS'],
+    cantrips: { 1: 2, 4: 3, 10: 4 },
+    preparados: [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22], incierto: true,
+    elecciones: []
+  },
+  paladin: {
+    prerrequisitos: ['STR', 'CHA'],
+    preparados: [2,3,4,5,6,6,7,7,9,9,10,10,11,11,12,12,14,14,15,15], incierto: true,
+    elecciones: [{ nivel: 2, tipo: 'estilo', cantidad: 1 }],
+    recursos: [{ id: 'lay-hands', nombre: 'Lay on Hands', max: { por: 5 }, recarga: 'largo', paso: 5, unidad: 'HP' }]
+  },
+  wizard: {
+    prerrequisitos: ['INT'],
+    cantrips: { 1: 3, 4: 4, 10: 5 },
+    preparados: [4,5,6,7,9,10,11,12,14,15,16,16,17,18,19,21,22,23,24,25], incierto: true,
+    libro: { inicial: 6, porNivel: 2 },
+    elecciones: [{ nivel: 2, tipo: 'expertise', cantidad: 1, restringido: ['Arcana', 'History', 'Investigation', 'Medicine', 'Nature', 'Religion'], etiqueta: 'Scholar' }]
+  },
+  sorcerer: {
+    prerrequisitos: ['CHA'],
+    cantrips: { 1: 4, 4: 5, 10: 6 },
+    preparados: [2,4,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22],
+    elecciones: [{ nivel: 2, tipo: 'metamagia', cantidad: 2 }, { nivel: 10, tipo: 'metamagia', cantidad: 2 }, { nivel: 17, tipo: 'metamagia', cantidad: 2 }]
+  },
+  warlock: {
+    prerrequisitos: ['CHA'],
+    cantrips: { 1: 2, 4: 3, 10: 4 },
+    preparados: [2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15],
+    invocaciones: [1,3,3,3,5,5,6,6,7,7,7,8,8,8,9,9,9,10,10,10], incierto: true,
+    elecciones: []
+  },
+  ranger: {
+    prerrequisitos: ['DEX', 'WIS'],
+    preparados: [2,3,4,5,6,6,7,7,9,9,10,10,11,11,12,12,14,14,15,15], incierto: true,
+    elecciones: [{ nivel: 2, tipo: 'estilo', cantidad: 1 }, { nivel: 9, tipo: 'expertise', cantidad: 2 }]
+  },
+  rogue: {
+    prerrequisitos: ['DEX'],
+    elecciones: [{ nivel: 1, tipo: 'expertise', cantidad: 2 }, { nivel: 6, tipo: 'expertise', cantidad: 2 }]
+  }
+};
+
+// Dados de golpe y características principales ya están en CLASSES (hitDie). Talentos generales
+// (PHB 2024, nivel 4+) en versión resumida; "otro" permite anotar cualquier talento a mano.
+// aumento: características entre las que el talento permite sumar +1 (null = no suma).
+// hpPorNivel: PG máximos extra por nivel de personaje (Tough).
+const TALENTOS = [
+  { nombre: 'Alert', desc: 'Sumás tu bono de competencia a la iniciativa y podés intercambiar iniciativa con un aliado.', aumento: null },
+  { nombre: 'Athlete', desc: 'Escalar y levantarte del suelo son más baratos, y saltás más lejos.', aumento: ['STR', 'DEX'] },
+  { nombre: 'Crossbow Expert', desc: 'Ignorás la carga de las ballestas, atacás sin desventaja a 5 pies y disparás con la mano libre.', aumento: ['DEX'] },
+  { nombre: 'Defensive Duelist', desc: 'Con reacción sumás tu competencia a la CA contra un ataque cuerpo a cuerpo mientras empuñás un arma sutil.', aumento: ['DEX'] },
+  { nombre: 'Dual Wielder', desc: 'Empuñás dos armas que no sean ligeras y sacás/guardás ambas a la vez.', aumento: ['STR', 'DEX'] },
+  { nombre: 'Durable', desc: 'Recuperás más PG con los Dados de Golpe (mínimo el doble de tu mod. de Constitución).', aumento: ['CON'] },
+  { nombre: 'Elemental Adept', desc: 'Tus conjuros de un tipo de daño elemental ignoran la resistencia y tratan los 1 como 2.', aumento: ['INT', 'WIS', 'CHA'] },
+  { nombre: 'Fey-Touched', desc: 'Aprendés Misty Step y otro conjuro de adivinación o encantamiento de nivel 1.', aumento: ['INT', 'WIS', 'CHA'] },
+  { nombre: 'Grappler', desc: 'Ventaja en ataques contra una criatura que tengas agarrada y mejor control del agarre.', aumento: ['STR', 'DEX'] },
+  { nombre: 'Great Weapon Master', desc: 'Con arma pesada podés sumar tu competencia al daño y gozás de un ataque extra tras un crítico o al matar.', aumento: ['STR'] },
+  { nombre: 'Heavy Armor Master', desc: 'Reducís el daño no mágico contundente, perforante y cortante mientras vestís armadura pesada.', aumento: ['STR'] },
+  { nombre: 'Inspiring Leader', desc: 'Tras un descanso, inspirás a los aliados con PG temporales.', aumento: ['WIS', 'CHA'] },
+  { nombre: 'Keen Mind', desc: 'Recordás con precisión y mejorás competencias de conocimiento.', aumento: ['INT'] },
+  { nombre: 'Lucky', desc: 'Puntos de suerte para repetir tiradas o forzar al DM a repetir un ataque.', aumento: null },
+  { nombre: 'Mage Slayer', desc: 'Reacción para golpear a un lanzador adyacente y ventaja en salvaciones contra conjuros de criaturas cercanas.', aumento: ['STR', 'DEX'] },
+  { nombre: 'Magic Initiate', desc: 'Aprendés dos trucos y un conjuro de nivel 1 de una lista de clase, y podés lanzar ese conjuro una vez por descanso largo.', aumento: null },
+  { nombre: 'Mobile', desc: 'Velocidad aumentada y no provocás ataques de oportunidad de las criaturas que atacás.', aumento: ['DEX', 'CON'] },
+  { nombre: 'Observant', desc: 'Leés labios, y sumás a Percepción e Investigación pasivas.', aumento: ['INT', 'WIS'] },
+  { nombre: 'Polearm Master', desc: 'Ataque adicional con el extremo romo de un arma de asta y ataques de oportunidad al entrar en tu alcance.', aumento: ['STR', 'DEX'] },
+  { nombre: 'Resilient', desc: 'Competencia en las salvaciones de una característica a elección.', aumento: ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'] },
+  { nombre: 'Ritual Caster', desc: 'Lanzás conjuros rituales de una lista a elección.', aumento: ['INT', 'WIS', 'CHA'] },
+  { nombre: 'Savage Attacker', desc: 'Una vez por turno repetís los dados de daño de un ataque con arma y te quedás con el mayor.', aumento: null },
+  { nombre: 'Sentinel', desc: 'Detenés a los enemigos con ataques de oportunidad y castigás a quienes atacan a tus aliados.', aumento: ['STR', 'DEX'] },
+  { nombre: 'Sharpshooter', desc: 'Ignorás cobertura parcial y no tenés desventaja a largo alcance con armas a distancia.', aumento: ['DEX'] },
+  { nombre: 'Shield Master', desc: 'Empujás con el escudo y sumás su bono a salvaciones de Destreza.', aumento: ['STR'] },
+  { nombre: 'Skilled', desc: 'Ganás competencia en tres habilidades o herramientas a elección.', aumento: null },
+  { nombre: 'Speedy', desc: 'Velocidad +10 pies y mejor movimiento en terreno difícil.', aumento: ['DEX', 'CON'] },
+  { nombre: 'Spell Sniper', desc: 'Duplicás el alcance de tus ataques de conjuro e ignorás cobertura parcial.', aumento: ['INT', 'WIS', 'CHA'] },
+  { nombre: 'Tough', desc: 'Tus PG máximos aumentan en el doble de tu nivel al tomarlo y +2 por cada nivel posterior.', aumento: null, hpPorNivel: 2 },
+  { nombre: 'War Caster', desc: 'Ventaja en salvaciones de concentración y podés lanzar conjuros como ataque de oportunidad.', aumento: ['INT', 'WIS', 'CHA'] }
+];
+
+// Dones Épicos (nivel 19, PHB 2024) — nombres; el detalle exacto no se transcribió.
+const DONES_EPICOS = ['Boon of Combat Prowess', 'Boon of Dimensional Travel', 'Boon of Fate', 'Boon of Fortitude', 'Boon of Irresistible Offense', 'Boon of Recovery', 'Boon of Skill', 'Boon of Speed', 'Boon of Spell Recall', 'Boon of the Night Spirit', 'Boon of Truesight'];
+
+const ESTILOS_COMBATE = [
+  { nombre: 'Archery', desc: '+2 a las tiradas de ataque con armas a distancia.' },
+  { nombre: 'Blind Fighting', desc: 'Visión ciega de 10 pies.' },
+  { nombre: 'Defense', desc: '+1 a la CA mientras vestís armadura.' },
+  { nombre: 'Dueling', desc: '+2 al daño con un arma de una mano si no empuñás otra arma.' },
+  { nombre: 'Great Weapon Fighting', desc: 'Tratás los 1 y 2 del dado de daño como 3 con armas a dos manos o versátiles a dos manos.' },
+  { nombre: 'Interception', desc: 'Con reacción reducís el daño que recibe un aliado cercano.' },
+  { nombre: 'Protection', desc: 'Con reacción y escudo imponés desventaja al ataque contra un aliado cercano.' },
+  { nombre: 'Thrown Weapon Fighting', desc: '+2 al daño con armas arrojadizas y desenfundás como parte del ataque.' },
+  { nombre: 'Two-Weapon Fighting', desc: 'Sumás tu modificador al daño del ataque adicional con la segunda arma.' },
+  { nombre: 'Unarmed Fighting', desc: 'Golpes desarmados con daño mayor y agarres que dañan.' },
+  { nombre: 'Blessed Warrior', desc: 'Solo Paladín: aprendés dos trucos de Clérigo.', clases: ['paladin'] },
+  { nombre: 'Druidic Warrior', desc: 'Solo Explorador: aprendés dos trucos de Druida.', clases: ['ranger'] }
+];
+
+const OPCIONES_METAMAGIA = [
+  { nombre: 'Careful Spell', desc: 'Protegés a algunas criaturas de tus conjuros con salvación.' },
+  { nombre: 'Distant Spell', desc: 'Duplicás el alcance del conjuro.' },
+  { nombre: 'Empowered Spell', desc: 'Repetís algunos dados de daño.' },
+  { nombre: 'Extended Spell', desc: 'Duplicás la duración del conjuro.' },
+  { nombre: 'Heightened Spell', desc: 'Un objetivo tiene desventaja en su salvación contra el conjuro.' },
+  { nombre: 'Quickened Spell', desc: 'Lanzás un conjuro de acción como acción adicional.' },
+  { nombre: 'Seeking Spell', desc: 'Repetís un ataque de conjuro fallido.' },
+  { nombre: 'Subtle Spell', desc: 'Lanzás sin componentes verbales ni somáticos.' },
+  { nombre: 'Transmuted Spell', desc: 'Cambiás el tipo de daño del conjuro.' },
+  { nombre: 'Twinned Spell', desc: 'Un conjuro de un solo objetivo afecta a un segundo.' }
+];
+
+const OPCIONES_INVOCACIONES = [
+  { nombre: 'Agonizing Blast', desc: 'Sumás tu mod. de Carisma al daño de un truco de daño elegido.' },
+  { nombre: 'Armor of Shadows', desc: 'Lanzás Mage Armor sobre vos a voluntad.' },
+  { nombre: "Devil's Sight", desc: 'Ves normalmente en oscuridad, mágica o no, hasta 120 pies.' },
+  { nombre: 'Eldritch Mind', desc: 'Ventaja en salvaciones de concentración.' },
+  { nombre: 'Eldritch Spear', desc: 'Aumenta el alcance de un truco de daño elegido.' },
+  { nombre: 'Fiendish Vigor', desc: 'Lanzás False Life sobre vos a voluntad.' },
+  { nombre: 'Gift of the Depths', desc: 'Respirás bajo el agua y nadás.' },
+  { nombre: 'Mask of Many Faces', desc: 'Lanzás Disguise Self a voluntad.' },
+  { nombre: 'Misty Visions', desc: 'Lanzás Silent Image a voluntad.' },
+  { nombre: 'One with Shadows', desc: 'Te volvés invisible en penumbra u oscuridad.' },
+  { nombre: 'Pact of the Blade', desc: 'Conjurás un arma de pacto.' },
+  { nombre: 'Pact of the Chain', desc: 'Obtenés un familiar mejorado.' },
+  { nombre: 'Pact of the Tome', desc: 'Obtenés un Libro de las Sombras con trucos y rituales.' },
+  { nombre: 'Repelling Blast', desc: 'Tu truco de ataque empuja a la criatura 10 pies.' },
+  { nombre: 'Thirsting Blade', desc: 'Atacás dos veces con tu arma de pacto.' }
+];
