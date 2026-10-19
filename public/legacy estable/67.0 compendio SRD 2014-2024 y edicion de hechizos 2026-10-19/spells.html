@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compendio de Hechizos — Grupo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #121018;
+  --bg-card: #1d1827;
+  --bg-card-header: #2a2238;
+  --accent-gold: #d4af37;
+  --accent-light: #b388ff;
+  --accent-hover: #9c51e0;
+  --text-light: #f3f0f7;
+  --text-muted: #a89cb5;
+  --border-color: #3b2d52;
+  --danger-color: #d94343;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  --surface-soft: rgba(0,0,0,0.2);
+  --surface-mid: rgba(0,0,0,0.3);
+  --surface-strong: rgba(0,0,0,0.45);
+  --text-on-surface: #fff;
+}
+body.light-mode {
+  --bg-primary: #f3edfa;
+  --bg-card: #fffdfb;
+  --bg-card-header: #e9def6;
+  --text-light: #241c33;
+  --text-muted: #6f6084;
+  --border-color: #d7c7ec;
+  --shadow: 0 4px 15px rgba(90,60,120,0.18);
+  --surface-soft: rgba(36,28,51,0.05);
+  --surface-mid: rgba(36,28,51,0.08);
+  --surface-strong: rgba(36,28,51,0.13);
+  --text-on-surface: #241c33;
+  --accent-light: #6a3aa8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+body { background-color: var(--bg-primary); color: var(--text-light); padding: 20px; padding-bottom: 60px; transition: background-color .3s, color .3s; }
+.container { max-width: 1100px; margin: 0 auto; }
+h1, .cinzel { font-family: 'Cinzel', serif; }
+header { background: linear-gradient(135deg, #241936 0%, #110a1c 100%); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px; box-shadow: var(--shadow); }
+body.light-mode header { background: linear-gradient(135deg, #f9f4ff 0%, #e9def6 100%); }
+header h1 { color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 4px; }
+header p { color: var(--accent-light); font-size: 0.95rem; }
+.top-actions { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+.btn-nav { background: var(--bg-card-header); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; text-decoration:none; display:inline-block; transition: all .2s; }
+.btn-nav:hover { background: var(--accent-gold); color: #1a1220; }
+
+/* --- BUSCADOR Y FILTROS --- */
+.search-bar { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.search-bar input[type="text"] { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-strong); color: var(--text-light); font-size: 1rem; outline: none; margin-bottom: 12px; }
+.search-bar input[type="text"]:focus { border-color: var(--accent-gold); }
+.filters-row { display:flex; gap:10px; flex-wrap:wrap; }
+.filters-row select { flex:1; min-width:120px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-strong); color: var(--text-light); font-size: 0.85rem; cursor:pointer; }
+.filters-row button { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card-header); color: var(--text-muted); font-size: 0.8rem; cursor:pointer; font-weight:700; }
+.filters-row button:hover { color: var(--text-light); border-color: var(--accent-gold); }
+.result-count { font-size: 0.8rem; color: var(--text-muted); margin: 10px 2px 4px 2px; }
+
+/* --- TARJETAS DE HECHIZO --- */
+.spell-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.spell-card { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: box-shadow .15s; }
+.spell-card:hover { box-shadow: 0 0 0 1px var(--accent-gold); }
+.spell-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+.spell-name { font-weight: 800; font-size: 1.02rem; color: var(--text-light); }
+.spell-badge { flex-shrink:0; font-size: 0.68rem; font-weight:700; background: var(--surface-strong); color: var(--accent-gold); border-radius: 4px; padding: 2px 7px; white-space:nowrap; }
+.spell-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+.spell-classes { font-size: 0.72rem; color: var(--accent-light); margin-top: 4px; }
+.spell-details { display:none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 0.85rem; }
+.spell-details.open { display:block; }
+.spell-details dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin-bottom: 8px; font-size: 0.78rem; }
+.spell-details dt { color: var(--text-muted); font-weight: 700; }
+.spell-details dd { color: var(--text-light); }
+.spell-details p { color: var(--text-light); line-height: 1.4; }
+.no-results { text-align:center; color: var(--text-muted); padding: 40px 0; font-size: 0.95rem; }
+
+/* --- HOMEBREW --- */
+.homebrew-section { margin-top: 30px; background: var(--surface-mid); border: 1px dashed var(--danger-color); border-radius: 10px; padding: 16px 18px; }
+.homebrew-section h2 { font-size: 1rem; color: var(--danger-color); margin-bottom: 8px; }
+.homebrew-section p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+.homebrew-item { margin-bottom: 8px; font-size: 0.82rem; }
+.homebrew-item strong { color: var(--text-light); }
+
+footer { text-align:center; margin-top: 30px; font-size: 0.75rem; color: var(--text-muted); }
+footer a { color: var(--accent-light); }
+</style>
+<script src="spells_data.js"></script>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>📖 Compendio de Hechizos</h1>
+  <p>Referencia rápida del grupo — lista de Druida completa + hechizos usados por las 6 fichas de la campaña.</p>
+</header>
+
+<div class="top-actions">
+  <a href="index.html" class="btn-nav">⬅ Volver al Menú</a>
+  <button class="btn-nav" id="theme-toggle" onclick="toggleTheme()">🌙 Modo Noche</button>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="Buscar hechizo por nombre o efecto..." oninput="applyFilters()">
+  <div class="filters-row">
+    <select id="filter-level" onchange="applyFilters()">
+      <option value="">Todos los niveles</option>
+      <option value="0">Truco (Nivel 0)</option>
+      <option value="1">Nivel 1</option>
+      <option value="2">Nivel 2</option>
+      <option value="3">Nivel 3</option>
+      <option value="4">Nivel 4</option>
+      <option value="5">Nivel 5</option>
+      <option value="6">Nivel 6</option>
+      <option value="7">Nivel 7</option>
+      <option value="8">Nivel 8</option>
+      <option value="9">Nivel 9</option>
+    </select>
+    <select id="filter-class" onchange="applyFilters()">
+      <option value="">Todas las clases</option>
+    </select>
+    <select id="filter-school" onchange="applyFilters()">
+      <option value="">Todas las escuelas</option>
+    </select>
+    <button type="button" onclick="clearFilters()">✖ Limpiar</button>
+  </div>
+</div>
+
+<div class="result-count" id="result-count"></div>
+<div class="spell-list" id="spell-list"></div>
+<div class="no-results" id="no-results" style="display:none;">Ningún hechizo coincide con la búsqueda.</div>
+
+<div class="homebrew-section">
+  <h2>⚠️ Aparecen en alguna ficha pero no son hechizos</h2>
+  <p>Nombres que figuran en la columna de "Conjuros" de alguna ficha del grupo, pero que en realidad son rasgos de clase/subclase (no ocupan espacio de conjuro), o contenido de mesa sin fuente pública encontrada. Se listan por transparencia, sin datos mecánicos inventados.</p>
+  <div id="homebrew-list"></div>
+</div>
+
+<footer>
+  Datos recopilados de fuentes públicas del SRD de D&D 5e (2014) — 5thsrd.org, 5esrd.com, dnd5e.wikidot.com, D&D Beyond, Roll20 Compendium — consultadas durante la investigación. Texto descriptivo parafraseado, no reproducido textualmente. Uso interno de mesa.
+</footer>
+
+</div>
+
+<script>
+// ==== DATOS ====
+// (cargados desde spells_data.js, ver <script src> en <head>)
+
+
+// ==== TEMA DÍA/NOCHE ====
+function applyTheme(isDark) {
+  document.body.classList.toggle('light-mode', !isDark);
+  const btn = document.getElementById('theme-toggle');
+  if (btn) btn.innerText = isDark ? '☀️ Modo Día' : '🌙 Modo Noche';
+}
+function toggleTheme() {
+  const isDark = document.body.classList.contains('light-mode');
+  applyTheme(isDark);
+  localStorage.setItem('spells_theme', isDark ? 'dark' : 'light');
+}
+(function initTheme() {
+  const saved = localStorage.getItem('spells_theme');
+  if (saved) {
+    applyTheme(saved === 'dark');
+  } else {
+    const hour = new Date().getHours();
+    applyTheme(!(hour >= 7 && hour < 19));
+  }
+})();
+
+// ==== POBLAR FILTROS ====
+function poblarFiltros() {
+  const clases = new Set();
+  const escuelas = new Set();
+  SPELLS.forEach(s => {
+    s.clases.forEach(c => clases.add(c));
+    if (s.escuela && s.escuela !== '—') escuelas.add(s.escuela);
+  });
+  const selClase = document.getElementById('filter-class');
+  Array.from(clases).sort().forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    selClase.appendChild(opt);
+  });
+  const selEscuela = document.getElementById('filter-school');
+  Array.from(escuelas).sort().forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e; opt.textContent = e;
+    selEscuela.appendChild(opt);
+  });
+}
+
+// ==== RENDER ====
+const NIVEL_LABEL = { 0: 'Truco' };
+function nivelTexto(n) { return NIVEL_LABEL[n] || `Nivel ${n}`; }
+
+function renderSpells(lista) {
+  const cont = document.getElementById('spell-list');
+  const noRes = document.getElementById('no-results');
+  cont.innerHTML = '';
+  document.getElementById('result-count').textContent = `${lista.length} hechizo${lista.length === 1 ? '' : 's'} encontrado${lista.length === 1 ? '' : 's'}`;
+  if (lista.length === 0) { noRes.style.display = 'block'; return; }
+  noRes.style.display = 'none';
+
+  lista.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'spell-card';
+    card.innerHTML = `
+      <div class="spell-card-head">
+        <span class="spell-name">${s.name}</span>
+        <span class="spell-badge">${nivelTexto(s.nivel)}</span>
+      </div>
+      <div class="spell-meta">${s.escuela} · ${s.tiempo}</div>
+      <div class="spell-classes">${s.clases.join(', ')}</div>
+      <div class="spell-details" id="details-${idx}">
+        <dl>
+          <dt>Alcance</dt><dd>${s.alcance}</dd>
+          <dt>Componentes</dt><dd>${s.componentes}</dd>
+          <dt>Duración</dt><dd>${s.duracion}</dd>
+        </dl>
+        <p>${s.desc}</p>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      const det = card.querySelector('.spell-details');
+      det.classList.toggle('open');
+    });
+    cont.appendChild(card);
+  });
+}
+
+function applyFilters() {
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const lvl = document.getElementById('filter-level').value;
+  const cls = document.getElementById('filter-class').value;
+  const esc = document.getElementById('filter-school').value;
+  let lista = SPELLS.filter(s => {
+    if (q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q))) return false;
+    if (lvl !== '' && String(s.nivel) !== lvl) return false;
+    if (cls && !s.clases.includes(cls)) return false;
+    if (esc && s.escuela !== esc) return false;
+    return true;
+  });
+  lista = lista.slice().sort((a, b) => a.nivel - b.nivel || a.name.localeCompare(b.name));
+  renderSpells(lista);
+}
+
+function clearFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-level').value = '';
+  document.getElementById('filter-class').value = '';
+  document.getElementById('filter-school').value = '';
+  applyFilters();
+}
+
+function renderHomebrew() {
+  const cont = document.getElementById('homebrew-list');
+  cont.innerHTML = HOMEBREW_NOTES.map(h => `<div class="homebrew-item"><strong>${h.name}:</strong> ${h.nota}</div>`).join('');
+}
+
+poblarFiltros();
+applyFilters();
+renderHomebrew();
+</script>
+</body>
+</html>

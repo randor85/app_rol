@@ -123,6 +123,10 @@ footer a { color: var(--accent-light); }
     <select id="filter-school" onchange="applyFilters()">
       <option value="">Todas las escuelas</option>
     </select>
+    <select id="filter-edicion" onchange="cambiarEdicion(this.value)" title="Versión del texto de los hechizos">
+      <option value="2014">Texto: SRD 2014</option>
+      <option value="2024">Texto: SRD 2024</option>
+    </select>
     <button type="button" onclick="clearFilters()">✖ Limpiar</button>
   </div>
 </div>
@@ -169,6 +173,11 @@ function toggleTheme() {
   }
 })();
 
+// ==== EDICIÓN DEL TEXTO (2014 / 2024) ====
+let edicionActual = edicionPreferida();
+document.getElementById('filter-edicion').value = edicionActual;
+function cambiarEdicion(ed) { edicionActual = ed; guardarEdicionPreferida(ed); applyFilters(); }
+
 // ==== POBLAR FILTROS ====
 function poblarFiltros() {
   const clases = new Set();
@@ -209,7 +218,7 @@ function renderSpells(lista) {
     card.innerHTML = `
       <div class="spell-card-head">
         <span class="spell-name">${s.name}</span>
-        <span class="spell-badge">${nivelTexto(s.nivel)}</span>
+        <span class="spell-badge">${nivelTexto(s.nivel)}${etiquetaEdicion(s) ? ' · ' + etiquetaEdicion(s) : ''}</span>
       </div>
       <div class="spell-meta">${s.escuela} · ${s.tiempo}</div>
       <div class="spell-classes">${s.clases.join(', ')}</div>
@@ -219,7 +228,7 @@ function renderSpells(lista) {
           <dt>Componentes</dt><dd>${s.componentes}</dd>
           <dt>Duración</dt><dd>${s.duracion}</dd>
         </dl>
-        <p>${s.desc}</p>
+        <p>${descDeHechizo(s, edicionActual)}</p>
       </div>
     `;
     card.addEventListener('click', () => {
@@ -236,7 +245,7 @@ function applyFilters() {
   const cls = document.getElementById('filter-class').value;
   const esc = document.getElementById('filter-school').value;
   let lista = SPELLS.filter(s => {
-    if (q && !(s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q))) return false;
+    if (q && !(s.name.toLowerCase().includes(q) || descDeHechizo(s, edicionActual).toLowerCase().includes(q))) return false;
     if (lvl !== '' && String(s.nivel) !== lvl) return false;
     if (cls && !s.clases.includes(cls)) return false;
     if (esc && s.escuela !== esc) return false;
