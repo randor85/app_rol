@@ -347,12 +347,23 @@
   }
 
   // ------------------------------------------------------------------ información de la subida en curso
+  // prerrequisitos = todas las características con 13+; si la clase trae prerrequisitosAlternativos (p. ej. Guerrero:
+  // Fuerza 13 O Destreza 13), el primero de la lista y las alternativas forman un grupo donde alcanza con una.
   function prerrequisitosFaltantes(nuevaClase) {
     const requeridos = new Set();
+    const grupos = [];
     const sc = leerScores();
-    clasesPropias().forEach((c) => (prog(datosClase(c.nombre)).prerrequisitos || []).forEach((k) => requeridos.add(k)));
-    (prog(datosClase(nuevaClase)).prerrequisitos || []).forEach((k) => requeridos.add(k));
-    return Array.from(requeridos).filter((k) => sc[k] < 13).map((k) => ({ k, valor: sc[k] }));
+    const agregar = (nombre) => {
+      const p = prog(datosClase(nombre));
+      const base = p.prerrequisitos || [], alt = p.prerrequisitosAlternativos || [];
+      if (alt.length && base.length) { grupos.push([base[0], ...alt]); base.slice(1).forEach((k) => requeridos.add(k)); }
+      else base.forEach((k) => requeridos.add(k));
+    };
+    clasesPropias().forEach((c) => agregar(c.nombre));
+    agregar(nuevaClase);
+    const faltan = Array.from(requeridos).filter((k) => sc[k] < 13).map((k) => ({ k, valor: sc[k] }));
+    grupos.forEach((g) => { if (!g.some((k) => sc[k] >= 13)) faltan.push({ k: g[0], valor: Math.max(...g.map((k) => sc[k])) }); });
+    return faltan;
   }
 
   function infoNivel() {
@@ -508,7 +519,7 @@
       const req = prog(c).prerrequisitos || [];
       const sel = est.clase === c.name && est.esNueva;
       if (falt.length) {
-        h += `<div class="fn-opcion bloqueada" data-clase-bloqueada="${esc(c.name)}">⛔ ${esc(c.name)} <small>requiere ${req.map((k) => k + ' 13').join(' y ')}${falt.some((f) => !req.includes(f.k)) ? ' (y las de tus clases actuales)' : ''} — te falta: ${falt.map((f) => `${f.k} (tenés ${f.valor})`).join(', ')}</small></div>`;
+        h += `<div class="fn-opcion bloqueada" data-clase-bloqueada="${esc(c.name)}">⛔ ${esc(c.name)} <small>requiere ${(prog(c).prerrequisitosAlternativos || []).length ? [req[0], ...prog(c).prerrequisitosAlternativos].map((k) => k + ' 13').join(' o ') : req.map((k) => k + ' 13').join(' y ')}${falt.some((f) => !req.includes(f.k)) ? ' (y las de tus clases actuales)' : ''} — te falta: ${falt.map((f) => `${f.k} (tenés ${f.valor})`).join(', ')}</small></div>`;
       } else {
         h += `<button type="button" class="fn-opcion ${sel ? 'sel' : ''}" data-fn="clase-nueva" data-valor="${esc(c.name)}">➕ ${esc(c.name)} <small>d${c.hitDie} · cumplís los prerrequisitos</small></button>`;
       }

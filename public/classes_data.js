@@ -1,6 +1,8 @@
 // Base de datos de clases D&D 5e — Player's Handbook 2024 ("5.5e").
 // Alcance: las 9 clases que usa el grupo (Monje, Clérigo, Druida, Paladín, Mago, Hechicero,
-// Brujo, Explorador, Pícaro), con 2-3 subclases representativas por clase.
+// Brujo, Explorador, Pícaro), con 2-3 subclases representativas por clase, más Bárbaro, Bardo y Guerrero
+// (SRD 5.2 / CC-BY-4.0, con la subclase del SRD de cada una). El índice de todas las subclases oficiales
+// (solo nombres y libros) está en subclases_catalogo.js.
 // Fuentes: investigación vía WebSearch (WebFetch a sitios de reglas está bloqueado en este
 // entorno) contra dndbeyond.com/posts (comparativas oficiales "2024 X vs 2014 X"), wargamer.com,
 // thegamer.com, rpgbot.net y dungeonmister.com — consultadas 30 ago 2026. Reutiliza las tablas
@@ -529,6 +531,152 @@ const CLASSES = [
   ]
 },
 
+
+// ============================================================
+// BÁRBARO (Barbarian)
+// ============================================================
+{
+  id: "barbarian", name: "Barbarian", nombre_es: "Bárbaro",
+  hitDie: 12, primaryAbility: "Fuerza", savingThrows: ["Fuerza", "Constitución"],
+  casterType: null, subclassLevel: 3, subclassLabel: "Senda Primigenia",
+  resumen: "Guerrero primigenio que entra en Rage para resistir daño y golpear más fuerte. En 2024 la Rage se mantiene atacando o forzando salvaciones (sin tener que gastar siempre la acción adicional), gana Weapon Mastery desde nivel 1, Primal Knowledge en nivel 3 y la familia de Brutal Strike desde nivel 9. Sin lanzamiento de conjuros.",
+  resourceName: "Usos de Rage",
+  resourceProgression: {1:2, 3:3, 6:4, 12:5, 17:6},
+  features: [
+    {nivel:1, nombre:"Rage", desc:"Acción adicional (sin armadura pesada): resistencia a daño contundente, perforante y cortante, daño extra con ataques de Fuerza (+2; +3 en nvl 9; +4 en nvl 16), ventaja en pruebas y salvaciones de Fuerza; sin conjuros ni concentración. Dura hasta el fin de tu próximo turno; se extiende atacando, forzando una salvación o con acción adicional (máx. 10 min). Usos: 2 (3 en nvl 3, 4 en 6, 5 en 12, 6 en 17); 1 se recupera en descanso corto, todos en largo."},
+    {nivel:1, nombre:"Unarmored Defense (Defensa sin Armadura)", desc:"Sin armadura, tu CA base es 10 + mod. Destreza + mod. Constitución; podés usar escudo y conservar el beneficio."},
+    {nivel:1, nombre:"Weapon Mastery", desc:"Podés usar las propiedades de maestría de 2 tipos de armas cuerpo a cuerpo simples o marciales (p. ej. hachas grandes y hachas de mano). Tras un descanso largo podés cambiar una elección. Los tipos aumentan a 3 en nivel 4 y a 4 en nivel 10."},
+    {nivel:2, nombre:"Danger Sense", desc:"Tenés ventaja en las salvaciones de Destreza, salvo que estés Incapacitado."},
+    {nivel:2, nombre:"Reckless Attack", desc:"En tu primer ataque del turno podés atacar de forma temeraria: ventaja en tiradas de ataque con Fuerza hasta el inicio de tu próximo turno, pero los ataques contra vos tienen ventaja en ese lapso."},
+    {nivel:3, nombre:"Senda Primigenia (Subclase)", desc:"Elegís tu Senda Primigenia (subclase de Bárbaro); ganás sus rasgos en los niveles 3, 6, 10 y 14."},
+    {nivel:3, nombre:"Primal Knowledge", desc:"Ganás competencia en otra habilidad de la lista de Bárbaro. Además, con Rage activa podés hacer pruebas de Acrobacias, Intimidación, Percepción, Sigilo o Supervivencia como pruebas de Fuerza."},
+    {nivel:4, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:5, nombre:"Ataque Extra", desc:"Atacás dos veces al usar la acción de Atacar."},
+    {nivel:5, nombre:"Fast Movement", desc:"Tu velocidad aumenta 10 pies mientras no vistas armadura pesada."},
+    {nivel:6, nombre:"Rasgo de Senda Primigenia (Subclase)", desc:"Ganás el rasgo de nivel 6 de tu Senda Primigenia."},
+    {nivel:7, nombre:"Feral Instinct", desc:"Tenés ventaja en las tiradas de iniciativa."},
+    {nivel:7, nombre:"Instinctive Pounce", desc:"Como parte de la acción adicional para entrar en Rage, podés moverte hasta la mitad de tu velocidad."},
+    {nivel:8, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:9, nombre:"Brutal Strike", desc:"Si usás Reckless Attack, podés renunciar a la ventaja en un ataque de Fuerza (que no tenga desventaja): si impacta, el objetivo recibe 1d10 extra del mismo tipo y aplicás un efecto a elección: Forceful Blow (empuja 15 pies y te movés hasta la mitad de tu velocidad hacia él sin provocar) o Hamstring Blow (velocidad -15 pies hasta tu próximo turno)."},
+    {nivel:10, nombre:"Rasgo de Senda Primigenia (Subclase)", desc:"Ganás el rasgo de nivel 10 de tu Senda Primigenia."},
+    {nivel:11, nombre:"Relentless Rage", desc:"Si caés a 0 PG con Rage activa y no morís directo, podés hacer una salvación de Constitución CD 10: si la superás, quedás con PG iguales al doble de tu nivel de Bárbaro. Cada uso posterior suma +5 a la CD; la CD vuelve a 10 tras un descanso corto o largo."},
+    {nivel:12, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:13, nombre:"Improved Brutal Strike (nivel 13)", desc:"Sumás dos efectos a Brutal Strike: Staggering Blow (el objetivo tiene desventaja en su próxima salvación y no puede hacer ataques de oportunidad hasta tu próximo turno) y Sundering Blow (el próximo ataque de otra criatura contra el objetivo recibe +5 a la tirada antes de tu próximo turno)."},
+    {nivel:14, nombre:"Rasgo de Senda Primigenia (Subclase)", desc:"Ganás el rasgo de nivel 14 de tu Senda Primigenia."},
+    {nivel:15, nombre:"Persistent Rage", desc:"Al tirar iniciativa recuperás todos los usos gastados de Rage (una vez por descanso largo). Además tu Rage dura 10 minutos sin necesidad de extenderla y solo termina antes si quedás Inconsciente o te ponés armadura pesada."},
+    {nivel:16, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:17, nombre:"Improved Brutal Strike (nivel 17)", desc:"El daño extra de Brutal Strike sube a 2d10 y podés aplicar dos efectos distintos de Brutal Strike en cada uso."},
+    {nivel:18, nombre:"Indomitable Might", desc:"Si el total de una prueba o salvación de Fuerza es menor que tu puntuación de Fuerza, podés usar esa puntuación en su lugar."},
+    {nivel:19, nombre:"Mejora de Puntuación de Característica / Don Épico", desc:"Última mejora de característica, o un Don Épico (se recomienda Boon of Irresistible Offense)."},
+    {nivel:20, nombre:"Primal Champion", desc:"Tus puntuaciones de Fuerza y Constitución aumentan en 4, hasta un máximo de 25."},
+  ],
+  subclasses: [
+    {
+      name: "Path of the Berserker", resumen: "Dirige su Rage hacia la violencia pura: una senda de furia desatada que se goza en el caos del combate.",
+      features: [
+        {nivel:3, nombre:"Frenzy", desc:"Si usás Reckless Attack con Rage activa, el primer objetivo al que impactes en tu turno con un ataque de Fuerza recibe daño extra: tirás tantos d6 como tu bono de Rage Damage, del mismo tipo que el arma o el Ataque Desarmado."},
+        {nivel:6, nombre:"Mindless Rage", desc:"Con Rage activa tenés inmunidad a las condiciones Hechizado (Charmed) y Asustado (Frightened); si ya tenés alguna al entrar en Rage, termina."},
+        {nivel:10, nombre:"Retaliation", desc:"Cuando una criatura a 5 pies de vos te daña, podés usar tu Reacción para hacerle un ataque cuerpo a cuerpo con un arma o un Ataque Desarmado."},
+        {nivel:14, nombre:"Intimidating Presence", desc:"Como acción adicional, las criaturas que elijas en una Emanación de 30 pies hacen una salvación de Sabiduría (CD 8 + mod. Fuerza + competencia) o quedan Asustadas 1 minuto (repiten la salvación al final de cada turno suyo). Una vez por descanso largo, o gastando un uso de Rage (sin acción) para recuperarlo."},
+      ]
+    },
+  ]
+},
+
+// ============================================================
+// BARDO (Bard)
+// ============================================================
+{
+  id: "bard", name: "Bard", nombre_es: "Bardo",
+  hitDie: 8, primaryAbility: "Carisma", savingThrows: ["Destreza", "Carisma"],
+  casterType: "full", subclassLevel: 3, subclassLabel: "Colegio Bárdico",
+  resumen: "Lanzador completo de Carisma que inspira a los aliados con música y palabras. Su recurso es Bardic Inspiration (usos = modificador de Carisma, mínimo 1), cuyo dado escala de d6 a d12; suma Expertise, Jack of All Trades y, desde nivel 10, Magical Secrets para preparar conjuros de otras listas.",
+  resourceName: "Dado de Bardic Inspiration",
+  resourceProgression: {1:"d6", 5:"d8", 10:"d10", 15:"d12"},
+  features: [
+    {nivel:1, nombre:"Bardic Inspiration", desc:"Como acción adicional, un aliado a 60 pies que te vea u oiga gana un dado de Inspiración Bárdica (d6; d8 en nivel 5, d10 en 10, d12 en 15). Durante la próxima hora, cuando falle una Prueba de d20, tira el dado y lo suma al d20. Un dado por criatura a la vez. Usos = mod. de Carisma (mínimo 1); recuperás todos en descanso largo."},
+    {nivel:1, nombre:"Lanzamiento de Conjuros", desc:"Lanzás conjuros de Bardo con Carisma; podés usar un instrumento musical como foco. Empezás con 2 trucos y 4 conjuros preparados de nivel 1+ (la tabla de clase los aumenta). Al subir de nivel de Bardo podés cambiar un truco y un conjuro preparado. Recuperás los espacios en descanso largo."},
+    {nivel:2, nombre:"Expertise", desc:"Ganás Expertise (doble bono de competencia) en dos habilidades en las que ya seas competente; Performance y Persuasion son las recomendadas. En nivel 9 elegís otras dos."},
+    {nivel:2, nombre:"Jack of All Trades", desc:"Sumás la mitad de tu bono de competencia (redondeado hacia abajo) a toda prueba de característica con una habilidad en la que no seas competente y que no use ya tu bono de competencia."},
+    {nivel:3, nombre:"Colegio Bárdico (Subclase)", desc:"Elegís vuestro Colegio Bárdico, que te da rasgos en los niveles 3, 6 y 14."},
+    {nivel:4, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:5, nombre:"Font of Inspiration", desc:"Recuperás todos los usos gastados de Bardic Inspiration al terminar un descanso corto o largo. Además, sin gastar acción, podés gastar un espacio de conjuro para recuperar un uso gastado de Bardic Inspiration."},
+    {nivel:7, nombre:"Countercharm", desc:"Cuando vos o una criatura a 30 pies fallan una salvación contra un efecto que aplica Hechizado (Charmed) o Asustado (Frightened), podés usar tu reacción para que repita la salvación con ventaja."},
+    {nivel:8, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:9, nombre:"Expertise (segunda elección)", desc:"Ganás Expertise en otras dos habilidades en las que ya seas competente."},
+    {nivel:10, nombre:"Magical Secrets", desc:"Al subir de nivel de Bardo (incluido este) y aumentar tus conjuros preparados, podés elegir los nuevos de las listas de Bardo, Clérigo, Druida y Mago; cuentan como conjuros de Bardo. También podés reemplazar un conjuro preparado por uno de esas listas."},
+    {nivel:12, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:16, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:18, nombre:"Superior Inspiration", desc:"Al tirar Iniciativa, recuperás usos de Bardic Inspiration hasta tener dos, si tenías menos de dos."},
+    {nivel:19, nombre:"Mejora de Puntuación de Característica / Don Épico", desc:"Última mejora de característica, o un Don Épico."},
+    {nivel:20, nombre:"Words of Creation", desc:"Siempre tenés preparados Power Word Heal y Power Word Kill. Al lanzar cualquiera de los dos, podés elegir una segunda criatura como objetivo si está a 10 pies o menos de la primera."},
+  ],
+  subclasses: [
+    {
+      name: "College of Lore", resumen: "Bardos que reúnen conjuros y secretos de fuentes diversas (tomos, ritos, cuentos populares); usan el ingenio para sembrar dudas y desenmascarar mentiras.",
+      features: [
+        {nivel:3, nombre:"Bonus Proficiencies", desc:"Ganás competencia en tres habilidades a elección."},
+        {nivel:3, nombre:"Cutting Words", desc:"Con reacción, cuando una criatura a 60 pies que veas tira daño o tiene éxito en una prueba de característica o tirada de ataque, gastás un uso de Bardic Inspiration, tirás el dado y restás el resultado a esa tirada, pudiendo convertir el éxito en fallo."},
+        {nivel:6, nombre:"Magical Discoveries", desc:"Aprendés dos conjuros de las listas de Clérigo, Druida o Mago (en cualquier combinación); deben ser trucos o de un nivel para el que tengas espacios. Siempre los tenés preparados y al subir de nivel de Bardo podés reemplazar uno."},
+        {nivel:14, nombre:"Peerless Skill", desc:"Cuando fallás una prueba de característica o tirada de ataque, podés gastar un uso de Bardic Inspiration, tirar el dado y sumarlo al d20. Si aun así fallás, el uso no se gasta."},
+      ]
+    },
+  ]
+},
+
+// ============================================================
+// GUERRERO (Fighter) — SRD 5.2 / PHB 2024 (CC-BY-4.0)
+// ============================================================
+{
+  id: "fighter", name: "Fighter", nombre_es: "Guerrero",
+  hitDie: 10, primaryAbility: "Fuerza o Destreza", savingThrows: ["Fuerza", "Constitución"],
+  casterType: null, subclassLevel: 3, subclassLabel: "Arquetipo Marcial",
+  resumen: "Maestro del combate con armas y armaduras. En 2024 elige un dote de Estilo de Combate desde nivel 1, gana Weapon Mastery, y suma rasgos tácticos ligados a Second Wind (Tactical Mind, Tactical Shift) además de Action Surge, Indomitable y hasta cuatro ataques por acción de Atacar.",
+  resourceName: "Usos de Second Wind",
+  resourceProgression: {1:2, 4:3, 10:4},
+  features: [
+    {nivel:1, nombre:"Fighting Style (Estilo de Combate)", desc:"Ganás un dote de Estilo de Combate a elección (se recomienda Defense). Cada vez que subís un nivel de Guerrero podés reemplazarlo por otro dote de Estilo de Combate."},
+    {nivel:1, nombre:"Second Wind", desc:"Como acción adicional recuperás PG iguales a 1d10 + tu nivel de Guerrero. Tenés 2 usos (3 desde nivel 4, 4 desde nivel 10); recuperás un uso gastado con un descanso corto y todos con un descanso largo."},
+    {nivel:1, nombre:"Weapon Mastery", desc:"Podés usar las propiedades de maestría de 3 tipos de armas simples o marciales a elección; tras un descanso largo podés cambiar una de esas elecciones. Sube a 4 tipos en nivel 4, 5 en nivel 10 y 6 en nivel 16."},
+    {nivel:2, nombre:"Action Surge", desc:"En tu turno podés realizar una acción adicional, excepto la acción Magic. Una vez usado, no podés volver a usarlo hasta un descanso corto o largo. Desde nivel 17 tenés 2 usos antes de descansar, pero solo uno por turno."},
+    {nivel:2, nombre:"Tactical Mind", desc:"Cuando fallás una prueba de característica, podés gastar un uso de Second Wind: tirás 1d10 y sumás el resultado a la prueba, lo que puede convertirla en éxito. Si igual falla, ese uso de Second Wind no se gasta."},
+    {nivel:3, nombre:"Arquetipo Marcial (Subclase)", desc:"Elegís tu Arquetipo Marcial, una especialización que te da rasgos en los niveles 3, 7, 10, 15 y 18."},
+    {nivel:4, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:5, nombre:"Extra Attack (Ataque Extra)", desc:"Atacás dos veces en lugar de una cuando realizás la acción de Atacar en tu turno."},
+    {nivel:5, nombre:"Tactical Shift", desc:"Cuando activás Second Wind con una acción adicional, podés moverte hasta la mitad de tu Velocidad sin provocar ataques de oportunidad."},
+    {nivel:6, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:7, nombre:"Rasgo del Arquetipo Marcial", desc:"Recibís el rasgo de nivel 7 de tu Arquetipo Marcial."},
+    {nivel:8, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:9, nombre:"Indomitable", desc:"Si fallás una tirada de salvación, podés repetirla con un bonificador igual a tu nivel de Guerrero; debés usar la nueva tirada. Un uso por descanso largo (2 desde nivel 13, 3 desde nivel 17)."},
+    {nivel:9, nombre:"Tactical Master", desc:"Cuando atacás con un arma cuya propiedad de maestría podés usar, podés reemplazar esa propiedad por Push, Sap o Slow para ese ataque."},
+    {nivel:10, nombre:"Rasgo del Arquetipo Marcial", desc:"Recibís el rasgo de nivel 10 de tu Arquetipo Marcial."},
+    {nivel:11, nombre:"Two Extra Attacks (Dos Ataques Extra)", desc:"Atacás tres veces en lugar de una cuando realizás la acción de Atacar en tu turno."},
+    {nivel:12, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:13, nombre:"Indomitable (2 usos)", desc:"Indomitable pasa a tener 2 usos entre descansos largos."},
+    {nivel:13, nombre:"Studied Attacks", desc:"Si hacés una tirada de ataque contra una criatura y fallás, tenés ventaja en tu siguiente tirada de ataque contra esa criatura antes del final de tu próximo turno."},
+    {nivel:14, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:15, nombre:"Rasgo del Arquetipo Marcial", desc:"Recibís el rasgo de nivel 15 de tu Arquetipo Marcial."},
+    {nivel:16, nombre:"Mejora de Puntuación de Característica", desc:"Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento."},
+    {nivel:17, nombre:"Action Surge (2 usos)", desc:"Action Surge pasa a tener 2 usos entre descansos, pero solo podés usarlo una vez por turno."},
+    {nivel:17, nombre:"Indomitable (3 usos)", desc:"Indomitable pasa a tener 3 usos entre descansos largos."},
+    {nivel:18, nombre:"Rasgo del Arquetipo Marcial", desc:"Recibís el rasgo de nivel 18 de tu Arquetipo Marcial."},
+    {nivel:19, nombre:"Mejora de Puntuación de Característica / Don Épico", desc:"Última mejora de característica, o un Don Épico."},
+    {nivel:20, nombre:"Three Extra Attacks (Tres Ataques Extra)", desc:"Atacás cuatro veces en lugar de una cuando realizás la acción de Atacar en tu turno."},
+  ],
+  subclasses: [
+    {
+      name: "Champion", resumen: "Se dedica a perfeccionar su destreza marcial y su excelencia física para dar golpes devastadores, resistir el peligro y perseguir la victoria sin descanso.",
+      features: [
+        {nivel:3, nombre:"Improved Critical", desc:"Tus tiradas de ataque con armas y con Golpes Desarmados logran un Golpe Crítico con 19 o 20 en el d20."},
+        {nivel:3, nombre:"Remarkable Athlete", desc:"Tenés ventaja en las tiradas de iniciativa y en las pruebas de Fuerza (Atletismo). Además, justo después de lograr un Golpe Crítico podés moverte hasta la mitad de tu Velocidad sin provocar ataques de oportunidad."},
+        {nivel:7, nombre:"Additional Fighting Style", desc:"Ganás otro dote de Estilo de Combate a elección."},
+        {nivel:10, nombre:"Heroic Warrior", desc:"Durante el combate, podés darte Inspiración Heroica cada vez que empezás tu turno sin ella."},
+        {nivel:15, nombre:"Superior Critical", desc:"Tus tiradas de ataque con armas y con Golpes Desarmados ahora logran un Golpe Crítico con 18-20 en el d20."},
+        {nivel:18, nombre:"Survivor", desc:"Defy Death: ventaja en las salvaciones de muerte, y si sacás 18-20 en una, contás como si hubieras sacado 20. Heroic Rally: al inicio de cada turno tuyo recuperás 5 + mod. Constitución PG si estás Malherido (Bloodied) y tenés al menos 1 PG."},
+      ]
+    },
+  ]
+},
 ];
 
 // ============================================================
@@ -590,6 +738,28 @@ const PROGRESION_CLASES = {
   rogue: {
     prerrequisitos: ['DEX'],
     elecciones: [{ nivel: 1, tipo: 'expertise', cantidad: 2 }, { nivel: 6, tipo: 'expertise', cantidad: 2 }]
+  },
+barbarian: {
+    prerrequisitos: ['STR'],
+    elecciones: [],
+    recursos: [{ id: 'rage', nombre: 'Rage', max: { tabla: { 1: 2, 3: 3, 6: 4, 12: 5, 17: 6 } }, recarga: 'largo' }]
+  },
+bard: {
+    prerrequisitos: ['CHA'],
+    cantrips: { 1: 2, 4: 3, 10: 4 },
+    preparados: [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22],
+    elecciones: [{ nivel: 2, tipo: 'expertise', cantidad: 2 }, { nivel: 9, tipo: 'expertise', cantidad: 2 }]
+  },
+fighter: {
+    // Multiclase PHB 2024: Fuerza 13 O Destreza 13 (prerrequisitosAlternativos: ver prerrequisitosFaltantes en ficha-nivel.js).
+    prerrequisitos: ['STR'], prerrequisitosAlternativos: ['DEX'],
+    // Estilo de Combate (dote) desde nivel 1 en 2024; Champion suma otro en nivel 7 (rasgo de subclase, no se declara acá).
+    elecciones: [{ nivel: 1, tipo: 'estilo', cantidad: 1 }],
+    // Second Wind va en resourceProgression de la clase (usos 2/3/4); acá van los que tienen contador propio.
+    recursos: [
+      { id: 'action-surge', nombre: 'Action Surge', max: { tabla: { 2: 1, 17: 2 } }, recarga: 'corto' },
+      { id: 'indomitable', nombre: 'Indomitable', max: { tabla: { 9: 1, 13: 2, 17: 3 } }, recarga: 'largo' }
+    ]
   }
 };
 
