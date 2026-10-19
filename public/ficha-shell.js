@@ -21,13 +21,20 @@
  *     velocidad:30, habilidadAtaque:'STR', habilidadConjuro:'WIS', sinConjuros:false,
  *     atributos:{ STR:13, … }, salvaciones:['INT','WIS'], habilidades:{ 'Insight':'comp'|'exp', … }, competencias:'html',
  *     ca:{ fija:17 } | { sinArmadura:() => 10 + FichaAtributos.modDe('DEX') + …, texto:'10 + DEX + WIS' },
- *     ataques:[{ nombre, habilidad:'STR', competente:true, bonoExtra:0, dano:{count,sides,mod:'STR'|n}, textoDano, notas, extras:[{nombre,dado}] }],
+ *     ataques:[{ nombre, habilidad:'STR', competente:true, bonoExtra:0, dano:{count,sides,mod:'STR'|n|{hab,prof,fijo}}, textoDano, notas, extras:[{nombre,dado}],
+ *                soloDano:true (fila sin tirada de ataque; dano.count y textoDano pueden ser funciones (ctx) => …) }],
+ *     velocidadNota:'/ 🦇30 vuelo', badgeAtaque:{ extra:4, alternativo:-5 }   (el badge de ataque suma `extra` y muestra "+12/+7"),
+ *     espaciosModo:'casillas'   (espacios como casillas chk-slotN-M, ☑ = usado, con espejo slot-N-cur: ver renderEspacios),
  *     hechizos:[…], inventario:[…], reputacion:[…],                      (semillas; mismo formato que FICHA_CONFIG)
  *     recursos:[ ver ficha-vitales.js ],
  *     rasgos:[{ id:'txt-feat-…', tag, titulo, html }],
  *     secciones:[{ id, icono, titulo, fragmento:'personajes/<id>/x.html' | html }],
  *     monedas:[{ id:'gp-val', etiqueta:'Oro (po)' }], trasfondo:{ html },
- *     ganchos:{ resolverSlotId, alGastarSlot, ventajaForzada },          (opcionales, ver ficha-common.js)
+ *     ganchos:{ resolverSlotId, alGastarSlot, ventajaForzada, notasD20(o)=>[texto], validarLanzamiento(h,nivel,slotId)=>aviso|null, etiquetaEspacio(slotId,nivel)=>texto },   (opcionales; notasD20 agrega notas al detalle de un d20)
+ *     ca:{ fija, casillaAuto:true, bonoConArmadura:1 }   (casillaAuto: casilla «calcular desde el equipo»; la CA fija manda mientras esté apagada)
+ *     auras:[{ id, nombre, icono, texto, objetivo:'salvaciones'|'iniciativa'|…, valor:()=>n, activa:true }]   (buffs permanentes con casilla)
+ *     calculos:{ clave: () => texto }                                    (valores para <span class="js-calc" data-calc="clave">)
+ *     rasgos[].acciones:[{ texto, roll } | { texto, uso:'Nombre' }]      (botón que tira una fórmula o anota un uso)
  *     iniciar(ctx)                                                       (opcional: código propio de la clase o del personaje)
  *   };
  */
@@ -87,7 +94,13 @@
     };
     if (P.ca && P.ca.fija != null) cfg.caBase = P.ca.fija;
     if (P.ca && P.ca.sinArmadura) { cfg.caSinArmadura = P.ca.sinArmadura; cfg.caSinArmaduraTexto = P.ca.texto || ''; }
-    ['resolverSlotId', 'alGastarSlot', 'ventajaForzada'].forEach(k => { if (g[k]) cfg[k] = g[k]; });
+    // CA base editable a mano (campo guardado en datos/<id>): se usa mientras no haya armadura ni escudo equipados.
+    if (P.ca && P.ca.manual) {
+      delete cfg.caBase;
+      cfg.caSinArmadura = () => { const e = document.getElementById(P.ca.manual); return e ? num(e.value, P.ca.fija != null ? P.ca.fija : 10) : (P.ca.fija != null ? P.ca.fija : 10); };
+      cfg.caSinArmaduraTexto = 'valor manual de CA base';
+    }
+    ['resolverSlotId', 'alGastarSlot', 'ventajaForzada', 'notasD20', 'validarLanzamiento', 'etiquetaEspacio'].forEach(k => { if (g[k]) cfg[k] = g[k]; });
     window.FICHA_CONFIG = cfg;
     window.CONFIG_NIVEL = { clases: P.clases.map(c => Object.assign({}, c)) };
   }
@@ -111,7 +124,71 @@
     window.CONFIG_NIVEL.clases.forEach(c => { niv[c.nombre] = FichaVitales.nivelClase(c.nombre); });
     return FichaNivel.espaciosPara(niv);
   }
+  /* ---------- espacios como CASILLAS (espaciosModo:'casillas'; p. ej. Dane) ----------
+     Las casillas chk-slotN-M son la fuente de verdad (☑ = usado) y `slot-N-cur` es un espejo (disponibles = sin marcar) que
+     FichaHechizos.usar descuenta; el puente traslada ese gasto a una casilla. Los datos ya guardados (chk-slotN-M) siguen valiendo. */
+  let enUsarHechizo = false;
+  function slotCasillas(n) { return Array.from(document.querySelectorAll(`#espacios-conjuro [data-slot-nivel="${n}"] input[type="checkbox"]`)); }
+  function refrescarSlotCur() {
+    if (enUsarHechizo) return;
+    document.querySelectorAll('#espacios-conjuro [data-slot-nivel]').forEach(row => {
+      const n = row.dataset.slotNivel, cbs = slotCasillas(n);
+      const cur = $(`slot-${n}-cur`), max = $(`slot-${n}-max`);
+      const disp = String(cbs.filter(c => !c.checked).length);
+      if (cur && cur.textContent !== disp) cur.textContent = disp;
+      if (max && max.textContent !== String(cbs.length)) max.textContent = String(cbs.length);
+    });
+  }
+  function renderEspaciosCasillas() {
+    const cont = $('espacios-conjuro'); if (!cont) return;
+    const e = espaciosActuales();
+    e.slots.forEach((max, i) => {
+      const n = i + 1;
+      if (max <= 0) return;
+      let row = cont.querySelector(`[data-slot-nivel="${n}"]`);
+      if (!row) {
+        row = document.createElement('div'); row.className = 'slot-card slot-casillas'; row.dataset.slotNivel = String(n);
+        row.innerHTML = `<h4>Nivel ${n}</h4><div class="pips slot-pips"></div><span class="slot-resumen texto-suave">Disp.: <span id="slot-${n}-cur">${max}</span>/<span id="slot-${n}-max">${max}</span></span>`;
+        cont.appendChild(row);
+      }
+      const grupo = row.querySelector('.slot-pips');
+      let cbs = slotCasillas(n);
+      for (let k = cbs.length + 1; k <= max; k++) {   // agrega, nunca quita
+        const lab = document.createElement('label'); lab.className = 'pip-casilla';
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = `chk-slot${n}-${k}`; cb.setAttribute('aria-label', `Espacio de nivel ${n}, número ${k}`);
+        const sp = document.createElement('span'); sp.className = 'pip'; sp.setAttribute('aria-hidden', 'true');
+        lab.append(cb, sp); grupo.appendChild(lab);
+      }
+    });
+    if (window.FichaComun) FichaComun.reaplicarDatos();
+    refrescarSlotCur();
+    const info = $('pacto-info'); if (info && !cont.children.length) info.textContent = 'Sin espacios de conjuro todavía.';
+  }
+  function instalarPuenteCasillas() {
+    if (!window.FichaHechizos || FichaHechizos.__puente) return;
+    const usarOriginal = FichaHechizos.usar;
+    FichaHechizos.usar = function (idx) {
+      const h = FichaHechizos.editor.items()[idx];
+      let n = h && h.slotCost;
+      if (h && h.upcast) { const sel = $(`upcast-sel-${idx}`); n = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase; }
+      refrescarSlotCur();
+      const el = n ? $(`slot-${n}-cur`) : null;
+      const antes = el ? parseInt(el.textContent, 10) : NaN;
+      enUsarHechizo = true;
+      try { usarOriginal(idx); } finally { enUsarHechizo = false; }
+      if (el && !isNaN(antes) && parseInt(el.textContent, 10) === antes - 1) {
+        const cb = slotCasillas(n).find(c => !c.checked);
+        if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); }
+      }
+      refrescarSlotCur();
+    };
+    FichaHechizos.__puente = true;
+    document.addEventListener('change', (e) => { if (e.target.matches('#espacios-conjuro input[type="checkbox"]')) refrescarSlotCur(); });
+    document.addEventListener('ficha:datos-sincronizados', () => refrescarSlotCur());
+  }
+
   function renderEspacios() {
+    if (P.espaciosModo === 'casillas') return renderEspaciosCasillas();
     const cont = $('espacios-conjuro'); if (!cont) return;
     const e = espaciosActuales();
     const actuales = {};
@@ -144,6 +221,12 @@
     return o;
   }
 
+  // Iniciativa base: DEX, salvo que el personaje tenga una fórmula propia (P.iniciativa.calcular, p. ej. DEX + INT).
+  function iniciativaBase() {
+    if (P.iniciativa && typeof P.iniciativa.calcular === 'function') return P.iniciativa.calcular({ mod: (h) => FichaAtributos.modDe(h), prof: FichaAtributos.profBonusActual() });
+    return FichaAtributos.modDe('DEX');
+  }
+
   /* ---------- números derivados que se muestran en varios lugares ---------- */
   function refrescarDerivados() {
     if (!window.FichaAtributos) return;
@@ -158,18 +241,20 @@
     FichaVitales.pintarHP();
     // ataques
     (P.ataques || []).forEach((a, i) => {
-      const bono = FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0);
+      const bono = FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0);   // (a.conjuro: mismo valor sin buffs)
       set('atq-bono-' + i, f(bono));
     });
     if (P.habilidadConjuro) set('atq-bono-conjuro', f(FichaAtributos.modDe(P.habilidadConjuro) + prof));
     // estadísticas base
-    set('atk-base', f(FichaAtributos.modDe(P.habilidadAtaque || 'STR') + prof) + ` (${P.habilidadAtaque || 'STR'} + comp.)`);
+    const extraAtk = (P.badgeAtaque && P.badgeAtaque.extra) || 0;
+    set('atk-base', f(FichaAtributos.modDe(P.habilidadAtaque || 'STR') + prof + extraAtk) + ` (${P.habilidadAtaque || 'STR'} + comp.${extraAtk ? ' + ' + extraAtk : ''})`);
     if (P.habilidadConjuro) {
       set('spell-atk-base', f(FichaAtributos.modDe(P.habilidadConjuro) + prof) + ` (${P.habilidadConjuro} + comp.)`);
       set('spell-dc-base', (8 + FichaAtributos.modDe(P.habilidadConjuro) + prof) + ` (8 + ${P.habilidadConjuro} + comp.)`);
     }
-    set('ini-base', 'DEX ' + f(FichaAtributos.modDe('DEX')));
-    set('vel-base', 'Base ' + (P.velocidad || 30) + ' ft');
+    set('ini-base', P.iniciativa && P.iniciativa.texto ? P.iniciativa.texto : 'DEX ' + f(FichaAtributos.modDe('DEX')));
+    set('vel-base', 'Base ' + (P.velocidad || 30) + ' ft' + (P.velocidadNota ? ' ' + P.velocidadNota : ''));
+    (P.ataques || []).forEach((a, i) => { if (typeof a.textoDano === 'function') set('atq-dano-' + i, a.textoDano(FichaVitales.ctx())); });
     set('hp-max-base', 'Base ' + (P.hpBase || 0) + ' + subidas');
   }
 
@@ -195,7 +280,7 @@
   function etiquetaHab(k) { return k; }
   function bindClicks() {
     document.addEventListener('click', (e) => {
-      const t = e.target.closest('[data-tirar],[data-roll],[data-contador],[data-compendio],[data-ataque],[data-hp-delta],[data-hp-accion],[data-slot],[data-pool],[data-descanso],[data-recurso-formula],.tab');
+      const t = e.target.closest('[data-tirar],[data-roll],[data-uso],[data-contador],[data-compendio],[data-ataque],[data-hp-delta],[data-hp-accion],[data-slot],[data-pool],[data-descanso],[data-recurso-formula],.tab');
       if (!t) return;
       if (t.dataset.tirar) {
         const bono = num(t.dataset.bonus || (t.closest('.skill-item') || {}).dataset && t.closest('.skill-item').dataset.bonus, 0);
@@ -203,13 +288,14 @@
         if (t.dataset.tirar === 'check') return FichaDados.d20({ mod: bono, etiqueta: etiquetaHab(t.dataset.hab) + ' Check', categoria: 'pruebas' });
         if (t.dataset.tirar === 'save') return FichaDados.d20({ mod: bono, etiqueta: etiquetaHab(t.dataset.hab) + ' Save', categoria: 'salvaciones' });
         if (t.dataset.tirar === 'iniciativa') {
-          const m = FichaAtributos.modDe('DEX') + num(($('iniciativa-buff') || {}).value, 0) + FichaBuffs.plano('iniciativa');
+          const m = iniciativaBase() + num(($('iniciativa-buff') || {}).value, 0) + FichaBuffs.plano('iniciativa');
           return FichaDados.d20({ mod: m, etiqueta: 'Iniciativa', categoria: 'pruebas' });
         }
       }
       if (t.dataset.tirar === 'concentracion') return FichaDados.d20({ mod: num(($('ab-con') && $('ab-con').querySelector('.btn-save') || {}).dataset && $('ab-con').querySelector('.btn-save').dataset.bonus, 0), etiqueta: 'CON Save (concentración)', categoria: 'salvaciones' });
       if (t.dataset.ataque !== undefined) return tirarAtaque(t);
       if (t.dataset.contador) return FichaVitales.cambiarContador(t.dataset.contador, num(t.dataset.delta, 0), t.closest('.panel') ? t.closest('.panel').querySelector('h3').textContent.trim() : t.dataset.contador);
+      if (t.dataset.uso) return FichaDados.registrarUso(t.dataset.uso, 'recurso');
       if (t.dataset.roll) return FichaDados.tirar(t.dataset.roll, t.dataset.etiqueta || t.dataset.roll);
       if (t.dataset.compendio !== undefined) return FichaCompendio.abrir();
       if (t.dataset.hpDelta) return FichaVitales.cambiarHP(num(t.dataset.hpDelta, 0));
@@ -255,7 +341,7 @@
     if (m == null) return 0;
     if (typeof m === 'number') return m;
     if (typeof m === 'string') return FichaAtributos.modDe(m);
-    return (m.hab ? FichaAtributos.modDe(m.hab) : 0) + (m.prof ? FichaAtributos.profBonusActual() : 0) + (m.fijo || 0);
+    return (m.hab ? FichaAtributos.modDe(m.hab) : 0) + (m.prof ? FichaAtributos.profBonusActual() : 0) + (m.clase ? FichaVitales.nivelClase(m.clase) * (m.mult || 1) : 0) + (m.fijo || 0);
   }
 
   function tirarAtaque(btn) {
@@ -266,15 +352,19 @@
       return FichaDados.d20({ mod: m, etiqueta: 'Ataque de conjuro', categoria: 'ataque' });
     }
     const a = P.ataques[num(idx, 0)]; if (!a) return;
-    if (modo === 'atk') {
-      const m = FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0) + num(($('atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque');
-      return FichaDados.d20({ mod: m, etiqueta: 'Ataque ' + a.nombre, categoria: 'ataque' });
+    if (modo === 'atk' || modo === 'atqextra') {
+      // a.conjuro: ataque de conjuro con otra característica (p. ej. el racial de Eldur con CON): suma el buff y los efectos de ataque de conjuro.
+      const m = a.conjuro
+        ? FichaAtributos.modDe(a.habilidad) + prof + num(($('spell-atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque-conjuro')
+        : FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0) + num(($('atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque');
+      const et = modo === 'atqextra' ? (a.atqExtra[num(btn.dataset.extra, 0)] || a.nombre) : (a.etiquetaAtaque || 'Ataque ' + a.nombre);
+      return FichaDados.d20({ mod: m, etiqueta: et, categoria: 'ataque' });
     }
     const dado = modo === 'extra' ? (a.extras[num(btn.dataset.extra, 0)] || {}).dado : a.dano;
     if (!dado) return;
     const modDano = valorMod(dado.mod);
     const nombre = modo === 'extra' ? a.extras[num(btn.dataset.extra, 0)].nombre : 'Daño ' + a.nombre;
-    const base = FichaDados.calcular({ count: dado.count, sides: dado.sides, mod: modDano });
+    const base = FichaDados.calcular({ count: typeof dado.count === 'function' ? dado.count(FichaVitales.ctx()) : dado.count, sides: dado.sides, mod: modDano });
     if (base.error) return;
     let total = base.total, detalle = base.detalle;
     const ex = FichaBuffs.tirarDados('dano');
@@ -296,6 +386,13 @@
     window.rollCheckSave = (dado, m, etiqueta, tipo, categoria) => FichaDados.d20({ mod: m, etiqueta, categoria: categoria || (tipo === 'save' ? 'salvaciones' : 'pruebas') });
     window.rollCoin = () => FichaDados.moneda();
     window.changeVal = (id, delta) => FichaVitales.cambiarContador(id, delta, id);
+    window.registrarUsoRecursoGenerico = (etiqueta) => FichaDados.registrarUso(etiqueta, 'recurso');
+    // Gasta un espacio de conjuro del nivel indicado (p. ej. Divine Smite); avisa si no queda ninguno.
+    window.gastarSlot = (nivel) => {
+      const el = $('slot-' + nivel + '-cur'); if (!el) return;
+      if (num(el.textContent, 0) <= 0) { FichaDados.mostrar('—', 'Sin espacios de nivel ' + nivel, 'No te quedan espacios de ese nivel.'); return; }
+      FichaVitales.cambiarContador('slot-' + nivel + '-cur', -1, 'Espacio de nivel ' + nivel);
+    };
   }
 
   // Textos derivados dentro de HTML propio: <span class="js-calc" data-calc="armaBono|mod|prof|cd" data-hab="DEX" data-fmt="num">
@@ -308,7 +405,13 @@
         case 'armaBono': { const v = FichaAtributos.modDe(hab) + prof; t = el.dataset.fmt === 'num' ? String(v) : f(v); break; }
         case 'mod': t = f(FichaAtributos.modDe(hab)); break;
         case 'prof': t = f(prof); break;
-        case 'cd': t = String(8 + FichaAtributos.modDe(P.habilidadConjuro) + prof); break;
+        case 'cd': case 'cdConjuro': t = String(8 + FichaAtributos.modDe(P.habilidadConjuro) + prof); break;
+        case 'bonoConjuro': t = f(FichaAtributos.modDe(P.habilidadConjuro) + prof); break;
+        case 'modnum': t = String(FichaAtributos.modDe(hab)); break;
+        case 'modsig': t = f(FichaAtributos.modDe(hab)); break;
+        case 'atqConjuro': t = f(FichaAtributos.modDe(P.habilidadConjuro) + prof); break;
+        case 'ini': t = f(iniciativaBase()); break;
+        default: if (P.calculos && P.calculos[el.dataset.calc]) t = String(P.calculos[el.dataset.calc]());
       }
       if (t !== undefined && el.textContent !== t) el.textContent = t;
     });
@@ -361,14 +464,19 @@
     FichaComun.iniciarEditorReputacion();
 
     FichaVitales.iniciar({
-      hpBase: P.hpBase || 1, clases: window.CONFIG_NIVEL.clases, recursos: P.recursos || [],
-      espacios: maxEspacios, modCON: () => (window.FichaAtributos ? FichaAtributos.modDe('CON') : 0),
+      hpBase: P.hpBase || 1, idHpTemp: P.idHpTemp, clases: window.CONFIG_NIVEL.clases, recursos: P.recursos || [],
+      espacios: P.espaciosModo === 'casillas' ? () => null : maxEspacios, modCON: () => (window.FichaAtributos ? FichaAtributos.modDe('CON') : 0),
       alDescanso: (tipo) => {
+        if (P.espaciosModo === 'casillas' && tipo === 'largo') {
+          document.querySelectorAll('#espacios-conjuro input[type="checkbox"]:checked').forEach(c => { c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); });
+          refrescarSlotCur();
+        }
         const e = espaciosActuales();
         if (e.pacto) { const el = $('slot-pact-cur'); if (el) { el.textContent = String(e.pacto.count); FichaComun.guardarCampo('slot-pact-cur', e.pacto.count); } }
         if (P.ganchos && P.ganchos.alDescanso) P.ganchos.alDescanso(tipo);
       },
     });
+    if (P.espaciosModo === 'casillas') instalarPuenteCasillas();
     renderEspacios();
     FichaComun.sincronizarDatosDesdeNube();
 
@@ -381,14 +489,42 @@
       pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
     });
     // Base + buff = total
-    FichaComun.iniciarCA({ buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base' });
+    if (P.ca && P.ca.casillaAuto) {
+      // CA fija mientras la casilla «calcular desde el equipo» esté apagada; encendida, armadura/escudo equipados (+ bono de estilo).
+      FichaComun.iniciarCA({ totalElId: 'ca-motor-sin-pintar' });   // solo publica FichaCA.calcular(); no pinta nada
+      const caDesdeEquipo = () => {
+        const r = FichaCA.calcular(), conArmadura = !/fija|sin armadura/.test(r.texto), extra = conArmadura ? (P.ca.bonoConArmadura || 0) : 0;
+        const detalle = (r.texto.match(/\((.*)\)\s*$/) || [])[1] || '';
+        return { total: r.total + extra, texto: `${r.total + extra} (equipo: ${detalle}${extra ? ', estilo de combate +' + extra : ''})` };
+      };
+      const caAuto = () => !!($('ac-auto') && $('ac-auto').checked);
+      FichaComun.iniciarEstadisticaConBuff({
+        buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base',
+        calcularBase: () => (caAuto() ? caDesdeEquipo().total : P.ca.fija),
+        formatearBase: () => (caAuto() ? caDesdeEquipo().texto : `${P.ca.fija} (fija)`),
+        objetivoBuff: 'ca', eventos: ['ficha:inventario'], vigilarTambien: ['ac-auto'],
+      });
+    } else {
+      FichaComun.iniciarCA({ buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base' });
+    }
+    // Auras / buffs permanentes con casilla (p. ej. Aura of Protection): entran como fuente de buffs y se apagan con la casilla o la ✖.
+    if ((P.auras || []).length) {
+      FichaComun.registrarFuenteBuffs(() => P.auras.filter(a => { const c = $(a.id); return c && c.checked; }).map(a => ({
+        nombre: a.nombre, efectos: [{ tipo: 'plano', objetivo: a.objetivo, valor: a.valor() }],
+        apagar: () => { const c = $(a.id); if (c) { c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); } },
+      })));
+      document.addEventListener('change', (e) => { if (P.auras.some(a => a.id === e.target.id)) FichaComun.notificarBuffs(); });
+      document.addEventListener('ficha:datos-sincronizados', () => FichaComun.notificarBuffs());
+    }
+    if (P.ca && P.ca.manual) document.addEventListener('input', (e) => { if (e.target.id === P.ca.manual && window.FichaCA) FichaCA.recalcular(); });
     FichaComun.iniciarConcentracion('concentracion-panel');
     const mod = (h) => FichaAtributos.modDe(h), prof = () => FichaAtributos.profBonusActual();
     const f = FichaComun.formatearMod;
     FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'hp-max-buff', totalElId: 'hp-max-total', calcularBase: () => (P.hpBase || 1) + FichaVitales.registro().reduce((s, r) => s + (r.hpGanado || 0), 0), objetivoBuff: 'hp-max' });
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => mod('DEX'), formatear: (n) => '🎲 ' + f(n), objetivoBuff: 'iniciativa' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: iniciativaBase, formatear: (n) => '🎲 ' + f(n), objetivoBuff: 'iniciativa' });
     FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => Math.floor((P.velocidad || 30) * FichaReglas.efectos().velocidadFactor), formatear: (n) => n + ' ft', objetivoBuff: 'velocidad' });
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', calcularBase: () => mod(P.habilidadAtaque || 'STR') + prof(), formatear: f, objetivoBuff: 'ataque' });
+    const altAtk = P.badgeAtaque && P.badgeAtaque.alternativo;
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', calcularBase: () => mod(P.habilidadAtaque || 'STR') + prof() + ((P.badgeAtaque && P.badgeAtaque.extra) || 0), formatear: altAtk ? (n) => f(n) + '/' + f(n + altAtk) : f, objetivoBuff: 'ataque' });
     if (!P.sinConjuros && P.habilidadConjuro) {
       FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: () => mod(P.habilidadConjuro) + prof(), formatear: f, objetivoBuff: 'ataque-conjuro' });
       FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + mod(P.habilidadConjuro) + prof(), objetivoBuff: 'cd-conjuro' });
@@ -406,6 +542,7 @@
       refrescarEspacios: renderEspacios, abrirCompendio: () => FichaCompendio.abrir(),
       agregarHD: () => FichaVitales.pintarHD(), quitarHD: () => FichaVitales.pintarHD(),
       recursos: [],
+      ...(P.nivel || {}),   // p. ej. { rasgosExtra:[{nivel,clase,nombre,descripcion}], rasgosDeFicha:['Monk','Cleric'] } si el personaje trae sus propios rasgos por nivel
     });
     document.addEventListener('ficha:nivel', () => { renderEspacios(); FichaVitales.pintarHD(); FichaVitales.pintarRecursos(); refrescarDerivados(); pintarXP(); });
     const undo = $('btn-deshacer-nivel'); if (undo) undo.addEventListener('click', () => FichaNivel.deshacer());

@@ -257,6 +257,8 @@
     });
     if (cat0 === 'ataque') { if (elegido === 20) partes.push('¡CRÍTICO!'); else if (elegido === 1) partes.push('Pifia (1 natural)'); }
     (o.notas || []).forEach(n => partes.push(n));
+    // Gancho propio del personaje: FICHA_CONFIG.notasD20({ categoria, etiqueta }) → [texto, …] (p. ej. un aura activa).
+    if (typeof FICHA_CONFIG !== 'undefined' && FICHA_CONFIG.notasD20) { try { (FICHA_CONFIG.notasD20({ categoria: cat0, etiqueta }) || []).forEach(n => partes.push(n)); } catch (e) { /* sin notas */ } }
     mostrar(total, etiqueta + nota, partes.join(' | '));
     return { total, d20: elegido, adv, detalle: partes.join(' | ') };
   }

@@ -36,7 +36,7 @@
     return `<header class="cabecera">
     <div class="cabecera-top">
       <div>
-        <h1>${esc(P.nombre)}</h1>
+        <h1>${esc(P.nombreCompleto || P.nombre)}</h1>
         <div class="subtitulo">${esc(P.subtitulo || '')}</div>
       </div>
       <div class="cabecera-acciones">
@@ -89,10 +89,10 @@
     ].filter(s => !(P.sinConjuros && (s[0] === 'satk' || s[0] === 'sdc')));
     const badges = stats.map(([k, et, base, buff, tot, destacado]) => `<div class="stat-badge${destacado ? ' destacado' : ''}" id="stat-${k}">
         <label for="${buff}">${et}</label>
-        <span class="stat-base" id="${base}"></span>
+        <span class="stat-base" id="${base}"></span>${k === 'ca' && P.ca && P.ca.casillaAuto ? '<label class="ac-auto-label" title="Calcula la CA desde la armadura y el escudo equipados en el inventario. Apagada: se usa la CA fija del personaje."><input type="checkbox" id="ac-auto"> calcular desde el equipo</label>' : ''}
         <div class="buff-row"><input type="number" id="${buff}" value="0" aria-label="Bono manual: ${esc(et.replace(/^\S+\s/, ''))}" title="Bono manual (objetos o efectos)">${k === 'ini'
           ? `<button type="button" class="btn-roll" id="${tot}" data-tirar="iniciativa" aria-label="Tirar iniciativa">🎲 +0</button>`
-          : `<div class="stat-total" id="${tot}">0</div>`}</div>
+          : `<div class="stat-total" id="${tot}">0</div>`}</div>${k === 'ca' && P.ca && P.ca.manual ? `<label class="campo"><span>CA base manual</span><input type="number" id="${esc(P.ca.manual)}" value="${P.ca.fija != null ? P.ca.fija : 10}" title="Se usa mientras no haya armadura o escudo equipados"></label>` : ''}
       </div>`).join('');
     return `<div class="vitales">
         <div class="panel panel-hp">
@@ -108,7 +108,7 @@
           </div>
           <div class="progreso gruesa bien" id="hp-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Barra de PG"><span style="width:100%"></span></div>
           <div class="form-grid">
-            <label class="campo"><span>PG temporales</span><input type="number" id="hp-temp-input" value="0" min="0"></label>
+            <label class="campo"><span>PG temporales</span><input type="number" id="${P.idHpTemp || 'hp-temp-input'}" value="0" min="0"></label>
             <label class="campo"><span>Recibir daño o curar</span><input type="number" id="hp-cantidad" value="" min="0" placeholder="Cantidad"></label>
           </div>
           <div class="fila"><button type="button" class="btn btn-peligro btn-sm" data-hp-accion="dano" title="El daño consume primero los PG temporales">💥 Daño</button><button type="button" class="btn btn-primario btn-sm" data-hp-accion="curar">💚 Curar</button></div>
@@ -140,7 +140,7 @@
           <div class="stat-badge"><label>📘 Competencia</label><span class="stat-base" id="prof-nivel"></span><div class="stat-total" id="prof-badge-2">+2</div></div>
           <div class="stat-badge"><label>👁️ Percepción pasiva</label><span class="stat-base">10 + Percepción</span><div class="stat-total" id="percepcion-pasiva">10</div></div>
         </div>
-        <div class="fila" style="grid-column:1/-1;align-items:flex-start"><div id="concentracion-panel" class="buffs-activos"></div><div id="buffs-activos" class="buffs-activos"></div></div>
+        <div class="fila" style="grid-column:1/-1;align-items:flex-start"><div id="concentracion-panel" class="buffs-activos"></div><div id="buffs-activos" class="buffs-activos"></div>${(P.auras || []).length ? `<div class="buffs-activos" id="auras-control">${P.auras.map(a => `<label class="aura-toggle" title="${esc(a.texto || '')}"><input type="checkbox" id="${esc(a.id)}"${a.activa === false ? '' : ' checked'}> ${esc(a.icono || '🛡️')} ${esc(a.nombre)}</label>`).join('')}</div>` : ''}</div>
       </div>`;
   }
 
@@ -175,10 +175,10 @@
   function ataques(P) {
     const filas = (P.ataques || []).map((a, i) => `<tr>
         <td data-etiqueta="Arma"><strong>${esc(a.nombre)}</strong></td>
-        <td class="num" data-etiqueta="Bono" id="atq-bono-${i}">+0</td>
-        <td data-etiqueta="Daño" id="atq-dano-${i}">${esc(a.textoDano || '')}</td>
-        <td data-etiqueta="Notas">${esc(a.notas || '')}</td>
-        <td data-etiqueta="Tirar"><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="atk">🎯 Atq</button>${a.dano ? `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="dano">💥 Daño</button>` : ''}${(a.extras || []).map((x, j) => `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="extra" data-extra="${j}">${esc(x.icono || '➕')} ${esc(x.nombre)}</button>`).join('')}</div></td>
+        <td class="num" data-etiqueta="Bono"${a.bonoTexto ? '>' + a.bonoTexto : a.soloDano ? '>—' : ` id="atq-bono-${i}">+0`}</td>
+        <td data-etiqueta="Daño" id="atq-dano-${i}">${a.html ? (a.textoDano || '') : esc(a.textoDano || '')}</td>
+        <td data-etiqueta="Notas">${a.html ? (a.notas || '') : esc(a.notas || '')}</td>
+        <td data-etiqueta="Tirar"><div class="spell-item-actions">${(a.soloDano || a.sinAtq) ? '' : `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="atk">🎯 Atq</button>`}${a.dano ? `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="dano">💥 Daño</button>` : ''}${(a.extras || []).map((x, j) => `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="extra" data-extra="${j}">${esc(x.icono || '➕')} ${esc(x.nombre)}</button>`).join('')}${(a.atqExtra || []).map((n, j) => `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="atqextra" data-extra="${j}">🎯 ${esc(n)}</button>`).join('')}${a.uso ? `<button type="button" class="btn-roll btn-roll-sm" data-uso="${esc(a.uso)}">✅ Usar</button>` : ''}</div></td>
       </tr>`).join('');
     const conj = P.sinConjuros ? '' : `<tr><td data-etiqueta="Arma"><strong>Ataque de conjuro</strong></td><td class="num" data-etiqueta="Bono" id="atq-bono-conjuro">+0</td><td data-etiqueta="Daño">Según el conjuro</td><td data-etiqueta="Notas">${P.habilidadConjuro || ''} + competencia</td><td data-etiqueta="Tirar"><button type="button" class="btn-roll btn-roll-sm" data-ataque="conjuro" data-modo="atk">🎯 Atq conjuro</button></td></tr>`;
     return `<div class="tabla-scroll"><table class="tabla tabla-resp"><thead><tr><th>Arma</th><th>Bono</th><th>Daño</th><th>Notas</th><th>Tirar</th></tr></thead><tbody>${filas}${conj}</tbody></table></div>`;
@@ -221,7 +221,7 @@
 
   /* ---------- rasgos ---------- */
   function rasgos(P) {
-    const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${r.html || ''}</div>${(r.acciones || []).map(a => `<button type="button" class="btn-roll btn-roll-sm" data-roll="${esc(a.roll)}" data-etiqueta="${esc(a.etiqueta || a.texto)}">${esc(a.texto)}</button>`).join('')}</div>`).join('');
+    const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${r.html || ''}</div>${(r.acciones || []).map(a => `<button type="button" class="btn-roll btn-roll-sm" ${a.uso ? `data-uso="${esc(a.uso)}"` : `data-roll="${esc(a.roll)}"`} data-etiqueta="${esc(a.etiqueta || a.texto)}">${esc(a.texto)}</button>`).join('')}</div>`).join('');
     return `<div class="feature-grid">${cards}</div>`;
   }
 
@@ -252,13 +252,13 @@
       </div>
       <div class="tab-panel" role="tabpanel" id="panel-trasfondo" aria-labelledby="tab-trasfondo">
         ${t.html ? `<div class="aviso"><span>${t.html}</span></div>` : ''}
-        <div class="form-grid">
+        ${t.sinCampos ? '<p class="texto-suave">El trasfondo de este personaje está en su sección propia.</p>' : `<div class="form-grid">
           ${campo('trasfondo-historia', 'Historia', 'De dónde viene, qué lo trajo a la aventura…')}
           ${campo('trasfondo-personalidad', 'Personalidad', 'Rasgos de personalidad…')}
           ${campo('trasfondo-ideales', 'Ideales', 'Qué lo motiva…')}
           ${campo('trasfondo-vinculos', 'Vínculos', 'Personas, lugares u objetos importantes…')}
           ${campo('trasfondo-defectos', 'Defectos', 'Debilidades o vicios…')}
-        </div>
+        </div>`}
       </div>
       <div class="tab-panel" role="tabpanel" id="panel-notas" aria-labelledby="tab-notas" hidden>
         <label class="campo"><span>Notas de aventura</span><textarea id="notas-personaje" style="min-height:160px" placeholder="Pistas, nombres, deudas pendientes…"></textarea></label>
@@ -290,7 +290,9 @@
     partes.push(seccion('inventario', '🎒', 'Inventario y equipo', inventario(P)));
     partes.push(seccion('reputacion', '🏅', 'Reputación y honor', reputacion()));
     partes.push(seccion('trasfondo', '📖', 'Trasfondo, notas y bitácora', trasfondo(P)));
-    return `<div class="ficha sheet" data-personaje="${esc(P.id)}">${partes.join('\n  ')}</div><div class="toast-zona" id="toast-zona" aria-live="polite"></div>`;
+    // Campos ocultos que algún módulo del personaje guarda en datos/ (p. ej. un mapa JSON de preferencias).
+    const ocultos = (P.camposOcultos || []).map(id => `<input type="hidden" id="${esc(id)}" value="">`).join('');
+    return `<div class="ficha sheet" data-personaje="${esc(P.id)}">${ocultos}${partes.join('\n  ')}</div><div class="toast-zona" id="toast-zona" aria-live="polite"></div>`;
   }
 
   window.FichaPlantilla = { ficha, ABIL, SKILL_HAB, skillId, esc, fmt };

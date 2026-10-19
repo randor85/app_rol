@@ -98,7 +98,7 @@
   function recibirDano(n) {
     if (soloLectura()) return;
     n = Math.max(0, n | 0); if (!n) return;
-    const t = $('hp-temp-input');
+    const t = $(cfg.idHpTemp || 'hp-temp-input');
     let resto = n;
     if (t) { const temp = num(t.value, 0), usados = Math.min(temp, resto); if (usados) { t.value = String(temp - usados); disparar(t, 'input'); resto -= usados; } }
     const antes = leer('hp-cur', 0);
@@ -120,8 +120,11 @@
     return por;
   }
   function listaHD() {
+    // Mismo orden que las fichas vivas (las claves hd-N guardadas dependen de él): primero los niveles iniciales por
+    // clase en el orden de `clases`, y cada subida registrada agrega su dado al final.
     const lista = [];
-    cfg.clases.slice().sort((a, b) => b.dado - a.dado).forEach(c => { for (let i = 0; i < nivelClase(c.nombre); i++) lista.push(c.dado); });
+    cfg.clases.forEach(c => { for (let i = 0; i < (c.nivelInicial || 0); i++) lista.push(c.dado); });
+    registro().forEach(r => { const c = cfg.clases.find(x => x.nombre === r.clase); lista.push(r.dado || (c && c.dado) || 8); });
     return lista;
   }
   function pintarHD() {
@@ -247,7 +250,7 @@
   function descansoLargo() {
     if (soloLectura()) return;
     fijarHP(hpMaxActual());
-    const t = $('hp-temp-input'); if (t && num(t.value, 0) !== 0) { t.value = '0'; disparar(t, 'input'); }
+    const t = $(cfg.idHpTemp || 'hp-temp-input'); if (t && num(t.value, 0) !== 0) { t.value = '0'; disparar(t, 'input'); }
     // Dados de golpe: se recupera la mitad del total (mínimo 1), sin pasarse.
     const lista = listaHD();
     const usados = lista.map((_, i) => $('hd-' + (i + 1))).filter(e => e && e.checked);

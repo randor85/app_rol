@@ -384,6 +384,8 @@ body {
 .espacio, .slot-card { background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: var(--sp-2) var(--sp-3); text-align: center; min-width: 92px; display: grid; gap: var(--sp-1); }
 .espacio h4, .slot-card h4 { font-family: var(--fuente-texto); font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--texto-suave); font-weight: 800; }
 .espacio .pips { justify-content: center; }
+.slot-card .pips { justify-content: center; }
+.slot-card .slot-resumen { font-size: var(--fs-xs); }
 .slot-card .slot-val { font-family: var(--fuente-titulo); font-size: var(--fs-xl); color: var(--acento); }
 
 /* ---------- recursos de clase ---------- */
@@ -518,6 +520,8 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 .estados-linea { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
 .skill-hab { color: var(--texto-suave); font-size: var(--fs-xs); }
 .recurso-cuenta { font-weight: 800; }
+.ac-auto-label { display: flex; align-items: center; gap: var(--sp-1); font-size: var(--fs-xs); color: var(--texto-suave); cursor: pointer; }
+.aura-toggle { display: inline-flex; align-items: center; gap: var(--sp-1); min-height: var(--toque); cursor: pointer; }
 .estados-titulo { font-size: var(--fs-xs); color: var(--acento); text-transform: uppercase; letter-spacing: 0.08em; }
 .pip-rotulo { font-size: var(--fs-sm); margin-left: var(--sp-1); }
 .recurso-valor .pips label.pip-casilla { align-items: center; gap: var(--sp-1); }

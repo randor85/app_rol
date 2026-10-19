@@ -771,16 +771,20 @@
       }
 
       let quedan = null;
+      let slotId = null;
       if (nivelGastado) {
         // Id directo ('slot-N-cur'), no indexado por posición en FICHA_CONFIG.slotsIds
         // — esa indexación se rompía (undefined) para cualquier nivel más allá de
         // slotsIds.length, como pasó de verdad al probar contra los datos reales de Fiona.
         // FICHA_CONFIG.resolverSlotId(h, nivel) permite otra reserva (p.ej. Pact Magic); por defecto 'slot-N-cur'.
-        const slotId = FICHA_CONFIG.resolverSlotId ? FICHA_CONFIG.resolverSlotId(h, nivelGastado) : `slot-${nivelGastado}-cur`;
+        slotId = FICHA_CONFIG.resolverSlotId ? FICHA_CONFIG.resolverSlotId(h, nivelGastado) : `slot-${nivelGastado}-cur`;
+        // FICHA_CONFIG.validarLanzamiento(h, nivel, slotId): devuelve un texto para impedir el lanzamiento (p. ej. el
+        // espacio de Pact Magic es de un nivel menor al del hechizo) o falsy si puede seguir.
+        if (FICHA_CONFIG.validarLanzamiento) { const aviso = FICHA_CONFIG.validarLanzamiento(h, nivelGastado, slotId); if (aviso) { alert(aviso); return; } }
         const el = document.getElementById(slotId);
         if (el) {
           const actual = parseInt(el.textContent) || 0;
-          if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivelGastado} disponibles.`); return; }
+          if (actual <= 0) { alert(`⚠️ No te quedan espacios de ${FICHA_CONFIG.etiquetaEspacio ? FICHA_CONFIG.etiquetaEspacio(slotId, nivelGastado) : 'nivel ' + nivelGastado} disponibles.`); return; }
           el.textContent = actual - 1;
           quedan = actual - 1;
           guardarCampo(slotId, actual - 1);
@@ -790,7 +794,7 @@
       }
 
       // Registro de uso (historial del lanzador de dados, si está cargado).
-      emitirUso('hechizo', h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con espacio de nivel ${nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`));
+      emitirUso('hechizo', h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con ${FICHA_CONFIG.etiquetaEspacio ? 'espacio de ' + FICHA_CONFIG.etiquetaEspacio(slotId, nivelGastado) : 'espacio de nivel ' + nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`));
       const enDados = (window.FichaDados && FichaDados.mostrar) ? FichaDados.mostrar : null;
 
       // Hechizo de concentración: marca la casilla (y deja de concentrar en el anterior).
