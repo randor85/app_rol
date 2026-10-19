@@ -29,7 +29,7 @@ window.PERSONAJES = window.PERSONAJES || {};
     atributos: {"STR": 16, "DEX": 10, "CON": 16, "INT": 10, "WIS": 12, "CHA": 14},
     salvaciones: ["STR", "WIS", "CHA"],
     habilidades: { 'Athletics': 'comp', 'Persuasion': 'comp', 'Religion': 'comp' },
-    competencias: "<strong>Competencias &amp; Idiomas:</strong><br> • <strong>Armaduras:</strong> Todas las armaduras, Escudos.<br> • <strong>Armas:</strong> Armas Simples, Armas Marciales.<br> • <strong>Herramientas:</strong> Dice set (Juego de dados).<br> • <strong>Idiomas:</strong> Common, Abyssal, Draconic.",
+    competencias: "• <strong>Armaduras:</strong> Todas las armaduras, Escudos.<br> • <strong>Armas:</strong> Armas Simples, Armas Marciales.<br> • <strong>Herramientas:</strong> Dice set (Juego de dados).<br> • <strong>Idiomas:</strong> Common, Abyssal, Draconic.",
     ca: { fija: 21, casillaAuto: true, bonoConArmadura: 1 },   // 18 Plate + 2 Shield + 1 Defense; la casilla "calcular desde el equipo" es opcional
 
     ataques: [
