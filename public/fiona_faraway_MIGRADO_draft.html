@@ -481,6 +481,11 @@
  .ability-table th, .ability-table td { border: 1px solid var(--border-color); padding: 8px 6px; }
  .ability-table th { background: var(--surface-strong, var(--bg-card-header, #27362d)); color: var(--accent-gold); font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; }
  .ability-table .ab-score { font-size: 1.15rem; font-weight: 800; color: var(--text-on-surface, var(--text-light, #fff)); }
+ .ability-table .ab-score input, .ability-table .ab-temp { width: 52px; text-align: center; background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: inherit; border-radius: 6px; padding: 2px 4px; font: inherit; }
+ .ability-table .ab-temp { width: 40px; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+ .ability-table .ab-temp-row { font-size: 0.62rem; color: var(--text-muted); margin-bottom: 2px; }
+ .hp-max-buff-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); }
+ .hp-max-buff-row input { width: 52px; text-align: center; background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 2px 4px; }
  .ability-table .ab-mod { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
  .ability-table .ab-btns { display: flex; gap: 4px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
  .btn-roll-sm { font-size: 0.66rem !important; padding: 3px 6px !important; }
@@ -1158,44 +1163,52 @@
 </div>
 <div class="stat-badge">
 <label>⚔️ Ataque</label>
-<span class="stat-base">+4 (STR+Prof)</span>
+<span class="stat-base"><span id="atk-base">+5</span> (STR+Prof)</span>
 <div class="buff-row">
 <input id="atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
-<div class="stat-total" id="atk-total">+4</div>
+<div class="stat-total" id="atk-total">+5</div>
 </div>
 </div>
 <div class="stat-badge">
 <label>✨ Atq. Conjuro</label>
-<span class="stat-base">+8 (WIS+Prof)</span>
+<span class="stat-base"><span id="spell-atk-base">+9</span> (WIS+Prof)</span>
 <div class="buff-row">
 <input id="spell-atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
-<div class="stat-total" id="spell-atk-total">+8</div>
+<div class="stat-total" id="spell-atk-total">+9</div>
 </div>
 </div>
 <div class="stat-badge">
 <label>📿 CD Conjuro</label>
-<span class="stat-base">16 (8+WIS+Prof)</span>
+<span class="stat-base"><span id="spell-dc-base">17</span> (8+WIS+Prof)</span>
 <div class="buff-row">
 <input id="spell-dc-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
-<div class="stat-total" id="spell-dc-total">16</div>
+<div class="stat-total" id="spell-dc-total">17</div>
 </div>
 </div>
 <div class="stat-badge">
 <label>🎲 Iniciativa</label>
-<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Iniciativa', 'save')" style="margin-top:4px; padding:3px 8px; font-size:0.8rem;">🎲 +2</button>
+<span class="stat-base">DEX</span>
+<div class="buff-row">
+<input id="iniciativa-buff" type="number" value="0" title="Bono Buffs (objetos/efectos)"/>
+<button class="btn-roll" id="iniciativa-total" onclick="rollIniciativa()" style="padding:3px 8px; font-size:0.8rem;">🎲 +2</button>
+</div>
 </div>
 <div class="stat-badge">
 <label>🏃 Velocidad</label>
-<span>30 ft</span>
+<span class="stat-base">Base 30 ft</span>
+<div class="buff-row">
+<input id="velocidad-buff" type="number" value="0" title="Bono Buffs (botas, hechizos, etc.)"/>
+<div class="stat-total" id="velocidad-total">30 ft</div>
+</div>
 </div>
 <div class="stat-badge">
 <label>📘 Prof.</label>
 
-<span>+3</span>
+<span id="prof-badge">+4</span>
 </div>
 <div class="stat-badge">
 <label>👁️ Perc. Pasiva</label>
-<span>18</span>
+<span id="percepcion-pasiva">19</span>
 </div>
 </div>
 </header>
@@ -1204,53 +1217,65 @@
 <!-- MÓDULO DE SALVACIÓN DE CONCENTRACIÓN -->
 <div class="adv-card" style="border-color: var(--accent-light);">
 <label>🧘 Save Concentración</label>
-<button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (+2)</button>
+<button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (<span id="conc-save-bonus">+2</span>)</button>
 </div>
 </div>
 <!-- CARACTERÍSTICAS Y SALVAGUARDAS (tabla compacta: Check + Save por separado) -->
 <table class="ability-table">
 <tr><th>STR</th><th>DEX</th><th>CON</th><th>INT</th><th>WIS</th><th>CHA</th></tr>
 <tr>
-<td>
-<div class="ab-score">13</div><div class="ab-mod">(+1)</div>
+<td id="ab-str">
+<div class="ab-score"><input type="number" id="str-score" value="13" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="str-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+1)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'STR Check', 'check')">Check +1</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'STR Save', 'save')">Save +1</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'STR Check', 'check')" data-bonus="1">Check +1</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'STR Save', 'save')" data-bonus="1">Save +1</button>
 </div>
 </td>
-<td>
-<div class="ab-score">14</div><div class="ab-mod">(+2)</div>
+<td id="ab-dex">
+<div class="ab-score"><input type="number" id="dex-score" value="14" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="dex-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+2)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'DEX Check', 'check')">Check +2</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'DEX Save', 'save')">Save +2</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'DEX Check', 'check')" data-bonus="2">Check +2</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'DEX Save', 'save')" data-bonus="2">Save +2</button>
 </div>
 </td>
-<td>
-<div class="ab-score">14</div><div class="ab-mod">(+2)</div>
+<td id="ab-con">
+<div class="ab-score"><input type="number" id="con-score" value="14" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="con-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+2)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'CON Check', 'check')">Check +2</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'CON Save', 'save')">Save +2</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'CON Check', 'check')" data-bonus="2">Check +2</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'CON Save', 'save')" data-bonus="2">Save +2</button>
 </div>
 </td>
-<td>
-<div class="ab-score">12</div><div class="ab-mod">(+1)</div>
+<td id="ab-int">
+<div class="ab-score"><input type="number" id="int-score" value="12" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="int-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+1)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'INT Check', 'check')">Check +1</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 4, 'INT Save', 'save')">Save +4★</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'INT Check', 'check')" data-bonus="1">Check +1</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'INT Save', 'save')" data-bonus="5">Save +5★</button>
 </div>
 </td>
-<td>
-<div class="ab-score">20</div><div class="ab-mod">(+5)</div>
+<td id="ab-wis">
+<div class="ab-score"><input type="number" id="wis-score" value="20" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="wis-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+5)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 5, 'WIS Check', 'check')">Check +5</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 8, 'WIS Save', 'save')">Save +8★</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'WIS Check', 'check')" data-bonus="5">Check +5</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'WIS Save', 'save')" data-bonus="9">Save +9★</button>
 </div>
 </td>
-<td>
-<div class="ab-score">12</div><div class="ab-mod">(+1)</div>
+<td id="ab-cha">
+<div class="ab-score"><input type="number" id="cha-score" value="12" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="cha-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+1)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'CHA Check', 'check')">Check +1</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'CHA Save', 'save')">Save +1</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'CHA Check', 'check')" data-bonus="1">Check +1</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'CHA Save', 'save')" data-bonus="1">Save +1</button>
 </div>
 </td>
 </tr>
@@ -1267,6 +1292,10 @@
 <span class="cnt-max">/ <span id="hp-max-label">59</span></span>
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', 1)">+</button>
 </div>
+</div>
+<div class="hp-max-buff-row">
+<span>Bono a HP máx. (objetos/efectos):</span>
+<input type="number" id="hp-max-buff" value="0" title="Se suma al HP máximo mientras esté activo"/>
 </div>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
 <span style="font-size:0.9rem; color:var(--text-muted);">HP Temporal (Editable):</span>
@@ -1432,60 +1461,60 @@
 <tbody>
 <tr>
 <td><strong>Quarterstaff</strong></td>
-<td>+4</td>
+<td><span class="js-calc" data-calc="armaBono" data-hab="STR">+5</span></td>
 <td>1d6 + 1 B</td>
 <td>Melee, Versátil (1d8)</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(4, 'Ataque Quarterstaff')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(armaBono('STR'), 'Ataque Quarterstaff')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 6, 1, 'Daño Quarterstaff 1H')">💥 1d6+1</button>
 </td>
 </tr>
 <tr>
 <td><strong>Shillelagh</strong> (Bastón Mágico)</td>
-<td>+8</td>
+<td><span class="js-calc" data-calc="armaBono" data-hab="WIS">+9</span></td>
 <td>1d8 + 5 B (+1d6 Fire/Cold)</td>
 <td>Bonus Action; usa WIS. +1d6 elemental por Elemental Fury 1/turno</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(8, 'Ataque Shillelagh')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(armaBono('WIS'), 'Ataque Shillelagh')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 8, 5, 'Daño Shillelagh')">💥 1d8+5</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Elemental Fury (+1d6)')">🔥 1d6 Extra</button>
 </td>
 </tr>
 <tr>
 <td><strong>Light Crossbow</strong></td>
-<td>+5</td>
+<td><span class="js-calc" data-calc="armaBono" data-hab="DEX">+6</span></td>
 <td>1d8 + 2 P</td>
 <td>Rango 80/320 ft, Cargando, 2H</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(5, 'Ataque Light Crossbow')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(armaBono('DEX'), 'Ataque Light Crossbow')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 8, 2, 'Daño Light Crossbow')">💥 1d8+2</button>
 </td>
 </tr>
 <tr>
 <td><strong>Heavy Crossbow</strong></td>
-<td>+5</td>
+<td><span class="js-calc" data-calc="armaBono" data-hab="DEX">+6</span></td>
 <td>1d10 + 2 P</td>
 <td>Rango 100/400 ft, Cargando, Pesada, 2H</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(5, 'Ataque Heavy Crossbow')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(armaBono('DEX'), 'Ataque Heavy Crossbow')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 10, 2, 'Daño Heavy Crossbow')">💥 1d10+2</button>
 </td>
 </tr>
 <tr>
 <td><strong>Splinter Arrows</strong></td>
-<td>+5</td>
-<td>1d6 + 5 P (1d6 + Prof + DEX)</td>
+<td><span class="js-calc" data-calc="armaBono" data-hab="DEX">+6</span></td>
+<td>1d6 + <span class="js-calc" data-calc="armaBono" data-hab="DEX" data-fmt="num">6</span> P (1d6 + Prof + DEX)</td>
 <td>Cono 60ft, elige hasta 4 criaturas y realiza ataques a distancia. Poco común.</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(5, 'Ataque Splinter Arrow')">🎯 Atk</button>
-<button class="btn-roll" onclick="rollGenericDamage(1, 6, 5, 'Daño Splinter Arrow')">💥 1d6+5</button>
+<button class="btn-roll" onclick="rollAttack(armaBono('DEX'), 'Ataque Splinter Arrow')">🎯 Atk</button>
+<button class="btn-roll js-calc" data-calc="splinterBtn" onclick="rollGenericDamage(1, 6, armaBono('DEX'), 'Daño Splinter Arrow')">💥 1d6+6</button>
 </td>
 </tr>
 <tr>
 <td><strong>Spell Attack</strong></td>
-<td>+8</td>
+<td><span class="js-calc" data-calc="armaBono" data-hab="WIS">+9</span></td>
 <td>Según conjuro</td>
-<td>WIS Mod (+5) + Prof (+3)</td>
+<td>WIS Mod (<span class="js-calc" data-calc="mod" data-hab="WIS">+5</span>) + Prof (<span class="js-calc" data-calc="prof">+4</span>)</td>
 <td>
 <button class="btn-roll" onclick="rollSpellAttack('Ataque de Conjuro')">🎯 Atk Conjuro</button>
 </td>
@@ -1494,24 +1523,24 @@
 </table></div>
 <h3 style="margin-top:20px;">Habilidades (Skills)</h3>
 <div class="skills-grid">
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobatics', 'check')">🎲</button><span class="skill-name"><strong>Acrobatics</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Animal Handling', 'check')">🎲</button><span class="skill-name"><strong>Animal Handling</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Arcana', 'check')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Athletics', 'check')">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Deception', 'check')">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'History', 'check')">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Insight', 'check')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Intimidation', 'check')">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Investigation', 'check')">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Medicine', 'check')">🎲</button><span class="skill-name"><strong>Medicine</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Nature', 'check')">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+4</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Perception', 'check')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Performance', 'check')">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Persuasion', 'check')">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Religion', 'check')">🎲</button><span class="skill-name"><strong>Religion</strong><span class="skill-tag">★</span></span><span class="skill-mod">+4</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Sleight of Hand', 'check')">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Stealth', 'check')">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Survival', 'check')">🎲</button><span class="skill-name"><strong>Survival</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item" id="sk-acrobatics" data-bonus="2"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Acrobatics', 'check')">🎲</button><span class="skill-name"><strong>Acrobatics</strong></span><span class="skill-mod">+2</span></div>
+<div class="skill-item" id="sk-animal-handling" data-bonus="9"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Animal Handling', 'check')">🎲</button><span class="skill-name"><strong>Animal Handling</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+<div class="skill-item" id="sk-arcana" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Arcana', 'check')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-athletics" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Athletics', 'check')">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-deception" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Deception', 'check')">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-history" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'History', 'check')">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-insight" data-bonus="9"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Insight', 'check')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+<div class="skill-item" id="sk-intimidation" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Intimidation', 'check')">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-investigation" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Investigation', 'check')">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-medicine" data-bonus="9"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Medicine', 'check')">🎲</button><span class="skill-name"><strong>Medicine</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+<div class="skill-item" id="sk-nature" data-bonus="5"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Nature', 'check')">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
+<div class="skill-item" id="sk-perception" data-bonus="9"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Perception', 'check')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+<div class="skill-item" id="sk-performance" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Performance', 'check')">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-persuasion" data-bonus="1"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Persuasion', 'check')">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+1</span></div>
+<div class="skill-item" id="sk-religion" data-bonus="5"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Religion', 'check')">🎲</button><span class="skill-name"><strong>Religion</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
+<div class="skill-item" id="sk-sleight-of-hand" data-bonus="2"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Sleight of Hand', 'check')">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-mod">+2</span></div>
+<div class="skill-item" id="sk-stealth" data-bonus="2"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Stealth', 'check')">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-mod">+2</span></div>
+<div class="skill-item" id="sk-survival" data-bonus="9"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Survival', 'check')">🎲</button><span class="skill-name"><strong>Survival</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
 </div>
 <div class="highlight-box" style="margin-top:15px;">
 <strong>Competencias &amp; Idiomas:</strong><br/>
@@ -1853,7 +1882,7 @@
 </tr>
 <tr>
 <td>• <strong>Mirthful Fey Step</strong></td>
-<td>Criatura a 10 ft debe superar WIS save DC 16 o queda <strong>Charmed</strong> por ti y el espíritu.</td>
+<td>Criatura a 10 ft debe superar WIS save DC <span class="js-calc" data-calc="cd">17</span> o queda <strong>Charmed</strong> por ti y el espíritu.</td>
 <td>-</td>
 </tr>
 <tr>
@@ -2225,6 +2254,7 @@
     personajeId: 'fiona_faraway',
     nombrePersonaje: 'Fiona Faraway',
     sistemaPropio: 'dnd',
+    habilidadConjuro: 'WIS', // DC/ataque de hechizos "automáticos" (dcAuto/bonusAuto) = 8 + mod(WIS) + competencia
     // ⚠️ PARCHE TEMPORAL, no una solución real: ficha-common.js's FichaHechizos.usar()
     // indexa FICHA_CONFIG.slotsIds[h.slotCost - 1] en vez de construir `slot-${slotCost}-cur`
     // directamente (que es la convención real, usada en TODA la flota). Eso rompe (throw,
@@ -2235,14 +2265,14 @@
     // dejar de existir en el contrato de FICHA_CONFIG.
     slotsIds: ['slot-1-cur', 'slot-2-cur', 'slot-3-cur', 'slot-4-cur', 'slot-5-cur', 'slot-6-cur'],
     hechizosIniciales: [
-      { nombre: 'Poison Spray', nivel: 0, tiempo: '1 Acc', alcance: '30 ft', area: '', resumen: 'CON save DC (Base 16); 2d12 poison damage (cantrip a nivel de personaje 8; escala a 3d12 en nivel 11 y 4d12 en nivel 17).', duracion: 'Instantáneo', formula: { count: 2, sides: 12, mod: 0 }, slotCost: null, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16 } },
+      { nombre: 'Poison Spray', nivel: 0, tiempo: '1 Acc', alcance: '30 ft', area: '', resumen: 'CON save DC <span class="js-calc" data-calc="cd">17</span>; 2d12 poison damage (cantrip a nivel de personaje 8; escala a 3d12 en nivel 11 y 4d12 en nivel 17).', duracion: 'Instantáneo', formula: { count: 2, sides: 12, mod: 0 }, slotCost: null, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16, dcAuto: true } },
       { nombre: 'Shillelagh', nivel: 0, tiempo: '1 B.Acc', alcance: 'Touch', area: '', resumen: 'Arma usa WIS, 1d8 bludgeoning.', duracion: '1 min', formula: { count: 1, sides: 8, mod: 5 }, slotCost: null, ataque: null },
       { nombre: 'Guidance', nivel: 0, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Objetivo suma 1d4 a un ability check.', duracion: '1 min, Conc.', formula: { count: 1, sides: 4, mod: 0 }, slotCost: null, ataque: null },
       { nombre: 'Cure Wounds (2024)', nivel: 1, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Cura 2d8 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, sumalo a mano).', duracion: 'Instantáneo', formula: { count: 2, sides: 8, mod: 5 }, slotCost: 1, upcast: { tipo: 'dado', nivelBase: 1, dado: { count: 2, sides: 8 } }, ataque: null },
       { nombre: 'Healing Word (2024)', nivel: 1, tiempo: '1 B.Acc', alcance: '60 ft', area: '', resumen: 'Cura 2d4 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, sumalo a mano).', duracion: 'Instantáneo', formula: { count: 2, sides: 4, mod: 5 }, slotCost: 1, upcast: { tipo: 'dado', nivelBase: 1, dado: { count: 2, sides: 4 } }, ataque: null },
-      { nombre: 'Faerie Fire', nivel: 1, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'DEX save DC (Base 16). Ventaja en ataques contra afectados; impide invisibilidad.', duracion: '1 min, Conc.', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
-      { nombre: 'Command', nivel: 1, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'WIS save DC (Base 16). Orden de 1 palabra: Approach, Drop, Flee, Grovel, Halt.', duracion: '1 Ronda', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'WIS', dc: 16 } },
-      { nombre: 'Hold Person', nivel: 2, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Humanoide; WIS save DC (Base 16) o Paralyzed. Repite save al final de cada turno.', duracion: '1 min, Conc.', formula: null, slotCost: 2, ataque: { tipo: 'salvacion', habilidad: 'WIS', dc: 16 } },
+      { nombre: 'Faerie Fire', nivel: 1, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'DEX save DC <span class="js-calc" data-calc="cd">17</span>. Ventaja en ataques contra afectados; impide invisibilidad.', duracion: '1 min, Conc.', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16, dcAuto: true } },
+      { nombre: 'Command', nivel: 1, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'WIS save DC <span class="js-calc" data-calc="cd">17</span>. Orden de 1 palabra: Approach, Drop, Flee, Grovel, Halt.', duracion: '1 Ronda', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'WIS', dc: 16, dcAuto: true } },
+      { nombre: 'Hold Person', nivel: 2, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Humanoide; WIS save DC <span class="js-calc" data-calc="cd">17</span> o Paralyzed. Repite save al final de cada turno.', duracion: '1 min, Conc.', formula: null, slotCost: 2, ataque: { tipo: 'salvacion', habilidad: 'WIS', dc: 16, dcAuto: true } },
       { nombre: 'Lesser Restoration', nivel: 2, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Termina condición: Blinded, Deafened, Paralyzed o Poisoned.', duracion: 'Instantáneo', formula: null, slotCost: 2, ataque: null },
       { nombre: 'Summon Beast', nivel: 2, tiempo: '1 Acc', alcance: '90 ft', area: '', resumen: 'Invoca espíritu bestial (Air, Land, Water). Ver bloque de estadísticas en Sección 7 para los valores exactos de cada nivel.', duracion: '1 hora, Conc.', formula: null, slotCost: 2, upcast: { tipo: 'tabla', nivelBase: 2, tabla: {
         2: "Espíritu Bestia nivel base — ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 2.",
@@ -2255,7 +2285,7 @@
         9: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 9.",
       } }, ataque: null },
       { nombre: 'Misty Step', nivel: 2, tiempo: '1 B.Acc', alcance: 'Self', area: '', resumen: 'Teleport 30 ft a espacio visible desocupado.', duracion: 'Instantáneo', formula: null, slotCost: 2, ataque: null },
-      { nombre: 'Conjure Animals (2024)', nivel: 3, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Pack espectral Large. DEX save DC (Base 16) o daño al mover/entrar.', duracion: '10 min, Conc.', formula: { count: 3, sides: 10, mod: 0 }, slotCost: 3, upcast: { tipo: 'dado', nivelBase: 3, dado: { count: 1, sides: 10 } }, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
+      { nombre: 'Conjure Animals (2024)', nivel: 3, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Pack espectral Large. DEX save DC <span class="js-calc" data-calc="cd">17</span> o daño al mover/entrar.', duracion: '10 min, Conc.', formula: { count: 3, sides: 10, mod: 0 }, slotCost: 3, upcast: { tipo: 'dado', nivelBase: 3, dado: { count: 1, sides: 10 } }, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16, dcAuto: true } },
       { nombre: 'Summon Fey', nivel: 3, tiempo: '1 Acc', alcance: '90 ft', area: '', resumen: 'Invoca espíritu fey (Fuming, Mirthful, Tricksy). Ver bloque de estadísticas en Sección 7 para los valores exactos de cada nivel.', duracion: '1 hora, Conc.', formula: null, slotCost: 3, upcast: { tipo: 'tabla', nivelBase: 3, tabla: {
         3: "Espíritu Feérico nivel base — ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 3.",
         4: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 4 (HP/ataque/daño mayores).",
@@ -2281,10 +2311,10 @@
         8: "+4 criaturas adicionales.",
         9: "+5 criaturas adicionales.",
       } }, ataque: null },
-      { nombre: 'Grasping Vine', nivel: 4, tiempo: '1 B.Acc', alcance: '30 ft', area: '', resumen: 'Invoca vid. B.Acc para forzar DEX save DC (Base 16) a criatura a 30 ft; si falla la atrae 20 ft.', duracion: '1 min, Conc.', formula: null, slotCost: 4, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
+      { nombre: 'Grasping Vine', nivel: 4, tiempo: '1 B.Acc', alcance: '30 ft', area: '', resumen: 'Invoca vid. B.Acc para forzar DEX save DC <span class="js-calc" data-calc="cd">17</span> a criatura a 30 ft; si falla la atrae 20 ft.', duracion: '1 min, Conc.', formula: null, slotCost: 4, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16, dcAuto: true } },
       // Agregados reales del compendio (antes en datos/hechizos-agregados, migrados acá):
       { nombre: 'Mass Cure Wounds', nivel: 5, tiempo: '1 Acción', alcance: '60 ft', area: 'Radio de 30 ft, hasta 6 criaturas', resumen: 'Hasta 6 criaturas en un radio de 30 ft recuperan 3d8 + tu mod. de característica de lanzamiento HP.', duracion: 'Instantáneo', formula: { count: 3, sides: 8, mod: 5 }, slotCost: 5, ataque: null },
-      { nombre: 'Insect Plague', nivel: 5, tiempo: '1 Acción', alcance: '300 ft', area: 'Esfera de 20 ft de radio', resumen: 'Una esfera de langostas devoradoras; cada criatura ahí hace salvación de Constitución, sufriendo daño perforante (mitad si salva).', duracion: 'Conc., hasta 10 min', formula: { count: 4, sides: 10, mod: 0 }, slotCost: 5, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16 } },
+      { nombre: 'Insect Plague', nivel: 5, tiempo: '1 Acción', alcance: '300 ft', area: 'Esfera de 20 ft de radio', resumen: 'Una esfera de langostas devoradoras; cada criatura ahí hace salvación de Constitución, sufriendo daño perforante (mitad si salva).', duracion: 'Conc., hasta 10 min', formula: { count: 4, sides: 10, mod: 0 }, slotCost: 5, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16, dcAuto: true } },
     ],
     // inventarioInicial: refleja el inventario REAL guardado hoy en producción
     // (campanas/etreum/personajes/fiona_faraway/datos/inventario-json), con categoria/
@@ -2773,8 +2803,11 @@
     function obtenerBonusHPNivel() {
         return obtenerSubidasNivel().reduce((s, r) => s + (r.hpGanado || 0), 0);
     }
+    function obtenerBuffHPMax() {
+        return parseInt(document.getElementById('hp-max-buff')?.value, 10) || 0;
+    }
     function hpMaxActual() {
-        return HP_MAX_FIONA + obtenerBonusHPNivel();
+        return HP_MAX_FIONA + obtenerBonusHPNivel() + obtenerBuffHPMax();
     }
     function nivelClaseActual(nombreClase) {
         const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nombreClase);
@@ -2883,6 +2916,8 @@
         const lista = obtenerSubidasNivel();
         lista.push({ clase: cfg.nombre, nivelNuevo: nuevoNivelClase, dado: cfg.dado, tirada: nivelUpEstado.tirada, modo: nivelUpEstado.modo, hpGanado, fecha: Date.now() });
         guardarSubidasNivel(lista);
+        // El nivel total cambió: bono de competencia, saves, skills, ataques y CD se recalculan solos.
+        if (window.FichaAtributos) FichaAtributos.recalcular();
 
         changeInputVal('hp-cur', hpGanado);
         agregarCheckboxHD(cfg.dado);
@@ -2947,6 +2982,15 @@
         if (!nivelUpEstado.hpAplicado) {
             body.innerHTML = html;
             return;
+        }
+
+        const nivelTotalAhora = nivelTotalPersonaje();
+        const profAntes = FichaComun.calcularProfBonus(nivelTotalAhora - 1);
+        const profAhora = FichaComun.calcularProfBonus(nivelTotalAhora);
+        if (profAhora !== profAntes) {
+            html += `<div class="nivelup-step"><h4>📘 Bono de competencia</h4>
+                <div class="nivelup-roll-result">Bono de competencia: ${FichaComun.formatearMod(profAntes)} → ${FichaComun.formatearMod(profAhora)} (saves, skills, ataques y CD se actualizaron solos)</div>
+            </div>`;
         }
 
         const nuevoNivel = nivelUpEstado.nuevoNivelClase;
@@ -3023,13 +3067,9 @@
 
     function recalcStats() {
         const acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
-        const atkBuff = parseInt(document.getElementById('atk-buff').value) || 0;
-        const spellAtkBuff = parseInt(document.getElementById('spell-atk-buff').value) || 0;
-        const spellDcBuff = parseInt(document.getElementById('spell-dc-buff').value) || 0;
+        // Ataque / Atq. Conjuro / CD Conjuro ya NO se calculan acá: salen de FichaComun.iniciarEstadisticaConBuff
+        // (base = mod + competencia calculados desde el nivel). La CA base no depende de la competencia.
         document.getElementById('ac-total').innerText = 17 + acBuff;
-        document.getElementById('atk-total').innerText = (4 + atkBuff >= 0 ? '+' : '') + (4 + atkBuff);
-        document.getElementById('spell-atk-total').innerText = (8 + spellAtkBuff >= 0 ? '+' : '') + (8 + spellAtkBuff);
-        document.getElementById('spell-dc-total').innerText = 16 + spellDcBuff;
         syncStickyBar();
     }
     function toggleConditionsDropdown() {
@@ -3366,19 +3406,27 @@
 
     // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
     function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
+    // --- Valores derivados (ver FichaComun.iniciarAtributos en ficha-common.js) ---
+    function bonoAtaqueConjuro() { return FichaAtributos.modDe(FICHA_CONFIG.habilidadConjuro) + FichaAtributos.profBonusActual(); }
+    function armaBono(hab) { return FichaAtributos.modDe(hab) + FichaAtributos.profBonusActual(); }
+    function rollIniciativa() {
+        const buff = parseInt(document.getElementById('iniciativa-buff')?.value, 10) || 0;
+        rollCheckSave('d20', FichaAtributos.modDe('DEX') + buff, 'Iniciativa', 'save');
+    }
     function rollAttack(baseMod, attackLabel) {
         const totalFlatMod = baseMod + (parseInt(document.getElementById('atk-buff').value) || 0);
         rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
     }
     function rollSpellAttack(attackLabel) {
-        const totalFlatMod = 8 + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
+        const totalFlatMod = bonoAtaqueConjuro() + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
         rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
     }
     function rollCheckSave(sides, baseMod, label, mode) {
         rollD20WithMechanics(baseMod, label, getAdvantage(), mode === 'save');
     }
     function rollConcentrationSave() {
-        rollD20WithMechanics(2, 'Save Concentración', getAdvantage(), true);
+        const btn = document.querySelector('#ab-con .btn-save');
+        rollD20WithMechanics(parseInt(btn?.dataset.bonus, 10) || 0, 'Save Concentración', getAdvantage(), true);
     }
     function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
     let finalAdv = advState;
@@ -3460,6 +3508,9 @@
                     }
                 }
             });
+            // Las subidas de nivel y las puntuaciones recién llegadas ya están en el DOM: recalcular lo derivado.
+            nivelDatosSincronizados = true;
+            if (window.FichaAtributos) FichaAtributos.recalcular();
             if (typeof recalcStats === 'function') recalcStats();
             if (typeof updateConditions === 'function') updateConditions();
             if (typeof syncStickyBar === 'function') syncStickyBar();
@@ -3471,6 +3522,96 @@
             if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
         });
     }
+
+    // ==========================================
+    // VALORES DERIVADOS (motor compartido: FichaComun.iniciarAtributos / iniciarEstadisticaConBuff)
+    // Bono de competencia, saves, skills, pasiva, ataques y CD se CALCULAN desde el nivel total
+    // + puntuaciones (+ aumento temporal): subir de nivel ya no deja números viejos en la ficha.
+    // ==========================================
+    let nivelDatosSincronizados = false;
+    const CLAVE_CACHE_NIVEL = `nivel_cache_${PERSONAJE_ID}`;
+    // Nivel total = suma de niveles de clase (base + subidas guardadas en Firebase). Es la fuente
+    // de verdad (la misma que usa el asistente de subida y los espacios de conjuro); el nivel por XP
+    // es solo informativo y puede ir por delante o por detrás. Hasta que llegan las subidas desde
+    // Firebase, se usa el último nivel conocido de este dispositivo para no mostrar un bono viejo.
+    function nivelTotalPersonaje() {
+        const real = CONFIG_NIVEL.clases.reduce((suma, c) => suma + nivelClaseActual(c.nombre), 0);
+        try {
+            if (!nivelDatosSincronizados) {
+                const cache = parseInt(localStorage.getItem(CLAVE_CACHE_NIVEL), 10);
+                if (cache > real) return cache;
+            } else {
+                localStorage.setItem(CLAVE_CACHE_NIVEL, String(real));
+            }
+        } catch (e) { /* almacenamiento no disponible */ }
+        return real;
+    }
+    function aplicarValoresCalculados() {
+        const prof = FichaAtributos.profBonusActual();
+        document.querySelectorAll('.js-calc').forEach(el => {
+            const hab = el.dataset.hab;
+            let txt;
+            switch (el.dataset.calc) {
+                case 'armaBono': { const v = armaBono(hab); txt = el.dataset.fmt === 'num' ? String(v) : FichaComun.formatearMod(v); break; }
+                case 'mod': txt = FichaComun.formatearMod(FichaAtributos.modDe(hab)); break;
+                case 'prof': txt = FichaComun.formatearMod(prof); break;
+                case 'cd': txt = String(8 + bonoAtaqueConjuro()); break;
+                case 'splinterBtn': txt = `💥 1d6+${armaBono('DEX')}`; break;
+            }
+            if (txt !== undefined && el.textContent !== txt) el.textContent = txt;
+        });
+    }
+    function iniciarEstadisticasDerivadas() {
+        document.addEventListener('ficha:datos-sincronizados', () => { nivelDatosSincronizados = true; });
+        const fmt = FichaComun.formatearMod;
+        const habilidad = (clave) => ({ clave, scoreId: `${clave.toLowerCase()}-score`, tempId: `${clave.toLowerCase()}-temp`, contenedorId: `ab-${clave.toLowerCase()}`, saveCompetente: clave === 'INT' || clave === 'WIS' });
+        const skill = (clave, id, hab, competente) => ({ clave, contenedorId: id, habilidad: hab, competente });
+        FichaComun.iniciarAtributos({
+            obtenerNivel: nivelTotalPersonaje,
+            profBadgeId: 'prof-badge',
+            habilidades: ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(habilidad),
+            skills: [
+                skill('Acrobatics', 'sk-acrobatics', 'DEX', false), skill('Animal Handling', 'sk-animal-handling', 'WIS', true),
+                skill('Arcana', 'sk-arcana', 'INT', false), skill('Athletics', 'sk-athletics', 'STR', false),
+                skill('Deception', 'sk-deception', 'CHA', false), skill('History', 'sk-history', 'INT', false),
+                skill('Insight', 'sk-insight', 'WIS', true), skill('Intimidation', 'sk-intimidation', 'CHA', false),
+                skill('Investigation', 'sk-investigation', 'INT', false), skill('Medicine', 'sk-medicine', 'WIS', true),
+                skill('Nature', 'sk-nature', 'INT', true), skill('Perception', 'sk-perception', 'WIS', true),
+                skill('Performance', 'sk-performance', 'CHA', false), skill('Persuasion', 'sk-persuasion', 'CHA', false),
+                skill('Religion', 'sk-religion', 'INT', true), skill('Sleight of Hand', 'sk-sleight-of-hand', 'DEX', false),
+                skill('Stealth', 'sk-stealth', 'DEX', false), skill('Survival', 'sk-survival', 'WIS', true),
+            ],
+            pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
+        });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', baseElId: 'atk-base', calcularBase: () => armaBono('STR'), formatear: fmt });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', baseElId: 'spell-atk-base', calcularBase: bonoAtaqueConjuro, formatear: fmt });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', baseElId: 'spell-dc-base', calcularBase: () => 8 + bonoAtaqueConjuro() });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => FichaAtributos.modDe('DEX'), formatear: (n) => '🎲 ' + fmt(n) });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, formatear: (n) => n + ' ft' });
+        // Textos derivados sueltos (tabla de armas, notas de CD) + barra sticky, tras cada recálculo.
+        document.addEventListener('ficha:atributos', () => { aplicarValoresCalculados(); syncStickyBar(); });
+        // La tabla de hechizos se re-renderiza al sincronizar: refrescar los "DC N" del texto.
+        // Contención de un problema del motor: elegir el nivel de upcast autoguarda el <select> (tiene id), el eco
+        // dispara 'ficha:atributos' y la tabla se re-renderiza (por los DC automáticos) devolviendo el selector al
+        // nivel base antes de que el jugador toque "Tirar". Se recuerda la elección (fase de captura: corre antes
+        // del autoguardado) y se restaura tras cada re-render.
+        const seleccionUpcast = {};
+        ['input', 'change'].forEach(tipo => document.addEventListener(tipo, (e) => { if (/^upcast-sel-/.test(e.target.id)) seleccionUpcast[e.target.id] = e.target.value; }, true));
+        function restaurarSeleccionUpcast() {
+            Object.entries(seleccionUpcast).forEach(([id, v]) => {
+                const sel = document.getElementById(id);
+                if (sel && sel.value !== v && Array.from(sel.options).some(o => o.value === v)) sel.value = v;
+            });
+        }
+        const listaHechizos = document.getElementById('hechizos-lista');
+        if (listaHechizos) new MutationObserver(() => { aplicarValoresCalculados(); restaurarSeleccionUpcast(); }).observe(listaHechizos, { childList: true, subtree: true });
+        // Bono a HP máx.: se suma en hpMaxActual() (que además se sincroniza a datos/hp-max para el GM).
+        document.addEventListener('input', (e) => { if (e.target.id === 'hp-max-buff') updateHPDisplay(); });
+        document.addEventListener('ficha:datos-sincronizados', updateHPDisplay);
+        aplicarValoresCalculados();
+        syncStickyBar();
+    }
+    iniciarEstadisticasDerivadas();
 
     // Primer pintado inmediato (usa el valor por defecto de xp-val hasta que llegue el sync real)
     if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();

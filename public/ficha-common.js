@@ -51,15 +51,21 @@
     if (el.isContentEditable) return el.innerText;
     return el.value;
   }
+  // Campos de formularios temporales y selectores de acción (no son datos del
+  // personaje): no deben ir a datos/ ni sincronizarse de vuelta.
+  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-'];
+  function esCampoEfimero(id) {
+    return PREFIJOS_EFIMEROS.some(p => id.startsWith(p));
+  }
   document.addEventListener('input', (e) => {
     if (modoLectura) return;
-    if (e.target.matches('input, select, textarea, [contenteditable="true"]') && e.target.id) {
+    if (e.target.matches('input, select, textarea, [contenteditable="true"]') && e.target.id && !esCampoEfimero(e.target.id)) {
       guardarCampo(e.target.id, valorDeCampo(e.target));
     }
   });
   document.addEventListener('change', (e) => {
     if (modoLectura) return;
-    if (e.target.matches('input[type="checkbox"], select, textarea') && e.target.id) {
+    if (e.target.matches('input[type="checkbox"], select, textarea') && e.target.id && !esCampoEfimero(e.target.id)) {
       guardarCampo(e.target.id, valorDeCampo(e.target));
     }
   });
@@ -234,6 +240,9 @@
   }
 
   function iniciarEditorHechizos() {
+    // Nivel de espacio elegido en el selector de upcast de cada fila: se recuerda
+    // para que un re-render (sincronización, DC automáticos) no lo resetee al base.
+    const upcastElegido = {};
     const editor = crearEditorDeLista({
       storageKey: 'hechizos-json',
       datosIniciales: FICHA_CONFIG.hechizosIniciales,
@@ -250,7 +259,8 @@
           const nivelMax = 9;
           const opciones = [];
           for (let n = h.upcast.nivelBase; n <= nivelMax; n++) opciones.push(n);
-          const selectHtml = `<select id="upcast-sel-${idx}" style="width:auto;display:inline-block;">${opciones.map(n => `<option value="${n}">Nvl ${n}</option>`).join('')}</select>`;
+          const elegido = upcastElegido[idx] || h.upcast.nivelBase;
+          const selectHtml = `<select id="upcast-sel-${idx}" style="width:auto;display:inline-block;" onchange="FichaHechizos.recordarUpcast(${idx}, this.value)">${opciones.map(n => `<option value="${n}" ${n === elegido ? 'selected' : ''}>Nvl ${n}</option>`).join('')}</select>`;
           const etiquetaBtn = h.upcast.tipo === 'tabla' ? '📜 Usar' : '🎲 Tirar';
           accionBtn = `${selectHtml} <button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">${etiquetaBtn}</button>`;
         } else if (h.formula) {
@@ -471,7 +481,9 @@
       if (editor.items().some(h => h.ataque && (h.ataque.dcAuto || h.ataque.bonusAuto))) editor.renderizar();
     });
 
-    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast };
+    function recordarUpcast(idx, valor) { upcastElegido[idx] = parseInt(valor, 10); }
+
+    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast, recordarUpcast };
   }
 
   // ============================================================
