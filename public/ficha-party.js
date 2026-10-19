@@ -5,7 +5,7 @@
  *
  *  1) PUBLICAR (cada ficha, solo el dueño o el GM):
  *     escribe un nodo chico en  campanas/<campaña>/party/<personajeId>  con lo que el grupo necesita ver:
- *       { nombre, clase, nivel, hp, hpMax, hpTemp, ca, concentracion, condiciones:[ids], agotamiento, actualizado }
+ *       { nombre, clase, nivel, hp, hpMax, hpTemp, ca, iniciativa, velocidad, pasiva, concentracion, condiciones:[ids], agotamiento, actualizado }
  *     Lo calcula leyendo la propia ficha (hp-cur, hpMaxActual()/hp-max, hp-temp-input|hp-temp, ac-total,
  *     concentracion-actual, y los estados de FichaReglas). Revisa cada 2 s y ante cambios, y solo escribe si algo cambió.
  *     Cualquiera de estos lectores se puede reemplazar con iniciarPublicador({ leer: () => ({...}) }).
@@ -49,6 +49,9 @@
       hpMax,
       hpTemp: num(txt('hp-temp-input') || txt('hp-temp'), 0),
       ca: num(txt('ac-total'), 0),
+      iniciativa: num((((document.getElementById('iniciativa-total') || {}).textContent) || '').replace(/[^0-9+\-]/g, ''), null),
+      velocidad: num(txt('velocidad-total'), null),
+      pasiva: num(txt('percepcion-pasiva'), null),
       concentracion: (txt('concentracion-actual') || '').trim(),
       condiciones: st.condiciones,
       agotamiento: st.agotamiento,

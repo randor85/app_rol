@@ -348,6 +348,7 @@
         // cambian los personajes como cuando cambia (o recién llega) el sistema de la campaña.
         let sistemaCampanaActual = null;
         let ultimoPersonajesSnap = null;
+        let partyActual = {}, partyListener = null;
         let soyElGMActual = false;
 
         // Sistema de juego al que pertenece cada personaje (independiente de en qué campaña
@@ -478,6 +479,8 @@ btnLoginEmail.onclick = () => {
             if (bitacoraListener) bitacoraListener.off();
             if (tiradasListener) tiradasListener.off();
             if (sistemaCampanaListener) sistemaCampanaListener.off();
+            if (partyListener) { partyListener.off(); partyListener = null; }
+            partyActual = {};
 
             panelGm.style.display = 'none';
             esDirector = false;
@@ -636,29 +639,47 @@ btnLoginEmail.onclick = () => {
         return;
     }
 
-    const hpCur = p.datos?.['hp-cur'] || 0;
-    const hpMax = p.datos?.['hp-max'] || 70;
-    const pct = Math.min((hpCur / hpMax) * 100, 100);
-
-    // 1. Buscamos qué condiciones tiene activas Fiona en Firebase
+    // Resumen publicado por la propia ficha (campanas/<c>/party/<id>): PG reales, PG temporales, CA, iniciativa,
+    // velocidad, percepción pasiva, concentración y condiciones. Si la ficha todavía no lo publicó, se usan los
+    // campos sueltos de datos/ (hp-cur, hp-max).
+    const pa = (partyActual && partyActual[id]) || {};
     const datos = p.datos || {};
-    const condicionesActivas = Object.keys(datos)
+    const entero = (v, def) => { const n = parseInt(v, 10); return isNaN(n) ? def : n; };
+    const hpCur = pa.hp != null ? pa.hp : entero(datos['hp-cur'], 0);
+    const hpMax = pa.hpMax || entero(datos['hp-max'], 0);
+    const hpTemp = pa.hpTemp || 0;
+    const pct = hpMax ? Math.max(0, Math.min((hpCur / hpMax) * 100, 100)) : 0;
+    const signo = (n) => (n >= 0 ? '+' : '') + n;
+    const stat = (icono, etiqueta, valor) => valor == null || valor === '' ? '' : `<span title="${etiqueta}" style="background:#1a1a22; border:1px solid #333; border-radius:4px; padding:2px 6px; font-size:0.78rem;">${icono} ${valor}</span>`;
+    const stats = [
+        stat('🛡️', 'Clase de armadura', pa.ca || null),
+        stat('⚡', 'Iniciativa', pa.iniciativa != null ? signo(pa.iniciativa) : null),
+        stat('🏃', 'Velocidad (ft)', pa.velocidad || null),
+        stat('👁️', 'Percepción pasiva', pa.pasiva || null),
+    ].join('');
+
+    // Condiciones: las que publica la ficha (ids del SRD) + las casillas cond-/buff-/debuff- guardadas en datos/.
+    const NOMBRES_COND = { blinded: 'Cegado', charmed: 'Hechizado', deafened: 'Ensordecido', frightened: 'Asustado', grappled: 'Agarrado', incapacitated: 'Incapacitado', invisible: 'Invisible', paralyzed: 'Paralizado', petrified: 'Petrificado', poisoned: 'Envenenado', prone: 'Derribado', restrained: 'Apresado', stunned: 'Aturdido', unconscious: 'Inconsciente' };
+    const bonito = (k) => NOMBRES_COND[k] || k.replace(/-/g, ' ');
+    const condiciones = new Set((pa.condiciones || []).map(k => '🛑 ' + bonito(k)));
+    Object.keys(datos)
         .filter(key => (key.startsWith('cond-') || key.startsWith('buff-') || key.startsWith('debuff-')) && datos[key] === true)
-        .map(key => {
-            // Reemplazamos los IDs técnicos por emojis bonitos
-            return key.replace('cond-', '🛑 ').replace('buff-', '✨ ').replace('debuff-', '⚡ ');
-        });
+        .forEach(key => condiciones.add(key.startsWith('cond-') ? '🛑 ' + bonito(key.slice(5)) : key.startsWith('buff-') ? '✨ ' + key.slice(5) : '⚡ ' + key.slice(7)));
+    if (pa.agotamiento) condiciones.add('🥱 Agotamiento ' + pa.agotamiento);
+    const sub = [pa.clase, pa.nivel ? 'nivel ' + pa.nivel : ''].filter(Boolean).join(' · ');
+    const esc = (t) => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     vital.innerHTML = `
-        <p style="font-weight:bold; color:var(--accent-gold);">${p.nombre || "Héroe"}</p>
+        <p style="font-weight:bold; color:var(--accent-gold);">${esc(p.nombre || "Héroe")}</p>
+        ${sub ? `<p style="font-size:0.7rem; color:var(--text-muted); margin-top:-2px;">${esc(sub)}</p>` : ''}
         <div style="background:#0f0f12; height:8px; border-radius:4px; overflow:hidden;">
             <div style="background:${pct < 30 ? '#c94a4a' : 'var(--accent-gold)'}; width:${pct}%; height:100%;"></div>
         </div>
-        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">HP: ${hpCur}/${hpMax}</p>
-
-        <!-- 2. Mostramos las condiciones activas en la pantalla del GM -->
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">HP: <strong style="color:#fff;">${hpCur}${hpMax ? '/' + hpMax : ''}</strong>${hpTemp ? ` <span title="PG temporales">(+${hpTemp} temp.)</span>` : ''}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">${stats}</div>
+        ${pa.concentracion ? `<p style="font-size:0.75rem; margin-top:6px;">🧠 ${esc(pa.concentracion)}</p>` : ''}
         <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
-            ${condicionesActivas.map(cond => `<span style="font-size:0.7rem; background:#2a2a3c; padding:2px 6px; border-radius:4px; color:#fff; border:1px solid #444;">${cond}</span>`).join('')}
+            ${[...condiciones].map(cond => `<span style="font-size:0.7rem; background:#2a2a3c; padding:2px 6px; border-radius:4px; color:#fff; border:1px solid #444;">${esc(cond)}</span>`).join('')}
         </div>
     `;
     gridVitalesGm.appendChild(vital);
@@ -801,6 +822,14 @@ btnLoginEmail.onclick = () => {
             ultimoPersonajesSnap = snap.val();
             renderizarGrid(campanaId);
         });
+
+        // El resumen que publica cada ficha (PG reales, CA, iniciativa…) llega por su propio nodo: repinta la grilla al cambiar.
+        if (partyListener) partyListener.off();
+        partyListener = db.ref(`campanas/${campanaId}/party`);
+        partyListener.on('value', snap => {
+            partyActual = snap.val() || {};
+            if (ultimoPersonajesSnap) renderizarGrid(campanaId);
+        }, () => { partyActual = {}; });
     });
 
     bitacoraListener = db.ref(`campanas/${campanaId}/bitacora`);
