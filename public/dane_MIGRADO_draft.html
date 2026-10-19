@@ -2255,6 +2255,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             // Se registran ANTES de pedirle a FichaComun que sincronice, para que la siembra inicial los vea.
             FichaComun.setCharRef(charRef);
             FichaComun.iniciarEditorHechizos();
+            puenteUsarHechizo();
             FichaComun.iniciarEditorInventario();
             FichaComun.iniciarEditorReputacion();
             FichaComun.sincronizarDatosDesdeNube();
@@ -2415,13 +2416,16 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     // ESPACIOS DE CONJURO: checkboxes (☑ = usado) con contadores espejo slot-N-cur
     // La tarjeta única de ficha-common.js descuenta de un elemento numérico `slot-N-cur` (estándar de la
     // flota). Dane lleva sus espacios como checkboxes: los checkboxes siguen siendo la fuente de verdad y
-    // `slot-N-cur` es un espejo (disponibles = sin marcar). Si el motor baja el contador, se marca el
-    // checkbox correspondiente (con su evento 'change': autoguardado + registro "usó"); si el jugador
-    // marca/desmarca a mano o hace un descanso largo, el contador se recalcula.
+    // `slot-N-cur` es un espejo (disponibles = sin marcar). puenteUsarHechizo() envuelve FichaHechizos.usar:
+    // si el motor baja el contador, se marca el checkbox de ese nivel (con su evento 'change': autoguardado +
+    // registro "usó"); si el jugador marca/desmarca a mano, hace un descanso largo o llega un sync de Firebase,
+    // el contador se recalcula desde los checkboxes.
     // ==========================================
     const ORDINALES_SLOT = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
+    let enUsarHechizo = false; // mientras el motor gasta un espacio, el sync NO debe re-derivar el espejo
     function slotCheckboxes(n) { return Array.from(document.querySelectorAll(`.spell-slots[data-slot-nivel="${n}"] input[type="checkbox"]`)); }
     function refrescarSlotCur() {
+        if (enUsarHechizo) return;
         document.querySelectorAll('.spell-slots[data-slot-nivel]').forEach(row => {
             const n = row.dataset.slotNivel;
             const cbs = slotCheckboxes(n);
@@ -2431,25 +2435,28 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             if (max && max.textContent !== String(cbs.length)) max.textContent = cbs.length;
         });
     }
-    function aplicarSlotCurAChecks(n) {
-        const el = document.getElementById(`slot-${n}-cur`);
-        const cbs = slotCheckboxes(n);
-        const v = parseInt(el && el.textContent, 10);
-        if (isNaN(v)) return;
-        if (cbs.filter(c => !c.checked).length === v) return;
-        const usados = Math.max(0, Math.min(cbs.length, cbs.length - v));
-        cbs.forEach((cb, i) => {
-            const quiero = i < usados;
-            if (cb.checked !== quiero) { cb.checked = quiero; cb.dispatchEvent(new Event('change', { bubbles: true })); }
-        });
-        refrescarSlotCur();
+    function marcarSlot(n) {
+        const cb = slotCheckboxes(n).find(c => !c.checked);
+        if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); } // autoguardado + registro "usó"
     }
-    const slotsObservados = new Set();
-    function observarSlotCur(n) {
-        const el = document.getElementById(`slot-${n}-cur`);
-        if (!el || slotsObservados.has(n)) return;
-        slotsObservados.add(n);
-        new MutationObserver(() => aplicarSlotCurAChecks(n)).observe(el, { childList: true, characterData: true, subtree: true });
+    // Envuelve FichaHechizos.usar: el motor descuenta del contador `slot-N-cur` (espejo) y acá se traslada ese
+    // gasto al checkbox. El nivel gastado se calcula igual que en el motor (nivel del selector de upcast o slotCost).
+    function puenteUsarHechizo() {
+        if (!window.FichaHechizos || FichaHechizos.__puente) return;
+        const usarOriginal = FichaHechizos.usar;
+        FichaHechizos.usar = function (idx) {
+            const h = FichaHechizos.editor.items()[idx];
+            let n = h && h.slotCost;
+            if (h && h.upcast) { const sel = document.getElementById(`upcast-sel-${idx}`); n = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase; }
+            refrescarSlotCur(); // el espejo parte de los checkboxes (fuente de verdad)
+            const el = n ? document.getElementById(`slot-${n}-cur`) : null;
+            const antes = el ? parseInt(el.textContent, 10) : NaN;
+            enUsarHechizo = true;
+            try { usarOriginal(idx); } finally { enUsarHechizo = false; }
+            if (el && !isNaN(antes) && parseInt(el.textContent, 10) === antes - 1) marcarSlot(n);
+            refrescarSlotCur();
+        };
+        FichaHechizos.__puente = true;
     }
     // Agrega (nunca quita) los checkboxes/filas que la tabla de Ranger pide para su nivel actual.
     function asegurarSlots() {
@@ -2478,7 +2485,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             }
             cbs = slotCheckboxes(n);
             row.querySelector('strong').textContent = `${ORDINALES_SLOT[i]} Level (${Math.max(m, cbs.length)} Slots):`;
-            observarSlotCur(n);
         });
         refrescarSlotCur();
     }
