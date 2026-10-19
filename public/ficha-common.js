@@ -326,11 +326,17 @@
       if (!mejor || total > mejor.total) mejor = { total, nombre: i.nombre, base: info.base, aporteDex };
     });
     if (!mejor && !escudo) {
+      // Fórmula de clase sin armadura (monje 10+DEX+WIS, bárbaro 10+DEX+CON, hechicero dracónico...).
+      if (typeof FICHA_CONFIG.caSinArmadura === 'function') {
+        const v = FICHA_CONFIG.caSinArmadura();
+        return { total: v, texto: `${v} (sin armadura: ${FICHA_CONFIG.caSinArmaduraTexto || 'fórmula de clase'})` };
+      }
       if (typeof FICHA_CONFIG.caBase === 'number') return { total: FICHA_CONFIG.caBase, texto: `${FICHA_CONFIG.caBase} (fija — equipá una armadura para calcularla)` };
       return { total: 10 + dex, texto: `${10 + dex} (sin armadura: 10 + DEX ${FichaComun.formatearMod(dex)})` };
     }
-    const base = mejor ? mejor.total : 10 + dex;
-    const partes = [mejor ? `${mejor.nombre} ${mejor.base}${mejor.aporteDex ? ' + DEX ' + FichaComun.formatearMod(mejor.aporteDex) : ''}` : `sin armadura 10 + DEX ${FichaComun.formatearMod(dex)}`];
+    const sinArm = typeof FICHA_CONFIG.caSinArmadura === 'function' ? FICHA_CONFIG.caSinArmadura() : 10 + dex;
+    const base = mejor ? mejor.total : sinArm;
+    const partes = [mejor ? `${mejor.nombre} ${mejor.base}${mejor.aporteDex ? ' + DEX ' + FichaComun.formatearMod(mejor.aporteDex) : ''}` : `sin armadura ${sinArm}`];
     if (escudo) partes.push(`escudo +${escudo}`);
     return { total: base + escudo, texto: `${base + escudo} (${partes.join(', ')})` };
   }
