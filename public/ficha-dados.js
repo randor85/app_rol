@@ -66,7 +66,33 @@
     if (estado.items.length > estado.max) estado.items = estado.items.slice(-estado.max);
     guardar();
     pintarHistorial();
+    avisar(entrada);
     return entrada;
+  }
+
+  /* ---------- avisos emergentes (con el panel cerrado, cada tirada o uso se confirma a la vista) ---------- */
+  const DURACION_AVISO = { tirada: 5000, otro: 3500 };
+  function avisar(it) {
+    if (!estado.iniciado || abierto()) return;           // con el panel abierto ya se ve en el resultado y el historial
+    let zona = document.getElementById('dados-avisos');
+    if (!zona) {
+      zona = el('div', 'dados-avisos'); zona.id = 'dados-avisos';
+      zona.setAttribute('role', 'status'); zona.setAttribute('aria-live', 'polite');
+      document.body.appendChild(zona);
+    }
+    const a = el('button', 'dados-aviso'); a.type = 'button'; a.dataset.tipo = it.tipo; a.dataset.grupo = it.grupo;
+    a.setAttribute('aria-label', 'Cerrar aviso: ' + it.etiqueta);
+    a.appendChild(el('span', 'dados-aviso-ico', ICONOS[it.tipo] || '•'));
+    const cuerpo = el('span', 'dados-aviso-texto');
+    cuerpo.appendChild(el('strong', 'dados-aviso-et', it.etiqueta));
+    if (it.detalle) cuerpo.appendChild(el('small', 'dados-aviso-det', it.detalle));
+    a.appendChild(cuerpo);
+    if (it.resultado !== '') a.appendChild(el('span', 'dados-aviso-res', it.resultado));
+    const quitar = () => { if (a.parentNode) a.remove(); };
+    a.addEventListener('click', quitar);
+    zona.appendChild(a);
+    while (zona.children.length > 3) zona.firstElementChild.remove();
+    setTimeout(quitar, it.grupo === 'tiradas' ? DURACION_AVISO.tirada : DURACION_AVISO.otro);
   }
 
   function publicarTirada(etiqueta, total) {

@@ -6,7 +6,7 @@
  * toma los colores de cada personaje sin tocar el resto de la hoja. Las fichas con ficha-tema.css NO deben
  * cargar este archivo (ya trae la misma sección con sus propios tokens).
  */
-.dados {
+.dados, .dados-avisos {
   --fuente-titulo: 'Cinzel', 'Georgia', 'Times New Roman', serif;
   --fuente-texto: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --fs-xs: 0.75rem; --fs-sm: 0.85rem; --fs-md: 1rem; --fs-lg: 1.15rem; --fs-xl: 1.5rem;
@@ -44,6 +44,19 @@
 .dados-adv[data-valor="disadvantage"] { border-color: var(--mal); }
 .dados-adv:focus-visible { outline: 3px solid var(--acento-2); outline-offset: 2px; }
 .dados[data-abierto="true"] .dados-adv { display: none; }
+/* avisos emergentes de tiradas y usos (ficha-dados.js) */
+.dados-avisos { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--gutter) + 116px); z-index: 96; display: grid; gap: var(--sp-2); width: min(420px, calc(100vw - 2 * var(--gutter))); pointer-events: none; }
+.dados-aviso { pointer-events: auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--sp-3); text-align: left; padding: var(--sp-2) var(--sp-3); background: var(--surface); color: var(--texto); border: 1px solid var(--borde-fuerte); border-left: 5px solid var(--acento); border-radius: var(--radio-sm); box-shadow: var(--sombra); font: inherit; cursor: pointer; animation: dados-aviso-entra 160ms ease-out; }
+.dados-aviso[data-grupo="recursos"] { border-left-color: var(--aviso); }
+.dados-aviso-ico { font-size: 1.3rem; }
+.dados-aviso-texto { display: grid; min-width: 0; }
+.dados-aviso-et { overflow-wrap: anywhere; }
+.dados-aviso-det { color: var(--texto-suave); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.dados-aviso-res { font-family: var(--fuente-titulo); font-size: var(--fs-xl); font-weight: 800; color: var(--acento); line-height: 1; }
+.dados-aviso:focus-visible { outline: 3px solid var(--acento-2); outline-offset: 2px; }
+@keyframes dados-aviso-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .dados-aviso { animation: none; } }
+@media (max-width: 600px) { .dados-avisos { bottom: calc(var(--sp-3) + 116px); } }
 .dados-fab-badge { position: absolute; top: -8px; right: -8px; min-width: 26px; padding: 1px 6px; border-radius: 999px; border: 2px solid var(--acento); background: var(--surface); color: var(--texto); font-family: var(--fuente-texto); font-size: var(--fs-xs); font-weight: 800; text-align: center; }
 .dados-panel { position: absolute; right: 0; bottom: calc(56px + var(--sp-3)); width: min(380px, calc(100vw - 2 * var(--gutter))); max-height: min(78vh, 680px); display: flex; flex-direction: column; background: var(--surface); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
 .dados-panel[hidden] { display: none; }
