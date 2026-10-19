@@ -174,6 +174,15 @@
  .nivel-hab-item button { background: var(--accent-gold); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-weight: 700; }
  .nivel-hab-item.agregada { opacity: 0.5; }
  .nivel-hab-item.agregada button { display: none; }
+ .btn-buff { background: none; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; padding: 3px 7px; cursor: pointer; font-size: 0.7rem; font-weight: 700; }
+ .btn-buff.on { background: #2b4c38; border-color: #4a7a52; color: #bfe8c4; }
+ .buffs-activos { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0; font-size: 0.78rem; }
+ .buff-chip { background: #2b4c38; border: 1px solid #4a7a52; color: #dff3e3; border-radius: 14px; padding: 3px 10px; }
+ .buff-chip small { color: #a9d3b0; margin-left: 4px; }
+ .buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
+ .buff-dano-btn { border: 1px solid #4a7a52; border-radius: 6px; color: #dff3e3; padding: 3px 8px; }
+ .buffs-vacio { color: var(--text-muted); }
+ .buff-efecto-row select, .buff-efecto-row input { background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 4px 6px; font-size: 0.78rem; }
  .hechizos-adicionales-box { margin-top: 14px; background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; }
  .hechizos-adicionales-box h4 { font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
  .btn-add-spell { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
@@ -1147,6 +1156,7 @@
 </div>
 <button class="nivel-popover-btn" onclick="toggleNivelUp()" type="button" style="margin-left:6px;">⬆️ Subir de Nivel</button>
 </div>
+<div id="buffs-activos" class="buffs-activos"></div>
 <div class="grid-identity">
 <div class="stat-badge">
 <label>❤️ HP</label>
@@ -2254,6 +2264,7 @@
     personajeId: 'fiona_faraway',
     nombrePersonaje: 'Fiona Faraway',
     sistemaPropio: 'dnd',
+    mostrarTirada: (total, etiqueta, detalle) => displayRollResult(total, etiqueta, detalle), // tiradas del motor compartido (p.ej. "Daño extra" de buffs)
     habilidadConjuro: 'WIS', // DC/ataque de hechizos "automáticos" (dcAuto/bonusAuto) = 8 + mod(WIS) + competencia
     // ⚠️ PARCHE TEMPORAL, no una solución real: ficha-common.js's FichaHechizos.usar()
     // indexa FICHA_CONFIG.slotsIds[h.slotCost - 1] en vez de construir `slot-${slotCost}-cur`
@@ -2711,6 +2722,7 @@
             slotCost: s.nivel > 0 ? s.nivel : null,
             ataque: s.ataque || null,
             upcast: s.upcast || null,
+            buff: s.buff ? JSON.parse(JSON.stringify(s.buff)) : null,
         });
         toggleSpellPicker(false);
     }
@@ -2807,7 +2819,7 @@
         return parseInt(document.getElementById('hp-max-buff')?.value, 10) || 0;
     }
     function hpMaxActual() {
-        return HP_MAX_FIONA + obtenerBonusHPNivel() + obtenerBuffHPMax();
+        return HP_MAX_FIONA + obtenerBonusHPNivel() + obtenerBuffHPMax() + (window.FichaBuffs ? FichaBuffs.plano('hp-max') : 0);
     }
     function nivelClaseActual(nombreClase) {
         const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nombreClase);
@@ -3069,7 +3081,7 @@
         const acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
         // Ataque / Atq. Conjuro / CD Conjuro ya NO se calculan acá: salen de FichaComun.iniciarEstadisticaConBuff
         // (base = mod + competencia calculados desde el nivel). La CA base no depende de la competencia.
-        document.getElementById('ac-total').innerText = 17 + acBuff;
+        document.getElementById('ac-total').innerText = 17 + acBuff + (window.FichaBuffs ? FichaBuffs.plano('ca') : 0);
         syncStickyBar();
     }
     function toggleConditionsDropdown() {
@@ -3411,24 +3423,24 @@
     function armaBono(hab) { return FichaAtributos.modDe(hab) + FichaAtributos.profBonusActual(); }
     function rollIniciativa() {
         const buff = parseInt(document.getElementById('iniciativa-buff')?.value, 10) || 0;
-        rollCheckSave('d20', FichaAtributos.modDe('DEX') + buff, 'Iniciativa', 'save');
+        rollCheckSave('d20', FichaAtributos.modDe('DEX') + buff + FichaBuffs.plano('iniciativa'), 'Iniciativa', 'save', 'pruebas');
     }
     function rollAttack(baseMod, attackLabel) {
-        const totalFlatMod = baseMod + (parseInt(document.getElementById('atk-buff').value) || 0);
-        rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
+        const totalFlatMod = baseMod + (parseInt(document.getElementById('atk-buff').value) || 0) + FichaBuffs.plano('ataque');
+        rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true, 'ataque');
     }
     function rollSpellAttack(attackLabel) {
-        const totalFlatMod = bonoAtaqueConjuro() + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
-        rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
+        const totalFlatMod = bonoAtaqueConjuro() + (parseInt(document.getElementById('spell-atk-buff').value) || 0) + FichaBuffs.plano('ataque-conjuro');
+        rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true, 'ataque');
     }
-    function rollCheckSave(sides, baseMod, label, mode) {
-        rollD20WithMechanics(baseMod, label, getAdvantage(), mode === 'save');
+    function rollCheckSave(sides, baseMod, label, mode, categoria) {
+        rollD20WithMechanics(baseMod, label, getAdvantage(), mode === 'save', categoria || (mode === 'save' ? 'salvaciones' : 'pruebas'));
     }
     function rollConcentrationSave() {
         const btn = document.querySelector('#ab-con .btn-save');
-        rollD20WithMechanics(parseInt(btn?.dataset.bonus, 10) || 0, 'Save Concentración', getAdvantage(), true);
+        rollD20WithMechanics(parseInt(btn?.dataset.bonus, 10) || 0, 'Save Concentración', getAdvantage(), true, 'salvaciones');
     }
-    function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
+    function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk, categoria) {
     let finalAdv = advState;
 
     // Lógica D&D 5e: Si está Cegada o Apresada, tira con desventaja los ataques
@@ -3450,6 +3462,11 @@
         if (isSaveOrAtk) {
             if (document.getElementById('buff-bless').checked) { let r = Math.floor(Math.random() * 4) + 1; total += r; b.push(`Bless: +${r}`); }
             if (document.getElementById('debuff-bane').checked) { let r = Math.floor(Math.random() * 4) + 1; total -= r; b.push(`Bane: -${r}`); }
+        }
+        // Dados extra de buffs activados en hechizos (ataques / salvaciones / pruebas), configurables por hechizo.
+        if (categoria && window.FichaBuffs) {
+            const extra = FichaBuffs.tirarDados(categoria);
+            extra.partes.forEach(pt => { total += pt.valor; b.push(pt.texto); });
         }
         displayRollResult(total, label + advText, b.join(' | '));
     }
@@ -3583,11 +3600,13 @@
             ],
             pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
         });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', baseElId: 'atk-base', calcularBase: () => armaBono('STR'), formatear: fmt });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', baseElId: 'spell-atk-base', calcularBase: bonoAtaqueConjuro, formatear: fmt });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', baseElId: 'spell-dc-base', calcularBase: () => 8 + bonoAtaqueConjuro() });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => FichaAtributos.modDe('DEX'), formatear: (n) => '🎲 ' + fmt(n) });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, formatear: (n) => n + ' ft' });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', baseElId: 'atk-base', calcularBase: () => armaBono('STR'), formatear: fmt, objetivoBuff: 'ataque' });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', baseElId: 'spell-atk-base', calcularBase: bonoAtaqueConjuro, formatear: fmt, objetivoBuff: 'ataque-conjuro' });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', baseElId: 'spell-dc-base', calcularBase: () => 8 + bonoAtaqueConjuro(), objetivoBuff: 'cd-conjuro' });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => FichaAtributos.modDe('DEX'), formatear: (n) => '🎲 ' + fmt(n), objetivoBuff: 'iniciativa' });
+        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, formatear: (n) => n + ' ft', objetivoBuff: 'velocidad' });
+        // Buffs activados (hechizos con efecto prendible): CA y HP máx. no pasan por iniciarEstadisticaConBuff.
+        document.addEventListener('ficha:buffs', () => { recalcStats(); updateHPDisplay(); });
         // Textos derivados sueltos (tabla de armas, notas de CD) + barra sticky, tras cada recálculo.
         document.addEventListener('ficha:atributos', () => { aplicarValoresCalculados(); syncStickyBar(); });
         // La tabla de hechizos se re-renderiza al sincronizar: refrescar los "DC N" del texto.
