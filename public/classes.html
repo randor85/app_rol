@@ -110,6 +110,7 @@ footer a { color: var(--accent-light); }
 </style>
 <script src="spells_data.js"></script>
 <script src="classes_data.js"></script>
+<script src="subclases_catalogo.js"></script>
 </head>
 <body>
 <div class="container">
@@ -336,7 +337,7 @@ function renderRasgosClase(c) {
 function renderSubclases(c) {
   const cont = document.getElementById(`panel-subclases-${c.id}`);
   if (!c.subclasses.length) {
-    cont.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);">Sin subclases cargadas todavía.</p>';
+    cont.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);">Sin subclases cargadas todavía.</p>' + catalogoSubclases(c);
     return;
   }
   const elegida = subclaseElegidaPorClase[c.id] || c.subclasses[0].name;
@@ -354,7 +355,26 @@ function renderSubclases(c) {
         <p>${f.desc}</p>
       </div>
     `).join('')}
+    ${catalogoSubclases(c)}
   `;
+}
+// Índice de subclases oficiales (solo nombre y libro; el detalle jugable está arriba para las del SRD y las de la mesa).
+function catalogoSubclases(c) {
+  const cat = (typeof SUBCLASES_CATALOGO !== 'undefined' && SUBCLASES_CATALOGO[c.id]) || [];
+  if (!cat.length) return '';
+  const norm = (n) => n.toLowerCase().replace(/^(the|path of the|path of|college of|circle of the|circle of|oath of the|oath of|school of|way of the|way of|warrior of the|warrior of)\s+/, '').replace(/\s+(domain|patron|sorcery|magic)$/, '').trim();
+  const detalladas = new Set(c.subclasses.map(x => norm(x.name)));
+  const grupo = (ed) => {
+    const l = cat.filter(x => x.e === ed);
+    if (!l.length) return '';
+    const porLibro = {};
+    l.forEach(x => (porLibro[x.f] = porLibro[x.f] || []).push(x));
+    return `<h5 style="margin:10px 0 4px">${ed === '2024' ? 'PHB 2024 (5.5e)' : 'Ediciones 2014 (5e)'}</h5>` +
+      Object.keys(porLibro).map(libro => `<p style="margin:2px 0;font-size:0.85rem"><strong>${libro}:</strong> ${porLibro[libro].map(x => x.n + (ed === '2024' && detalladas.has(norm(x.n)) ? ' ✔' : '')).join(', ')}</p>`).join('');
+  };
+  return `<details style="margin-top:14px"><summary style="cursor:pointer;font-weight:600">📚 Subclases oficiales (índice: solo nombres y libros)</summary>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin:6px 0">No incluye texto de los libros. ✔ = ya tiene el detalle cargado en esta página. Para las demás, consultá el libro.</p>
+    ${grupo('2024')}${grupo('2014')}</details>`;
 }
 function elegirSubclase(claseId, nombreSubclase) {
   subclaseElegidaPorClase[claseId] = nombreSubclase;
