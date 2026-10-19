@@ -155,6 +155,7 @@
     function guardar() {
       guardarCampo(opts.storageKey, JSON.stringify(items));
       renderizar();
+      if (opts.alCambiar) opts.alCambiar();
     }
     function mostrarFormulario(idx) {
       editandoIdx = (typeof idx === 'number') ? idx : null;
@@ -196,6 +197,7 @@
       if (Array.isArray(parsed)) {
         items = parsed;
         renderizar();
+        if (opts.alCambiar) opts.alCambiar();
       }
     }
     // Se corre una sola vez, antes de empezar a escuchar cambios: si el
@@ -214,6 +216,75 @@
     renderizar();
     editoresDeLista[opts.storageKey] = { resincronizarDesdeValor, sembrarSiVacioEnFirebase };
     return { items: () => items, mostrarFormulario, cerrarFormulario, guardarDesdeFormulario, eliminar, mutar, renderizar, editandoIdx: () => editandoIdx };
+  }
+
+  // ============================================================
+  // 5b. BUFFS ACTIVABLES (aura / efecto temporal que se prende y se
+  //     apaga) — genérico: hoy lo alimentan los hechizos; el día de
+  //     mañana ítems o artefactos pueden registrarse como otra fuente
+  //     con registrarFuenteBuffs(). Tres tipos de efecto:
+  //       plano: suma un número fijo a una estadística derivada
+  //              (CA, iniciativa, velocidad, HP máx., ataque, CD...).
+  //       dado:  suma un dado a las tiradas (ataque, salvaciones,
+  //              pruebas) o queda como "daño extra" que se tira aparte.
+  //       stat:  suma a una puntuación de atributo (STR..CHA), así el
+  //              modificador y todo lo que depende de él se recalcula.
+  // ============================================================
+  const OBJETIVOS_PLANO = [['ca', 'CA'], ['iniciativa', 'Iniciativa'], ['velocidad', 'Velocidad (ft)'], ['hp-max', 'HP máx.'], ['ataque', 'Ataque con arma'], ['ataque-conjuro', 'Ataque de conjuro'], ['cd-conjuro', 'CD de conjuro'], ['salvaciones', 'Todas las salvaciones'], ['pruebas', 'Todas las pruebas y skills']];
+  const OBJETIVOS_DADO = [['ataque', 'Tiradas de ataque'], ['salvaciones', 'Salvaciones'], ['pruebas', 'Pruebas y skills'], ['dano', 'Daño (se tira aparte)']];
+  const STATS_ATRIBUTO = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+  const fuentesBuff = [];
+  function registrarFuenteBuffs(fn) { fuentesBuff.push(fn); }
+  function buffsActivos() { return fuentesBuff.flatMap(f => f()); }
+  function efectosActivos() { return buffsActivos().flatMap(b => (b.efectos || []).map(e => ({ ...e, fuente: b.nombre }))); }
+  function nombreObjetivo(lista, id) { const x = lista.find(o => o[0] === id); return x ? x[1] : id; }
+  function resumenEfecto(e) {
+    if (e.tipo === 'dado') return `+${e.dado.count}d${e.dado.sides} ${nombreObjetivo(OBJETIVOS_DADO, e.objetivo)}`;
+    if (e.tipo === 'stat') return `${e.valor > 0 ? '+' : ''}${e.valor} ${e.stat}`;
+    return `${e.valor > 0 ? '+' : ''}${e.valor} ${nombreObjetivo(OBJETIVOS_PLANO, e.objetivo)}`;
+  }
+  function resumenEfectos(efectos) { return (efectos || []).map(resumenEfecto).join(', '); }
+
+  const FichaBuffs = {
+    plano: (obj) => efectosActivos().filter(e => e.tipo === 'plano' && e.objetivo === obj).reduce((a, e) => a + (Number(e.valor) || 0), 0),
+    stat: (clave) => efectosActivos().filter(e => e.tipo === 'stat' && e.stat === clave).reduce((a, e) => a + (Number(e.valor) || 0), 0),
+    dados: (obj) => efectosActivos().filter(e => e.tipo === 'dado' && e.objetivo === obj),
+    // Tira los dados extra activos de una categoría ('ataque'|'salvaciones'|'pruebas'|'dano').
+    tirarDados(obj) {
+      const partes = [];
+      let total = 0;
+      FichaBuffs.dados(obj).forEach(e => {
+        const rs = Array.from({ length: e.dado.count }, () => Math.floor(Math.random() * e.dado.sides) + 1);
+        const suma = rs.reduce((a, b) => a + b, 0);
+        total += suma;
+        partes.push({ fuente: e.fuente, texto: `${e.fuente}: +${suma} (${e.dado.count}d${e.dado.sides} [${rs.join(', ')}])`, valor: suma });
+      });
+      return { total, partes };
+    },
+    activos: buffsActivos,
+    apagar(i) { const b = buffsActivos()[i]; if (b && b.apagar) b.apagar(); },
+    tirarDano() {
+      const r = FichaBuffs.tirarDados('dano');
+      if (!r.partes.length) return;
+      const detalle = r.partes.map(p => p.texto).join(' | ');
+      if (FICHA_CONFIG.mostrarTirada) FICHA_CONFIG.mostrarTirada(r.total, 'Daño extra de buffs', detalle);
+      else alert(`🎲 Daño extra: ${r.total}\n${detalle}`);
+    },
+    resumenEfectos,
+  };
+  window.FichaBuffs = FichaBuffs;
+
+  function renderPanelBuffs() {
+    const cont = document.getElementById('buffs-activos');
+    if (!cont) return;
+    const act = buffsActivos();
+    if (!act.length) { cont.innerHTML = '<span class="buffs-vacio">Sin buffs activos.</span>'; return; }
+    cont.innerHTML = act.map((b, i) => `<span class="buff-chip" title="${resumenEfectos(b.efectos)}">🔆 ${b.nombre} <small>${resumenEfectos(b.efectos)}</small> <button type="button" onclick="FichaBuffs.apagar(${i})" title="Apagar">✖</button></span>`).join(' ')
+      + (FichaBuffs.dados('dano').length ? ' <button type="button" class="buff-dano-btn" onclick="FichaBuffs.tirarDano()">🎲 Daño extra</button>' : '');
+  }
+  function notificarBuffs() {
+    renderPanelBuffs();
+    document.dispatchEvent(new CustomEvent('ficha:buffs'));
   }
 
   // ============================================================
@@ -239,12 +310,62 @@
     return ataque[campo];
   }
 
+  // --- Formulario de efectos de buff (filas dinámicas) ---
+  function defaultEfecto(tipo) {
+    if (tipo === 'dado') return { tipo: 'dado', objetivo: 'ataque', dado: { count: 1, sides: 4 } };
+    if (tipo === 'stat') return { tipo: 'stat', stat: 'STR', valor: 2 };
+    return { tipo: 'plano', objetivo: 'ca', valor: 2 };
+  }
+  function opcionesSelect(lista, actual) {
+    return lista.map(o => `<option value="${o[0]}" ${o[0] === actual ? 'selected' : ''}>${o[1]}</option>`).join('');
+  }
+  function renderEfectosForm(efectos) {
+    return efectos.map((e, i) => {
+      const tipoSel = `<select id="hf-bf-tipo-${i}" onchange="FichaHechizos.buffCambiarTipo(${i})">
+        <option value="plano" ${e.tipo === 'plano' ? 'selected' : ''}>Sumar número fijo</option>
+        <option value="dado" ${e.tipo === 'dado' ? 'selected' : ''}>Sumar dado</option>
+        <option value="stat" ${e.tipo === 'stat' ? 'selected' : ''}>Sumar a un atributo</option></select>`;
+      let campos;
+      if (e.tipo === 'dado') {
+        campos = `<select id="hf-bf-obj-${i}">${opcionesSelect(OBJETIVOS_DADO, e.objetivo)}</select>
+          <input type="number" id="hf-bf-cant-${i}" min="1" style="width:55px;" value="${e.dado.count}"><span>d</span>
+          <input type="number" id="hf-bf-caras-${i}" min="1" style="width:55px;" value="${e.dado.sides}">`;
+      } else if (e.tipo === 'stat') {
+        campos = `<select id="hf-bf-stat-${i}">${STATS_ATRIBUTO.map(a => `<option value="${a}" ${a === e.stat ? 'selected' : ''}>${a}</option>`).join('')}</select>
+          <input type="number" id="hf-bf-val-${i}" style="width:65px;" value="${e.valor}">`;
+      } else {
+        campos = `<select id="hf-bf-obj-${i}">${opcionesSelect(OBJETIVOS_PLANO, e.objetivo)}</select>
+          <input type="number" id="hf-bf-val-${i}" style="width:65px;" value="${e.valor}">`;
+      }
+      return `<div class="spell-form-row-dado buff-efecto-row">${tipoSel} ${campos}
+        <button type="button" class="btn-clear" onclick="FichaHechizos.buffQuitarEfecto(${i})" title="Quitar efecto">✖</button></div>`;
+    }).join('');
+  }
+  // Lee las filas del formulario tal como están en pantalla (con valores por defecto
+  // para campos que todavía no existen tras cambiar el tipo).
+  function leerEfectosForm() {
+    const filas = document.querySelectorAll('#hf-buff-efectos .buff-efecto-row');
+    return Array.from(filas).map((_, i) => {
+      const tipo = document.getElementById(`hf-bf-tipo-${i}`).value;
+      const num = (id, def) => { const el = document.getElementById(id); const n = el ? parseInt(el.value, 10) : NaN; return isNaN(n) ? def : n; };
+      const sel = (id, def) => { const el = document.getElementById(id); return el ? el.value : def; };
+      if (tipo === 'dado') return { tipo, objetivo: sel(`hf-bf-obj-${i}`, 'ataque'), dado: { count: num(`hf-bf-cant-${i}`, 1), sides: num(`hf-bf-caras-${i}`, 4) } };
+      if (tipo === 'stat') return { tipo, stat: sel(`hf-bf-stat-${i}`, 'STR'), valor: num(`hf-bf-val-${i}`, 0) };
+      return { tipo: 'plano', objetivo: sel(`hf-bf-obj-${i}`, 'ca'), valor: num(`hf-bf-val-${i}`, 0) };
+    });
+  }
+  function efectoValido(e) {
+    if (e.tipo === 'dado') return e.dado.count > 0 && e.dado.sides > 0;
+    return e.valor !== 0;
+  }
+
   function iniciarEditorHechizos() {
     // Nivel de espacio elegido en el selector de upcast de cada fila: se recuerda
     // para que un re-render (sincronización, DC automáticos) no lo resetee al base.
     const upcastElegido = {};
     const editor = crearEditorDeLista({
       storageKey: 'hechizos-json',
+      alCambiar: notificarBuffs,
       datosIniciales: FICHA_CONFIG.hechizosIniciales,
       contenedorListaId: 'hechizos-lista',
       contenedorFormId: 'hechizos-form-container',
@@ -274,12 +395,16 @@
             : `<span class="tag tag-atk">🛡️ ${h.ataque.habilidad} DC ${valorAtaqueHechizo(h.ataque, 'dc')}</span>`;
         const areaTxt = h.area ? ` · 📐 ${h.area}` : '';
         const upcastTxt = h.upcast ? ' · ⬆️ Escala con el nivel del espacio' : '';
+        const buffTxt = h.buff ? ` · 🔆 ${resumenEfectos(h.buff.efectos)}` : '';
+        if (h.buff) {
+          accionBtn += ` <button type="button" class="btn-buff ${h.buff.activo ? 'on' : ''}" onclick="FichaHechizos.alternarBuff(${idx})" title="Prender/apagar el efecto">${h.buff.activo ? '🟢 Activo' : '⚪ Activar'}</button>`;
+        }
         return `
           <tr>
             <td><span class="tag">${h.especial ? '⭐ ' : ''}${etiquetaNivelConjuro(h.nivel)}</span></td>
             <td><strong>${h.nombre}</strong>${ataqueBadge ? ' ' + ataqueBadge : ''}</td>
             <td>${h.tiempo} / ${h.alcance}${areaTxt}</td>
-            <td>${h.resumen}${upcastTxt} <em>(${h.duracion})</em></td>
+            <td>${h.resumen}${upcastTxt}${buffTxt} <em>(${h.duracion})</em></td>
             <td class="spell-item-actions">
               ${accionBtn}
               ${!h.especial ? `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.editor.mostrarFormulario(${idx})">✏️ Editar</button>` : ''}
@@ -344,6 +469,13 @@
               <textarea id="hf-upcast-tabla" rows="4" placeholder="3: efecto a nivel 3&#10;4: efecto a nivel 4">${h && h.upcast && h.upcast.tipo === 'tabla' ? Object.entries(h.upcast.tabla).map(([n, t]) => `${n}: ${t}`).join('\n') : ''}</textarea>
             </div>
           </div>
+          <div class="spell-form-row-dado">
+            <label><input type="checkbox" id="hf-buff-on" onchange="FichaHechizos.alternarCamposBuff()" ${h && h.buff ? 'checked' : ''}> 🔆 Buff / aura que se puede prender y apagar</label>
+          </div>
+          <div id="hf-buff-campos" style="display:${h && h.buff ? 'block' : 'none'};">
+            <div id="hf-buff-efectos">${renderEfectosForm(h && h.buff ? h.buff.efectos : [defaultEfecto('plano')])}</div>
+            <button type="button" class="btn-roll btn-roll-sm" onclick="FichaHechizos.buffAgregarEfecto()">➕ Agregar efecto</button>
+          </div>
           <div class="spell-form-actions">
             <button type="button" onclick="FichaHechizos.editor.cerrarFormulario()">Cancelar</button>
             <button type="button" class="add" onclick="FichaHechizos.guardarDesdeFormulario()">💾 Guardar</button>
@@ -358,6 +490,24 @@
       document.getElementById('hf-ataque-habilidad').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
       document.getElementById('hf-ataque-dc').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
       document.getElementById('hf-ataque-auto-label').style.display = tipo ? 'flex' : 'none';
+    }
+
+    function alternarCamposBuff() {
+      document.getElementById('hf-buff-campos').style.display = document.getElementById('hf-buff-on').checked ? 'block' : 'none';
+    }
+    function redibujarEfectosForm(efectos) {
+      document.getElementById('hf-buff-efectos').innerHTML = renderEfectosForm(efectos);
+    }
+    function buffAgregarEfecto() { const efs = leerEfectosForm(); efs.push(defaultEfecto('plano')); redibujarEfectosForm(efs); }
+    function buffQuitarEfecto(i) { const efs = leerEfectosForm(); efs.splice(i, 1); redibujarEfectosForm(efs); }
+    function buffCambiarTipo(i) {
+      const efs = leerEfectosForm();
+      efs[i] = defaultEfecto(document.getElementById(`hf-bf-tipo-${i}`).value);
+      redibujarEfectosForm(efs);
+    }
+    function alternarBuff(idx) {
+      if (modoLectura) return;
+      editor.mutar(idx, (h) => { if (h.buff) h.buff.activo = !h.buff.activo; });
     }
 
     function alternarCamposUpcast() {
@@ -411,6 +561,15 @@
           tabla,
         };
       }
+      let buff = null;
+      if (document.getElementById('hf-buff-on').checked) {
+        const efectos = leerEfectosForm().filter(efectoValido);
+        if (efectos.length) {
+          const idxEd = editor.editandoIdx();
+          const previo = idxEd !== null ? editor.items()[idxEd] : null;
+          buff = { activo: !!(previo && previo.buff && previo.buff.activo), efectos };
+        }
+      }
       editor.guardarDesdeFormulario({
         nombre, nivel,
         tiempo: document.getElementById('hf-tiempo').value.trim(),
@@ -421,6 +580,7 @@
         formula,
         ataque,
         upcast,
+        buff,
         slotCost: nivel > 0 ? nivel : null,
       });
     }
@@ -453,9 +613,16 @@
         }
       }
 
+      // Lanzar un hechizo con buff lo activa (apagarlo es a mano o con la ✖ del panel).
+      let sufijoBuff = '';
+      if (h.buff && !h.buff.activo) {
+        editor.mutar(idx, (it) => { it.buff.activo = true; });
+        sufijoBuff = `\n🔆 Buff "${h.nombre}" activado: ${resumenEfectos(h.buff.efectos)}.`;
+      }
+
       if (h.upcast && h.upcast.tipo === 'tabla') {
         const texto = h.upcast.tabla[nivelGastado] || h.upcast.tabla[h.upcast.nivelBase] || '(sin detalle para ese nivel)';
-        alert(`📜 ${h.nombre} (nivel ${nivelGastado}): ${texto}`);
+        alert(`📜 ${h.nombre} (nivel ${nivelGastado}): ${texto}${sufijoBuff}`);
         return;
       }
 
@@ -469,9 +636,9 @@
         const tiradas = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
         const total = tiradas.reduce((a, b) => a + b, 0) + mod;
         const etiquetaNivel = h.upcast ? ` (nivel ${nivelGastado})` : '';
-        alert(`🎲 ${h.nombre}${etiquetaNivel}: [${tiradas.join(', ')}]${mod ? (mod > 0 ? ' +' : ' ') + mod : ''} = ${total}`);
+        alert(`🎲 ${h.nombre}${etiquetaNivel}: [${tiradas.join(', ')}]${mod ? (mod > 0 ? ' +' : ' ') + mod : ''} = ${total}${sufijoBuff}`);
       } else {
-        alert(`✅ ${h.nombre}: usado (sin tirada automática).`);
+        alert(`✅ ${h.nombre}: usado (sin tirada automática).${sufijoBuff}`);
       }
     }
 
@@ -483,7 +650,14 @@
 
     function recordarUpcast(idx, valor) { upcastElegido[idx] = parseInt(valor, 10); }
 
-    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast, recordarUpcast };
+    registrarFuenteBuffs(() => editor.items()
+      .map((h, idx) => ({ h, idx }))
+      .filter(x => x.h.buff && x.h.buff.activo)
+      .map(x => ({ nombre: x.h.nombre, efectos: x.h.buff.efectos || [], apagar: () => alternarBuff(x.idx) })));
+
+    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast, recordarUpcast,
+      alternarCamposBuff, buffAgregarEfecto, buffQuitarEfecto, buffCambiarTipo, alternarBuff };
+    notificarBuffs();
   }
 
   // ============================================================
@@ -810,12 +984,12 @@
       habilidades.forEach(h => {
         const score = leerNumero(document.getElementById(h.scoreId), 10);
         const temp = h.tempId ? leerNumero(document.getElementById(h.tempId), 0) : 0;
-        const mod = calcularModificador(score + temp);
+        const mod = calcularModificador(score + temp + FichaBuffs.stat(h.clave));
         estadoAtributos.mods[h.clave] = mod;
         const cont = document.getElementById(h.contenedorId);
         if (!cont) return;
-        const checkBonus = mod + (h.checkCompetente ? prof : 0);
-        const saveBonus = mod + (h.saveCompetente ? prof : 0);
+        const checkBonus = mod + (h.checkCompetente ? prof : 0) + FichaBuffs.plano('pruebas');
+        const saveBonus = mod + (h.saveCompetente ? prof : 0) + FichaBuffs.plano('salvaciones');
         const modEl = cont.querySelector('.ab-mod');
         if (modEl) modEl.textContent = `(${formatearMod(mod)})`;
         const checkBtn = cont.querySelector('.btn-check');
@@ -831,7 +1005,7 @@
       });
       skills.forEach(s => {
         const mod = estadoAtributos.mods[s.habilidad] ?? 0;
-        const bono = mod + (s.competente ? prof * (s.expertise ? 2 : 1) : 0);
+        const bono = mod + (s.competente ? prof * (s.expertise ? 2 : 1) : 0) + FichaBuffs.plano('pruebas');
         estadoAtributos.bonosSkill[s.clave] = bono;
         const cont = document.getElementById(s.contenedorId);
         if (!cont) return;
@@ -851,6 +1025,7 @@
     document.addEventListener('input', (e) => { if (idsAVigilar.includes(e.target.id)) recalcular(); });
     // Datos que llegan de Firebase se aplican por código (sin evento 'input').
     document.addEventListener('ficha:datos-sincronizados', recalcular);
+    document.addEventListener('ficha:buffs', recalcular);
     // Se publica ANTES del primer recálculo: los listeners de 'ficha:atributos'
     // (hechizos con DC automático, estadísticas con buff) lo necesitan ya disponible.
     window.FichaAtributos = { recalcular, profBonusActual: () => estadoAtributos.prof, modDe: (clave) => estadoAtributos.mods[clave] ?? 0, bonoSkill: (clave) => estadoAtributos.bonosSkill[clave] ?? 0 };
@@ -867,7 +1042,9 @@
     function recalcular() {
       const base = opts.calcularBase();
       const buff = opts.buffInputId ? leerNumero(document.getElementById(opts.buffInputId), 0) : 0;
-      const total = base + buff;
+      // objetivoBuff: además del campo manual, suma los buffs activados (hechizos, etc.).
+      const buffActivado = opts.objetivoBuff ? FichaBuffs.plano(opts.objetivoBuff) : 0;
+      const total = base + buff + buffActivado;
       const totalEl = document.getElementById(opts.totalElId);
       if (totalEl) totalEl.textContent = opts.formatear ? opts.formatear(total) : total;
       if (opts.baseElId) {
@@ -884,6 +1061,7 @@
     });
     document.addEventListener('ficha:atributos', recalcular);
     document.addEventListener('ficha:datos-sincronizados', recalcular);
+    document.addEventListener('ficha:buffs', recalcular);
     recalcular();
     return { recalcular };
   }
@@ -954,5 +1132,6 @@
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,
     iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
+    registrarFuenteBuffs, notificarBuffs,
   };
 })();

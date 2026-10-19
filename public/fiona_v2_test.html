@@ -101,6 +101,15 @@
  .reputacion-form-actions button { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
  .reputacion-form-actions button:last-child { background: var(--accent-gold); color: #000; border: none; }
  .reputacion-add-btn { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+ .btn-buff { background: none; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; padding: 3px 7px; cursor: pointer; font-size: 0.7rem; font-weight: 700; }
+ .btn-buff.on { background: #2b4c38; border-color: #4a7a52; color: #bfe8c4; }
+ #buffs-activos { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 14px; font-size: 0.8rem; }
+ .buff-chip { background: #2b4c38; border: 1px solid #4a7a52; color: #dff3e3; border-radius: 14px; padding: 3px 10px; }
+ .buff-chip small { color: #a9d3b0; margin-left: 4px; }
+ .buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
+ .buff-dano-btn { border: 1px solid #4a7a52; border-radius: 6px; color: #dff3e3; padding: 3px 8px; }
+ .buffs-vacio { color: var(--text-muted); }
+ .buff-efecto-row select, .buff-efecto-row input { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 4px 6px; font-size: 0.78rem; }
  .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
  .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-gold); list-style: none; font-size: 0.9rem; }
  .bitacora-section > summary::-webkit-details-marker { display: none; }
@@ -160,22 +169,25 @@
     <table class="ab-demo-table">
       <tr><th>Atributo</th><th>Puntuación</th><th>Aumento temporal</th><th>Modificador y tiradas</th></tr>
       <tr class="ab-demo-score-row"><td>WIS</td><td><input type="number" id="wis-score" value="20"></td><td><input type="number" id="wis-temp" value="0"><span class="temp-label">ej. Potion of Wisdom +2</span></td>
-        <td id="ab-wis"><div class="ab-mod">(+5)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('WIS Check', this)">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('WIS Save', this)">Save</button></td></tr>
+        <td id="ab-wis"><div class="ab-mod">(+5)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('WIS Check', this, 'pruebas')">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('WIS Save', this, 'salvaciones')">Save</button></td></tr>
       <tr class="ab-demo-score-row"><td>INT</td><td><input type="number" id="int-score" value="12"></td><td><input type="number" id="int-temp" value="0"></td>
-        <td id="ab-int"><div class="ab-mod">(+1)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('INT Check', this)">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('INT Save', this)">Save</button></td></tr>
+        <td id="ab-int"><div class="ab-mod">(+1)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('INT Check', this, 'pruebas')">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('INT Save', this, 'salvaciones')">Save</button></td></tr>
     </table>
     <div class="skills-grid">
-      <div class="skill-item" id="sk-perception"><button class="btn-roll" onclick="tirarD20('Perception', this)">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+0</span></div>
-      <div class="skill-item" id="sk-insight"><button class="btn-roll" onclick="tirarD20('Insight', this)">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★★</span></span><span class="skill-mod">+0</span></div>
-      <div class="skill-item" id="sk-nature"><button class="btn-roll" onclick="tirarD20('Nature', this)">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+0</span></div>
-      <div class="skill-item" id="sk-arcana"><button class="btn-roll" onclick="tirarD20('Arcana', this)">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-perception"><button class="btn-roll" onclick="tirarD20('Perception', this, 'pruebas')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-insight"><button class="btn-roll" onclick="tirarD20('Insight', this, 'pruebas')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★★</span></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-nature"><button class="btn-roll" onclick="tirarD20('Nature', this, 'pruebas')">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-arcana"><button class="btn-roll" onclick="tirarD20('Arcana', this, 'pruebas')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
     </div>
     <p class="nota-test">★ = competencia (suma el bono), ★★ = expertise (suma el doble). Percepción pasiva: <strong id="percepcion-pasiva">10</strong></p>
   </div>
 
   <div class="card">
     <h2>💪 HP Máx. / Iniciativa / Velocidad / Combate</h2>
+    <div id="buffs-activos"></div>
     <div class="stat-row">
+      <div class="stat-mini"><label>🛡️ CA</label><span class="stat-base">Base: 17</span>
+        <div class="buff-row"><input type="number" id="ca-buff" value="0" title="Objeto/efecto"><div class="stat-total" id="ca-total">17</div></div></div>
       <div class="stat-mini"><label>❤️ HP Máx.</label><span class="stat-base">Base: 75</span>
         <div class="buff-row"><input type="number" id="hp-max-buff" value="0" title="Objeto/efecto"><div class="stat-total" id="hp-max-total">75</div></div></div>
       <div class="stat-mini"><label>🎲 Iniciativa</label><span class="stat-base">Base: DEX</span>
@@ -231,7 +243,14 @@
     nombrePersonaje: 'Fiona Faraway (prueba)',
     sistemaPropio: 'dnd',
     slotsIds: ['slot-1-cur', 'slot-2-cur', 'slot-3-cur', 'slot-4-cur'],
+    mostrarTirada: (total, etiqueta, detalle) => alert(`🎲 ${etiqueta}: ${total}\n${detalle}`),
+    habilidadConjuro: 'WIS',
     hechizosIniciales: [
+      { nombre: 'Shield of Faith', nivel: 1, tiempo: '1 Acc Adicional', alcance: '60 ft', area: '', resumen: '+2 CA a una criatura.', duracion: '10 min, Conc.', formula: null, slotCost: 1, ataque: null, buff: { activo: false, efectos: [{ tipo: 'plano', objetivo: 'ca', valor: 2 }] } },
+      { nombre: 'Longstrider', nivel: 1, tiempo: '1 Acc', alcance: 'Toque', area: '', resumen: '+10 ft de velocidad.', duracion: '1 hora', formula: null, slotCost: 1, ataque: null, buff: { activo: false, efectos: [{ tipo: 'plano', objetivo: 'velocidad', valor: 10 }] } },
+      { nombre: 'Bendición de prueba', nivel: 1, tiempo: '1 Acc', alcance: '30 ft', area: '', resumen: 'Suma 1d4 a ataques y salvaciones.', duracion: '1 min, Conc.', formula: null, slotCost: 1, ataque: null, buff: { activo: false, efectos: [{ tipo: 'dado', objetivo: 'ataque', dado: { count: 1, sides: 4 } }, { tipo: 'dado', objetivo: 'salvaciones', dado: { count: 1, sides: 4 } }] } },
+      { nombre: 'Hunter\'s Mark', nivel: 1, tiempo: '1 Acc Adicional', alcance: '90 ft', area: '', resumen: '+1d6 de daño al objetivo marcado.', duracion: '1 hora, Conc.', formula: null, slotCost: 1, ataque: null, buff: { activo: false, efectos: [{ tipo: 'dado', objetivo: 'dano', dado: { count: 1, sides: 6 } }] } },
+      { nombre: 'Enhance Ability (Sabiduría)', nivel: 2, tiempo: '1 Acc', alcance: 'Toque', area: '', resumen: 'Ventaja en pruebas del atributo. Acá: +2 WIS de ejemplo.', duracion: '1 hora, Conc.', formula: null, slotCost: 2, ataque: null, buff: { activo: false, efectos: [{ tipo: 'stat', stat: 'WIS', valor: 2 }, { tipo: 'plano', objetivo: 'hp-max', valor: 5 }] } },
       { nombre: 'Poison Spray', nivel: 0, tiempo: '1 Acción', alcance: '30 ft', area: '', resumen: 'Daño veneno si falla la salvación.', duracion: 'Instantáneo', formula: { count: 2, sides: 12, mod: 0 }, slotCost: null, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16 } },
       { nombre: 'Guidance', nivel: 0, tiempo: '1 Acción', alcance: 'Toque', area: '', resumen: 'Objetivo suma 1d4 a un chequeo.', duracion: '1 min, Conc.', formula: { count: 1, sides: 4, mod: 0 }, slotCost: null, ataque: null },
       { nombre: 'Cure Wounds', nivel: 1, tiempo: '1 Acción', alcance: 'Toque', area: '', resumen: 'Cura 2d8 + WIS.', duracion: 'Instantáneo', formula: { count: 2, sides: 8, mod: 5 }, slotCost: 1, ataque: null },
@@ -273,10 +292,12 @@
   const db = firebase.database();
 
   // Tirada con el bono VIGENTE (dataset.bonus, lo mantiene iniciarAtributos), no un número fijo.
-  function tirarD20(etiqueta, btn) {
+  function tirarD20(etiqueta, btn, categoria) {
     const bono = parseInt(btn.dataset.bonus, 10) || 0;
     const d20 = Math.floor(Math.random() * 20) + 1;
-    alert(`🎲 ${etiqueta}: d20 (${d20}) ${FichaComun.formatearMod(bono)} = ${d20 + bono}`);
+    const extra = categoria ? FichaBuffs.tirarDados(categoria) : { total: 0, partes: [] };
+    const detalle = extra.partes.length ? '\n' + extra.partes.map(p => p.texto).join('\n') : '';
+    alert(`🎲 ${etiqueta}: d20 (${d20}) ${FichaComun.formatearMod(bono)}${extra.total ? ' + ' + extra.total : ''} = ${d20 + bono + extra.total}${detalle}`);
   }
 
   const PERSONAJE_ID = FICHA_CONFIG.personajeId;
@@ -327,11 +348,12 @@
       pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
     });
     // Base + buff = total. calcularBase puede leer atributos derivados.
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'hp-max-buff', totalElId: 'hp-max-total', calcularBase: () => 75 });
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => 2, formatear: FichaComun.formatearMod });
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30 });
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: () => FichaAtributos.modDe('WIS') + FichaAtributos.profBonusActual(), formatear: FichaComun.formatearMod });
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + FichaAtributos.modDe('WIS') + FichaAtributos.profBonusActual() });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'ca-buff', totalElId: 'ca-total', calcularBase: () => 17, objetivoBuff: 'ca' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'hp-max-buff', totalElId: 'hp-max-total', calcularBase: () => 75, objetivoBuff: 'hp-max' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => 2, formatear: FichaComun.formatearMod, objetivoBuff: 'iniciativa' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, objetivoBuff: 'velocidad' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: () => FichaAtributos.modDe('WIS') + FichaAtributos.profBonusActual(), formatear: FichaComun.formatearMod, objetivoBuff: 'ataque-conjuro' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + FichaAtributos.modDe('WIS') + FichaAtributos.profBonusActual(), objetivoBuff: 'cd-conjuro' });
 
     FichaComun.iniciarBitacora({ db, codigoCampana });
     FichaComun.iniciarPermisosYCompartir({ db, codigoCampana, uid: user.uid });
