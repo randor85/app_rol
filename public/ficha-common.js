@@ -53,7 +53,7 @@
   }
   // Campos de formularios temporales y selectores de acción (no son datos del
   // personaje): no deben ir a datos/ ni sincronizarse de vuelta.
-  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-'];
+  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla'];
   function esCampoEfimero(id) {
     return PREFIJOS_EFIMEROS.some(p => id.startsWith(p));
   }
@@ -288,6 +288,116 @@
   }
 
   // ============================================================
+  // 5c. CLASE DE ARMADURA (CA) CALCULADA desde el inventario
+  //     Armadura equipada: base + DEX (con el tope de su tipo) + escudos
+  //     equipados. Los ítems sin categoría se reconocen por nombre con la
+  //     tabla SRD (Half Plate, Studded Leather, Shield...) sin tocar los
+  //     datos guardados. Si no hay NADA equipado se usa
+  //     FICHA_CONFIG.caBase (valor fijo de la ficha) o 10 + DEX — así una
+  //     ficha existente no cambia de CA hasta que el jugador equipe algo.
+  // ============================================================
+  const ARMADURAS_SRD = [
+    ['half plate', 15, 2], ['breastplate', 14, 2], ['studded leather', 12, null], ['chain shirt', 13, 2],
+    ['chain mail', 16, 0], ['scale mail', 14, 2], ['ring mail', 14, 0], ['padded', 11, null],
+    ['leather', 11, null], ['splint', 17, 0], ['plate', 18, 0], ['hide', 12, 2],
+  ];
+  function reconocerArmadura(item) {
+    const n = (item.nombre || '').toLowerCase();
+    if (/\bshield\b/.test(n) && !/\bshield of\b|\bspell\b/.test(n)) return { tipo: 'escudo', bono: 2 };
+    const hit = ARMADURAS_SRD.find(a => new RegExp('\\b' + a[0] + '\\b').test(n));
+    return hit ? { tipo: 'armadura', base: hit[1], dexCap: hit[2] } : null;
+  }
+  function calcularCA() {
+    const dex = window.FichaAtributos ? FichaAtributos.modDe('DEX') : 0;
+    const equipados = (window.FichaInventario ? FichaInventario.editor.items() : []).filter(i => i.equipado);
+    let mejor = null;
+    let escudo = 0;
+    equipados.forEach(i => {
+      let info = null;
+      if (i.categoria === 'armadura') info = (i.modAC != null) ? { tipo: 'armadura', base: i.modAC, dexCap: i.dexCap === undefined ? null : i.dexCap } : reconocerArmadura(i);
+      else if (i.categoria === 'escudo') info = { tipo: 'escudo', bono: i.modAC != null ? i.modAC : 2 };
+      else if (!i.categoria || i.categoria === 'general') info = reconocerArmadura(i);
+      if (!info) return;
+      if (info.tipo === 'escudo') { escudo += info.bono; return; }
+      const aporteDex = info.dexCap === null ? dex : (info.dexCap === 0 ? 0 : Math.min(dex, info.dexCap));
+      const total = info.base + aporteDex;
+      if (!mejor || total > mejor.total) mejor = { total, nombre: i.nombre, base: info.base, aporteDex };
+    });
+    if (!mejor && !escudo) {
+      if (typeof FICHA_CONFIG.caBase === 'number') return { total: FICHA_CONFIG.caBase, texto: `${FICHA_CONFIG.caBase} (fija — equipá una armadura para calcularla)` };
+      return { total: 10 + dex, texto: `${10 + dex} (sin armadura: 10 + DEX ${FichaComun.formatearMod(dex)})` };
+    }
+    const base = mejor ? mejor.total : 10 + dex;
+    const partes = [mejor ? `${mejor.nombre} ${mejor.base}${mejor.aporteDex ? ' + DEX ' + FichaComun.formatearMod(mejor.aporteDex) : ''}` : `sin armadura 10 + DEX ${FichaComun.formatearMod(dex)}`];
+    if (escudo) partes.push(`escudo +${escudo}`);
+    return { total: base + escudo, texto: `${base + escudo} (${partes.join(', ')})` };
+  }
+  // opts: { totalElId, baseElId?, buffInputId? } — CA = armadura calculada + buff manual + buffs activados.
+  function iniciarCA(opts) {
+    const ctl = iniciarEstadisticaConBuff({
+      buffInputId: opts.buffInputId, totalElId: opts.totalElId, baseElId: opts.baseElId,
+      calcularBase: () => calcularCA().total,
+      formatearBase: () => calcularCA().texto,
+      objetivoBuff: 'ca',
+      eventos: ['ficha:inventario'],
+    });
+    window.FichaCA = { calcular: calcularCA, recalcular: ctl.recalcular };
+    return window.FichaCA;
+  }
+
+  // ============================================================
+  // 5d. CONCENTRACIÓN — una casilla que se marca sola al lanzar un
+  //     hechizo con concentración y se desmarca a mano cuando se
+  //     pierde. Solo se puede concentrar en un hechizo a la vez:
+  //     lanzar otro reemplaza al anterior, y soltar la concentración
+  //     apaga el buff de ese hechizo.
+  // ============================================================
+  function esConcentracion(h) {
+    return h.concentracion !== undefined ? !!h.concentracion : /conc/i.test(h.duracion || '');
+  }
+  function concentracionActual() {
+    const el = document.getElementById('concentracion-actual');
+    return el ? (el.value || '') : '';
+  }
+  function renderConcentracion() {
+    const cb = document.querySelector('.conc-check');
+    const nombre = document.getElementById('concentracion-nombre');
+    const actual = concentracionActual();
+    if (cb) cb.checked = !!actual;
+    if (nombre) nombre.textContent = actual || 'ninguna';
+  }
+  function fijarConcentracion(nombre) {
+    if (modoLectura) return;
+    const previa = concentracionActual();
+    const el = document.getElementById('concentracion-actual');
+    if (el) el.value = nombre || '';
+    guardarCampo('concentracion-actual', nombre || '');
+    renderConcentracion();
+    // Al soltar o cambiar de hechizo se apaga el buff del anterior (si era de concentración).
+    if (previa && previa !== nombre && window.FichaHechizos) {
+      FichaHechizos.editor.items().forEach((h, idx) => {
+        if (h.nombre === previa && h.buff && h.buff.activo && esConcentracion(h)) FichaHechizos.editor.mutar(idx, (it) => { it.buff.activo = false; });
+      });
+    }
+    return previa;
+  }
+  // contenedorId: elemento donde se pinta la casilla (se crea el input oculto con el estado).
+  function iniciarConcentracion(contenedorId) {
+    const cont = document.getElementById(contenedorId);
+    if (!cont) return;
+    cont.innerHTML = `<input type="hidden" id="concentracion-actual" value="">
+      <label class="conc-casilla" title="Se marca al lanzar un hechizo con concentración; desmarcala cuando la pierdas"><input type="checkbox" class="conc-check"> 🧠 Concentración: <strong id="concentracion-nombre">ninguna</strong></label>`;
+    // Sin id a propósito: ningún autoguardado genérico debe tratarla como un dato; el estado es 'concentracion-actual'.
+    cont.querySelector('.conc-check').addEventListener('change', (e) => {
+      if (e.target.checked) fijarConcentracion(concentracionActual() || 'Concentración (manual)');
+      else fijarConcentracion('');
+    });
+    document.addEventListener('ficha:datos-sincronizados', renderConcentracion);
+    renderConcentracion();
+    window.FichaConcentracion = { actual: concentracionActual, fijar: fijarConcentracion, esConcentracion };
+  }
+
+  // ============================================================
   // 6. EDITOR DE HECHIZOS — una sola tabla para los hechizos de
   //    clase (migrados a datos) y los agregados del compendio,
   //    con área y ataque/salvación como campos opcionales.
@@ -395,7 +505,7 @@
             : `<span class="tag tag-atk">🛡️ ${h.ataque.habilidad} DC ${valorAtaqueHechizo(h.ataque, 'dc')}</span>`;
         const areaTxt = h.area ? ` · 📐 ${h.area}` : '';
         const upcastTxt = h.upcast ? ' · ⬆️ Escala con el nivel del espacio' : '';
-        const buffTxt = h.buff ? ` · 🔆 ${resumenEfectos(h.buff.efectos)}` : '';
+        const buffTxt = (h.buff ? ` · 🔆 ${resumenEfectos(h.buff.efectos)}` : '') + (esConcentracion(h) ? ' · 🧠 Conc.' : '');
         if (h.buff) {
           accionBtn += ` <button type="button" class="btn-buff ${h.buff.activo ? 'on' : ''}" onclick="FichaHechizos.alternarBuff(${idx})" title="Prender/apagar el efecto">${h.buff.activo ? '🟢 Activo' : '⚪ Activar'}</button>`;
         }
@@ -422,7 +532,7 @@
           <input type="text" id="hf-alcance" placeholder="Alcance" value="${h ? h.alcance : ''}">
           <input type="text" id="hf-area" placeholder="Área (opcional, p.ej. Esfera 20 ft)" value="${h && h.area ? h.area : ''}">
           <textarea id="hf-resumen" placeholder="Resumen y efecto mecánico" rows="2">${h ? h.resumen : ''}</textarea>
-          <input type="text" id="hf-duracion" placeholder="Duración" value="${h ? h.duracion : ''}">
+          <input type="text" id="hf-duracion" placeholder="Duración" value="${h ? h.duracion : ''}" oninput="if (/conc/i.test(this.value)) document.getElementById('hf-concentracion').checked = true;">
           <div class="spell-form-row-dado">
             <span class="spell-form-mini-label">Tirada automática (opcional):</span>
             <input type="number" id="hf-dado-cant" placeholder="cant." min="0" value="${h && h.formula ? h.formula.count : ''}">
@@ -468,6 +578,9 @@
               <span class="spell-form-mini-label">Una línea por nivel, formato "nivel: efecto":</span>
               <textarea id="hf-upcast-tabla" rows="4" placeholder="3: efecto a nivel 3&#10;4: efecto a nivel 4">${h && h.upcast && h.upcast.tipo === 'tabla' ? Object.entries(h.upcast.tabla).map(([n, t]) => `${n}: ${t}`).join('\n') : ''}</textarea>
             </div>
+          </div>
+ <div class="spell-form-row-dado">
+            <label><input type="checkbox" id="hf-concentracion" ${h ? (esConcentracion(h) ? 'checked' : '') : ''}> 🧠 Requiere concentración (marca la casilla de concentración al lanzarlo)</label>
           </div>
           <div class="spell-form-row-dado">
             <label><input type="checkbox" id="hf-buff-on" onchange="FichaHechizos.alternarCamposBuff()" ${h && h.buff ? 'checked' : ''}> 🔆 Buff / aura que se puede prender y apagar</label>
@@ -581,6 +694,7 @@
         ataque,
         upcast,
         buff,
+        concentracion: document.getElementById('hf-concentracion').checked,
         slotCost: nivel > 0 ? nivel : null,
       });
     }
@@ -613,11 +727,16 @@
         }
       }
 
-      // Lanzar un hechizo con buff lo activa (apagarlo es a mano o con la ✖ del panel).
+      // Hechizo de concentración: marca la casilla (y deja de concentrar en el anterior).
       let sufijoBuff = '';
+      if (esConcentracion(h) && window.FichaConcentracion) {
+        const previa = FichaConcentracion.fijar(h.nombre);
+        sufijoBuff += `\n🧠 Concentrando en "${h.nombre}"${previa && previa !== h.nombre ? ` (dejás de concentrarte en "${previa}")` : ''}.`;
+      }
+      // Lanzar un hechizo con buff lo activa (apagarlo es a mano o con la ✖ del panel).
       if (h.buff && !h.buff.activo) {
         editor.mutar(idx, (it) => { it.buff.activo = true; });
-        sufijoBuff = `\n🔆 Buff "${h.nombre}" activado: ${resumenEfectos(h.buff.efectos)}.`;
+        sufijoBuff += `\n🔆 Buff "${h.nombre}" activado: ${resumenEfectos(h.buff.efectos)}.`;
       }
 
       if (h.upcast && h.upcast.tipo === 'tabla') {
@@ -668,16 +787,17 @@
   function iniciarEditorInventario() {
     const editor = crearEditorDeLista({
       storageKey: 'inventario-json',
+      alCambiar: () => document.dispatchEvent(new CustomEvent('ficha:inventario')),
       datosIniciales: FICHA_CONFIG.inventarioInicial,
       contenedorListaId: 'inventario-lista',
       contenedorFormId: 'inventario-form-container',
       filaVacia: '<p class="inventory-empty">Inventario vacío.</p>',
       renderFila: (item, idx) => {
         const nombreEsc = item.nombre.replace(/'/g, "\\'");
-        const catLabel = { armadura: '🛡️ Armadura', municion: '🏹 Munición', bienes: '💰 Bienes' }[item.categoria] || '';
+        const catLabel = { armadura: '🛡️ Armadura', escudo: '🛡️ Escudo', municion: '🏹 Munición', bienes: '💰 Bienes' }[item.categoria] || '';
         const acInfo = (item.categoria === 'armadura' && item.modAC != null)
           ? ` · CA base ${item.modAC}${item.dexCap === null ? ' + DEX' : item.dexCap === 0 ? ' (sin DEX)' : ` + DEX (máx +${item.dexCap})`}`
-          : '';
+          : (item.categoria === 'escudo' ? ` · +${item.modAC != null ? item.modAC : 2} CA` : '');
         const usarBtn = item.consumible
           ? `<button onclick="FichaInventario.usar(${idx})" title="Gasta 1 sin entrar a edición">⚡ Usar</button>`
           : '';
@@ -702,11 +822,12 @@
           <select id="if-categoria" onchange="FichaInventario.alternarCamposArmadura()">
             <option value="general" ${!item || item.categoria === 'general' || !item.categoria ? 'selected' : ''}>General</option>
             <option value="armadura" ${item && item.categoria === 'armadura' ? 'selected' : ''}>Armadura</option>
+            <option value="escudo" ${item && item.categoria === 'escudo' ? 'selected' : ''}>Escudo (suma a la CA)</option>
             <option value="municion" ${item && item.categoria === 'municion' ? 'selected' : ''}>Munición</option>
             <option value="bienes" ${item && item.categoria === 'bienes' ? 'selected' : ''}>Bienes comerciales</option>
           </select>
-          <div id="if-armadura-campos" class="inventory-armadura-campos" style="display:${item && item.categoria === 'armadura' ? 'flex' : 'none'};">
-            <input type="number" id="if-modac" placeholder="CA base" value="${item && item.modAC != null ? item.modAC : ''}">
+          <div id="if-armadura-campos" class="inventory-armadura-campos" style="display:${item && (item.categoria === 'armadura' || item.categoria === 'escudo') ? 'flex' : 'none'};">
+            <input type="number" id="if-modac" placeholder="CA base (armadura) / bono (escudo)" value="${item && item.modAC != null ? item.modAC : ''}">
             <select id="if-dexcap">
               <option value="sin-tope" ${item && item.dexCap === null ? 'selected' : ''}>+ DEX sin tope (ligera)</option>
               <option value="2" ${item && item.dexCap === 2 ? 'selected' : ''}>+ DEX máx +2 (media)</option>
@@ -726,7 +847,7 @@
 
     function alternarCamposArmadura() {
       const categoria = document.getElementById('if-categoria').value;
-      document.getElementById('if-armadura-campos').style.display = categoria === 'armadura' ? 'flex' : 'none';
+      document.getElementById('if-armadura-campos').style.display = (categoria === 'armadura' || categoria === 'escudo') ? 'flex' : 'none';
     }
 
     function guardarDesdeFormulario() {
@@ -734,9 +855,11 @@
       if (!nombre) { alert('El ítem necesita un nombre.'); return; }
       const categoria = document.getElementById('if-categoria').value;
       let modAC = null, dexCap = null;
-      if (categoria === 'armadura') {
+      if (categoria === 'armadura' || categoria === 'escudo') {
         const modACRaw = parseInt(document.getElementById('if-modac').value, 10);
         modAC = isNaN(modACRaw) ? null : modACRaw;
+      }
+      if (categoria === 'armadura') {
         const dexCapRaw = document.getElementById('if-dexcap').value;
         dexCap = dexCapRaw === 'sin-tope' ? null : parseInt(dexCapRaw, 10);
       }
@@ -1062,6 +1185,7 @@
     document.addEventListener('ficha:atributos', recalcular);
     document.addEventListener('ficha:datos-sincronizados', recalcular);
     document.addEventListener('ficha:buffs', recalcular);
+    (opts.eventos || []).forEach(ev => document.addEventListener(ev, recalcular));
     recalcular();
     return { recalcular };
   }
@@ -1132,6 +1256,6 @@
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,
     iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
-    registrarFuenteBuffs, notificarBuffs,
+    registrarFuenteBuffs, notificarBuffs, iniciarCA, iniciarConcentracion,
   };
 })();

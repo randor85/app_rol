@@ -182,6 +182,7 @@
  .buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
  .buff-dano-btn { border: 1px solid #4a7a52; border-radius: 6px; color: #dff3e3; padding: 3px 8px; }
  .buffs-vacio { color: var(--text-muted); }
+ .conc-casilla { background: #2a2540; border: 1px solid #5a4f8a; color: #d9d2f5; border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 0.78rem; }
  .buff-efecto-row select, .buff-efecto-row input { background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 4px 6px; font-size: 0.78rem; }
  .hechizos-adicionales-box { margin-top: 14px; background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; }
  .hechizos-adicionales-box h4 { font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
@@ -1156,6 +1157,7 @@
 </div>
 <button class="nivel-popover-btn" onclick="toggleNivelUp()" type="button" style="margin-left:6px;">⬆️ Subir de Nivel</button>
 </div>
+<div id="concentracion-panel" class="buffs-activos"></div>
 <div id="buffs-activos" class="buffs-activos"></div>
 <div class="grid-identity">
 <div class="stat-badge">
@@ -1165,7 +1167,7 @@
 <!-- STATS SEPARADOS EN BASE Y BUFFS -->
 <div class="stat-badge">
 <label>🛡️ AC</label>
-<span class="stat-base">17 (Half-Plate+Shield)</span>
+<span class="stat-base" id="ac-base">17 (fija — equipá una armadura para calcularla)</span>
 <div class="buff-row">
 <input id="ac-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
 <div class="stat-total" id="ac-total">17</div>
@@ -2265,6 +2267,7 @@
     nombrePersonaje: 'Fiona Faraway',
     sistemaPropio: 'dnd',
     mostrarTirada: (total, etiqueta, detalle) => displayRollResult(total, etiqueta, detalle), // tiradas del motor compartido (p.ej. "Daño extra" de buffs)
+    caBase: 17, // CA fija mientras no haya armadura/escudo equipados en el inventario (al equipar, se calcula sola)
     habilidadConjuro: 'WIS', // DC/ataque de hechizos "automáticos" (dcAuto/bonusAuto) = 8 + mod(WIS) + competencia
     // ⚠️ PARCHE TEMPORAL, no una solución real: ficha-common.js's FichaHechizos.usar()
     // indexa FICHA_CONFIG.slotsIds[h.slotCost - 1] en vez de construir `slot-${slotCost}-cur`
@@ -3078,10 +3081,8 @@
     document.getElementById('xp-val')?.addEventListener('input', actualizarNivelYProximaXP);
 
     function recalcStats() {
-        const acBuff = parseInt(document.getElementById('ac-buff').value) || 0;
         // Ataque / Atq. Conjuro / CD Conjuro ya NO se calculan acá: salen de FichaComun.iniciarEstadisticaConBuff
         // (base = mod + competencia calculados desde el nivel). La CA base no depende de la competencia.
-        document.getElementById('ac-total').innerText = 17 + acBuff + (window.FichaBuffs ? FichaBuffs.plano('ca') : 0);
         syncStickyBar();
     }
     function toggleConditionsDropdown() {
@@ -3605,8 +3606,13 @@
         FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', baseElId: 'spell-dc-base', calcularBase: () => 8 + bonoAtaqueConjuro(), objetivoBuff: 'cd-conjuro' });
         FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => FichaAtributos.modDe('DEX'), formatear: (n) => '🎲 ' + fmt(n), objetivoBuff: 'iniciativa' });
         FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, formatear: (n) => n + ' ft', objetivoBuff: 'velocidad' });
-        // Buffs activados (hechizos con efecto prendible): CA y HP máx. no pasan por iniciarEstadisticaConBuff.
+        // CA calculada desde el inventario (armadura/escudo equipados) + buff manual + buffs activados.
+        FichaComun.iniciarCA({ buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base' });
+        // Casilla de concentración (se marca sola al lanzar un hechizo con concentración).
+        FichaComun.iniciarConcentracion('concentracion-panel');
+        // Buffs activados / cambios de equipo: refrescar HP máx. y la barra sticky (la CA la recalcula el motor).
         document.addEventListener('ficha:buffs', () => { recalcStats(); updateHPDisplay(); });
+        document.addEventListener('ficha:inventario', () => syncStickyBar());
         // Textos derivados sueltos (tabla de armas, notas de CD) + barra sticky, tras cada recálculo.
         document.addEventListener('ficha:atributos', () => { aplicarValoresCalculados(); syncStickyBar(); });
         // La tabla de hechizos se re-renderiza al sincronizar: refrescar los "DC N" del texto.

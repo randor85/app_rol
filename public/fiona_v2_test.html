@@ -109,6 +109,7 @@
  .buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
  .buff-dano-btn { border: 1px solid #4a7a52; border-radius: 6px; color: #dff3e3; padding: 3px 8px; }
  .buffs-vacio { color: var(--text-muted); }
+ .conc-casilla { background: #2a2540; border: 1px solid #5a4f8a; color: #d9d2f5; border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 0.8rem; }
  .buff-efecto-row select, .buff-efecto-row input { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 4px 6px; font-size: 0.78rem; }
  .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
  .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-gold); list-style: none; font-size: 0.9rem; }
@@ -170,6 +171,8 @@
       <tr><th>Atributo</th><th>Puntuación</th><th>Aumento temporal</th><th>Modificador y tiradas</th></tr>
       <tr class="ab-demo-score-row"><td>WIS</td><td><input type="number" id="wis-score" value="20"></td><td><input type="number" id="wis-temp" value="0"><span class="temp-label">ej. Potion of Wisdom +2</span></td>
         <td id="ab-wis"><div class="ab-mod">(+5)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('WIS Check', this, 'pruebas')">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('WIS Save', this, 'salvaciones')">Save</button></td></tr>
+      <tr class="ab-demo-score-row"><td>DEX</td><td><input type="number" id="dex-score" value="14"></td><td><input type="number" id="dex-temp" value="0"></td>
+        <td id="ab-dex"><div class="ab-mod">(+2)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('DEX Check', this, 'pruebas')">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('DEX Save', this, 'salvaciones')">Save</button></td></tr>
       <tr class="ab-demo-score-row"><td>INT</td><td><input type="number" id="int-score" value="12"></td><td><input type="number" id="int-temp" value="0"></td>
         <td id="ab-int"><div class="ab-mod">(+1)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('INT Check', this, 'pruebas')">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('INT Save', this, 'salvaciones')">Save</button></td></tr>
     </table>
@@ -184,9 +187,10 @@
 
   <div class="card">
     <h2>💪 HP Máx. / Iniciativa / Velocidad / Combate</h2>
+    <div id="concentracion-panel" style="margin-bottom:8px;"></div>
     <div id="buffs-activos"></div>
     <div class="stat-row">
-      <div class="stat-mini"><label>🛡️ CA</label><span class="stat-base">Base: 17</span>
+      <div class="stat-mini"><label>🛡️ CA</label><span class="stat-base" id="ca-base">Base: 17</span>
         <div class="buff-row"><input type="number" id="ca-buff" value="0" title="Objeto/efecto"><div class="stat-total" id="ca-total">17</div></div></div>
       <div class="stat-mini"><label>❤️ HP Máx.</label><span class="stat-base">Base: 75</span>
         <div class="buff-row"><input type="number" id="hp-max-buff" value="0" title="Objeto/efecto"><div class="stat-total" id="hp-max-total">75</div></div></div>
@@ -245,6 +249,7 @@
     slotsIds: ['slot-1-cur', 'slot-2-cur', 'slot-3-cur', 'slot-4-cur'],
     mostrarTirada: (total, etiqueta, detalle) => alert(`🎲 ${etiqueta}: ${total}\n${detalle}`),
     habilidadConjuro: 'WIS',
+    caBase: 17,
     hechizosIniciales: [
       { nombre: 'Shield of Faith', nivel: 1, tiempo: '1 Acc Adicional', alcance: '60 ft', area: '', resumen: '+2 CA a una criatura.', duracion: '10 min, Conc.', formula: null, slotCost: 1, ataque: null, buff: { activo: false, efectos: [{ tipo: 'plano', objetivo: 'ca', valor: 2 }] } },
       { nombre: 'Longstrider', nivel: 1, tiempo: '1 Acc', alcance: 'Toque', area: '', resumen: '+10 ft de velocidad.', duracion: '1 hora', formula: null, slotCost: 1, ataque: null, buff: { activo: false, efectos: [{ tipo: 'plano', objetivo: 'velocidad', valor: 10 }] } },
@@ -267,6 +272,8 @@
       { nombre: 'Bastón de Mando', cantidad: 1, descripcion: 'Foco de lanzamiento druídico.', equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
       { nombre: 'Armadura de Cuero Tachonado', cantidad: 1, descripcion: 'Armadura ligera.', equipado: true, categoria: 'armadura', consumible: false, modAC: 12, dexCap: null },
       { nombre: 'Flechas', cantidad: 20, descripcion: 'Para el arco corto.', equipado: false, categoria: 'municion', consumible: false, modAC: null, dexCap: null },
+      { nombre: 'Escudo', cantidad: 1, descripcion: '+2 CA.', equipado: false, categoria: 'escudo', consumible: false, modAC: 2, dexCap: null },
+      { nombre: 'Half Plate Armor', cantidad: 1, descripcion: 'Sin categoría: se reconoce por nombre (SRD).', equipado: false, consumible: false },
       { nombre: 'Gema de ámbar', cantidad: 1, descripcion: 'Vale unos 100 po.', equipado: false, categoria: 'bienes', consumible: false, modAC: null, dexCap: null },
       { nombre: 'Poción de curación', cantidad: 2, descripcion: '2d4+2 HP al beberla.', equipado: false, categoria: 'general', consumible: true, modAC: null, dexCap: null },
     ],
@@ -336,6 +343,7 @@
       nivelInputId: 'nivel-personaje',
       profBadgeId: 'prof-badge',
       habilidades: [
+        { clave: 'DEX', scoreId: 'dex-score', tempId: 'dex-temp', contenedorId: 'ab-dex' },
         { clave: 'WIS', scoreId: 'wis-score', tempId: 'wis-temp', contenedorId: 'ab-wis', saveCompetente: true },
         { clave: 'INT', scoreId: 'int-score', tempId: 'int-temp', contenedorId: 'ab-int', saveCompetente: true },
       ],
@@ -348,7 +356,8 @@
       pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
     });
     // Base + buff = total. calcularBase puede leer atributos derivados.
-    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'ca-buff', totalElId: 'ca-total', calcularBase: () => 17, objetivoBuff: 'ca' });
+    FichaComun.iniciarCA({ buffInputId: 'ca-buff', totalElId: 'ca-total', baseElId: 'ca-base' });
+    FichaComun.iniciarConcentracion('concentracion-panel');
     FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'hp-max-buff', totalElId: 'hp-max-total', calcularBase: () => 75, objetivoBuff: 'hp-max' });
     FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => 2, formatear: FichaComun.formatearMod, objetivoBuff: 'iniciativa' });
     FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, objetivoBuff: 'velocidad' });
