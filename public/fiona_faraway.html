@@ -1138,26 +1138,26 @@
 </div>
 <div class="stat-badge">
 <label>⚔️ Ataque</label>
-<span class="stat-base">+4 (STR+Prof)</span>
+<span class="stat-base">+5 (STR+Prof)</span>
 <div class="buff-row">
 <input id="atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
-<div class="stat-total" id="atk-total">+4</div>
+<div class="stat-total" id="atk-total">+5</div>
 </div>
 </div>
 <div class="stat-badge">
 <label>✨ Atq. Conjuro</label>
-<span class="stat-base">+8 (WIS+Prof)</span>
+<span class="stat-base">+9 (WIS+Prof)</span>
 <div class="buff-row">
 <input id="spell-atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
-<div class="stat-total" id="spell-atk-total">+8</div>
+<div class="stat-total" id="spell-atk-total">+9</div>
 </div>
 </div>
 <div class="stat-badge">
 <label>📿 CD Conjuro</label>
-<span class="stat-base">16 (8+WIS+Prof)</span>
+<span class="stat-base">17 (8+WIS+Prof)</span>
 <div class="buff-row">
 <input id="spell-dc-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
-<div class="stat-total" id="spell-dc-total">16</div>
+<div class="stat-total" id="spell-dc-total">17</div>
 </div>
 </div>
 <div class="stat-badge">
@@ -1171,11 +1171,11 @@
 <div class="stat-badge">
 <label>📘 Prof.</label>
 
-<span>+3</span>
+<span>+4</span>
 </div>
 <div class="stat-badge">
 <label>👁️ Perc. Pasiva</label>
-<span>18</span>
+<span>19</span>
 </div>
 </div>
 </header>
@@ -1216,14 +1216,14 @@
 <div class="ab-score">12</div><div class="ab-mod">(+1)</div>
 <div class="ab-btns">
 <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 1, 'INT Check', 'check')">Check +1</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 4, 'INT Save', 'save')">Save +4★</button>
+<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 5, 'INT Save', 'save')">Save +5★</button>
 </div>
 </td>
 <td>
 <div class="ab-score">20</div><div class="ab-mod">(+5)</div>
 <div class="ab-btns">
 <button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 5, 'WIS Check', 'check')">Check +5</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 8, 'WIS Save', 'save')">Save +8★</button>
+<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 9, 'WIS Save', 'save')">Save +9★</button>
 </div>
 </td>
 <td>
@@ -1412,60 +1412,60 @@
 <tbody>
 <tr>
 <td><strong>Quarterstaff</strong></td>
-<td>+4</td>
+<td>+5</td>
 <td>1d6 + 1 B</td>
 <td>Melee, Versátil (1d8)</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(4, 'Ataque Quarterstaff')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(5, 'Ataque Quarterstaff')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 6, 1, 'Daño Quarterstaff 1H')">💥 1d6+1</button>
 </td>
 </tr>
 <tr>
 <td><strong>Shillelagh</strong> (Bastón Mágico)</td>
-<td>+8</td>
+<td>+9</td>
 <td>1d8 + 5 B (+1d6 Fire/Cold)</td>
 <td>Bonus Action; usa WIS. +1d6 elemental por Elemental Fury 1/turno</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(8, 'Ataque Shillelagh')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(9, 'Ataque Shillelagh')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 8, 5, 'Daño Shillelagh')">💥 1d8+5</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Elemental Fury (+1d6)')">🔥 1d6 Extra</button>
 </td>
 </tr>
 <tr>
 <td><strong>Light Crossbow</strong></td>
-<td>+5</td>
+<td>+6</td>
 <td>1d8 + 2 P</td>
 <td>Rango 80/320 ft, Cargando, 2H</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(5, 'Ataque Light Crossbow')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(6, 'Ataque Light Crossbow')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 8, 2, 'Daño Light Crossbow')">💥 1d8+2</button>
 </td>
 </tr>
 <tr>
 <td><strong>Heavy Crossbow</strong></td>
-<td>+5</td>
+<td>+6</td>
 <td>1d10 + 2 P</td>
 <td>Rango 100/400 ft, Cargando, Pesada, 2H</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(5, 'Ataque Heavy Crossbow')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollAttack(6, 'Ataque Heavy Crossbow')">🎯 Atk</button>
 <button class="btn-roll" onclick="rollGenericDamage(1, 10, 2, 'Daño Heavy Crossbow')">💥 1d10+2</button>
 </td>
 </tr>
 <tr>
 <td><strong>Splinter Arrows</strong></td>
-<td>+5</td>
-<td>1d6 + 5 P (1d6 + Prof + DEX)</td>
+<td>+6</td>
+<td>1d6 + 6 P (1d6 + Prof + DEX)</td>
 <td>Cono 60ft, elige hasta 4 criaturas y realiza ataques a distancia. Poco común.</td>
 <td>
-<button class="btn-roll" onclick="rollAttack(5, 'Ataque Splinter Arrow')">🎯 Atk</button>
-<button class="btn-roll" onclick="rollGenericDamage(1, 6, 5, 'Daño Splinter Arrow')">💥 1d6+5</button>
+<button class="btn-roll" onclick="rollAttack(6, 'Ataque Splinter Arrow')">🎯 Atk</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 6, 6, 'Daño Splinter Arrow')">💥 1d6+6</button>
 </td>
 </tr>
 <tr>
 <td><strong>Spell Attack</strong></td>
-<td>+8</td>
+<td>+9</td>
 <td>Según conjuro</td>
-<td>WIS Mod (+5) + Prof (+3)</td>
+<td>WIS Mod (+5) + Prof (+4)</td>
 <td>
 <button class="btn-roll" onclick="rollSpellAttack('Ataque de Conjuro')">🎯 Atk Conjuro</button>
 </td>
@@ -1475,23 +1475,23 @@
 <h3 style="margin-top:20px;">Habilidades (Skills)</h3>
 <div class="skills-grid">
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobatics', 'check')">🎲</button><span class="skill-name"><strong>Acrobatics</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Animal Handling', 'check')">🎲</button><span class="skill-name"><strong>Animal Handling</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 9, 'Animal Handling', 'check')">🎲</button><span class="skill-name"><strong>Animal Handling</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Arcana', 'check')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+1</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Athletics', 'check')">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">+1</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Deception', 'check')">🎲</button><span class="skill-name"><strong>Deception</strong></span><span class="skill-mod">+1</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'History', 'check')">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Insight', 'check')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 9, 'Insight', 'check')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Intimidation', 'check')">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+1</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Investigation', 'check')">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Medicine', 'check')">🎲</button><span class="skill-name"><strong>Medicine</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Nature', 'check')">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+4</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Perception', 'check')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 9, 'Medicine', 'check')">🎲</button><span class="skill-name"><strong>Medicine</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Nature', 'check')">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 9, 'Perception', 'check')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Performance', 'check')">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+1</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 1, 'Persuasion', 'check')">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+1</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 4, 'Religion', 'check')">🎲</button><span class="skill-name"><strong>Religion</strong><span class="skill-tag">★</span></span><span class="skill-mod">+4</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Religion', 'check')">🎲</button><span class="skill-name"><strong>Religion</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Sleight of Hand', 'check')">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong></span><span class="skill-mod">+2</span></div>
 <div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Stealth', 'check')">🎲</button><span class="skill-name"><strong>Stealth</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Survival', 'check')">🎲</button><span class="skill-name"><strong>Survival</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 9, 'Survival', 'check')">🎲</button><span class="skill-name"><strong>Survival</strong><span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
 </div>
 <div class="highlight-box" style="margin-top:15px;">
 <strong>Competencias &amp; Idiomas:</strong><br/>
@@ -1613,7 +1613,7 @@
 <td><span class="tag">Cantrip</span></td>
 <td><strong>Poison Spray</strong></td>
 <td>1 Acc / 30 ft</td>
-<td>CON save DC (Base 16); 2d12 poison damage (cantrip a nivel de personaje 8; escala a 3d12 en nivel 11 y 4d12 en nivel 17).</td>
+<td>CON save DC (Base 17); 2d12 poison damage (cantrip a nivel de personaje 8; escala a 3d12 en nivel 11 y 4d12 en nivel 17).</td>
 <td><button class="btn-roll" onclick="rollGenericDamage(2, 12, 0, 'Poison Spray (2d12)')">☣️ 2d12 Poison</button></td>
 </tr>
 <tr>
@@ -1664,21 +1664,21 @@
 <td><span class="tag">1st</span></td>
 <td><strong>Faerie Fire</strong></td>
 <td>1 Acc / 60 ft</td>
-<td>DEX save DC (Base 16). Ventaja en ataques contra afectados; impide invisibilidad. Conc. 1 min.</td>
+<td>DEX save DC (Base 17). Ventaja en ataques contra afectados; impide invisibilidad. Conc. 1 min.</td>
 <td>-</td>
 </tr>
 <tr>
 <td><span class="tag">1st</span></td>
 <td><strong>Command</strong></td>
 <td>1 Acc / 60 ft</td>
-<td>WIS save DC (Base 16). Orden de 1 palabra: Approach, Drop, Flee, Grovel, Halt.</td>
+<td>WIS save DC (Base 17). Orden de 1 palabra: Approach, Drop, Flee, Grovel, Halt.</td>
 <td>-</td>
 </tr>
 <tr>
 <td><span class="tag">2nd</span></td>
 <td><strong>Hold Person</strong></td>
 <td>1 Acc / 60 ft</td>
-<td>Humanoide; WIS save DC (Base 16) o Paralyzed. Repite save al final de cada turno. Conc. 1 min.</td>
+<td>Humanoide; WIS save DC (Base 17) o Paralyzed. Repite save al final de cada turno. Conc. 1 min.</td>
 <td>-</td>
 </tr>
 <tr>
@@ -1706,7 +1706,7 @@
 <td><span class="tag">3rd</span></td>
 <td><strong>Conjure Animals (2024)</strong></td>
 <td>1 Acc / 60 ft</td>
-<td>Pack espectral Large. DEX save DC (Base 16) o 3d10 slashing al mover/entrar. Upcast: +1d10/nivel. Conc. 10 min.</td>
+<td>Pack espectral Large. DEX save DC (Base 17) o 3d10 slashing al mover/entrar. Upcast: +1d10/nivel. Conc. 10 min.</td>
 <td>
 <button class="btn-roll" onclick="rollGenericDamage(3, 10, 0, 'Conjure Animals 2024 (3d10)'); gastarSlot(3)">🐺 3d10 Slashing</button>
 <div style="margin-top:6px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
@@ -1740,7 +1740,7 @@
 <td><span class="tag">4th</span></td>
 <td><strong>Grasping Vine</strong></td>
 <td>1 B.Acc / 30 ft</td>
-<td>Invoca vid. B.Acc para forzar DEX save DC (Base 16) a criatura a 30 ft; si falla la atrae 20 ft. Conc. 1 min.</td>
+<td>Invoca vid. B.Acc para forzar DEX save DC (Base 17) a criatura a 30 ft; si falla la atrae 20 ft. Conc. 1 min.</td>
 <td>-</td>
 </tr>
 </tbody>
@@ -1973,7 +1973,7 @@
 </tr>
 <tr>
 <td>• <strong>Mirthful Fey Step</strong></td>
-<td>Criatura a 10 ft debe superar WIS save DC 16 o queda <strong>Charmed</strong> por ti y el espíritu.</td>
+<td>Criatura a 10 ft debe superar WIS save DC 17 o queda <strong>Charmed</strong> por ti y el espíritu.</td>
 <td>-</td>
 </tr>
 <tr>
@@ -3161,9 +3161,9 @@
         const spellAtkBuff = parseInt(document.getElementById('spell-atk-buff').value) || 0;
         const spellDcBuff = parseInt(document.getElementById('spell-dc-buff').value) || 0;
         document.getElementById('ac-total').innerText = 17 + acBuff;
-        document.getElementById('atk-total').innerText = (4 + atkBuff >= 0 ? '+' : '') + (4 + atkBuff);
-        document.getElementById('spell-atk-total').innerText = (8 + spellAtkBuff >= 0 ? '+' : '') + (8 + spellAtkBuff);
-        document.getElementById('spell-dc-total').innerText = 16 + spellDcBuff;
+        document.getElementById('atk-total').innerText = (5 + atkBuff >= 0 ? '+' : '') + (5 + atkBuff);
+        document.getElementById('spell-atk-total').innerText = (9 + spellAtkBuff >= 0 ? '+' : '') + (9 + spellAtkBuff);
+        document.getElementById('spell-dc-total').innerText = 17 + spellDcBuff;
         syncStickyBar();
     }
     function toggleConditionsDropdown() {
@@ -3505,7 +3505,7 @@
         rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
     }
     function rollSpellAttack(attackLabel) {
-        const totalFlatMod = 8 + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
+        const totalFlatMod = 9 + (parseInt(document.getElementById('spell-atk-buff').value) || 0);
         rollD20WithMechanics(totalFlatMod, attackLabel, getAdvantage(), true);
     }
     function rollCheckSave(sides, baseMod, label, mode) {
