@@ -47,11 +47,13 @@
   //    con id se guarda solo, igual que en el resto de la flota.
   // ============================================================
   function valorDeCampo(el) {
-    return el.type === 'checkbox' ? el.checked : el.value;
+    if (el.type === 'checkbox') return el.checked;
+    if (el.isContentEditable) return el.innerText;
+    return el.value;
   }
   document.addEventListener('input', (e) => {
     if (modoLectura) return;
-    if (e.target.matches('input, select, textarea') && e.target.id) {
+    if (e.target.matches('input, select, textarea, [contenteditable="true"]') && e.target.id) {
       guardarCampo(e.target.id, valorDeCampo(e.target));
     }
   });
@@ -103,11 +105,18 @@
   // ============================================================
   function aplicarModoLectura(soloLectura) {
     modoLectura = soloLectura;
-    const sheet = document.querySelector('.sheet');
+    // FICHA_CONFIG.wrapperSelector es opcional — por defecto '.sheet' (la
+    // convención de la mayoría de la flota), pero alguna ficha real usa otro
+    // selector para su contenedor raíz (p.ej. '.container').
+    const selector = FICHA_CONFIG.wrapperSelector || '.sheet';
+    const wrapper = document.querySelector(selector);
     const banner = document.getElementById('readonly-banner');
-    if (sheet) sheet.classList.toggle('readonly-mode', soloLectura);
+    if (wrapper) wrapper.classList.toggle('readonly-mode', soloLectura);
     if (banner) banner.style.display = soloLectura ? 'block' : 'none';
-    document.querySelectorAll('.sheet input, .sheet select, .sheet textarea').forEach(el => { el.disabled = soloLectura; });
+    document.querySelectorAll(`${selector} input, ${selector} select, ${selector} textarea, ${selector} [contenteditable]`).forEach(el => {
+      if (el.hasAttribute('contenteditable')) el.setAttribute('contenteditable', soloLectura ? 'false' : 'true');
+      else el.disabled = soloLectura;
+    });
   }
 
   // ============================================================
@@ -322,8 +331,13 @@
       const h = editor.items()[idx];
       if (!h || modoLectura) return;
       if (h.slotCost) {
-        const slotId = FICHA_CONFIG.slotsIds[h.slotCost - 1];
-        const el = slotId && document.getElementById(slotId);
+        // Se construye el id directo ('slot-N-cur') en vez de indexar
+        // FICHA_CONFIG.slotsIds por posición: esa indexación se rompía
+        // (undefined) para cualquier nivel de espacio más allá de
+        // slotsIds.length, como pasó de verdad al probar contra los
+        // datos reales de Fiona (nivel 5 con un slotsIds de 4 entradas).
+        const slotId = `slot-${h.slotCost}-cur`;
+        const el = document.getElementById(slotId);
         if (el) {
           const actual = parseInt(el.textContent) || 0;
           if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${h.slotCost} disponibles.`); return; }
