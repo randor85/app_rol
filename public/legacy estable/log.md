@@ -561,3 +561,7 @@ Las 5 fichas D&D restantes (`eldur.html`, `hannoghar.html`, `myrklogi_mangarison
 - **Eldur:** equipar un escudo sin armadura suma +2 a la CA (por reglas, un monje pierde Unarmored Defense con escudo); el modificador fijo de curación (p. ej. Cure Wounds +3) no sigue a WIS.
 - **Myrklogi:** el encabezado vivo tenía un "43 / 70" fijo y ahora muestra el HP real (70 / 70); la percepción pasiva es nueva.
 - **En todas:** se pierde el agregado "Valor total estimado" del inventario (decisión previa) y la edición en línea de cada fila de la tabla de hechizos; "Usar" gasta un espacio en todos los hechizos con nivel.
+
+## 60.0 — Channel Divinity de Hannoghar: 2 usos (19 oct 2026)
+
+Solo `hannoghar.html` (con respaldo previo), más su borrador del asistente de nivel. El usuario confirmó que Channel Divinity tiene **2 usos** (la ficha mostraba "1 / descanso" con una sola casilla, mientras los datos de clase de `classes_data.js` ya decían 2). Se agregó la segunda casilla (`cd-use-2`), el rótulo pasó a "Channel Divinity (2 usos / descanso)" y el Descanso Corto resetea ambas casillas (antes solo `cd-use-1`). No se tocó ningún dato guardado: las casillas guardadas siguen igual y la segunda arranca desmarcada. Verificado con `node --check`, el parser HTML y la suite de Hannoghar (133 OK y el único fallo documentado de siempre).

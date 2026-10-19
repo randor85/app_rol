@@ -1344,9 +1344,10 @@
  </div>
  </div>
  <div style="margin-top: 10px;">
- <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Channel Divinity (1 / descanso):</label>
+ <label style="font-size:0.85rem; font-weight:bold; color:var(--accent-light);">Channel Divinity (2 usos / descanso):</label>
  <div class="checkbox-group">
- <label class="check-box-item"><input type="checkbox" id="cd-use-1"> Canalización Usada</label>
+ <label class="check-box-item"><input type="checkbox" id="cd-use-1"> Canalización Usada 1</label>
+ <label class="check-box-item"><input type="checkbox" id="cd-use-2"> Canalización Usada 2</label>
  </div>
  </div>
  <div style="margin-top: 10px;">
@@ -2835,7 +2836,7 @@
 
   function restShort() {
     if (!confirm("¿Efectuar Descanso Corto?")) return;
-    ['cd-use-1', 'bw-use-1'].forEach(id => {
+    ['cd-use-1', 'cd-use-2', 'bw-use-1'].forEach(id => {
       const cb = document.getElementById(id);
       if (cb) { cb.checked = false; guardarCampo(id, false); }
     });
