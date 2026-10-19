@@ -18,13 +18,17 @@ pjs/app/                        ← raíz del proyecto Firebase
     ├── db_rules.txt            ← reglas de Firebase RTDB — ⚠️ ver advertencia abajo
     ├── db.json                 ← export de datos reales de Firebase (no es fuente de verdad, es un snapshot)
     ├── 404.html
+    ├── ficha.html (+ ficha-shell.js, ficha-plantilla.js, personajes/<id>.js)   ← ficha única de los 6 personajes D&D (ver "Carcasa única")
     ├── fiona_faraway.html, eldur.html, hannoghar.html, myrklogi_mangarisonn.html,
-    │   ulreek.html, dane.html   ← 6 fichas de D&D
+    │   ulreek.html, dane.html   ← desde la v66.0 son REDIRECCIONES a ficha.html?pj=<id> (conservan ?campana=)
+    ├── <id>_clasico.html       ← la versión anterior de cada una (respaldo para volver atrás; no se enlaza desde ningún lado)
     ├── nevada_jones.html       ← 1 ficha de Call of Cthulhu (arquitectura de juego distinta, ver abajo)
     ├── legacy estable/         ← respaldos versionados (ver "Respaldos e historial")
     ├── estable provisorio/     ← snapshots puntuales más antiguos, menos relevantes
     └── trabajo en progreso/    ← borradores viejos descartados, no tocar salvo que el usuario lo pida
 ```
+
+> **Estado desde la v66.0:** las 6 fichas D&D se ven y usan desde la carcasa única (`ficha.html?pj=<id>`, sección «Carcasa única»). Las secciones «Arquitectura actual», «Arquitectura de cada ficha D&D» y «Dane» describen el código de las fichas clásicas (`*_clasico.html`), que sigue siendo la base del motor compartido `ficha-common.js`.
 
 ## Arquitectura actual: `ficha-common.js` (desde la v56.0)
 
@@ -53,7 +57,7 @@ Todos se cargan con `<script src>` (sin build). `FICHA_CONFIG` se define ANTES d
 
 ## Carcasa única: `ficha.html?pj=<id>[&campana=<código>]` (URL única elegida por el usuario)
 
-Una sola página para todos los personajes: `ficha-shell.js` (arranque y conexión de motores), `ficha-plantilla.js` (HTML de cada sección con los ids de siempre) y un archivo de datos por personaje `personajes/<id>.js` (forma documentada en la cabecera de `ficha-shell.js`), más fragmentos HTML en `personajes/<id>/*.html` para secciones propias grandes (stat blocks, etc.). Los datos guardados en Firebase siguen valiendo porque la carcasa usa las mismas claves `datos/<id>`. Lo propio de una clase o personaje (Pact Magic, Lay on Hands, criaturas invocadas…) va en `P.recursos`, `P.ganchos` y `P.iniciar(ctx)`, no en los archivos compartidos. `personajes/_*.js` (p. ej. `_demo.js`) son fixtures de prueba y no se publican (`firebase.json` → `ignore`). Las URLs viejas (`eldur.html`, …) se reemplazan por stubs de redirección SOLO cuando la paridad de ese personaje contra la ficha viva está verificada; la ficha vieja queda como respaldo en `legacy estable/`.
+Una sola página para todos los personajes: `ficha-shell.js` (arranque y conexión de motores), `ficha-plantilla.js` (HTML de cada sección con los ids de siempre) y un archivo de datos por personaje `personajes/<id>.js` (forma documentada en la cabecera de `ficha-shell.js`), más fragmentos HTML en `personajes/<id>/*.html` para secciones propias grandes (stat blocks, etc.). Los datos guardados en Firebase siguen valiendo porque la carcasa usa las mismas claves `datos/<id>`. Lo propio de una clase o personaje (Pact Magic, Lay on Hands, criaturas invocadas…) va en `P.recursos`, `P.ganchos` y `P.iniciar(ctx)`, no en los archivos compartidos. `personajes/_*.js` (p. ej. `_demo.js`) son fixtures de prueba y no se publican (`firebase.json` → `ignore`). Desde la v66.0 las URLs viejas (`eldur.html`, …) son redirecciones a la carcasa y la ficha anterior de cada personaje quedó como `<id>_clasico.html` (más el respaldo en `legacy estable/66.0 …/`). Las conversiones se verificaron con una prueba de paridad contra la ficha clásica con datos reales de Firebase (0 diferencias sin explicar). Nevada Jones y chicle no pasaron por la carcasa.
 
 ## Arquitectura de cada ficha D&D (patrón compartido por las 6)
 

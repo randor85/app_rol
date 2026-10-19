@@ -577,7 +577,8 @@ btnLoginEmail.onclick = () => {
             // Ruteo por id de personaje (no por substring del nombre): el nombre de las
             // fichas de "El Último Chicle" lo elige cada jugador, así que no se puede
             // seguir adivinando el archivo de destino a partir del texto de p.nombre.
-            let destino = `${id}.html`;
+            const IDS_DND = ['dane', 'eldur', 'hannoghar', 'fiona_faraway', 'myrklogi_mangarisonn', 'ulreek'];
+            let destino = IDS_DND.includes(id) ? `ficha.html?pj=${id}` : `${id}.html`;
             if (SISTEMA_PERSONAJE[id] === 'chicle') {
                 const numeroJugador = id.replace('chicle', '');
                 destino = `chicle.html?jugador=${numeroJugador}`;
