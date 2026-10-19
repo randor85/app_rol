@@ -2,14 +2,15 @@
 
 Plataforma de administración de fichas de rol para un grupo de juego. Es un sitio estático (sin build, sin framework, sin `package.json`) desplegado en **Firebase Hosting**, con **Firebase Realtime Database** como backend de datos y autenticación. Cada personaje es un archivo HTML autocontenido (HTML+CSS+JS en un solo archivo) que lee/escribe directamente en Firebase.
 
-Desde el 27 ago 2026 hay repositorio git en `https://github.com/randor85/app_rol` (rama `main`), pero **git es solo respaldo/historial de código — no reemplaza el flujo de respaldos manuales en `legacy estable/` ni hace deploy**. Publicar el sitio real sigue siendo `firebase deploy` (ver advertencia de `db_rules.txt` más abajo). Cuidado si trabajás en esta carpeta con git: vive dentro de Google Drive ("Mi unidad"), que puede volcar `desktop.ini` dentro de `.git/` (incluso en `.git/objects/*/`) y corromper refs — si un `git fetch`/`status` falla con `bad object` o similar, correr `find .git -iname "desktop.ini" -delete` antes de reintentar.
+Desde el 27 ago 2026 hay repositorio git en `https://github.com/randor85/app_rol` (rama `main`), pero **git es solo respaldo/historial de código — no reemplaza el flujo de respaldos manuales en `legacy estable/` ni hace deploy**. Publicar el sitio real sigue siendo `firebase deploy` (ver advertencia de `database.rules.json` más abajo). Cuidado si trabajás en esta carpeta con git: vive dentro de Google Drive ("Mi unidad"), que puede volcar `desktop.ini` dentro de `.git/` (incluso en `.git/objects/*/`) y corromper refs — si un `git fetch`/`status` falla con `bad object` o similar, correr `find .git -iname "desktop.ini" -delete` antes de reintentar.
 
 ## Estructura del proyecto
 
 ```
 pjs/app/                        ← raíz del proyecto Firebase
 ├── .firebaserc                 ← proyecto Firebase: "personajes-rol"
-├── firebase.json               ← hosting.public = "public"
+├── firebase.json               ← hosting.public = "public"; database.rules = database.rules.json
+├── database.rules.json         ← reglas de Firebase RTDB (con comentarios) — ⚠️ ver advertencia abajo
 ├── bugs-fixes-pendientes.md    ← lista VIVA de pendientes/bugs (el usuario la edita a mano)
 ├── campanas.json, society.json, borrador   ← notas/plantillas sueltas, no productivas
 └── public/                     ← todo lo que se sirve en Firebase Hosting
@@ -36,6 +37,22 @@ Piezas del motor: autoguardado y sincronización genéricos (`FichaComun.sincron
 Reglas que costaron bugs reales: (1) **nunca escribir bonos de competencia a mano** (`Save +8★`, `DC 16`…): usar el motor; es lo que dejó 25 números viejos al subir Fiona a nivel 9 (v55.0). (2) Los campos de formularios temporales (`hf-`, `if-`, `rf-`, `upcast-sel-`, `bitacora-ficha-`) no deben guardarse en `datos/` (`FichaComun.esCampoEfimero`), y la casilla de concentración no lleva `id`. (3) Leer valores de elementos dentro de `<details>` colapsados con `.textContent`, no `.innerText`. (4) Antes de migrar o tocar una ficha: respaldo en `legacy estable/N.0 …/`, comparar los valores calculados contra los de la ficha en vivo, y no "corregir" datos del personaje sin confirmar.
 
 El resto de esta sección describe el patrón anterior (cada ficha con su propia copia del autoguardado), que sigue siendo la base conceptual pero ya no es el código que corre.
+
+## Módulos compartidos (lo común) — estado desde la v61.0–63.0
+
+Todos se cargan con `<script src>` (sin build). `FICHA_CONFIG` se define ANTES de `ficha-common.js`.
+
+- `ficha-common.js` — motor (ver sección anterior). Exporta además `FichaComun.reaplicarDatos()` (vuelve a volcar el último snapshot a elementos dibujados tarde) y `FichaAtributos.nivel()`. Los ids `dice-*`/`dados-*` son efímeros (no se guardan en `datos/`).
+- `ficha-dados.js` + `ficha-dados.css` — lanzador de dados flotante (🎲), chip de ventaja siempre visible (Normal/Ventaja/Desventaja sobre `#dice-adv`), historial de tiradas y de usos de recursos (local) y publicación a `campanas/<c>/tiradas` (y, con `publicarUsos`, los usos de recurso como `🔧 …`/`usó` para el GM). `FichaDados.d20({mod, etiqueta, categoria:'ataque'|'pruebas'|'salvaciones', ventaja?, extras?, notas?, sinReglas?})` resuelve ventaja/desventaja (selector + estados de `ficha-reglas.js`), Bless/Bane (casillas `buff-bless`/`debuff-bane`, solo ataques y salvaciones), dados extra de buffs, y anota ¡CRÍTICO!/pifia; `tirar`, `calcular` (sin mostrar), `mostrar`, `moneda`, `registrarUso`. `ficha-dados.css` es la misma sección que `ficha-tema.css` más un puente de variables para las fichas viejas que no cargan el tema completo. Dane ya NO tiene tiradas distintas: sus `rollAttack`/`displayRollResult` son envoltorios finos sobre el lanzador.
+- `reglas_srd2014_data.js` + `ficha-reglas.js` — compendio de reglas SRD 5.1 (2014) y lógica de estados. Condiciones y agotamiento con efectos legibles por máquina; `FichaReglas.ventaja({categoria, habilidad})`, `efectos()`, `estados()`, `poblarDesplegable(id)`. Estados = casillas `#cond-<id>` + `#exhaustion-level` (mismas claves `datos/cond-*` de siempre). Texto con atribución CC-BY-4.0 (mantenerla).
+- `ficha-party.js` + `ficha-party.css` + `party.html` — cada ficha con campaña publica un resumen en `campanas/<c>/party/<personaje>` (PG, CA, concentración, condiciones, clase y nivel; lo escribe solo el dueño o el GM según `database.rules.json`) y muestra el botón 👥 con el estado del grupo. `party.html?campana=<código>` lo muestra en una página.
+- `ficha-vitales.js` — vida (daño consume PG temporales primero), dados de golpe, salvaciones de muerte, estados, descansos (largo = SRD: la mitad de los dados de golpe, quita 1 de agotamiento, restablece recursos y espacios) y recursos de clase declarativos (`pips`/`pool`/`info`, con `max` como número o función). Lo usa solo la carcasa única.
+- `ficha-nivel.js` — asistente de subida de nivel generado desde `classes_data.js` (multiclase, PG, ASI/dotes, hechizos, deshacer). Nunca se aplica solo; Hannoghar NO sube de nivel hasta que el usuario apruebe el asistente.
+- `ficha-tema.css` + `ficha-paleta.js` — tokens de diseño y 9 paletas (reemplazan el modo día/noche; las fichas viejas todavía lo tienen).
+
+## Carcasa única: `ficha.html?pj=<id>[&campana=<código>]` (URL única elegida por el usuario)
+
+Una sola página para todos los personajes: `ficha-shell.js` (arranque y conexión de motores), `ficha-plantilla.js` (HTML de cada sección con los ids de siempre) y un archivo de datos por personaje `personajes/<id>.js` (forma documentada en la cabecera de `ficha-shell.js`), más fragmentos HTML en `personajes/<id>/*.html` para secciones propias grandes (stat blocks, etc.). Los datos guardados en Firebase siguen valiendo porque la carcasa usa las mismas claves `datos/<id>`. Lo propio de una clase o personaje (Pact Magic, Lay on Hands, criaturas invocadas…) va en `P.recursos`, `P.ganchos` y `P.iniciar(ctx)`, no en los archivos compartidos. `personajes/_*.js` (p. ej. `_demo.js`) son fixtures de prueba y no se publican (`firebase.json` → `ignore`). Las URLs viejas (`eldur.html`, …) se reemplazan por stubs de redirección SOLO cuando la paridad de ese personaje contra la ficha viva está verificada; la ficha vieja queda como respaldo en `legacy estable/`.
 
 ## Arquitectura de cada ficha D&D (patrón compartido por las 6)
 
@@ -111,7 +128,7 @@ Estas piezas de CSS/HTML se repiten idénticas en Eldur, Hannoghar, Myrklogi, Ul
 - `campanas/{campanaId}/bitacora`, `/tiradas` — bitácora de sesión y log de tiradas, lectura/escritura abierta a cualquier autenticado.
 - `lista_campanas/{campanaId}/sistema` — `'dnd'` o `'coc'`, usado por `index.html` y por `SISTEMA_PERSONAJE_PROPIO` en cada ficha para no mezclar personajes de sistemas distintos en la misma campaña.
 
-**⚠️ `db_rules.txt` no se publica solo — cambiar el archivo no alcanza, hay que desplegarlo.** Esto ya causó un bug real (ver `log.md`, versión 14.1): las reglas se cambiaron en el archivo pero nunca se publicaron, así que el fix parecía no funcionar.
+**⚠️ `database.rules.json` (antes `public/db_rules.txt`) no se publica solo — cambiar el archivo no alcanza, hay que desplegarlo.** Esto ya causó un bug real (ver `log.md`, versión 14.1): las reglas se cambiaron en el archivo pero nunca se publicaron, así que el fix parecía no funcionar.
 
 Desde el 27 ago 2026 el entorno de Claude Code tiene `firebase-tools` instalado y autenticado con acceso confirmado al proyecto `personajes-rol` — `firebase deploy --only database` desde `pjs/app/` funciona y reemplaza el paso manual de pegar las reglas en Firebase Console. Mismo mecanismo para el resto del sitio: `firebase deploy --only hosting` publica `public/` (el sitio real que ven los jugadores) — esto es un paso aparte de subir a git/GitHub, que solo versiona el código y no toca el sitio en vivo. El usuario prefiere pedir el deploy explícitamente en cada caso en vez de que se corra automático tras cada edición.
 
