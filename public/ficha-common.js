@@ -53,7 +53,7 @@
   }
   // Campos de formularios temporales y selectores de acción (no son datos del
   // personaje): no deben ir a datos/ ni sincronizarse de vuelta.
-  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla', 'dice-', 'dados-'];
+  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla', 'dice-', 'dados-', 'bp-'];
   function esCampoEfimero(id) {
     return PREFIJOS_EFIMEROS.some(p => id.startsWith(p));
   }
@@ -251,34 +251,138 @@
     if (window.FichaDados && FichaDados.mostrar) return FichaDados.mostrar;
     return FICHA_CONFIG.mostrarTirada || null;
   }
-  const OBJETIVOS_PLANO = [['ca', 'CA'], ['iniciativa', 'Iniciativa'], ['velocidad', 'Velocidad (ft)'], ['hp-max', 'HP máx.'], ['ataque', 'Ataque con arma'], ['ataque-conjuro', 'Ataque de conjuro'], ['cd-conjuro', 'CD de conjuro'], ['salvaciones', 'Todas las salvaciones'], ['pruebas', 'Todas las pruebas y skills']];
-  const OBJETIVOS_DADO = [['ataque', 'Tiradas de ataque'], ['salvaciones', 'Salvaciones'], ['pruebas', 'Pruebas y skills'], ['dano', 'Daño (se tira aparte)']];
+  const OBJETIVOS_PLANO = [['ca', 'CA'], ['iniciativa', 'Iniciativa'], ['velocidad', 'Velocidad (ft)'], ['hp-max', 'HP máx.'], ['ataque', 'Ataque con arma'], ['ataque-conjuro', 'Ataque de conjuro'], ['cd-conjuro', 'CD de conjuro'], ['salvaciones', 'Todas las salvaciones'], ['pruebas', 'Todas las pruebas y skills'], ['curacion', 'Curación de hechizos'], ['dano', 'Daño de hechizos']];
+  const OBJETIVOS_DADO = [['ataque', 'Tiradas de ataque'], ['salvaciones', 'Salvaciones'], ['pruebas', 'Pruebas y skills'], ['dano', 'Daño (se tira aparte)'], ['curacion', 'Curación de hechizos']];
   const STATS_ATRIBUTO = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   const fuentesBuff = [];
   function registrarFuenteBuffs(fn) { fuentesBuff.push(fn); }
   function buffsActivos() { return fuentesBuff.flatMap(f => f()); }
-  function efectosActivos() { return buffsActivos().flatMap(b => (b.efectos || []).map(e => ({ ...e, fuente: b.nombre }))); }
+
+  // --- Condiciones ("cuando") y valores dinámicos de un efecto ---
+  //   cuando: { hechizo:{ etiqueta?, nombre?, nivelMin? }, concentrando?, pgMitad?, estado? }   (todas las que estén deben cumplirse)
+  //   valor:  número, o { de:'nivelClase'|'nivelTotal'|'modificador'|'competencia', clase?, hab?, signo?, mult? }
+  // Un efecto con condición de hechizo solo aplica cuando se pasa el contexto { hechizo, nivel } (al lanzar ese hechizo);
+  // los demás (concentrando, pgMitad, estado) se evalúan en cualquier momento.
+  const normalizar = (s) => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  const sinParentesis = (s) => String(s || '').replace(/\s*\(.*?\)\s*/g, ' ');
+  // Etiquetas de un hechizo: las propias (h.etiquetas) más las del compendio (spells_data.js) por nombre,
+  // más 'concentracion' si lo es. Se comparan sin acentos ni mayúsculas.
+  function etiquetasDeHechizo(h) {
+    const t = new Set((h.etiquetas || []).map(normalizar));
+    const base = normalizar(sinParentesis(h.nombre));
+    if (typeof SPELLS !== 'undefined') {
+      const c = SPELLS.find(x => normalizar(sinParentesis(x.name)) === base);
+      if (c) { (c.etiquetas || []).forEach(x => t.add(normalizar(x))); if (/conc/i.test(c.duracion || '')) t.add('concentracion'); }
+    }
+    if (h.concentracion || /conc/i.test(h.duracion || '')) t.add('concentracion');
+    return t;
+  }
+  let evaluandoPgMitad = false;
+  function cumpleCuando(c, ctx) {
+    if (!c) return true;
+    if (c.hechizo) {
+      const h = ctx && ctx.hechizo; if (!h) return false;
+      if (c.hechizo.etiqueta && !etiquetasDeHechizo(h).has(normalizar(c.hechizo.etiqueta))) return false;
+      if (c.hechizo.nombre && normalizar(h.nombre).indexOf(normalizar(c.hechizo.nombre)) < 0) return false;
+      if (c.hechizo.nivelMin != null && ((ctx.nivel != null ? ctx.nivel : h.nivel) || 0) < c.hechizo.nivelMin) return false;
+    }
+    if (c.concentrando) { const el = document.getElementById('concentracion-actual'); if (!(el && el.value)) return false; }
+    if (c.pgMitad) {
+      // hpMaxActual() consulta los buffs ('hp-max'), que podrían consultar esta condición: se corta el ciclo.
+      if (evaluandoPgMitad) return false;
+      evaluandoPgMitad = true;
+      let max = 0;
+      try { max = (typeof window.hpMaxActual === 'function') ? window.hpMaxActual() : 0; } finally { evaluandoPgMitad = false; }
+      const cur = parseInt((document.getElementById('hp-cur') || {}).value, 10) || 0;
+      if (!max || cur * 2 > max) return false;
+    }
+    if (c.estado) {
+      if (!window.FichaReglas) return false;
+      const want = normalizar(c.estado);
+      const ok = FichaReglas.estados().condiciones.some(id => { const k = FichaReglas.condicion(id); return normalizar(id) === want || (k && (normalizar(k.nombre) === want || normalizar(k.en) === want)); });
+      if (!ok) return false;
+    }
+    return true;
+  }
+  function nivelDeClase(nombre) {
+    if (window.FichaVitales && FichaVitales.nivelClase) return FichaVitales.nivelClase(nombre) || 0;
+    if (window.FichaNivel && FichaNivel.nivelClase) return FichaNivel.nivelClase(nombre) || 0;
+    const cn = (typeof CONFIG_NIVEL !== 'undefined' && CONFIG_NIVEL) ? CONFIG_NIVEL.clases.find(c => c.nombre === nombre) : null;
+    return cn ? cn.nivelInicial || 0 : 0;
+  }
+  function resolverValor(e) {
+    const v = e.valor;
+    if (v && typeof v === 'object') {
+      let n = 0;
+      if (v.de === 'nivelClase') n = nivelDeClase(v.clase);
+      else if (v.de === 'nivelTotal') n = window.FichaVitales ? FichaVitales.nivelTotal() : 0;
+      else if (v.de === 'modificador') n = window.FichaAtributos ? FichaAtributos.modDe(v.hab) : 0;
+      else if (v.de === 'competencia') n = window.FichaAtributos ? FichaAtributos.profBonusActual() : 0;
+      return n * (v.mult || 1) * (v.signo || 1);
+    }
+    return Number(v) || 0;
+  }
+  function efectosActivos(ctx) { return buffsActivos().flatMap(b => (b.efectos || []).filter(e => cumpleCuando(e.cuando, ctx)).map(e => ({ ...e, fuente: b.nombre }))); }
   function nombreObjetivo(lista, id) { const x = lista.find(o => o[0] === id); return x ? x[1] : id; }
+  function textoCuando(c) {
+    if (!c) return '';
+    const p = [];
+    if (c.hechizo) {
+      if (c.hechizo.etiqueta) p.push(`hechizo «${c.hechizo.etiqueta}»`);
+      if (c.hechizo.nombre) p.push(`hechizo «${c.hechizo.nombre}»`);
+      if (c.hechizo.nivelMin != null) p.push(`hechizo de nivel ${c.hechizo.nivelMin} o más`);
+    }
+    if (c.concentrando) p.push('concentrado');
+    if (c.pgMitad) p.push('PG ≤ mitad');
+    if (c.estado) p.push(`estado ${c.estado}`);
+    return p.length ? ` (si ${p.join(' y ')})` : '';
+  }
   function resumenEfecto(e) {
-    if (e.tipo === 'dado') return `+${e.dado.count}d${e.dado.sides} ${nombreObjetivo(OBJETIVOS_DADO, e.objetivo)}`;
-    if (e.tipo === 'stat') return `${e.valor > 0 ? '+' : ''}${e.valor} ${e.stat}`;
-    return `${e.valor > 0 ? '+' : ''}${e.valor} ${nombreObjetivo(OBJETIVOS_PLANO, e.objetivo)}`;
+    const cu = textoCuando(e.cuando);
+    if (e.tipo === 'ventaja' || e.tipo === 'desventaja') return `${e.tipo} en ${nombreObjetivo(OBJETIVOS_DADO, e.objetivo)}${cu}`;
+    if (e.tipo === 'dado') return `+${e.dado.count}d${e.dado.sides} ${nombreObjetivo(OBJETIVOS_DADO, e.objetivo)}${cu}`;
+    const val = resolverValor(e);
+    if (e.tipo === 'stat') return `${val > 0 ? '+' : ''}${val} ${e.stat}${cu}`;
+    return `${val > 0 ? '+' : ''}${val} ${nombreObjetivo(OBJETIVOS_PLANO, e.objetivo)}${cu}`;
   }
   function resumenEfectos(efectos) { return (efectos || []).map(resumenEfecto).join(', '); }
 
   const FichaBuffs = {
-    plano: (obj) => efectosActivos().filter(e => e.tipo === 'plano' && e.objetivo === obj).reduce((a, e) => a + (Number(e.valor) || 0), 0),
-    stat: (clave) => efectosActivos().filter(e => e.tipo === 'stat' && e.stat === clave).reduce((a, e) => a + (Number(e.valor) || 0), 0),
-    dados: (obj) => efectosActivos().filter(e => e.tipo === 'dado' && e.objetivo === obj),
-    // Tira los dados extra activos de una categoría ('ataque'|'salvaciones'|'pruebas'|'dano').
-    tirarDados(obj) {
+    // ctx (opcional): { hechizo, nivel } para efectos que solo valen al lanzar cierto hechizo.
+    plano: (obj, ctx) => efectosActivos(ctx).filter(e => e.tipo === 'plano' && e.objetivo === obj).reduce((a, e) => a + resolverValor(e), 0),
+    stat: (clave) => efectosActivos().filter(e => e.tipo === 'stat' && e.stat === clave).reduce((a, e) => a + resolverValor(e), 0),
+    dados: (obj, ctx) => efectosActivos(ctx).filter(e => e.tipo === 'dado' && e.objetivo === obj),
+    // Tira los dados extra activos de una categoría ('ataque'|'salvaciones'|'pruebas'|'dano'|'curacion').
+    tirarDados(obj, ctx) {
       const partes = [];
       let total = 0;
-      FichaBuffs.dados(obj).forEach(e => {
+      FichaBuffs.dados(obj, ctx).forEach(e => {
         const rs = Array.from({ length: e.dado.count }, () => Math.floor(Math.random() * e.dado.sides) + 1);
         const suma = rs.reduce((a, b) => a + b, 0);
         total += suma;
         partes.push({ fuente: e.fuente, texto: `${e.fuente}: +${suma} (${e.dado.count}d${e.dado.sides} [${rs.join(', ')}])`, valor: suma });
+      });
+      return { total, partes };
+    },
+    // Ventaja/desventaja que dan los buffs activos a una categoría ('ataque'|'salvaciones'|'pruebas').
+    // Devuelve 'advantage' | 'disadvantage' | 'normal' (si hay de las dos, se cancelan).
+    ventaja(cat) {
+      const ef = efectosActivos().filter(e => (e.tipo === 'ventaja' || e.tipo === 'desventaja') && e.objetivo === cat);
+      const v = ef.some(e => e.tipo === 'ventaja'), d = ef.some(e => e.tipo === 'desventaja');
+      return v && d ? 'normal' : v ? 'advantage' : d ? 'disadvantage' : 'normal';
+    },
+    // Bonos de buffs para el resultado de un hechizo: suma fija + dados de un objetivo ('curacion' | 'dano').
+    // soloCondicionales: ignora los efectos sin condición de hechizo (el 'dano' sin condición es "daño extra" que se tira aparte).
+    bonoDeHechizo(obj, ctx, soloCondicionales) {
+      const ef = efectosActivos(ctx).filter(e => e.objetivo === obj && (e.tipo === 'plano' || e.tipo === 'dado') && (!soloCondicionales || (e.cuando && e.cuando.hechizo)));
+      const partes = []; let total = 0;
+      ef.forEach(e => {
+        if (e.tipo === 'plano') { const v = resolverValor(e); if (!v) return; total += v; partes.push(`${e.fuente}: ${v > 0 ? '+' : '−'}${Math.abs(v)}`); }
+        else {
+          const rs = Array.from({ length: e.dado.count }, () => Math.floor(Math.random() * e.dado.sides) + 1);
+          const suma = rs.reduce((a, b) => a + b, 0); total += suma;
+          partes.push(`${e.fuente}: +${suma} (${e.dado.count}d${e.dado.sides} [${rs.join(', ')}])`);
+        }
       });
       return { total, partes };
     },
@@ -292,7 +396,7 @@
       if (mostrar) mostrar(r.total, 'Daño extra de buffs', detalle);
       else alert(`🎲 Daño extra: ${r.total}\n${detalle}`);
     },
-    resumenEfectos,
+    resumenEfectos, etiquetasDeHechizo, cumpleCuando,
   };
   window.FichaBuffs = FichaBuffs;
 
@@ -827,10 +931,18 @@
       }
       if (count > 0 && sides > 0) {
         const tiradas = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-        const total = tiradas.reduce((a, b) => a + b, 0) + mod;
+        let total = tiradas.reduce((a, b) => a + b, 0) + mod;
         const etiquetaNivel = h.upcast ? ` (nivel ${nivelGastado})` : '';
-        if (enDados) enDados(total, `${h.nombre}${etiquetaNivel}`, `[${tiradas.join(', ')}]${mod ? (mod > 0 ? ' + ' : ' − ') + Math.abs(mod) : ''}`);
-        else alert(`🎲 ${h.nombre}${etiquetaNivel}: [${tiradas.join(', ')}]${mod ? (mod > 0 ? ' +' : ' ') + mod : ''} = ${total}${sufijoBuff}`);
+        let detalle = `[${tiradas.join(', ')}]${mod ? (mod > 0 ? ' + ' : ' − ') + Math.abs(mod) : ''}`;
+        // Buffs con condición de hechizo (p. ej. el Tótem de Unicornio suma a las curaciones): bonos fijos y dados extra.
+        const etq = etiquetasDeHechizo(h), ctxB = { hechizo: h, nivel: nivelGastado };
+        [['curacion', false], ['dano', true]].forEach(([obj, soloCond]) => {
+          if (!etq.has(obj)) return;
+          const bb = FichaBuffs.bonoDeHechizo(obj, ctxB, soloCond);
+          if (bb.partes.length) { total += bb.total; detalle += ' | ' + bb.partes.join(' | '); }
+        });
+        if (enDados) enDados(total, `${h.nombre}${etiquetaNivel}`, detalle);
+        else alert(`🎲 ${h.nombre}${etiquetaNivel}: ${detalle} = ${total}${sufijoBuff}`);
       } else if (!enDados) {
         alert(`✅ ${h.nombre}: usado (sin tirada automática).${sufijoBuff}`);
       }
@@ -1329,12 +1441,215 @@
     window.FichaReputacion = { editor, guardarDesdeFormulario, ajustar };
   }
 
+  // ============================================================
+  // 9b. BUFFS PERSONALIZADOS — interruptores propios del personaje (no atados a un hechizo)
+  //     Lista en datos/buffs-personales-json: [{ nombre, icono, activo, descripcion, avisarGrupo:{texto}|null,
+  //       efectos:[{ tipo:'plano'|'dado'|'ventaja'|'desventaja', objetivo, valor|dado, cuando }] }]
+  //     Cada efecto usa el mismo formato que los buffs de hechizo (ver 5b), más el "cuando" y los valores dinámicos.
+  //     Se apagan a mano; aparecen junto a los estados. FICHA_CONFIG.buffsIniciales siembra la lista.
+  //     avisarGrupo: al encender o apagar manda una NOTIFICACIÓN al resto del grupo (FichaDados.avisarGrupo);
+  //     no modifica ninguna otra ficha.
+  // ============================================================
+  function iniciarBuffsPersonales() {
+    const ACCIONES = [['sumar', 'Suma'], ['restar', 'Resta'], ['dado', 'Suma un dado'], ['ventaja', 'Da ventaja'], ['desventaja', 'Da desventaja']];
+    const VALORES = [['fijo', 'Número fijo'], ['nivelClase', 'Tu nivel de una clase'], ['modificador', 'Un modificador'], ['competencia', 'Tu bono de competencia']];
+    const OBJ_ADV = [['ataque', 'Tiradas de ataque'], ['salvaciones', 'Salvaciones'], ['pruebas', 'Pruebas y habilidades']];
+    const CONDICIONES = [['siempre', 'Siempre'], ['etiqueta', 'Si el hechizo tiene la etiqueta…'], ['nombre', 'Si el hechizo se llama…'], ['nivel', 'Si el hechizo es de nivel… o más'], ['concentrando', 'Mientras estoy concentrado'], ['pgMitad', 'Mientras tengo la mitad de mis PG o menos'], ['estado', 'Mientras tengo el estado…']];
+    const ETIQUETAS = ['curación', 'daño', 'fuego', 'frío', 'rayo', 'trueno', 'ácido', 'veneno', 'necrótico', 'radiante', 'psíquico', 'fuerza', 'ataque', 'salvación', 'buff', 'control', 'invocación', 'concentración', 'utilidad'];
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const opts = (lista, sel) => lista.map(([v, t]) => `<option value="${v}"${v === sel ? ' selected' : ''}>${t}</option>`).join('');
+    let filasForm = [];   // efectos en edición (estado del formulario)
+
+    // --- el efecto guardado ⇄ la fila del formulario ---
+    function efectoAFila(e) {
+      const f = { accion: 'sumar', objetivo: e.objetivo || 'curacion', valorTipo: 'fijo', num: 0, clase: '', hab: 'WIS', dc: 1, dl: 6, cond: 'siempre', cv: '' };
+      if (e.tipo === 'ventaja' || e.tipo === 'desventaja') f.accion = e.tipo;
+      else if (e.tipo === 'dado') { f.accion = 'dado'; f.dc = e.dado.count; f.dl = e.dado.sides; }
+      else if (e.valor && typeof e.valor === 'object') { f.valorTipo = e.valor.de; f.clase = e.valor.clase || ''; f.hab = e.valor.hab || 'WIS'; f.accion = (e.valor.signo === -1) ? 'restar' : 'sumar'; }
+      else { f.num = Math.abs(Number(e.valor) || 0); f.accion = (Number(e.valor) < 0) ? 'restar' : 'sumar'; }
+      const c = e.cuando || {};
+      if (c.hechizo && c.hechizo.etiqueta) { f.cond = 'etiqueta'; f.cv = c.hechizo.etiqueta; }
+      else if (c.hechizo && c.hechizo.nombre) { f.cond = 'nombre'; f.cv = c.hechizo.nombre; }
+      else if (c.hechizo && c.hechizo.nivelMin != null) { f.cond = 'nivel'; f.cv = c.hechizo.nivelMin; }
+      else if (c.concentrando) f.cond = 'concentrando';
+      else if (c.pgMitad) f.cond = 'pgMitad';
+      else if (c.estado) { f.cond = 'estado'; f.cv = c.estado; }
+      return f;
+    }
+    function filaAEfecto(f) {
+      const e = { objetivo: f.objetivo };
+      if (f.accion === 'ventaja' || f.accion === 'desventaja') e.tipo = f.accion;
+      else if (f.accion === 'dado') { e.tipo = 'dado'; e.dado = { count: Math.max(1, parseInt(f.dc, 10) || 1), sides: parseInt(f.dl, 10) || 6 }; }
+      else {
+        e.tipo = 'plano';
+        const signo = f.accion === 'restar' ? -1 : 1;
+        if (f.valorTipo === 'fijo') e.valor = signo * Math.abs(parseInt(f.num, 10) || 0);
+        else { e.valor = { de: f.valorTipo, signo }; if (f.valorTipo === 'nivelClase') e.valor.clase = f.clase; if (f.valorTipo === 'modificador') e.valor.hab = f.hab; }
+      }
+      const cv = String(f.cv == null ? '' : f.cv).trim();
+      if (f.cond === 'etiqueta' && cv) e.cuando = { hechizo: { etiqueta: cv } };
+      else if (f.cond === 'nombre' && cv) e.cuando = { hechizo: { nombre: cv } };
+      else if (f.cond === 'nivel' && cv) e.cuando = { hechizo: { nivelMin: parseInt(cv, 10) || 0 } };
+      else if (f.cond === 'concentrando') e.cuando = { concentrando: true };
+      else if (f.cond === 'pgMitad') e.cuando = { pgMitad: true };
+      else if (f.cond === 'estado' && cv) e.cuando = { estado: cv };
+      return e;
+    }
+
+    function htmlFila(f, i) {
+      const esDado = f.accion === 'dado', esVent = f.accion === 'ventaja' || f.accion === 'desventaja';
+      const objetivos = esVent ? OBJ_ADV : (esDado ? OBJETIVOS_DADO : OBJETIVOS_PLANO);
+      const objSel = objetivos.some(o => o[0] === f.objetivo) ? f.objetivo : objetivos[0][0];
+      const claseOpts = (typeof CONFIG_NIVEL !== 'undefined' && CONFIG_NIVEL ? CONFIG_NIVEL.clases : []).map(c => `<option value="${esc(c.nombre)}"${c.nombre === f.clase ? ' selected' : ''}>${esc(c.nombre)}</option>`).join('');
+      const cvCampo = (f.cond === 'etiqueta') ? `<input type="text" class="bp-cv" list="bp-etiquetas" value="${esc(f.cv)}" placeholder="p. ej. curación">`
+        : (f.cond === 'nombre') ? `<input type="text" class="bp-cv" value="${esc(f.cv)}" placeholder="parte del nombre">`
+        : (f.cond === 'nivel') ? `<input type="number" class="bp-cv" min="0" max="9" value="${esc(f.cv)}">`
+        : (f.cond === 'estado') ? `<input type="text" class="bp-cv" value="${esc(f.cv)}" placeholder="p. ej. Envenenado">` : '';
+      return `<div class="bp-efecto" data-i="${i}">
+        <div class="bp-efecto-cab"><strong>Efecto ${i + 1}</strong><button type="button" class="btn-clear" onclick="FichaBuffsPersonales.quitarEfecto(${i})" aria-label="Quitar el efecto ${i + 1}">✖</button></div>
+        <div class="bp-partes">
+          <div class="bp-parte"><span class="bp-et">Qué hace</span>
+            <select class="bp-accion" data-i="${i}">${opts(ACCIONES, f.accion)}</select>
+            ${(!esDado && !esVent) ? `<select class="bp-valor-tipo" data-i="${i}">${opts(VALORES, f.valorTipo)}</select>` : ''}
+            ${(!esDado && !esVent && f.valorTipo === 'fijo') ? `<input type="number" class="bp-num" value="${esc(f.num)}" aria-label="Valor">` : ''}
+            ${(!esDado && !esVent && f.valorTipo === 'nivelClase') ? `<select class="bp-clase">${claseOpts}</select>` : ''}
+            ${(!esDado && !esVent && f.valorTipo === 'modificador') ? `<select class="bp-hab">${STATS_ATRIBUTO.map(h => `<option${h === f.hab ? ' selected' : ''}>${h}</option>`).join('')}</select>` : ''}
+            ${esDado ? `<span class="bp-dado"><input type="number" class="bp-dc" min="1" value="${esc(f.dc)}" aria-label="Cantidad de dados"> d <input type="number" class="bp-dl" min="2" value="${esc(f.dl)}" aria-label="Caras del dado"></span>` : ''}
+          </div>
+          <div class="bp-parte"><span class="bp-et">A qué se aplica</span>
+            <select class="bp-objetivo" data-i="${i}">${opts(objetivos, objSel)}</select>
+          </div>
+          <div class="bp-parte"><span class="bp-et">Cuándo</span>
+            <select class="bp-cond" data-i="${i}">${opts(CONDICIONES, f.cond)}</select>
+            ${cvCampo}
+          </div>
+        </div>
+      </div>`;
+    }
+    function pintarEfectosForm() {
+      const cont = document.getElementById('bp-efectos'); if (!cont) return;
+      cont.innerHTML = filasForm.map(htmlFila).join('') || '<p class="bp-vacio">Sin efectos todavía.</p>';
+      actualizarFrase();
+    }
+    function leerFilasDelDOM() {
+      document.querySelectorAll('#bp-efectos .bp-efecto').forEach((el) => {
+        const i = parseInt(el.dataset.i, 10), f = filasForm[i]; if (!f) return;
+        const v = (sel) => { const e = el.querySelector(sel); return e ? e.value : undefined; };
+        f.accion = v('.bp-accion') || f.accion; f.objetivo = v('.bp-objetivo') || f.objetivo;
+        if (v('.bp-valor-tipo') !== undefined) f.valorTipo = v('.bp-valor-tipo');
+        if (v('.bp-num') !== undefined) f.num = v('.bp-num');
+        if (v('.bp-clase') !== undefined) f.clase = v('.bp-clase');
+        if (v('.bp-hab') !== undefined) f.hab = v('.bp-hab');
+        if (v('.bp-dc') !== undefined) f.dc = v('.bp-dc');
+        if (v('.bp-dl') !== undefined) f.dl = v('.bp-dl');
+        f.cond = v('.bp-cond') || f.cond;
+        f.cv = v('.bp-cv') !== undefined ? v('.bp-cv') : '';
+      });
+    }
+    function actualizarFrase() {
+      const el = document.getElementById('bp-frase'); if (!el) return;
+      const ef = filasForm.map(filaAEfecto);
+      el.textContent = ef.length ? 'Encendido: ' + resumenEfectos(ef) + '.' : '';
+    }
+
+    const editor = crearEditorDeLista({
+      storageKey: 'buffs-personales-json',
+      datosIniciales: FICHA_CONFIG.buffsIniciales || [],
+      contenedorListaId: 'buffs-personales-lista',
+      contenedorFormId: 'buffs-personales-form',
+      filaVacia: '<p class="bp-vacio">Todavía no creaste ningún buff personalizado.</p>',
+      alCambiar: () => notificarBuffs(),
+      renderFila: (b, idx) => `<div class="buff-personal" data-activo="${b.activo ? 'true' : 'false'}">
+        <button type="button" class="buff-toggle" aria-pressed="${b.activo ? 'true' : 'false'}" onclick="FichaBuffsPersonales.alternar(${idx})"><span aria-hidden="true">${esc(b.icono || '🔆')}</span><span>${esc(b.nombre)}</span><span class="buff-est">${b.activo ? 'ENCENDIDO' : 'apagado'}</span></button>
+        <span class="buff-personal-resumen">${esc(resumenEfectos(b.efectos))}${b.descripcion ? ' — ' + esc(b.descripcion) : ''}${b.avisarGrupo ? ' · 📣 avisa al grupo' : ''}</span>
+        <span class="buff-personal-acciones"><button type="button" onclick="FichaBuffsPersonales.editor.mostrarFormulario(${idx})" title="Editar" aria-label="Editar ${esc(b.nombre)}">✏️</button><button type="button" onclick="FichaBuffsPersonales.editor.eliminar(${idx}, '¿Quitar el buff «${esc(b.nombre).replace(/'/g, "\\'")}»?')" title="Quitar" aria-label="Quitar ${esc(b.nombre)}">🗑️</button></span>
+      </div>`,
+      renderFormulario: (b) => {
+        filasForm = ((b && b.efectos) || []).map(efectoAFila);
+        if (!filasForm.length) filasForm.push(efectoAFila({ tipo: 'plano', objetivo: 'ca', valor: 1 }));
+        setTimeout(pintarEfectosForm, 0);
+        return `<div class="bp-form">
+          <datalist id="bp-etiquetas">${ETIQUETAS.map(t => `<option value="${t}">`).join('')}</datalist>
+          <div class="bp-grid">
+            <label class="bp-campo"><span>Nombre</span><input type="text" id="bp-nombre" value="${esc(b ? b.nombre : '')}" placeholder="p. ej. Tótem de Unicornio"></label>
+            <label class="bp-campo"><span>Ícono</span><input type="text" id="bp-icono" maxlength="4" value="${esc(b ? b.icono || '🔆' : '🔆')}"></label>
+            <label class="bp-campo bp-ancho"><span>Nota (opcional)</span><input type="text" id="bp-desc" value="${esc(b ? b.descripcion || '' : '')}" placeholder="Para recordar qué es"></label>
+          </div>
+          <div id="bp-efectos"></div>
+          <div class="bp-frase" id="bp-frase" aria-live="polite"></div>
+          <label class="bp-check"><input type="checkbox" id="bp-grupo"${b && b.avisarGrupo ? ' checked' : ''}> 📣 Avisar al grupo al encenderlo o apagarlo <small>(solo una notificación: no cambia ninguna otra ficha)</small></label>
+          <input type="text" id="bp-grupo-texto" value="${esc(b && b.avisarGrupo ? b.avisarGrupo.texto : '')}" placeholder="Mensaje para el grupo (opcional)">
+          <div class="bp-acciones">
+            <button type="button" onclick="FichaBuffsPersonales.agregarEfecto()">➕ Agregar efecto</button>
+            <button type="button" onclick="FichaBuffsPersonales.editor.cerrarFormulario()">Cancelar</button>
+            <button type="button" class="bp-guardar" onclick="FichaBuffsPersonales.guardarDesdeFormulario()">💾 Guardar buff</button>
+          </div>
+        </div>`;
+      },
+    });
+
+    function agregarEfecto() { leerFilasDelDOM(); filasForm.push(efectoAFila({ tipo: 'plano', objetivo: 'ca', valor: 1 })); pintarEfectosForm(); }
+    function quitarEfecto(i) { leerFilasDelDOM(); filasForm.splice(i, 1); pintarEfectosForm(); }
+    function guardarDesdeFormulario() {
+      leerFilasDelDOM();
+      const nombre = (document.getElementById('bp-nombre').value || '').trim();
+      if (!nombre) { alert('El buff necesita un nombre.'); return; }
+      if (!filasForm.length) { alert('Agregá al menos un efecto.'); return; }
+      const idx = editor.editandoIdx();
+      const previo = idx !== null ? editor.items()[idx] : null;
+      const grupoOn = document.getElementById('bp-grupo').checked;
+      editor.guardarDesdeFormulario({
+        nombre, icono: (document.getElementById('bp-icono').value || '🔆').trim(),
+        descripcion: (document.getElementById('bp-desc').value || '').trim(),
+        activo: previo ? !!previo.activo : false,
+        avisarGrupo: grupoOn ? { texto: (document.getElementById('bp-grupo-texto').value || '').trim() } : null,
+        efectos: filasForm.map(filaAEfecto),
+      });
+    }
+    function alternar(idx) {
+      if (modoLectura) return;
+      const b = editor.items()[idx]; if (!b) return;
+      const activo = !b.activo;
+      editor.mutar(idx, (it) => { it.activo = activo; });
+      const etiqueta = `${b.icono || '🔆'} ${b.nombre}`;
+      emitirUso('buff', `Buff "${b.nombre}" ${activo ? 'activado' : 'desactivado'}`, resumenEfectos(b.efectos));
+      if (b.avisarGrupo && window.FichaDados && FichaDados.avisarGrupo) FichaDados.avisarGrupo(etiqueta, `${activo ? 'activo' : 'terminó'}${b.avisarGrupo.texto ? ' — ' + b.avisarGrupo.texto : ''}`);
+    }
+
+    // Cambios en el formulario: rearmar la fila (campos que dependen de la acción o de la condición) y la frase de resumen.
+    document.addEventListener('change', (e) => {
+      const t = e.target;
+      if (!t || !t.closest || !t.closest('#bp-efectos')) return;
+      leerFilasDelDOM();
+      if (t.classList.contains('bp-accion') || t.classList.contains('bp-valor-tipo') || t.classList.contains('bp-cond')) {
+        const i = parseInt(t.dataset.i, 10), f = filasForm[i];
+        if (t.classList.contains('bp-accion')) {   // el objetivo válido depende de la acción
+          const esVent = f.accion === 'ventaja' || f.accion === 'desventaja';
+          const lista = esVent ? OBJ_ADV : (f.accion === 'dado' ? OBJETIVOS_DADO : OBJETIVOS_PLANO);
+          if (!lista.some(o => o[0] === f.objetivo)) f.objetivo = lista[0][0];
+        }
+        if (t.classList.contains('bp-cond')) f.cv = '';
+        pintarEfectosForm();
+      } else actualizarFrase();
+    });
+    document.addEventListener('input', (e) => { if (e.target && e.target.closest && e.target.closest('#bp-efectos')) { leerFilasDelDOM(); actualizarFrase(); } });
+
+    registrarFuenteBuffs(() => editor.items()
+      .map((b, idx) => ({ b, idx }))
+      .filter(x => x.b.activo)
+      .map(x => ({ nombre: x.b.nombre, icono: x.b.icono || '🔆', efectos: x.b.efectos || [], apagar: () => alternar(x.idx) })));
+
+    window.FichaBuffsPersonales = { editor, alternar, agregarEfecto, quitarEfecto, guardarDesdeFormulario };
+    notificarBuffs();
+    return window.FichaBuffsPersonales;
+  }
+
   window.FichaComun = {
     setCharRef, guardarCampo, sincronizarDatosDesdeNube, reaplicarDatos, aplicarModoLectura,
     crearEditorDeLista, iniciarEditorHechizos, iniciarEditorInventario,
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,
     iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
-    registrarFuenteBuffs, notificarBuffs, iniciarCA, iniciarConcentracion, esCampoEfimero, emitirUso,
+    registrarFuenteBuffs, notificarBuffs, iniciarBuffsPersonales, iniciarCA, iniciarConcentracion, esCampoEfimero, emitirUso,
   };
 })();

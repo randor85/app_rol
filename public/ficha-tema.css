@@ -548,6 +548,39 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 .highlight-box, .invocation-note { background: color-mix(in srgb, var(--acento) 8%, transparent); border: 1px dashed var(--acento); padding: var(--sp-3); border-radius: var(--radio-sm); font-size: var(--fs-sm); }
 .editable-text { min-width: 0; overflow-wrap: anywhere; }
 
+/* buffs personalizados (ficha-common.js · iniciarBuffsPersonales) */
+.buff-personal { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); padding: var(--sp-2) 0; border-top: 1px solid var(--borde); }
+.buff-personal:first-child { border-top: 0; }
+.buff-toggle { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: var(--toque); padding: var(--sp-1) var(--sp-3); border-radius: 999px; border: 2px solid var(--borde-fuerte); background: var(--surface-2); color: var(--texto); font: inherit; font-weight: 800; cursor: pointer; }
+.buff-toggle[aria-pressed="true"] { border-color: var(--acento-2); background: color-mix(in srgb, var(--acento-2) 22%, var(--surface)); }
+.buff-est { font-size: var(--fs-xs); padding: 1px var(--sp-2); border-radius: 999px; background: var(--borde); color: var(--texto); }
+.buff-toggle[aria-pressed="true"] .buff-est { background: var(--acento-2); color: var(--sobre-acento); }
+.buff-toggle:focus-visible { outline: 3px solid var(--acento-2); outline-offset: 2px; }
+.buff-personal-resumen { flex: 1 1 14rem; color: var(--texto-suave); font-size: var(--fs-sm); min-width: 0; overflow-wrap: anywhere; }
+.buff-personal-acciones { display: inline-flex; gap: var(--sp-1); }
+.buff-personal-acciones button { min-width: 36px; min-height: 36px; background: transparent; border: 1px solid var(--borde); border-radius: var(--radio-sm); color: var(--texto); cursor: pointer; }
+.buff-estado { border-color: var(--acento-2); background: color-mix(in srgb, var(--acento-2) 18%, var(--surface)); }
+.bp-vacio { color: var(--texto-suave); font-size: var(--fs-sm); margin: 0; }
+.bp-form { display: grid; gap: var(--sp-3); padding: var(--sp-3); margin-top: var(--sp-2); background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+.bp-grid { display: grid; gap: var(--sp-2); grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.bp-ancho { grid-column: 1 / -1; }
+.bp-campo { display: grid; gap: var(--sp-1); font-size: var(--fs-sm); font-weight: 700; color: var(--texto-suave); }
+.bp-form input[type=text], .bp-form input[type=number], .bp-form select { min-height: var(--toque); padding: 0 var(--sp-2); background: var(--bg); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font: inherit; min-width: 0; }
+.bp-efecto { display: grid; gap: var(--sp-2); padding: var(--sp-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); background: var(--surface); }
+.bp-efecto-cab { display: flex; justify-content: space-between; align-items: center; }
+.bp-partes { display: grid; gap: var(--sp-2); grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.bp-parte { display: grid; gap: var(--sp-2); align-content: start; }
+.bp-et { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--acento); }
+.bp-dado { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.bp-dado input { width: 4.5rem; }
+.bp-frase { padding: var(--sp-2) var(--sp-3); border-left: 4px solid var(--acento-2); background: color-mix(in srgb, var(--acento-2) 14%, var(--surface)); border-radius: var(--radio-sm); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.bp-frase:empty { display: none; }
+.bp-check { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); font-weight: 700; }
+.bp-check small { color: var(--texto-suave); font-weight: 400; }
+.bp-acciones { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.bp-acciones button { min-height: var(--toque); padding: 0 var(--sp-4); border-radius: var(--radio-sm); border: 1px solid var(--borde-fuerte); background: var(--surface); color: var(--texto); font: inherit; font-weight: 800; cursor: pointer; }
+.bp-acciones .bp-guardar { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
+
 /* ============================================================
    LANZADOR DE DADOS + HISTORIAL (ficha-dados.js) — solo tokens
    ============================================================ */

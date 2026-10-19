@@ -34,6 +34,14 @@ PERSONAJES.fiona_faraway = {
     { nombre: 'Splinter Arrows', habilidad: 'DEX', dano: { count: 1, sides: 6, mod: { hab: 'DEX', prof: true } }, textoDano: '1d6 + Competencia + DEX perforante', notas: 'Cono 60 ft, elige hasta 4 criaturas y realiza ataques a distancia. Poco común.' },
   ],
 
+  // Buffs personalizados (interruptores propios; ver FichaComun.iniciarBuffsPersonales). Semilla: solo se guarda si todavía no hay lista.
+  buffs: [
+    { nombre: 'Tótem de Unicornio', icono: '🦄', activo: false,
+      descripcion: 'Spirit Totem (Unicorn): suma a las curaciones de tus hechizos tu nivel de Druida.',
+      avisarGrupo: { texto: 'las curaciones de Fiona dan PG extra' },
+      efectos: [{ tipo: 'plano', objetivo: 'curacion', valor: { de: 'nivelClase', clase: 'Druid' }, cuando: { hechizo: { etiqueta: 'curación' } } }] },
+  ],
+
   efectosManuales: [
     { id: 'buff-bless', nombre: 'Bless', icono: '✨', texto: '+1d4 ataques y salvaciones', tipo: 'buff' },
     { id: 'debuff-bane', nombre: 'Bane', icono: '💀', texto: '−1d4 ataques y salvaciones', tipo: 'debuff' },

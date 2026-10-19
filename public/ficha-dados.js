@@ -19,7 +19,7 @@
 (function () {
   'use strict';
 
-  const ICONOS = { tirada: '🎲', recurso: '🔋', hechizo: '✨', buff: '🔆', concentracion: '🧠', descanso: '🌙', nivel: '⬆️', inventario: '🎒', reputacion: '🏅', hp: '❤️' };
+  const ICONOS = { aviso: '🔔', tirada: '🎲', recurso: '🔋', hechizo: '✨', buff: '🔆', concentracion: '🧠', descanso: '🌙', nivel: '⬆️', inventario: '🎒', reputacion: '🏅', hp: '❤️' };
   const GRUPO_RECURSOS = (tipo) => tipo !== 'tirada';
 
   const estado = {
@@ -72,8 +72,8 @@
 
   /* ---------- avisos emergentes (con el panel cerrado, cada tirada o uso se confirma a la vista) ---------- */
   const DURACION_AVISO = { tirada: 5000, otro: 3500 };
-  function avisar(it) {
-    if (!estado.iniciado || abierto()) return;           // con el panel abierto ya se ve en el resultado y el historial
+  function avisar(it, forzar) {
+    if (!estado.iniciado || (abierto() && !forzar)) return;   // con el panel abierto ya se ve en el resultado y el historial
     let zona = document.getElementById('dados-avisos');
     if (!zona) {
       zona = el('div', 'dados-avisos'); zona.id = 'dados-avisos';
@@ -120,6 +120,13 @@
       if (p && p.catch) p.catch(() => {});
     } catch (e) { /* el historial local sigue valiendo */ }
   }
+
+  /** Aviso emergente que NO se anota en el historial (p. ej. un buff de otro personaje del grupo). */
+  function notificar(o) {
+    avisar({ tipo: 'aviso', grupo: 'recursos', etiqueta: String(o.etiqueta || ''), resultado: o.resultado || '', detalle: o.detalle || '' }, true);
+  }
+  /** Avisa al grupo con una NOTIFICACIÓN (viaja por campanas/<c>/tiradas con el tipo "🔔 …"); no modifica ninguna otra ficha. */
+  function avisarGrupo(etiqueta, texto) { publicarTirada('🔔 ' + etiqueta, texto || ''); }
 
   /* ---------- resultado visible ---------- */
   function mostrarResultado(total, etiqueta, detalle) {
@@ -248,6 +255,11 @@
       if (!hab && cat0 === 'salvaciones') { const m = /\b(STR|DEX|CON|INT|WIS|CHA|FUE|DES|SAB|CAR)\b/i.exec(etiqueta); hab = m && m[1]; }
       const v = FichaReglas.ventaja({ categoria: cat0, habilidad: hab });
       forzada = v.estado; autoFalla = v.autoFalla;
+    }
+    // Ventaja/desventaja que dan los buffs personalizados encendidos (se combinan con las anteriores).
+    if (window.FichaBuffs && FichaBuffs.ventaja && cat0 && !o.sinReglas) {
+      const vb = FichaBuffs.ventaja(cat0);
+      if (vb !== 'normal') forzada = (!forzada || forzada === 'normal') ? vb : (forzada === vb ? vb : 'normal');
     }
     let nota = '';
     if (forzada && forzada !== 'normal') {
@@ -460,5 +472,5 @@
     if (d.texto) registrarUso(d.texto, d.tipo, d.detalle);
   });
 
-  window.FichaDados = { iniciar, tirar, calcular, d20, moneda, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar, _parsear: parsear };
+  window.FichaDados = { iniciar, tirar, calcular, notificar, avisarGrupo, d20, moneda, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar, _parsear: parsear };
 })();

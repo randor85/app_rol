@@ -302,7 +302,22 @@
       const n = FichaReglas.datos().agotamiento.find(x => x.nivel === e.agotamiento); if (n) chip.title = n.texto;
       cont.appendChild(chip);
     }
-    if (!cont.children.length) { const v = document.createElement('span'); v.className = 'texto-suave'; v.textContent = 'Sin estados activos.'; cont.appendChild(v); }
+    // Buffs activos (personalizados y de hechizos) junto a los estados, con ✖ para apagarlos a mano.
+    if (window.FichaBuffs) {
+      FichaBuffs.activos().forEach((b) => {
+        const chip = document.createElement('span'); chip.className = 'cond-chip buff-estado';
+        chip.title = 'Buff activo: ' + FichaBuffs.resumenEfectos(b.efectos);
+        chip.textContent = (b.icono || '🔆') + ' ' + b.nombre + ' ';
+        if (b.apagar) {
+          const x = document.createElement('button'); x.type = 'button'; x.className = 'btn-clear'; x.textContent = '✖';
+          x.setAttribute('aria-label', 'Apagar el buff ' + b.nombre);
+          x.addEventListener('click', () => { if (!soloLectura()) b.apagar(); });
+          chip.appendChild(x);
+        }
+        cont.appendChild(chip);
+      });
+    }
+    if (!cont.children.length) { const v = document.createElement('span'); v.className = 'texto-suave'; v.textContent = 'Sin estados ni buffs activos.'; cont.appendChild(v); }
     const ef = FichaReglas.efectos();
     const nota = $('estados-efectos');
     if (nota) {
@@ -329,7 +344,7 @@
     iniciado = true;
     const refrescar = () => { pintarHP(); pintarHD(); pintarRecursos(); pintarEstados(); };
     document.addEventListener('ficha:datos-sincronizados', refrescar);
-    document.addEventListener('ficha:buffs', pintarHP);
+    document.addEventListener('ficha:buffs', () => { pintarHP(); pintarEstados(); });
     document.addEventListener('ficha:estados', pintarEstados);
     document.addEventListener('input', (e) => { if (e.target && (e.target.id === 'hp-max-buff' || e.target.id === 'exhaustion-level')) { pintarHP(); if (e.target.id === 'exhaustion-level') pintarEstados(); } });
     document.addEventListener('change', (e) => { if (e.target && e.target.dataset && e.target.dataset.efecto) pintarEstados(); });

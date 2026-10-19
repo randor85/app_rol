@@ -90,6 +90,7 @@
       hechizosIniciales: P.hechizos || [],
       inventarioInicial: P.inventario || [],
       reputacionInicial: P.reputacion || [],
+      buffsIniciales: P.buffs || [],
       resumenClase: null,
     };
     if (P.ca && P.ca.fija != null) cfg.caBase = P.ca.fija;
@@ -462,6 +463,7 @@
     FichaComun.iniciarEditorHechizos();
     FichaComun.iniciarEditorInventario();
     FichaComun.iniciarEditorReputacion();
+    FichaComun.iniciarBuffsPersonales();
 
     FichaVitales.iniciar({
       hpBase: P.hpBase || 1, idHpTemp: P.idHpTemp, clases: window.CONFIG_NIVEL.clases, recursos: P.recursos || [],

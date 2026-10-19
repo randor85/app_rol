@@ -219,6 +219,14 @@
     return lista ? `<div class="recursos-grid">${lista}</div>` : '<p class="texto-suave">Este personaje no tiene recursos de clase con contador.</p>';
   }
 
+  /* ---------- buffs personalizados ---------- */
+  function buffsPersonales() {
+    return `<p class="texto-suave">Se encienden y apagan a mano. Mientras están activos aparecen junto a los estados.</p>
+      <div id="buffs-personales-lista"></div>
+      <div class="fila"><button type="button" class="btn btn-fantasma btn-sm" onclick="FichaBuffsPersonales.editor.mostrarFormulario()">➕ Crear buff</button></div>
+      <div id="buffs-personales-form"></div>`;
+  }
+
   /* ---------- rasgos ---------- */
   function rasgos(P) {
     const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${r.html || ''}</div>${(r.acciones || []).map(a => `<button type="button" class="btn-roll btn-roll-sm" ${a.uso ? `data-uso="${esc(a.uso)}"` : `data-roll="${esc(a.roll)}"`} data-etiqueta="${esc(a.etiqueta || a.texto)}">${esc(a.texto)}</button>`).join('')}</div>`).join('');
@@ -285,6 +293,7 @@
     partes.push(seccion('ataques', '⚔️', 'Ataques', ataques(P), { abierta: true }));
     if (!P.sinConjuros) partes.push(seccion('conjuros', '✨', 'Conjuros', conjuros(P), { abierta: true }));
     if ((P.recursos || []).length) partes.push(seccion('recursos', '🔥', 'Recursos de clase', recursos(P), { abierta: true, nota: 'el máximo se calcula del nivel y se recargan con el descanso' }));
+    partes.push(seccion('buffs', '🔆', 'Buffs personalizados', buffsPersonales(P), { abierta: true, nota: 'interruptores propios: suman o restan solo cuando se cumple su condición' }));
     partes.push(seccion('rasgos', '📜', 'Rasgos y características', rasgos(P)));
     (P.secciones || []).forEach(s => partes.push(seccion(s.id, s.icono || '📄', esc(s.titulo), `<div class="seccion-propia" data-fragmento="${esc(s.fragmento || '')}">${s.html || '<p class="texto-suave">Cargando…</p>'}</div>`)));
     partes.push(seccion('inventario', '🎒', 'Inventario y equipo', inventario(P)));

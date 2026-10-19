@@ -220,11 +220,37 @@
     return FichaParty;
   }
 
+  /**
+   * Avisos del grupo: cuando otro personaje enciende un buff con "avisar al grupo" (ficha-common.js), llega como una
+   * entrada "🔔 …" en campanas/<c>/tiradas y acá se muestra como notificación. Es solo un aviso: no cambia esta ficha.
+   */
+  function escucharAvisos(o) {
+    if (!o.db || !o.codigoCampana || !window.FichaDados || !FichaDados.notificar) return;
+    const propio = ((typeof FICHA_CONFIG !== 'undefined' && FICHA_CONFIG.nombrePersonaje) || o.nombre || '').trim();
+    let ultima = null, primera = true;
+    const base = o.db.ref(`campanas/${o.codigoCampana}/tiradas`);
+    if (typeof base.limitToLast !== 'function') return;   // los avisos son un extra: nunca deben romper el resto del grupo
+    try {
+    base.limitToLast(1).on('value', (snap) => {
+      const v = snap.val();
+      if (!v) { primera = false; return; }
+      const k = Object.keys(v).pop(), e = v[k];
+      if (primera) { ultima = k; primera = false; return; }   // lo que ya estaba al abrir no se vuelve a avisar
+      if (k === ultima) return;
+      ultima = k;
+      if (e && typeof e.tipo === 'string' && e.tipo.indexOf('🔔') === 0 && String(e.personaje || '').trim() !== propio) {
+        FichaDados.notificar({ etiqueta: `${e.personaje || 'Alguien'}: ${e.tipo.replace(/^🔔\s*/, '')}`, detalle: e.resultado || '' });
+      }
+    }, () => { /* sin permiso: no hay avisos */ });
+    } catch (e) { /* sin avisos */ }
+  }
+
   /** Atajo para una ficha: publica el resumen propio y muestra el visor flotante. */
   function iniciar(o) {
     if (!o || !o.db || !o.codigoCampana) return FichaParty;   // sin campaña no hay grupo
     iniciarPublicador(o);
     iniciarVisor(o);
+    escucharAvisos(o);
     return FichaParty;
   }
 
