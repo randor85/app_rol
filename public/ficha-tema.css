@@ -523,7 +523,7 @@ body {
 .dados-fila select, .dados-fila input, .dados-formula input { min-height: var(--toque); padding: 0 var(--sp-3); background: var(--bg); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font: inherit; }
 .dados-fila select { min-width: 9.5rem; }
 .dados-fila input { width: 6rem; text-align: center; }
-.dados-rapidos { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--sp-1); }
+.dados-rapidos { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-1); }
 .dados-rapido { min-height: var(--toque); padding: 0; background: var(--surface-2); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font-weight: 800; cursor: pointer; }
 .dados-rapido:hover { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
 .dados-formula { display: flex; gap: var(--sp-2); }

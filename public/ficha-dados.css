@@ -1,0 +1,87 @@
+/*
+ * ficha-dados.css — estilos del lanzador de dados para las fichas que NO cargan ficha-tema.css completo.
+ *
+ * Es la misma sección "lanzador de dados" de ficha-tema.css, más un puente que traduce los tokens del
+ * lanzador a las variables que ya definen las fichas (--bg-card, --accent-gold, --text-light…). Así el panel
+ * toma los colores de cada personaje sin tocar el resto de la hoja. Las fichas con ficha-tema.css NO deben
+ * cargar este archivo (ya trae la misma sección con sus propios tokens).
+ */
+.dados {
+  --fuente-titulo: 'Cinzel', 'Georgia', 'Times New Roman', serif;
+  --fuente-texto: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-xs: 0.75rem; --fs-sm: 0.85rem; --fs-md: 1rem; --fs-lg: 1.15rem; --fs-xl: 1.5rem;
+  --sp-1: 0.25rem; --sp-2: 0.5rem; --sp-3: 0.75rem; --sp-4: 1rem;
+  --radio: 12px; --radio-sm: 8px; --gutter: 16px; --toque: 44px;
+  --bg: var(--bg-primary);
+  --surface: var(--bg-card);
+  --surface-2: var(--bg-card-header);
+  --texto: var(--text-light);
+  --texto-suave: var(--text-muted);
+  --borde: var(--border-color);
+  --borde-fuerte: var(--accent-light);
+  --acento: var(--accent-gold, var(--accent-light));
+  --acento-2: var(--accent-light);
+  --sobre-acento: var(--bg-primary);
+  --mal: var(--danger-color);
+  --aviso: var(--accent-gold, var(--accent-light));
+  --sombra: var(--shadow);
+  font-family: var(--fuente-texto);
+}
+.dados .solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dados-limpiar { min-height: 36px; padding: 0 var(--sp-3); background: transparent; color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.dados-limpiar:hover { background: var(--surface-2); }
+
+/* ============================================================
+   LANZADOR DE DADOS + HISTORIAL (ficha-dados.js)
+   ============================================================ */
+.dados { position: fixed; right: var(--gutter); bottom: var(--gutter); z-index: 95; }
+.dados-fab { position: relative; width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--borde-fuerte); background: var(--acento); color: var(--sobre-acento); font-size: 1.6rem; line-height: 1; cursor: pointer; box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center; }
+.dados-fab:hover { background: var(--acento-2); }
+.dados-fab:focus-visible, .dados-cerrar:focus-visible, .dados-rapido:focus-visible, .dados-tab:focus-visible, .dados-tirar:focus-visible { outline: 3px solid var(--acento-2); outline-offset: 2px; }
+.dados-fab-badge { position: absolute; top: -8px; right: -8px; min-width: 26px; padding: 1px 6px; border-radius: 999px; border: 2px solid var(--acento); background: var(--surface); color: var(--texto); font-family: var(--fuente-texto); font-size: var(--fs-xs); font-weight: 800; text-align: center; }
+.dados-panel { position: absolute; right: 0; bottom: calc(56px + var(--sp-3)); width: min(380px, calc(100vw - 2 * var(--gutter))); max-height: min(78vh, 680px); display: flex; flex-direction: column; background: var(--surface); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
+.dados-panel[hidden] { display: none; }
+.dados-cab { display: flex; justify-content: space-between; align-items: center; padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--borde); background: var(--surface-2); }
+.dados-cab h3 { font-size: var(--fs-md); color: var(--acento); margin: 0; }
+.dados-cerrar { min-width: var(--toque); min-height: var(--toque); background: none; border: 0; color: var(--texto-suave); font-size: var(--fs-lg); cursor: pointer; border-radius: var(--radio-sm); }
+.dados-cerrar:hover { color: var(--texto); background: var(--surface); }
+.dados-cuerpo { display: grid; gap: var(--sp-2); padding: var(--sp-3); overflow-y: auto; }
+.dados-resultado { text-align: center; padding: var(--sp-2) var(--sp-3); border: 1px solid var(--borde); border-radius: var(--radio-sm); background: var(--bg); }
+.dados-total { font-family: var(--fuente-titulo); font-size: var(--fs-xl); font-weight: 800; color: var(--acento); line-height: 1.1; }
+.dados-etiqueta { font-weight: 800; margin-top: var(--sp-1); }
+.dados-detalle { color: var(--texto-suave); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.dados-error { padding: var(--sp-2) var(--sp-3); border: 1px solid var(--mal); border-radius: var(--radio-sm); color: var(--mal); font-size: var(--fs-sm); }
+.dados-error[hidden] { display: none; }
+.dados-fila { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.dados-fila label { font-size: var(--fs-sm); color: var(--texto-suave); font-weight: 700; }
+.dados-fila select, .dados-fila input, .dados-formula input { min-height: var(--toque); padding: 0 var(--sp-3); background: var(--bg); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font: inherit; }
+.dados-fila select { min-width: 9.5rem; }
+.dados-fila input { width: 6rem; text-align: center; }
+.dados-rapidos { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-1); }
+.dados-rapido { min-height: var(--toque); padding: 0; background: var(--surface-2); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font-weight: 800; cursor: pointer; }
+.dados-rapido:hover { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
+.dados-formula { display: flex; gap: var(--sp-2); }
+.dados-formula input { flex: 1; min-width: 0; }
+.dados-tirar { min-height: var(--toque); padding: 0 var(--sp-4); background: var(--acento); color: var(--sobre-acento); border: 0; border-radius: var(--radio-sm); font-weight: 800; cursor: pointer; }
+.dados-tabs { display: flex; gap: var(--sp-1); border-bottom: 1px solid var(--borde); }
+.dados-tab { flex: 1; min-height: var(--toque); background: none; border: 0; border-bottom: 3px solid transparent; color: var(--texto-suave); font-size: var(--fs-sm); font-weight: 800; cursor: pointer; }
+.dados-tab:hover { color: var(--texto); }
+.dados-tab[aria-selected="true"] { color: var(--acento); border-bottom-color: var(--acento); }
+.dados-historial { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-1); align-content: start; min-height: 10rem; max-height: 260px; overflow-y: auto; }
+.dados-item { display: grid; grid-template-columns: auto auto 1fr; gap: var(--sp-2); align-items: start; padding: var(--sp-2); border-left: 4px solid var(--acento); background: var(--bg); border-radius: var(--radio-sm); }
+.dados-item[data-grupo="recursos"] { border-left-color: var(--aviso); }
+.dados-hora { color: var(--texto-suave); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.dados-texto { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); align-items: baseline; min-width: 0; }
+.dados-et { overflow-wrap: anywhere; }
+.dados-res { font-family: var(--fuente-titulo); font-weight: 800; color: var(--acento); }
+.dados-det { flex-basis: 100%; color: var(--texto-suave); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.dados-vacio { color: var(--texto-suave); font-size: var(--fs-sm); text-align: center; padding: var(--sp-3); }
+.dados-pie { display: flex; justify-content: flex-end; }
+@media (max-width: 600px) {
+  .dados { right: var(--sp-3); bottom: var(--sp-3); }
+  .dados[data-abierto="true"] { right: 0; bottom: 0; left: 0; }
+  .dados[data-abierto="true"] .dados-fab { display: none; }
+  .dados-panel { position: static; width: auto; max-height: 86vh; border-radius: var(--radio) var(--radio) 0 0; border-bottom: 0; }
+  .dados-historial { max-height: 34vh; }
+}
+

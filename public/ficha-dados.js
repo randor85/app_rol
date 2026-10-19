@@ -13,7 +13,7 @@
  *   - El selector de ventaja es un <select id="dice-adv"> real con los valores que ya leen las fichas
  *     ('normal' | 'advantage' | 'disadvantage'), así el código existente que lo consulta sigue andando.
  *
- * API: iniciar, tirar, d20, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar.
+ * API: iniciar, tirar, d20, moneda, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar.
  * Estilos: sección "lanzador de dados" de ficha-tema.css (solo tokens).
  */
 (function () {
@@ -23,7 +23,7 @@
   const GRUPO_RECURSOS = (tipo) => tipo !== 'tirada';
 
   const estado = {
-    personaje: 'personaje', db: null, codigoCampana: null, max: 60,
+    personaje: 'personaje', db: null, codigoCampana: null, max: 60, publicarUsos: false,
     items: [], pendientes: [], iniciado: false, tab: 'todo',
     ui: {},
   };
@@ -82,6 +82,19 @@
     } catch (e) { /* el historial local sigue valiendo */ }
   }
 
+  const TIPOS_USO_PUBLICOS = { recurso: 1, hechizo: 1, inventario: 1, descanso: 1 };
+  /** Opcional (iniciar({ publicarUsos: true })): los usos de recurso también salen a la pantalla del GM, como hacían las fichas. */
+  function publicarUso(tipo, texto) {
+    if (!estado.publicarUsos || !TIPOS_USO_PUBLICOS[tipo]) return;
+    if (!estado.db || !estado.codigoCampana || typeof firebase === 'undefined') return;
+    try {
+      const p = estado.db.ref(`campanas/${estado.codigoCampana}/tiradas`).push({
+        personaje: estado.personaje, tipo: '🔧 ' + texto, resultado: 'usó', fecha: firebase.database.ServerValue.TIMESTAMP,
+      });
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) { /* el historial local sigue valiendo */ }
+  }
+
   /* ---------- resultado visible ---------- */
   function mostrarResultado(total, etiqueta, detalle) {
     const u = estado.ui;
@@ -106,6 +119,7 @@
   function registrarUso(texto, tipo, detalle) {
     const t = tipo || 'recurso';
     if (!estado.iniciado) { estado.pendientes.push({ texto, tipo: t, detalle }); return null; }
+    publicarUso(t, texto);
     return agregar(t, texto, '', detalle);
   }
 
@@ -175,6 +189,12 @@
     const et = etiqueta || String(texto);
     mostrar(r.total, et, r.detalle);
     return r;
+  }
+
+  /** Moneda del Destino (d2): muestra Cara o Cruz en lugar de 1 o 2. */
+  function moneda() {
+    const r = rnd(2);
+    return mostrar('🪙 ' + (r === 1 ? 'Cara' : 'Cruz'), 'Moneda del Destino', '[' + r + ']');
   }
 
   const ALIAS_CATEGORIA = { salvacion: 'salvaciones', prueba: 'pruebas' };
@@ -302,6 +322,8 @@
       });
       rapidos.appendChild(b);
     });
+    const bm = el('button', 'dados-rapido', '🪙'); bm.type = 'button'; bm.setAttribute('aria-label', 'Tirar la Moneda del Destino');
+    bm.addEventListener('click', moneda); rapidos.appendChild(bm);
 
     const form = document.createElement('form'); form.className = 'dados-formula'; form.noValidate = true;
     const lblF = el('label', 'solo-lector', 'Fórmula de dados'); lblF.htmlFor = 'dados-formula';
@@ -318,7 +340,7 @@
     });
     const lista = el('ol', 'dados-historial'); lista.setAttribute('aria-label', 'Historial de tiradas y usos de recursos');
     const pie = el('div', 'dados-pie');
-    const limpiar = el('button', 'btn btn-fantasma btn-sm', '🗑️ Limpiar historial'); limpiar.type = 'button';
+    const limpiar = el('button', 'btn btn-fantasma btn-sm dados-limpiar', '🗑️ Limpiar historial'); limpiar.type = 'button';
     limpiar.addEventListener('click', () => { if (confirm('¿Borrar todo el historial de este dispositivo?')) FichaDados.limpiar(); });
     pie.appendChild(limpiar);
 
@@ -337,6 +359,7 @@
     estado.db = o.db || null;
     estado.codigoCampana = o.codigoCampana || null;
     estado.max = o.maxHistorial || 60;
+    estado.publicarUsos = !!o.publicarUsos;
     if (estado.iniciado) return FichaDados;
     estado.items = cargar();
     construir();
@@ -363,5 +386,5 @@
     if (d.texto) registrarUso(d.texto, d.tipo, d.detalle);
   });
 
-  window.FichaDados = { iniciar, tirar, d20, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar, _parsear: parsear };
+  window.FichaDados = { iniciar, tirar, d20, moneda, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar, _parsear: parsear };
 })();
