@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ficha-tema.css">
 <script src="ficha-paleta.js"></script>
+<script src="ficha-dados.js"></script>
 <script>FichaPaleta.aplicarGuardada({ porDefecto: 'bosque', clave: 'fiona_faraway_prototipo' });</script>
 <style>
   /* Solo estructura propia del prototipo; los colores salen exclusivamente de los tokens. */
@@ -59,8 +60,8 @@
     <div class="barra-dato"><small>Prof.</small><strong>+4</strong></div>
     <label class="conc-casilla" id="barra-conc" hidden>🧠 <span id="barra-conc-nombre"></span></label>
     <span class="barra-sep"></span>
-    <button type="button" class="btn btn-fantasma btn-sm" data-toast="Descanso corto: dados de golpe y recursos de descanso corto recuperados">☕ Corto</button>
-    <button type="button" class="btn btn-fantasma btn-sm" data-toast="Descanso largo: HP, espacios y recursos restablecidos">🌙 Largo</button>
+    <button type="button" class="btn btn-fantasma btn-sm" id="btn-corto">☕ Corto</button>
+    <button type="button" class="btn btn-fantasma btn-sm" id="btn-largo">🌙 Largo</button>
   </div>
 
   <!-- ============ 3. VITALES ============ -->
@@ -89,7 +90,7 @@
             <button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 1"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 2"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 3"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 4"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 5"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 6"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 7"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 8"></button><button type="button" class="pip dado lleno" aria-pressed="true" aria-label="Dado 9"></button>
           </div>
           <p class="nota-ejemplo"><span id="dg-cuenta">9</span> de 9 disponibles · gastá uno tocando un dado</p>
-          <button type="button" class="btn btn-roll" data-toast="🎲 Dado de golpe: 1d8 + 2 (CON) = 7 HP recuperados">🎲 Usar dado de golpe</button>
+          <button type="button" class="btn btn-roll" id="btn-dg">🎲 Usar dado de golpe</button>
         </div>
 
         <div class="panel">
@@ -130,35 +131,35 @@
     <summary><span class="seccion-icono">📊</span> Atributos, salvaciones y habilidades</summary>
     <div class="seccion-cuerpo">
       <div class="atributos">
-        <div class="atributo"><h3>STR</h3><div class="ab-score"><input type="number" value="13" aria-label="Puntuación de STR"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de STR" title="Aumento temporal"></div><div class="ab-mod">(+1)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 STR Check: d20 + 1">Check +1</button><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 STR Save: d20 + 1">Save +1</button></div></div>
-        <div class="atributo"><h3>DEX</h3><div class="ab-score"><input type="number" value="14" aria-label="Puntuación de DEX"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de DEX"></div><div class="ab-mod">(+2)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 DEX Check: d20 + 2">Check +2</button><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 DEX Save: d20 + 2">Save +2</button></div></div>
-        <div class="atributo"><h3>CON</h3><div class="ab-score"><input type="number" value="14" aria-label="Puntuación de CON"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de CON"></div><div class="ab-mod">(+2)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 CON Check: d20 + 2">Check +2</button><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 CON Save: d20 + 2">Save +2</button></div></div>
-        <div class="atributo competente"><h3>INT ★</h3><div class="ab-score"><input type="number" value="12" aria-label="Puntuación de INT"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de INT"></div><div class="ab-mod">(+1)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 INT Check: d20 + 1">Check +1</button><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 INT Save: d20 + 5">Save +5 ★</button></div></div>
-        <div class="atributo competente"><h3>WIS ★</h3><div class="ab-score"><input type="number" value="20" aria-label="Puntuación de WIS"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de WIS"></div><div class="ab-mod">(+5)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 WIS Check: d20 + 5">Check +5</button><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 WIS Save: d20 + 9">Save +9 ★</button></div></div>
-        <div class="atributo"><h3>CHA</h3><div class="ab-score"><input type="number" value="12" aria-label="Puntuación de CHA"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de CHA"></div><div class="ab-mod">(+1)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 CHA Check: d20 + 1">Check +1</button><button type="button" class="btn-roll btn-roll-sm" data-toast="🎲 CHA Save: d20 + 1">Save +1</button></div></div>
+        <div class="atributo"><h3>STR</h3><div class="ab-score"><input type="number" value="13" aria-label="Puntuación de STR"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de STR" title="Aumento temporal"></div><div class="ab-mod">(+1)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-d20="STR Check" data-mod="1" data-cat="pruebas">Check +1</button><button type="button" class="btn-roll btn-roll-sm" data-d20="STR Save" data-mod="1" data-cat="salvaciones">Save +1</button></div></div>
+        <div class="atributo"><h3>DEX</h3><div class="ab-score"><input type="number" value="14" aria-label="Puntuación de DEX"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de DEX"></div><div class="ab-mod">(+2)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-d20="DEX Check" data-mod="2" data-cat="pruebas">Check +2</button><button type="button" class="btn-roll btn-roll-sm" data-d20="DEX Save" data-mod="2" data-cat="salvaciones">Save +2</button></div></div>
+        <div class="atributo"><h3>CON</h3><div class="ab-score"><input type="number" value="14" aria-label="Puntuación de CON"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de CON"></div><div class="ab-mod">(+2)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-d20="CON Check" data-mod="2" data-cat="pruebas">Check +2</button><button type="button" class="btn-roll btn-roll-sm" data-d20="CON Save" data-mod="2" data-cat="salvaciones">Save +2</button></div></div>
+        <div class="atributo competente"><h3>INT ★</h3><div class="ab-score"><input type="number" value="12" aria-label="Puntuación de INT"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de INT"></div><div class="ab-mod">(+1)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-d20="INT Check" data-mod="1" data-cat="pruebas">Check +1</button><button type="button" class="btn-roll btn-roll-sm" data-d20="INT Save" data-mod="5" data-cat="salvaciones">Save +5 ★</button></div></div>
+        <div class="atributo competente"><h3>WIS ★</h3><div class="ab-score"><input type="number" value="20" aria-label="Puntuación de WIS"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de WIS"></div><div class="ab-mod">(+5)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-d20="WIS Check" data-mod="5" data-cat="pruebas">Check +5</button><button type="button" class="btn-roll btn-roll-sm" data-d20="WIS Save" data-mod="9" data-cat="salvaciones">Save +9 ★</button></div></div>
+        <div class="atributo"><h3>CHA</h3><div class="ab-score"><input type="number" value="12" aria-label="Puntuación de CHA"></div><div class="ab-temp"><input type="number" value="0" aria-label="Aumento temporal de CHA"></div><div class="ab-mod">(+1)</div><div class="ab-btns"><button type="button" class="btn-roll btn-roll-sm" data-d20="CHA Check" data-mod="1" data-cat="pruebas">Check +1</button><button type="button" class="btn-roll btn-roll-sm" data-d20="CHA Save" data-mod="1" data-cat="salvaciones">Save +1</button></div></div>
       </div>
       <p class="nota-ejemplo">Debajo de cada puntuación va el “aumento temporal” (pociones, artefactos). El bono de competencia y todos los números de abajo se calculan solos desde el nivel.</p>
 
       <div class="etiqueta-seccion">Habilidades (★ = competencia)</div>
       <div class="skills-grid">
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Acrobatics: d20 + 2" aria-label="Tirar Acrobatics">🎲</button><span class="skill-name">Acrobatics</span><span class="skill-mod">+2</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Animal Handling: d20 + 9" aria-label="Tirar Animal Handling">🎲</button><span class="skill-name">Animal Handling<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Arcana: d20 + 1" aria-label="Tirar Arcana">🎲</button><span class="skill-name">Arcana</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Athletics: d20 + 1" aria-label="Tirar Athletics">🎲</button><span class="skill-name">Athletics</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Deception: d20 + 1" aria-label="Tirar Deception">🎲</button><span class="skill-name">Deception</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 History: d20 + 1" aria-label="Tirar History">🎲</button><span class="skill-name">History</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Insight: d20 + 9" aria-label="Tirar Insight">🎲</button><span class="skill-name">Insight<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Intimidation: d20 + 1" aria-label="Tirar Intimidation">🎲</button><span class="skill-name">Intimidation</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Investigation: d20 + 1" aria-label="Tirar Investigation">🎲</button><span class="skill-name">Investigation</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Medicine: d20 + 9" aria-label="Tirar Medicine">🎲</button><span class="skill-name">Medicine<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Nature: d20 + 5" aria-label="Tirar Nature">🎲</button><span class="skill-name">Nature<span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Perception: d20 + 9" aria-label="Tirar Perception">🎲</button><span class="skill-name">Perception<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Performance: d20 + 1" aria-label="Tirar Performance">🎲</button><span class="skill-name">Performance</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Persuasion: d20 + 1" aria-label="Tirar Persuasion">🎲</button><span class="skill-name">Persuasion</span><span class="skill-mod">+1</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Religion: d20 + 5" aria-label="Tirar Religion">🎲</button><span class="skill-name">Religion<span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Sleight of Hand: d20 + 2" aria-label="Tirar Sleight of Hand">🎲</button><span class="skill-name">Sleight of Hand</span><span class="skill-mod">+2</span></div>
-        <div class="skill-item"><button type="button" class="btn-roll" data-toast="🎲 Stealth: d20 + 2" aria-label="Tirar Stealth">🎲</button><span class="skill-name">Stealth</span><span class="skill-mod">+2</span></div>
-        <div class="skill-item competente"><button type="button" class="btn-roll" data-toast="🎲 Survival: d20 + 9" aria-label="Tirar Survival">🎲</button><span class="skill-name">Survival<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Acrobatics" data-mod="2" data-cat="pruebas" aria-label="Tirar Acrobatics">🎲</button><span class="skill-name">Acrobatics</span><span class="skill-mod">+2</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Animal Handling" data-mod="9" data-cat="pruebas" aria-label="Tirar Animal Handling">🎲</button><span class="skill-name">Animal Handling<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Arcana" data-mod="1" data-cat="pruebas" aria-label="Tirar Arcana">🎲</button><span class="skill-name">Arcana</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Athletics" data-mod="1" data-cat="pruebas" aria-label="Tirar Athletics">🎲</button><span class="skill-name">Athletics</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Deception" data-mod="1" data-cat="pruebas" aria-label="Tirar Deception">🎲</button><span class="skill-name">Deception</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="History" data-mod="1" data-cat="pruebas" aria-label="Tirar History">🎲</button><span class="skill-name">History</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Insight" data-mod="9" data-cat="pruebas" aria-label="Tirar Insight">🎲</button><span class="skill-name">Insight<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Intimidation" data-mod="1" data-cat="pruebas" aria-label="Tirar Intimidation">🎲</button><span class="skill-name">Intimidation</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Investigation" data-mod="1" data-cat="pruebas" aria-label="Tirar Investigation">🎲</button><span class="skill-name">Investigation</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Medicine" data-mod="9" data-cat="pruebas" aria-label="Tirar Medicine">🎲</button><span class="skill-name">Medicine<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Nature" data-mod="5" data-cat="pruebas" aria-label="Tirar Nature">🎲</button><span class="skill-name">Nature<span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Perception" data-mod="9" data-cat="pruebas" aria-label="Tirar Perception">🎲</button><span class="skill-name">Perception<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Performance" data-mod="1" data-cat="pruebas" aria-label="Tirar Performance">🎲</button><span class="skill-name">Performance</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Persuasion" data-mod="1" data-cat="pruebas" aria-label="Tirar Persuasion">🎲</button><span class="skill-name">Persuasion</span><span class="skill-mod">+1</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Religion" data-mod="5" data-cat="pruebas" aria-label="Tirar Religion">🎲</button><span class="skill-name">Religion<span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Sleight of Hand" data-mod="2" data-cat="pruebas" aria-label="Tirar Sleight of Hand">🎲</button><span class="skill-name">Sleight of Hand</span><span class="skill-mod">+2</span></div>
+        <div class="skill-item"><button type="button" class="btn-roll" data-d20="Stealth" data-mod="2" data-cat="pruebas" aria-label="Tirar Stealth">🎲</button><span class="skill-name">Stealth</span><span class="skill-mod">+2</span></div>
+        <div class="skill-item competente"><button type="button" class="btn-roll" data-d20="Survival" data-mod="9" data-cat="pruebas" aria-label="Tirar Survival">🎲</button><span class="skill-name">Survival<span class="skill-tag">★</span></span><span class="skill-mod">+9</span></div>
       </div>
     </div>
   </details>
@@ -170,10 +171,10 @@
       <table class="tabla tabla-resp">
         <thead><tr><th>Arma</th><th>Bono</th><th>Daño</th><th>Notas</th><th>Tirar</th></tr></thead>
         <tbody>
-          <tr><td data-etiqueta="Arma"><strong>Quarterstaff</strong></td><td class="num" data-etiqueta="Bono">+5</td><td data-etiqueta="Daño">1d6 + 1 contundente</td><td data-etiqueta="Notas">Cuerpo a cuerpo · versátil (1d8)</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎯 Quarterstaff: d20 + 5">🎯 Atacar</button><button type="button" class="btn-roll btn-roll-sm" data-toast="💥 Quarterstaff: 1d6 + 1 = 5">💥 1d6+1</button></div></td></tr>
-          <tr><td data-etiqueta="Arma"><strong>Shillelagh</strong></td><td class="num" data-etiqueta="Bono">+9</td><td data-etiqueta="Daño">1d8 + 5 contundente</td><td data-etiqueta="Notas">Acción adicional · usa WIS · +1d6 elemental 1/turno</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎯 Shillelagh: d20 + 9">🎯 Atacar</button><button type="button" class="btn-roll btn-roll-sm" data-toast="💥 Shillelagh: 1d8 + 5 = 9">💥 1d8+5</button></div></td></tr>
-          <tr><td data-etiqueta="Arma"><strong>Light Crossbow</strong></td><td class="num" data-etiqueta="Bono">+6</td><td data-etiqueta="Daño">1d8 + 2 perforante</td><td data-etiqueta="Notas">Alcance 80/320 ft · recarga · 2 manos</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎯 Light Crossbow: d20 + 6">🎯 Atacar</button><button type="button" class="btn-roll btn-roll-sm" data-toast="💥 Light Crossbow: 1d8 + 2 = 7">💥 1d8+2</button></div></td></tr>
-          <tr><td data-etiqueta="Arma"><strong>Ataque de conjuro</strong></td><td class="num" data-etiqueta="Bono">+9</td><td data-etiqueta="Daño">Según el conjuro</td><td data-etiqueta="Notas">WIS +5 · Competencia +4</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-toast="🎯 Ataque de conjuro: d20 + 9">🎯 Atacar</button></div></td></tr>
+          <tr><td data-etiqueta="Arma"><strong>Quarterstaff</strong></td><td class="num" data-etiqueta="Bono">+5</td><td data-etiqueta="Daño">1d6 + 1 contundente</td><td data-etiqueta="Notas">Cuerpo a cuerpo · versátil (1d8)</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-d20="Quarterstaff" data-mod="5" data-cat="ataque">🎯 Atacar</button><button type="button" class="btn-roll btn-roll-sm" data-formula="1d6+1" data-etiqueta="Quarterstaff (daño)">💥 1d6+1</button></div></td></tr>
+          <tr><td data-etiqueta="Arma"><strong>Shillelagh</strong></td><td class="num" data-etiqueta="Bono">+9</td><td data-etiqueta="Daño">1d8 + 5 contundente</td><td data-etiqueta="Notas">Acción adicional · usa WIS · +1d6 elemental 1/turno</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-d20="Shillelagh" data-mod="9" data-cat="ataque">🎯 Atacar</button><button type="button" class="btn-roll btn-roll-sm" data-formula="1d8+5" data-etiqueta="Shillelagh (daño)">💥 1d8+5</button></div></td></tr>
+          <tr><td data-etiqueta="Arma"><strong>Light Crossbow</strong></td><td class="num" data-etiqueta="Bono">+6</td><td data-etiqueta="Daño">1d8 + 2 perforante</td><td data-etiqueta="Notas">Alcance 80/320 ft · recarga · 2 manos</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-d20="Light Crossbow" data-mod="6" data-cat="ataque">🎯 Atacar</button><button type="button" class="btn-roll btn-roll-sm" data-formula="1d8+2" data-etiqueta="Light Crossbow (daño)">💥 1d8+2</button></div></td></tr>
+          <tr><td data-etiqueta="Arma"><strong>Ataque de conjuro</strong></td><td class="num" data-etiqueta="Bono">+9</td><td data-etiqueta="Daño">Según el conjuro</td><td data-etiqueta="Notas">WIS +5 · Competencia +4</td><td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-d20="Ataque de conjuro" data-mod="9" data-cat="ataque">🎯 Atacar</button></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -210,7 +211,7 @@
             <td><strong>Guidance</strong> <span class="tag">🧠 Conc.</span></td>
             <td data-etiqueta="Tiempo / alcance">1 acción · Toque</td>
             <td data-etiqueta="Efecto" class="resumen-hechizo">Suma 1d4 a una prueba de característica. <em>(1 min)</em></td>
-            <td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-toast="✅ Guidance usado (sin tirada automática)">✅ Usar</button><button type="button" class="btn-buff" data-buff="guidance" aria-pressed="false">⚪ Activar</button></div></td>
+            <td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-lanzar="Guidance" data-nivel="0">✅ Usar</button><button type="button" class="btn-buff" data-buff="guidance" aria-pressed="false">⚪ Activar</button></div></td>
           </tr>
           <tr>
             <td><span class="tag">1.º</span></td>
@@ -224,28 +225,28 @@
             <td><strong>Faerie Fire</strong> <span class="tag-atk">🛡️ DEX CD 17</span> <span class="tag">🧠 Conc.</span></td>
             <td data-etiqueta="Tiempo / alcance">1 acción · 60 ft · 📐 cubo de 20 ft</td>
             <td data-etiqueta="Efecto" class="resumen-hechizo">Ventaja en ataques contra los afectados; impide invisibilidad. <em>(1 min)</em></td>
-            <td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-conc="Faerie Fire" data-toast="✅ Faerie Fire usado · espacio de nivel 1 gastado">✅ Usar</button><button type="button" class="btn-roll btn-roll-sm" data-toast="Editar hechizo">✏️</button></div></td>
+            <td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-conc="Faerie Fire" data-lanzar="Faerie Fire" data-nivel="1">✅ Usar</button><button type="button" class="btn-roll btn-roll-sm" data-toast="Editar hechizo">✏️</button></div></td>
           </tr>
           <tr>
             <td><span class="tag">2.º</span></td>
             <td><strong>Shield of Faith</strong> <span class="tag">🧠 Conc.</span></td>
             <td data-etiqueta="Tiempo / alcance">1 acción adicional · 60 ft</td>
             <td data-etiqueta="Efecto" class="resumen-hechizo">+2 a la CA de una criatura. <em>🔆 +2 CA</em> <em>(10 min)</em></td>
-            <td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-conc="Shield of Faith" data-toast="✅ Shield of Faith usado · buff activado">✅ Usar</button><button type="button" class="btn-buff on" id="btn-buff-fe" aria-pressed="true">🟢 Activo</button></div></td>
+            <td><div class="spell-item-actions"><button type="button" class="btn-roll btn-roll-sm" data-conc="Shield of Faith" data-lanzar="Shield of Faith" data-nivel="2">✅ Usar</button><button type="button" class="btn-buff on" id="btn-buff-fe" aria-pressed="true">🟢 Activo</button></div></td>
           </tr>
           <tr>
             <td><span class="tag">3.º</span></td>
             <td><strong>Conjure Animals (2024)</strong> <span class="tag-atk">🛡️ DEX CD 17</span> <span class="tag">🧠 Conc.</span></td>
             <td data-etiqueta="Tiempo / alcance">1 acción · 60 ft</td>
             <td data-etiqueta="Efecto" class="resumen-hechizo">Manada espectral: daño al entrar o moverse. +1d10 por nivel. <em>⬆️ Escala con el nivel</em> <em>(10 min)</em></td>
-            <td><div class="spell-item-actions"><label class="solo-lector" for="up-conj">Nivel de espacio</label><select id="up-conj" aria-label="Nivel de espacio para Conjure Animals"><option>Nvl 3</option><option>Nvl 4</option><option>Nvl 5</option></select><button type="button" class="btn-roll btn-roll-sm" data-conc="Conjure Animals (2024)" data-toast="🎲 Conjure Animals (nivel 3): 3d10 = 17">🎲 Tirar</button></div></td>
+            <td><div class="spell-item-actions"><label class="solo-lector" for="up-conj">Nivel de espacio</label><select id="up-conj" aria-label="Nivel de espacio para Conjure Animals"><option>Nvl 3</option><option>Nvl 4</option><option>Nvl 5</option></select><button type="button" class="btn-roll btn-roll-sm" data-conc="Conjure Animals (2024)" data-lanzar="Conjure Animals (2024)" data-nivel="3" data-up="#up-conj">🎲 Tirar</button></div></td>
           </tr>
           <tr>
             <td><span class="tag">3.º</span></td>
             <td><strong>Summon Fey</strong> <span class="tag">🧠 Conc.</span></td>
             <td data-etiqueta="Tiempo / alcance">1 acción · 90 ft</td>
             <td data-etiqueta="Efecto" class="resumen-hechizo">Espíritu feérico a tu lado; estadísticas según el espacio usado. <em>⬆️ Escala con el nivel</em></td>
-            <td><div class="spell-item-actions"><select aria-label="Nivel de espacio para Summon Fey"><option>Nvl 3</option><option>Nvl 4</option><option>Nvl 5</option></select><button type="button" class="btn-roll btn-roll-sm" data-conc="Summon Fey" data-toast="📜 Summon Fey (nivel 3): ver bloque de estadísticas del espíritu feérico">📜 Usar</button></div></td>
+            <td><div class="spell-item-actions"><label class="solo-lector" for="up-fey">Nivel de espacio</label><select id="up-fey" aria-label="Nivel de espacio para Summon Fey"><option>Nvl 3</option><option>Nvl 4</option><option>Nvl 5</option></select><button type="button" class="btn-roll btn-roll-sm" data-conc="Summon Fey" data-lanzar="Summon Fey" data-nivel="3" data-up="#up-fey">📜 Usar</button></div></td>
           </tr>
         </tbody>
       </table>
@@ -280,7 +281,7 @@
         </div>
         <div class="recurso ejemplo">
           <div class="recurso-cab"><span class="recurso-nombre">🗡️ Sneak Attack <span class="tag">ejemplo: Pícaro 9</span></span><span class="recurso-recarga">Informativo</span></div>
-          <div class="recurso-valor"><span class="recurso-info">5d6</span><button type="button" class="btn-roll" data-toast="🎲 Sneak Attack: 5d6 = 18">🎲 Tirar</button></div>
+          <div class="recurso-valor"><span class="recurso-info">5d6</span><button type="button" class="btn-roll" data-formula="5d6" data-etiqueta="Sneak Attack">🎲 Tirar</button></div>
           <p class="recurso-desc">Dados = ⌈nivel de Pícaro ÷ 2⌉. Se muestra y se tira, no se gasta.</p>
         </div>
         <div class="recurso ejemplo">
@@ -383,7 +384,7 @@
         <p class="nota-ejemplo">Con varias clases se elige cuál sube (y se validan los requisitos de multiclase).</p>
       </div>
       <div class="paso-panel" data-pp="2" hidden>
-        <div class="fila"><button type="button" class="btn btn-roll" data-toast="🎲 1d8 = 6, + 2 (CON) = 8 HP">🎲 Tirar 1d8</button><button type="button" class="btn btn-fantasma" data-toast="Promedio: 5 + 2 (CON) = 7 HP">📊 Promedio (5)</button></div>
+        <div class="fila"><button type="button" class="btn btn-roll" data-formula="1d8+2" data-etiqueta="Dado de golpe al subir de nivel">🎲 Tirar 1d8</button><button type="button" class="btn btn-fantasma" data-toast="Promedio: 5 + 2 (CON) = 7 HP" data-uso="Subida de nivel: usó el promedio del dado de golpe (5 + 2 CON = 7 PG)" data-uso-tipo="nivel">📊 Promedio (5)</button></div>
         <div class="aviso-bien"><span>HP máximo: 66 → 74 (con el promedio, 73)</span></div>
       </div>
       <div class="paso-panel" data-pp="3" hidden>
@@ -421,6 +422,25 @@
 <script>
   FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: 'bosque', clave: 'fiona_faraway_prototipo' });
 
+  /* --- lanzador de dados + historial (ficha-dados.js) --- */
+  // En la ficha real FichaBuffs lo provee ficha-common.js; acá un reemplazo mínimo para mostrar que
+  // los buffs activos suman sus dados a las tiradas (Guidance: +1d4 a pruebas).
+  let guidanceOn = false;
+  window.FichaBuffs = { tirarDados(cat) {
+    const partes = []; let total = 0;
+    if (guidanceOn && cat === 'pruebas') { const r = 1 + Math.floor(Math.random() * 4); total += r; partes.push({ fuente: 'Guidance', texto: 'Guidance: +' + r + ' (1d4 [' + r + '])', valor: r }); }
+    return { total, partes };
+  } };
+  FichaDados.iniciar({ personaje: 'Fiona Faraway' });
+  if (!FichaDados.historial().length) {   // primera visita: un par de entradas para que no se vea vacío
+    FichaDados.registrarUso('Descanso largo: PG, espacios y recursos restablecidos', 'descanso');
+    FichaDados.d20({ mod: 9, etiqueta: 'Perception', categoria: 'pruebas' });
+    FichaDados.registrarUso('Lanzó Faerie Fire con espacio de nivel 1 (quedan 3)', 'hechizo');
+    FichaDados.registrarUso('Concentrando en "Faerie Fire"', 'concentracion');
+    FichaDados.tirar('2d8+5', 'Cure Wounds (nivel 1)');
+    FichaDados.registrarUso('Forma Salvaje: 2 → 1 / 2', 'recurso');
+  }
+
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 
@@ -446,22 +466,45 @@
     $('#loh-barra').firstElementChild.style.width = pct + '%';
   }
 
+  const NOMBRE_PIPS = { dg: 'Dados de golpe', ws: 'Forma Salvaje', ki: 'Puntos de Enfoque', sp: 'Puntos de Hechicería', cd: 'Canalizar Divinidad' };
+  const NOMBRE_POOL = { 'loh-val': 'Imposición de manos', 'hp-val': 'PG' };
+  function contarPips(grupo) { return $$('.pip.lleno', grupo).length; }
+  function llenarPips(grupo, lleno) {
+    $$('.pip', grupo).forEach(p => { p.classList.toggle('lleno', lleno); p.setAttribute('aria-pressed', lleno); });
+    const c = grupo.dataset.pips && document.getElementById(grupo.dataset.pips + '-cuenta'); if (c) c.textContent = contarPips(grupo);
+  }
+  /** Gasta un espacio de conjuro del nivel indicado; devuelve cuántos quedan o null si no había. */
+  function gastarEspacio(nivel) {
+    const grupo = $$('.espacio').find(g => g.querySelector('h4') && g.querySelector('h4').textContent.trim() === 'Nivel ' + nivel);
+    if (!grupo) return undefined;
+    const lleno = $$('.pip.lleno', grupo);
+    if (!lleno.length) return null;
+    lleno[lleno.length - 1].classList.remove('lleno'); lleno[lleno.length - 1].setAttribute('aria-pressed', 'false');
+    return contarPips(grupo);
+  }
+
   document.addEventListener('click', (e) => {
     const d = e.target.closest('[data-delta]');
     if (d) {
-      const el = document.getElementById(d.dataset.objetivo);
-      el.textContent = Math.max(0, Math.min(+el.dataset.max, +el.textContent + +d.dataset.delta));
+      const el = document.getElementById(d.dataset.objetivo), antes = +el.textContent;
+      el.textContent = Math.max(0, Math.min(+el.dataset.max, antes + +d.dataset.delta));
       if (el.id === 'hp-val') actualizarHP(); if (el.id === 'loh-val') actualizarPool();
+      if (+el.textContent !== antes) FichaDados.registrarUso((NOMBRE_POOL[el.id] || el.id) + ': ' + antes + ' → ' + el.textContent + ' / ' + el.dataset.max, el.id === 'hp-val' ? 'hp' : 'recurso');
       return;
     }
     const pip = e.target.closest('.pip');
     if (pip) {
+      const grupo = pip.closest('[data-pips]'), esp = pip.closest('.espacio');
+      const antes = grupo ? contarPips(grupo) : esp ? contarPips(esp) : null;
       pip.classList.toggle('lleno');
       pip.setAttribute('aria-pressed', pip.classList.contains('lleno'));
-      const grupo = pip.closest('[data-pips]');
       if (grupo) {
-        const n = $$('.pip.lleno', grupo).length;
+        const n = contarPips(grupo);
         const c = document.getElementById(grupo.dataset.pips + '-cuenta'); if (c) c.textContent = n;
+        FichaDados.registrarUso((NOMBRE_PIPS[grupo.dataset.pips] || grupo.dataset.pips) + ': ' + antes + ' → ' + n + ' / ' + $$('.pip', grupo).length, 'recurso');
+      } else if (esp) {
+        const n = contarPips(esp);
+        FichaDados.registrarUso('Espacio de ' + esp.querySelector('h4').textContent.trim().toLowerCase() + ': ' + antes + ' → ' + n + ' / ' + $$('.pip', esp).length, 'recurso');
       }
       return;
     }
@@ -470,7 +513,8 @@
     const rep = e.target.closest('[data-rep]');
     if (rep) {
       const v = rep.parentElement.querySelector('.reputacion-valor');
-      const n = +v.dataset.valor + +rep.dataset.rep; v.dataset.valor = n;
+      const n = +v.dataset.valor + +rep.dataset.rep, antes = +v.dataset.valor; v.dataset.valor = n;
+      const fac = rep.closest('.reputacion-item'); FichaDados.registrarUso('Reputación con ' + (fac ? fac.querySelector('.reputacion-faccion').textContent : '') + ': ' + antes + ' → ' + n, 'reputacion');
       v.textContent = (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n);
       v.classList.toggle('positivo', n > 0); v.classList.toggle('negativo', n < 0);
     }
@@ -483,9 +527,32 @@
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-tirar="cure"]'); if (!b) return;
     const nivel = +$('#up-cure').value, n = 2 + 2 * (nivel - 1);
-    const rs = Array.from({ length: n }, () => 1 + Math.floor(Math.random() * 8));
-    toast('🎲 Cure Wounds (nivel ' + nivel + '): [' + rs.join(', ') + '] + 5 = ' + (rs.reduce((a, c) => a + c, 0) + 5));
+    const quedan = gastarEspacio(nivel);
+    if (quedan === null) { toast('No te quedan espacios de nivel ' + nivel); return; }
+    FichaDados.registrarUso('Lanzó Cure Wounds con espacio de nivel ' + nivel + (quedan !== undefined ? ' (quedan ' + quedan + ')' : ''), 'hechizo');
+    FichaDados.tirar(n + 'd8+5', 'Cure Wounds (nivel ' + nivel + ')');
   });
+
+  /* --- tiradas y usos conectados al lanzador --- */
+  document.addEventListener('click', (e) => {
+    const r = e.target.closest('[data-d20]');
+    if (r) { FichaDados.d20({ mod: +r.dataset.mod, etiqueta: r.dataset.d20, categoria: r.dataset.cat }); return; }
+    const f = e.target.closest('[data-formula]');
+    if (f) { FichaDados.tirar(f.dataset.formula, f.dataset.etiqueta); return; }
+    const u = e.target.closest('[data-uso]');
+    if (u) FichaDados.registrarUso(u.dataset.uso, u.dataset.usoTipo || 'recurso');
+    const l = e.target.closest('[data-lanzar]');
+    if (l) {
+      const sel = l.dataset.up ? $(l.dataset.up) : null;
+      const nivel = sel ? parseInt(sel.value.replace(/\D/g, ''), 10) : +l.dataset.nivel;
+      const nombre = l.dataset.lanzar;
+      if (nivel > 0) {
+        const quedan = gastarEspacio(nivel);
+        if (quedan === null) { toast('No te quedan espacios de nivel ' + nivel); e.stopImmediatePropagation(); return; }
+        FichaDados.registrarUso('Lanzó ' + nombre + ' con espacio de nivel ' + nivel + (quedan !== undefined ? ' (quedan ' + quedan + ')' : ''), 'hechizo');
+      } else FichaDados.registrarUso('Lanzó ' + nombre + ' (truco)', 'hechizo');
+    }
+  }, true);
 
   /* --- buff activable + CA + concentración + panel de buffs --- */
   let buffFe = true;
@@ -505,22 +572,27 @@
     recalcularCA();
   }
   function fijarConcentracion(nombre) {
+    const previa = $('#conc-nombre').textContent;
+    if (nombre && previa !== nombre && previa !== 'ninguna') FichaDados.registrarUso('Concentración: pasa de "' + previa + '" a "' + nombre + '"', 'concentracion');
+    else if (nombre && previa !== nombre) FichaDados.registrarUso('Concentrando en "' + nombre + '"', 'concentracion');
+    else if (!nombre && previa !== 'ninguna') FichaDados.registrarUso('Dejó de concentrarse en "' + previa + '"', 'concentracion');
     $('#conc-check').checked = !!nombre;
     $('#conc-nombre').textContent = nombre || 'ninguna';
     $('#barra-conc').hidden = !nombre;
     $('#barra-conc-nombre').textContent = nombre || '';
-    if (nombre !== 'Shield of Faith' && buffFe) { buffFe = false; renderBuffs(); toast('Dejás de concentrarte en Shield of Faith: su buff se apagó'); }
-    if (nombre === 'Shield of Faith' && !buffFe) { buffFe = true; renderBuffs(); }
+    if (nombre !== 'Shield of Faith' && buffFe) { buffFe = false; renderBuffs(); FichaDados.registrarUso('Buff "Shield of Faith" desactivado (se soltó la concentración)', 'buff'); toast('Dejás de concentrarte en Shield of Faith: su buff se apagó'); }
+    if (nombre === 'Shield of Faith' && !buffFe) { buffFe = true; renderBuffs(); FichaDados.registrarUso('Buff "Shield of Faith" activado', 'buff', '+2 CA'); }
   }
   document.addEventListener('click', (e) => {
-    if (e.target.closest('#btn-buff-fe')) { buffFe = !buffFe; renderBuffs(); fijarConcentracion(buffFe ? 'Shield of Faith' : ''); toast(buffFe ? '🔆 Buff activado: +2 CA' : 'Buff apagado'); }
-    if (e.target.closest('#apagar-fe')) { buffFe = false; renderBuffs(); fijarConcentracion(''); }
+    if (e.target.closest('#btn-buff-fe')) { const quiere = !buffFe; fijarConcentracion(quiere ? 'Shield of Faith' : ''); toast(buffFe ? '🔆 Buff activado: +2 CA' : 'Buff apagado'); }
+    if (e.target.closest('#apagar-fe')) { buffFe = false; renderBuffs(); FichaDados.registrarUso('Buff "Shield of Faith" desactivado', 'buff'); fijarConcentracion(''); }
     const g = e.target.closest('[data-buff="guidance"]');
-    if (g) { const on = g.classList.toggle('on'); g.textContent = on ? '🟢 Activo' : '⚪ Activar'; toast(on ? '🔆 Guidance activo: +1d4 a pruebas' : 'Guidance apagado'); }
+    if (g) { const on = g.classList.toggle('on'); guidanceOn = on; g.textContent = on ? '🟢 Activo' : '⚪ Activar'; FichaDados.registrarUso('Buff "Guidance" ' + (on ? 'activado' : 'desactivado'), 'buff', '+1d4 a pruebas'); toast(on ? '🔆 Guidance activo: +1d4 a pruebas' : 'Guidance apagado'); }
   });
   $('#ca-buff').addEventListener('input', recalcularCA);
   $('#conc-check').addEventListener('change', (e) => { if (!e.target.checked) fijarConcentracion(''); else fijarConcentracion('Concentración (manual)'); });
-  buffFe = true; renderBuffs(); fijarConcentracion('Shield of Faith');
+  buffFe = true; renderBuffs();
+  $('#conc-check').checked = true; $('#conc-nombre').textContent = 'Shield of Faith'; $('#barra-conc').hidden = false; $('#barra-conc-nombre').textContent = 'Shield of Faith';
 
   /* --- poción (consumible) --- */
   let pociones = 2;
@@ -528,7 +600,32 @@
     if (pociones <= 0) { toast('No te quedan pociones'); return; }
     pociones--; $('#pocion-meta').textContent = 'x' + pociones + ' · consumible';
     const hp = $('#hp-val'); hp.textContent = Math.min(+hp.dataset.max, +hp.textContent + 7); actualizarHP();
+    FichaDados.registrarUso('Usó Poción de curación (quedan ' + pociones + ')', 'inventario', '+7 PG');
     toast('⚡ Poción usada: +7 HP');
+  });
+
+  /* --- descansos y dado de golpe --- */
+  $('#btn-corto').addEventListener('click', () => {
+    ['ws', 'ki', 'cd'].forEach(k => { const g = $('[data-pips="' + k + '"]'); if (g) llenarPips(g, true); });
+    FichaDados.registrarUso('Descanso corto: Forma Salvaje, Puntos de Enfoque y Canalizar Divinidad recuperados', 'descanso');
+    toast('☕ Descanso corto');
+  });
+  $('#btn-largo').addEventListener('click', () => {
+    $$('[data-pips]').forEach(g => llenarPips(g, true));
+    $$('.espacio').forEach(g => { $$('.pip', g).forEach(p => { p.classList.add('lleno'); p.setAttribute('aria-pressed', 'true'); }); });
+    const hp = $('#hp-val'); hp.textContent = hp.dataset.max; actualizarHP();
+    const loh = $('#loh-val'); loh.textContent = loh.dataset.max; actualizarPool();
+    FichaDados.registrarUso('Descanso largo: PG, espacios y todos los recursos restablecidos', 'descanso');
+    toast('🌙 Descanso largo');
+  });
+  $('#btn-dg').addEventListener('click', () => {
+    const g = $('[data-pips="dg"]'), llenos = $$('.pip.lleno', g);
+    if (!llenos.length) { toast('No te quedan dados de golpe'); return; }
+    llenos[llenos.length - 1].classList.remove('lleno'); llenos[llenos.length - 1].setAttribute('aria-pressed', 'false');
+    const c = document.getElementById('dg-cuenta'); if (c) c.textContent = contarPips(g);
+    FichaDados.registrarUso('Usó un dado de golpe (quedan ' + contarPips(g) + ')', 'recurso');
+    const r = FichaDados.tirar('1d8+2', 'Dado de golpe');
+    if (r && r.total) { const hp = $('#hp-val'); hp.textContent = Math.min(+hp.dataset.max, +hp.textContent + r.total); actualizarHP(); }
   });
 
   /* --- pestañas --- */
@@ -554,7 +651,7 @@
     $('#paso-sig').textContent = paso === 4 ? '✔ Confirmar subida' : 'Siguiente →';
   }
   $('#paso-atras').addEventListener('click', () => { paso = Math.max(1, paso - 1); pintarPaso(); });
-  $('#paso-sig').addEventListener('click', () => { if (paso === 4) { cerrarModales(); paso = 1; pintarPaso(); toast('Prototipo: aquí se aplicaría el nivel 10'); } else { paso++; pintarPaso(); } });
+  $('#paso-sig').addEventListener('click', () => { if (paso === 4) { cerrarModales(); paso = 1; pintarPaso(); FichaDados.registrarUso('Subió a Druida 10 (prototipo: nada se aplica de verdad)', 'nivel'); toast('Prototipo: aquí se aplicaría el nivel 10'); } else { paso++; pintarPaso(); } });
   pintarPaso();
 </script>
 </body>

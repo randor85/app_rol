@@ -232,6 +232,16 @@
   //       stat:  suma a una puntuación de atributo (STR..CHA), así el
   //              modificador y todo lo que depende de él se recalcula.
   // ============================================================
+  // Aviso de uso de recurso (hechizo lanzado, buff, concentración, consumible, reputación). Si hay un
+  // registro escuchando (ficha-dados.js) lo anota en el historial; si no, no pasa nada.
+  function emitirUso(tipo, texto, detalle) {
+    document.dispatchEvent(new CustomEvent('ficha:uso', { detail: { tipo, texto, detalle } }));
+  }
+  // Dónde mostrar un resultado de tirada: el lanzador compartido si está cargado; si no, el gancho de la ficha.
+  function resolverMostrar() {
+    if (window.FichaDados && FichaDados.mostrar) return FichaDados.mostrar;
+    return FICHA_CONFIG.mostrarTirada || null;
+  }
   const OBJETIVOS_PLANO = [['ca', 'CA'], ['iniciativa', 'Iniciativa'], ['velocidad', 'Velocidad (ft)'], ['hp-max', 'HP máx.'], ['ataque', 'Ataque con arma'], ['ataque-conjuro', 'Ataque de conjuro'], ['cd-conjuro', 'CD de conjuro'], ['salvaciones', 'Todas las salvaciones'], ['pruebas', 'Todas las pruebas y skills']];
   const OBJETIVOS_DADO = [['ataque', 'Tiradas de ataque'], ['salvaciones', 'Salvaciones'], ['pruebas', 'Pruebas y skills'], ['dano', 'Daño (se tira aparte)']];
   const STATS_ATRIBUTO = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
@@ -269,7 +279,8 @@
       const r = FichaBuffs.tirarDados('dano');
       if (!r.partes.length) return;
       const detalle = r.partes.map(p => p.texto).join(' | ');
-      if (FICHA_CONFIG.mostrarTirada) FICHA_CONFIG.mostrarTirada(r.total, 'Daño extra de buffs', detalle);
+      const mostrar = resolverMostrar();
+      if (mostrar) mostrar(r.total, 'Daño extra de buffs', detalle);
       else alert(`🎲 Daño extra: ${r.total}\n${detalle}`);
     },
     resumenEfectos,
@@ -400,9 +411,14 @@
     // Al soltar o cambiar de hechizo se apaga el buff del anterior (si era de concentración).
     if (previa && previa !== nombre && window.FichaHechizos) {
       FichaHechizos.editor.items().forEach((h, idx) => {
-        if (h.nombre === previa && h.buff && h.buff.activo && esConcentracion(h)) FichaHechizos.editor.mutar(idx, (it) => { it.buff.activo = false; });
+        if (h.nombre === previa && h.buff && h.buff.activo && esConcentracion(h)) {
+          FichaHechizos.editor.mutar(idx, (it) => { it.buff.activo = false; });
+          emitirUso('buff', `Buff "${h.nombre}" desactivado (se soltó la concentración)`);
+        }
       });
     }
+    if (nombre) emitirUso('concentracion', previa && previa !== nombre ? `Concentración: pasa de "${previa}" a "${nombre}"` : `Concentrando en "${nombre}"`);
+    else if (previa) emitirUso('concentracion', `Dejó de concentrarse en "${previa}"`);
     return previa;
   }
   // contenedorId: elemento donde se pinta la casilla (se crea el input oculto con el estado).
@@ -650,6 +666,8 @@
     function alternarBuff(idx) {
       if (modoLectura) return;
       editor.mutar(idx, (h) => { if (h.buff) h.buff.activo = !h.buff.activo; });
+      const hb = editor.items()[idx];
+      if (hb && hb.buff) emitirUso('buff', `Buff "${hb.nombre}" ${hb.buff.activo ? 'activado' : 'desactivado'}`, resumenEfectos(hb.buff.efectos));
     }
 
     function alternarCamposUpcast() {
@@ -743,6 +761,7 @@
         nivelGastado = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase;
       }
 
+      let quedan = null;
       if (nivelGastado) {
         // Id directo ('slot-N-cur'), no indexado por posición en FICHA_CONFIG.slotsIds
         // — esa indexación se rompía (undefined) para cualquier nivel más allá de
@@ -754,11 +773,16 @@
           const actual = parseInt(el.textContent) || 0;
           if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivelGastado} disponibles.`); return; }
           el.textContent = actual - 1;
+          quedan = actual - 1;
           guardarCampo(slotId, actual - 1);
           // FICHA_CONFIG.alGastarSlot(nivel, hechizo, slotId): registro de uso, casillas espejo, etc.
           if (FICHA_CONFIG.alGastarSlot) FICHA_CONFIG.alGastarSlot(nivelGastado, h, slotId);
         }
       }
+
+      // Registro de uso (historial del lanzador de dados, si está cargado).
+      emitirUso('hechizo', h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con espacio de nivel ${nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`));
+      const enDados = (window.FichaDados && FichaDados.mostrar) ? FichaDados.mostrar : null;
 
       // Hechizo de concentración: marca la casilla (y deja de concentrar en el anterior).
       let sufijoBuff = '';
@@ -770,11 +794,13 @@
       if (h.buff && !h.buff.activo) {
         editor.mutar(idx, (it) => { it.buff.activo = true; });
         sufijoBuff += `\n🔆 Buff "${h.nombre}" activado: ${resumenEfectos(h.buff.efectos)}.`;
+        emitirUso('buff', `Buff "${h.nombre}" activado`, resumenEfectos(h.buff.efectos));
       }
 
       if (h.upcast && h.upcast.tipo === 'tabla') {
         const texto = h.upcast.tabla[nivelGastado] || h.upcast.tabla[h.upcast.nivelBase] || '(sin detalle para ese nivel)';
-        alert(`📜 ${h.nombre} (nivel ${nivelGastado}): ${texto}${sufijoBuff}`);
+        if (enDados) enDados(`📜 nivel ${nivelGastado}`, h.nombre, texto);
+        else alert(`📜 ${h.nombre} (nivel ${nivelGastado}): ${texto}${sufijoBuff}`);
         return;
       }
 
@@ -790,8 +816,9 @@
         const tiradas = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
         const total = tiradas.reduce((a, b) => a + b, 0) + mod;
         const etiquetaNivel = h.upcast ? ` (nivel ${nivelGastado})` : '';
-        alert(`🎲 ${h.nombre}${etiquetaNivel}: [${tiradas.join(', ')}]${mod ? (mod > 0 ? ' +' : ' ') + mod : ''} = ${total}${sufijoBuff}`);
-      } else {
+        if (enDados) enDados(total, `${h.nombre}${etiquetaNivel}`, `[${tiradas.join(', ')}]${mod ? (mod > 0 ? ' + ' : ' − ') + Math.abs(mod) : ''}`);
+        else alert(`🎲 ${h.nombre}${etiquetaNivel}: [${tiradas.join(', ')}]${mod ? (mod > 0 ? ' +' : ' ') + mod : ''} = ${total}${sufijoBuff}`);
+      } else if (!enDados) {
         alert(`✅ ${h.nombre}: usado (sin tirada automática).${sufijoBuff}`);
       }
     }
@@ -918,6 +945,7 @@
       if (!item || modoLectura) return;
       if (item.cantidad <= 0) { alert(`No te quedan "${item.nombre}".`); return; }
       editor.mutar(idx, (it) => { it.cantidad -= 1; });
+      emitirUso('inventario', `Usó ${item.nombre} (quedan ${item.cantidad})`);
     }
 
     window.FichaInventario = { editor, guardarDesdeFormulario, alternarCamposArmadura, usar };
@@ -1279,7 +1307,10 @@
     }
     function ajustar(idx, delta) {
       if (modoLectura) return;
+      const antes = editor.items()[idx] ? editor.items()[idx].valor : null;
       editor.mutar(idx, (r) => { r.valor += delta; });
+      const r2 = editor.items()[idx];
+      if (r2 && antes !== null) emitirUso('reputacion', `Reputación con ${r2.faccion}: ${antes} → ${r2.valor}`);
     }
 
     window.FichaReputacion = { editor, guardarDesdeFormulario, ajustar };
@@ -1291,6 +1322,6 @@
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,
     iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
-    registrarFuenteBuffs, notificarBuffs, iniciarCA, iniciarConcentracion, esCampoEfimero,
+    registrarFuenteBuffs, notificarBuffs, iniciarCA, iniciarConcentracion, esCampoEfimero, emitirUso,
   };
 })();
