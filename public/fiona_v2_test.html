@@ -66,6 +66,21 @@
  .inventory-empty { color: var(--text-muted); font-size: 0.85rem; }
  label { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
  .nota-test { font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; }
+ #btn-compartir { background: #3a7d44; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; display: none; }
+ .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
+ .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-gold); list-style: none; font-size: 0.9rem; }
+ .bitacora-section > summary::-webkit-details-marker { display: none; }
+ .bitacora-section > summary::before { content: '▶'; display: inline-block; margin-right: 8px; font-size: 0.7em; transition: transform 0.2s; }
+ .bitacora-section[open] > summary::before { transform: rotate(90deg); }
+ .bitacora-section-content { padding: 0 14px 14px; }
+ .bitacora-section-content input[type="text"], .bitacora-section-content textarea { width: 100%; box-sizing: border-box; background: #0f0f12; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 8px; font-size: 0.85rem; margin-bottom: 8px; font-family: inherit; }
+ .bitacora-section-content .bf-entrada { border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.8rem; }
+ .bitacora-section-content .bf-entrada:last-child { border-bottom: none; }
+ .bitacora-section-content .bf-fecha { color: var(--accent-gold); font-size: 0.72rem; }
+ .bf-entrada-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+ .bf-entrada-actions button { background: none; border: none; cursor: pointer; font-size: 0.8rem; }
+ .bitacora-section-content button[type="button"] { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 6px 12px; font-weight: 700; cursor: pointer; font-size: 0.8rem; margin-right: 6px; }
+ .bitacora-section-label { margin: 0 0 8px; font-weight: 700; color: var(--accent-gold); font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -81,8 +96,24 @@
       <h1>Fiona Faraway (prueba)</h1>
       <div style="color:var(--text-muted);font-size:0.9rem;">Editor unificado de hechizos + inventario, sobre ficha-common.js</div>
     </div>
-    <a href="index.html">← Volver</a>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button id="btn-compartir">👁️ Compartir Ficha</button>
+      <a href="index.html">← Volver</a>
+    </div>
   </div>
+
+  <details class="bitacora-section" id="bitacora-section">
+  <summary>📜 Bitácora de la Campaña</summary>
+  <div class="bitacora-section-content">
+  <p class="bitacora-section-label">Nueva entrada</p>
+  <input type="text" id="bitacora-ficha-titulo" placeholder="Título (opcional)">
+  <textarea id="bitacora-ficha-texto" rows="3" placeholder="Qué pasó..."></textarea>
+  <button type="button" id="btn-guardar-bitacora-ficha" onclick="guardarEntradaBitacoraFicha()">Guardar Entrada</button>
+  <button type="button" id="btn-cancelar-bitacora-ficha" onclick="cancelarEdicionBitacoraFicha()" style="display:none;">Cancelar</button>
+  <p class="bitacora-section-label" style="margin-top:10px;border-top:1px solid var(--border-color);padding-top:8px;">Últimas entradas</p>
+  <div id="bitacora-ficha-lista"></div>
+  </div>
+  </details>
 
   <div class="card">
     <h2>Espacios de Conjuro</h2>
@@ -164,17 +195,6 @@
   const urlParams = new URLSearchParams(window.location.search);
   const codigoCampana = urlParams.get('campana');
 
-  function bloquearPorSistemaIncorrecto(sistemaCampana) {
-    document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
-      <div style="font-size:3rem;">⚠️</div>
-      <h1 style="font-size:1.3rem;color:#e0b84a;">Ficha fuera de sistema</h1>
-      <p style="max-width:420px;color:#94a3b8;">Esta ficha de prueba es de <strong>D&D</strong> y la campaña seleccionada es de otro sistema. No se puede abrir desde esa campaña.</p>
-      <a href="index.html?campana=${codigoCampana}" style="color:#e0b84a;text-decoration:underline;">← Volver al selector de personajes</a>
-    </div>`;
-  }
-
-  let ownerReparado = false;
-
   firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) {
       console.warn("Ficha de prueba sin sesión activa. Redirigiendo...");
@@ -186,7 +206,7 @@
       const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
       const sistemaCampana = sistemaSnap.val();
       if (sistemaCampana && sistemaCampana !== SISTEMA_PERSONAJE_PROPIO) {
-        bloquearPorSistemaIncorrecto(sistemaCampana);
+        FichaComun.bloquearPorSistemaIncorrecto(sistemaCampana, codigoCampana);
         return;
       }
       charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
@@ -198,27 +218,8 @@
     FichaComun.iniciarEditorHechizos();
     FichaComun.iniciarEditorInventario();
     FichaComun.sincronizarDatosDesdeNube();
-
-    const gmRefPromise = codigoCampana
-      ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
-      : Promise.resolve(true);
-
-    gmRefPromise.then(soyElGM => {
-      charRef.on('value', snap => {
-        const p = snap.val();
-        if (!p) return;
-
-        if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
-          ownerReparado = true;
-          charRef.child('owner').set(user.uid);
-          return;
-        }
-
-        const esMio = codigoCampana ? (p.owner === user.uid) : true;
-        const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
-        FichaComun.aplicarModoLectura(soloLectura);
-      });
-    });
+    FichaComun.iniciarBitacora({ db, codigoCampana });
+    FichaComun.iniciarPermisosYCompartir({ db, codigoCampana, uid: user.uid });
   });
 </script>
 </body>

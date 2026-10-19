@@ -448,8 +448,172 @@
     window.FichaInventario = { editor, guardarDesdeFormulario, alternarCamposArmadura, usar };
   }
 
+  // ============================================================
+  // 8. BITÁCORA DE CAMPAÑA — confirmado byte-idéntico en las 6
+  //    fichas D&D (renderizarBitacoraFicha/editarEntradaBitacoraFicha/
+  //    cancelarEdicionBitacoraFicha/eliminarEntradaBitacoraFicha/
+  //    guardarEntradaBitacoraFicha). Se expone como funciones globales
+  //    con el MISMO nombre porque el HTML de cada ficha ya las llama
+  //    vía onclick="..." — así una ficha migrada no necesita tocar su
+  //    markup, solo dejar de definir estas funciones ella misma.
+  // ============================================================
+  function iniciarBitacora({ db, codigoCampana }) {
+    const cont0 = document.getElementById('bitacora-ficha-lista');
+    if (!cont0) return; // esta ficha no tiene la tarjeta de bitácora
+
+    let bitacoraFichaCache = {};
+    let editandoKeyBitacoraFicha = null;
+
+    function renderizarBitacoraFicha(logs) {
+      const cont = document.getElementById('bitacora-ficha-lista');
+      if (!cont) return;
+      bitacoraFichaCache = {};
+      const entradas = Object.entries(logs || {}).map(([key, log]) => ({ key, ...log })).sort((a, b) => (b.fecha || 0) - (a.fecha || 0)).slice(0, 8);
+      if (!entradas.length) {
+        cont.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);">Sin entradas todavía.</p>';
+        return;
+      }
+      cont.innerHTML = entradas.map(log => {
+        bitacoraFichaCache[log.key] = { titulo: log.titulo || '', texto: log.texto || '' };
+        const esMia = log.personaje === FICHA_CONFIG.nombrePersonaje;
+        return `
+          <div class="bf-entrada">
+            <div class="bf-entrada-head">
+              <div class="bf-fecha">${log.fecha ? new Date(log.fecha).toLocaleString() : ''}${log.personaje ? ' · ' + log.personaje : ''}</div>
+              ${esMia ? `<div class="bf-entrada-actions">
+                <button type="button" onclick="editarEntradaBitacoraFicha('${log.key}')" title="Editar">✏️</button>
+                <button type="button" onclick="eliminarEntradaBitacoraFicha('${log.key}')" title="Eliminar">🗑️</button>
+              </div>` : ''}
+            </div>
+            ${log.titulo ? `<strong>${log.titulo}</strong>` : ''}
+            <p style="white-space:pre-wrap;margin:2px 0 0;">${log.texto || ''}</p>
+          </div>
+        `;
+      }).join('');
+    }
+    function editarEntradaBitacoraFicha(key) {
+      const entry = bitacoraFichaCache[key];
+      if (!entry) return;
+      editandoKeyBitacoraFicha = key;
+      document.getElementById('bitacora-ficha-titulo').value = entry.titulo;
+      document.getElementById('bitacora-ficha-texto').value = entry.texto;
+      const btn = document.getElementById('btn-guardar-bitacora-ficha');
+      if (btn) btn.innerText = '💾 Guardar Cambios';
+      const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
+      if (btnCancelar) btnCancelar.style.display = 'inline-block';
+      document.getElementById('bitacora-ficha-texto')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function cancelarEdicionBitacoraFicha() {
+      editandoKeyBitacoraFicha = null;
+      document.getElementById('bitacora-ficha-titulo').value = '';
+      document.getElementById('bitacora-ficha-texto').value = '';
+      const btn = document.getElementById('btn-guardar-bitacora-ficha');
+      if (btn) btn.innerText = 'Guardar Entrada';
+      const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
+      if (btnCancelar) btnCancelar.style.display = 'none';
+    }
+    function eliminarEntradaBitacoraFicha(key) {
+      if (!codigoCampana) return;
+      if (!confirm('¿Eliminar esta entrada de la bitácora?')) return;
+      db.ref(`campanas/${codigoCampana}/bitacora/${key}`).remove()
+        .catch(err => alert('No se pudo eliminar la entrada: ' + err.message));
+    }
+    function guardarEntradaBitacoraFicha() {
+      if (!codigoCampana) { alert('Esta ficha no está asociada a ninguna campaña.'); return; }
+      const tituloEl = document.getElementById('bitacora-ficha-titulo');
+      const textoEl = document.getElementById('bitacora-ficha-texto');
+      const texto = (textoEl.value || '').trim();
+      if (!texto) return;
+      if (editandoKeyBitacoraFicha) {
+        db.ref(`campanas/${codigoCampana}/bitacora/${editandoKeyBitacoraFicha}`).update({
+          titulo: (tituloEl.value || '').trim(),
+          texto: texto
+        }).then(() => {
+          cancelarEdicionBitacoraFicha();
+        }).catch(err => alert('No se pudo guardar la edición en la bitácora: ' + err.message));
+        return;
+      }
+      db.ref(`campanas/${codigoCampana}/bitacora`).push({
+        titulo: (tituloEl.value || '').trim(),
+        texto: texto,
+        fecha: firebase.database.ServerValue.TIMESTAMP,
+        personaje: FICHA_CONFIG.nombrePersonaje
+      }).then(() => {
+        tituloEl.value = '';
+        textoEl.value = '';
+      }).catch(err => alert('No se pudo guardar la entrada en la bitácora: ' + err.message));
+    }
+
+    if (codigoCampana) {
+      db.ref(`campanas/${codigoCampana}/bitacora`).on('value', snap => renderizarBitacoraFicha(snap.val() || {}));
+    } else {
+      const bitacoraWrap = document.getElementById('bitacora-section');
+      if (bitacoraWrap) bitacoraWrap.style.display = 'none';
+    }
+
+    window.editarEntradaBitacoraFicha = editarEntradaBitacoraFicha;
+    window.cancelarEdicionBitacoraFicha = cancelarEdicionBitacoraFicha;
+    window.eliminarEntradaBitacoraFicha = eliminarEntradaBitacoraFicha;
+    window.guardarEntradaBitacoraFicha = guardarEntradaBitacoraFicha;
+  }
+
+  // ============================================================
+  // 9. PERMISOS (owner/GM/modo lectura) + BOTÓN COMPARTIR +
+  //    BLOQUEO POR SISTEMA INCORRECTO — confirmado idéntico en
+  //    nevada_jones.html (y el resto de la flota) dentro de
+  //    firebase.auth().onAuthStateChanged.
+  // ============================================================
+  function bloquearPorSistemaIncorrecto(sistemaCampana, codigoCampana) {
+    const propio = FICHA_CONFIG.sistemaPropio === 'coc' ? 'Call of Cthulhu' : 'D&D';
+    const deCampana = sistemaCampana === 'coc' ? 'Call of Cthulhu' : 'D&D';
+    document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
+      <div style="font-size:3rem;">⚠️</div>
+      <h1 style="font-size:1.3rem;color:#e0b84a;">Ficha fuera de sistema</h1>
+      <p style="max-width:420px;color:#94a3b8;">Esta ficha es de <strong>${propio}</strong> y la campaña seleccionada es de <strong>${deCampana}</strong>. No se puede abrir esta ficha desde esa campaña.</p>
+      <a href="index.html?campana=${codigoCampana}" style="color:#e0b84a;text-decoration:underline;">← Volver al selector de personajes</a>
+    </div>`;
+  }
+
+  function iniciarPermisosYCompartir({ db, codigoCampana, uid }) {
+    if (!charRef) return;
+    let ownerReparado = false;
+
+    const gmRefPromise = codigoCampana
+      ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === uid)
+      : Promise.resolve(true);
+
+    gmRefPromise.then(soyElGM => {
+      charRef.on('value', snap => {
+        const p = snap.val();
+        if (!p) return;
+
+        // Auto-reparación: personaje activo sin owner (dato legacy) -> quien lo abre lo reclama.
+        if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+          ownerReparado = true;
+          charRef.child('owner').set(uid);
+          return;
+        }
+
+        const esMio = codigoCampana ? (p.owner === uid) : true;
+        const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+        aplicarModoLectura(soloLectura);
+
+        const btnCompartir = document.getElementById('btn-compartir');
+        if (btnCompartir && esMio) {
+          btnCompartir.style.display = 'inline-block';
+          btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+          btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+          btnCompartir.onclick = () => { charRef.child('publico').set(!p.publico); };
+        } else if (btnCompartir) {
+          btnCompartir.style.display = 'none';
+        }
+      });
+    });
+  }
+
   window.FichaComun = {
     setCharRef, guardarCampo, sincronizarDatosDesdeNube, aplicarModoLectura,
     crearEditorDeLista, iniciarEditorHechizos, iniciarEditorInventario,
+    iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
   };
 })();
