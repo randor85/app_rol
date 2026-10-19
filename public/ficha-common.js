@@ -221,6 +221,18 @@
     return nivel + sufijo;
   }
 
+  // Ataque/CD de un hechizo: fijo (bonus/dc) o automático (bonusAuto/dcAuto) según la
+  // característica de conjuro de la ficha (FICHA_CONFIG.habilidadConjuro) + bono de
+  // competencia vigente — así subir de nivel no deja un DC viejo en la tabla.
+  function valorAtaqueHechizo(ataque, campo) {
+    const auto = campo === 'dc' ? ataque.dcAuto : ataque.bonusAuto;
+    if (auto && window.FichaAtributos && FICHA_CONFIG.habilidadConjuro) {
+      const base = FichaAtributos.modDe(FICHA_CONFIG.habilidadConjuro) + FichaAtributos.profBonusActual();
+      return campo === 'dc' ? 8 + base : base;
+    }
+    return ataque[campo];
+  }
+
   function iniciarEditorHechizos() {
     const editor = crearEditorDeLista({
       storageKey: 'hechizos-json',
@@ -248,8 +260,8 @@
         }
         const ataqueBadge = !h.ataque ? '' :
           h.ataque.tipo === 'ataque'
-            ? `<span class="tag tag-atk">🎯 +${h.ataque.bonus} Ataque</span>`
-            : `<span class="tag tag-atk">🛡️ ${h.ataque.habilidad} DC ${h.ataque.dc}</span>`;
+            ? `<span class="tag tag-atk">🎯 ${formatearMod(valorAtaqueHechizo(h.ataque, 'bonus'))} Ataque</span>`
+            : `<span class="tag tag-atk">🛡️ ${h.ataque.habilidad} DC ${valorAtaqueHechizo(h.ataque, 'dc')}</span>`;
         const areaTxt = h.area ? ` · 📐 ${h.area}` : '';
         const upcastTxt = h.upcast ? ' · ⬆️ Escala con el nivel del espacio' : '';
         return `
@@ -296,6 +308,7 @@
               ${['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(a => `<option value="${a}" ${h && h.ataque && h.ataque.habilidad === a ? 'selected' : ''}>${a}</option>`).join('')}
             </select>
             <input type="number" id="hf-ataque-dc" placeholder="DC" style="width:70px;display:${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'inline-block' : 'none'};" value="${h && h.ataque && h.ataque.tipo === 'salvacion' ? h.ataque.dc : ''}">
+            <label id="hf-ataque-auto-label" style="display:${h && h.ataque ? 'flex' : 'none'};"><input type="checkbox" id="hf-ataque-auto" ${h && h.ataque && (h.ataque.dcAuto || h.ataque.bonusAuto) ? 'checked' : ''}> Automático (según mi característica de conjuro)</label>
           </div>
           <div class="spell-form-row-dado">
             <span class="spell-form-mini-label">Upcast (opcional, si el efecto escala con el nivel del espacio):</span>
@@ -334,6 +347,7 @@
       document.getElementById('hf-ataque-bonus').style.display = tipo === 'ataque' ? 'inline-block' : 'none';
       document.getElementById('hf-ataque-habilidad').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
       document.getElementById('hf-ataque-dc').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
+      document.getElementById('hf-ataque-auto-label').style.display = tipo ? 'flex' : 'none';
     }
 
     function alternarCamposUpcast() {
@@ -355,12 +369,14 @@
       let ataque = null;
       if (tipoAtaque === 'ataque') {
         ataque = { tipo: 'ataque', bonus: parseInt(document.getElementById('hf-ataque-bonus').value, 10) || 0 };
+        if (document.getElementById('hf-ataque-auto').checked) ataque.bonusAuto = true;
       } else if (tipoAtaque === 'salvacion') {
         ataque = {
           tipo: 'salvacion',
           habilidad: document.getElementById('hf-ataque-habilidad').value,
           dc: parseInt(document.getElementById('hf-ataque-dc').value, 10) || 0,
         };
+        if (document.getElementById('hf-ataque-auto').checked) ataque.dcAuto = true;
       }
       const tipoUpcast = document.getElementById('hf-upcast-tipo').value;
       let upcast = null;
@@ -448,6 +464,12 @@
         alert(`✅ ${h.nombre}: usado (sin tirada automática).`);
       }
     }
+
+    // Re-renderiza al recalcular atributos solo si algún hechizo tiene valores automáticos
+    // (evita resetear los selectores de upcast en cada sincronización si no hace falta).
+    document.addEventListener('ficha:atributos', () => {
+      if (editor.items().some(h => h.ataque && (h.ataque.dcAuto || h.ataque.bonusAuto))) editor.renderizar();
+    });
 
     window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast };
   }
@@ -817,8 +839,10 @@
     document.addEventListener('input', (e) => { if (idsAVigilar.includes(e.target.id)) recalcular(); });
     // Datos que llegan de Firebase se aplican por código (sin evento 'input').
     document.addEventListener('ficha:datos-sincronizados', recalcular);
-    recalcular();
+    // Se publica ANTES del primer recálculo: los listeners de 'ficha:atributos'
+    // (hechizos con DC automático, estadísticas con buff) lo necesitan ya disponible.
     window.FichaAtributos = { recalcular, profBonusActual: () => estadoAtributos.prof, modDe: (clave) => estadoAtributos.mods[clave] ?? 0, bonoSkill: (clave) => estadoAtributos.bonosSkill[clave] ?? 0 };
+    recalcular();
     return window.FichaAtributos;
   }
 
