@@ -97,6 +97,9 @@
           el.value = data[id];
         }
       });
+      // Los valores se aplican por código (sin evento 'input'): avisar para que
+      // las estadísticas derivadas (bono de competencia, saves, ataque...) recalculen.
+      document.dispatchEvent(new CustomEvent('ficha:datos-sincronizados'));
     });
   }
 
@@ -717,9 +720,203 @@
     });
   }
 
+  // ============================================================
+  // 10. ATRIBUTOS Y ESTADÍSTICAS DERIVADAS — el bono de competencia
+  //     y todo lo que depende de él (Check/Save, skills con
+  //     competencia/expertise, percepción pasiva, ataque/CD de
+  //     conjuro) se CALCULAN desde el nivel + puntuación base +
+  //     aumento temporal, en vez de ser texto hardcodeado. Nace de
+  //     un bug real (Fiona nivel 8->9, v55.0): 25 lugares quedaron
+  //     con el bono viejo porque nada los recalculaba.
+  // ============================================================
+  function calcularProfBonus(nivel) {
+    if (nivel >= 17) return 6;
+    if (nivel >= 13) return 5;
+    if (nivel >= 9) return 4;
+    if (nivel >= 5) return 3;
+    return 2;
+  }
+  function calcularModificador(score) {
+    return Math.floor((score - 10) / 2);
+  }
+  function formatearMod(n) {
+    return (n >= 0 ? '+' : '') + n;
+  }
+  function leerNumero(el, porDefecto) {
+    if (!el) return porDefecto;
+    const crudo = ('value' in el && el.value !== undefined && el.tagName !== 'DIV' && el.tagName !== 'SPAN') ? el.value : el.textContent;
+    const n = parseInt(crudo, 10);
+    return isNaN(n) ? porDefecto : n;
+  }
+
+  // opts.obtenerNivel: () => nivel total del personaje (preferido: p.ej. suma de
+  //   niveles de clase, o derivado de XP). Alternativa: opts.nivelInputId.
+  // opts.profBadgeId: elemento donde mostrar "+N".
+  // opts.habilidades: [{ clave:'WIS', scoreId, tempId?, contenedorId, saveCompetente, checkCompetente }]
+  //   El contenedor tiene .ab-mod, .btn-check y .btn-save (el bono vigente queda en dataset.bonus).
+  // opts.skills: [{ clave:'Perception', contenedorId, habilidad:'WIS', competente, expertise? }]
+  //   El contenedor tiene .skill-mod; el bono vigente queda en dataset.bonus del contenedor
+  //   (y de su botón), para que onclick lo lea en vez de llevar un número fijo.
+  // opts.pasiva: [{ elId, skillClave }] -> 10 + bono de esa skill (percepción pasiva, etc.).
+  // Dispara el evento 'ficha:atributos' tras cada recálculo para que otras
+  // estadísticas (ataque, CD de conjuro) se enganchen sin duplicar la cuenta.
+  const estadoAtributos = { prof: 2, mods: {}, bonosSkill: {} };
+  function iniciarAtributos(opts) {
+    const habilidades = opts.habilidades || [];
+    const skills = opts.skills || [];
+    function nivelActual() {
+      if (opts.obtenerNivel) return opts.obtenerNivel();
+      return opts.nivelInputId ? leerNumero(document.getElementById(opts.nivelInputId), 1) : 1;
+    }
+    function recalcular() {
+      const prof = calcularProfBonus(nivelActual());
+      estadoAtributos.prof = prof;
+      const badge = document.getElementById(opts.profBadgeId);
+      if (badge) badge.textContent = formatearMod(prof);
+      habilidades.forEach(h => {
+        const score = leerNumero(document.getElementById(h.scoreId), 10);
+        const temp = h.tempId ? leerNumero(document.getElementById(h.tempId), 0) : 0;
+        const mod = calcularModificador(score + temp);
+        estadoAtributos.mods[h.clave] = mod;
+        const cont = document.getElementById(h.contenedorId);
+        if (!cont) return;
+        const checkBonus = mod + (h.checkCompetente ? prof : 0);
+        const saveBonus = mod + (h.saveCompetente ? prof : 0);
+        const modEl = cont.querySelector('.ab-mod');
+        if (modEl) modEl.textContent = `(${formatearMod(mod)})`;
+        const checkBtn = cont.querySelector('.btn-check');
+        if (checkBtn) {
+          checkBtn.textContent = `Check ${formatearMod(checkBonus)}${h.checkCompetente ? '★' : ''}`;
+          checkBtn.dataset.bonus = checkBonus;
+        }
+        const saveBtn = cont.querySelector('.btn-save');
+        if (saveBtn) {
+          saveBtn.textContent = `Save ${formatearMod(saveBonus)}${h.saveCompetente ? '★' : ''}`;
+          saveBtn.dataset.bonus = saveBonus;
+        }
+      });
+      skills.forEach(s => {
+        const mod = estadoAtributos.mods[s.habilidad] ?? 0;
+        const bono = mod + (s.competente ? prof * (s.expertise ? 2 : 1) : 0);
+        estadoAtributos.bonosSkill[s.clave] = bono;
+        const cont = document.getElementById(s.contenedorId);
+        if (!cont) return;
+        const modEl = cont.querySelector('.skill-mod');
+        if (modEl) modEl.textContent = formatearMod(bono);
+        cont.dataset.bonus = bono;
+        const btn = cont.querySelector('button');
+        if (btn) btn.dataset.bonus = bono;
+      });
+      (opts.pasiva || []).forEach(p => {
+        const el = document.getElementById(p.elId);
+        if (el) el.textContent = 10 + (estadoAtributos.bonosSkill[p.skillClave] ?? 0);
+      });
+      document.dispatchEvent(new CustomEvent('ficha:atributos'));
+    }
+    const idsAVigilar = [opts.nivelInputId, ...habilidades.flatMap(h => [h.scoreId, h.tempId])].filter(Boolean);
+    document.addEventListener('input', (e) => { if (idsAVigilar.includes(e.target.id)) recalcular(); });
+    // Datos que llegan de Firebase se aplican por código (sin evento 'input').
+    document.addEventListener('ficha:datos-sincronizados', recalcular);
+    recalcular();
+    window.FichaAtributos = { recalcular, profBonusActual: () => estadoAtributos.prof, modDe: (clave) => estadoAtributos.mods[clave] ?? 0, bonoSkill: (clave) => estadoAtributos.bonosSkill[clave] ?? 0 };
+    return window.FichaAtributos;
+  }
+
+  // Patrón "base + buff = total" (el mismo de CA/Ataque/CD de Conjuro), para
+  // cualquier estadística con un modificador externo de objeto/efecto: HP máx.,
+  // Iniciativa, Velocidad, etc. calcularBase() puede leer lo que haga falta
+  // (p.ej. FichaAtributos.modDe('DEX') + FichaAtributos.profBonusActual()); se
+  // recalcula solo cuando cambian los atributos ('ficha:atributos').
+  function iniciarEstadisticaConBuff(opts) {
+    function recalcular() {
+      const base = opts.calcularBase();
+      const buff = opts.buffInputId ? leerNumero(document.getElementById(opts.buffInputId), 0) : 0;
+      const total = base + buff;
+      const totalEl = document.getElementById(opts.totalElId);
+      if (totalEl) totalEl.textContent = opts.formatear ? opts.formatear(total) : total;
+      if (opts.baseElId) {
+        const baseEl = document.getElementById(opts.baseElId);
+        if (baseEl) baseEl.textContent = opts.formatearBase ? opts.formatearBase(base) : (opts.formatear ? opts.formatear(base) : base);
+      }
+      return total;
+    }
+    if (opts.buffInputId) {
+      document.addEventListener('input', (e) => { if (e.target.id === opts.buffInputId) recalcular(); });
+    }
+    (opts.vigilarTambien || []).forEach(id => {
+      document.addEventListener('input', (e) => { if (e.target.id === id) recalcular(); });
+    });
+    document.addEventListener('ficha:atributos', recalcular);
+    document.addEventListener('ficha:datos-sincronizados', recalcular);
+    recalcular();
+    return { recalcular };
+  }
+
+  // ============================================================
+  // 11. EDITOR DE REPUTACIÓN / HONOR — tracker de facciones
+  //     personalizable (agregar, renombrar, ajustar valor con ➖/➕
+  //     directo, quitar). Tercer uso de crearEditorDeLista.
+  // ============================================================
+  function iniciarEditorReputacion() {
+    const editor = crearEditorDeLista({
+      storageKey: 'reputacion-json',
+      datosIniciales: FICHA_CONFIG.reputacionInicial || [],
+      contenedorListaId: 'reputacion-lista',
+      contenedorFormId: 'reputacion-form-container',
+      filaVacia: '<p class="reputacion-empty">Sin facciones registradas todavía.</p>',
+      renderFila: (r, idx) => {
+        const faccionEsc = r.faccion.replace(/'/g, "\\'");
+        return `
+          <div class="reputacion-item">
+            <div class="reputacion-top">
+              <span class="reputacion-faccion">${r.faccion}</span>
+              <div class="reputacion-controles">
+                <button onclick="FichaReputacion.ajustar(${idx}, -1)" title="-1">➖</button>
+                <span class="reputacion-valor">${r.valor}</span>
+                <button onclick="FichaReputacion.ajustar(${idx}, 1)" title="+1">➕</button>
+                <button onclick="FichaReputacion.editor.mostrarFormulario(${idx})" title="Editar/renombrar">✏️</button>
+                <button onclick="FichaReputacion.editor.eliminar(${idx}, '¿Quitar la facción \\'${faccionEsc}\\' del tracker?')" title="Quitar">🗑️</button>
+              </div>
+            </div>
+            ${r.descripcion ? `<div class="reputacion-desc">${r.descripcion}</div>` : ''}
+          </div>
+        `;
+      },
+      renderFormulario: (r) => `
+        <div class="reputacion-form">
+          <input type="text" id="rf-faccion" placeholder="Nombre de la facción" value="${r ? r.faccion : ''}">
+          <input type="number" id="rf-valor" placeholder="Valor" value="${r ? r.valor : 0}">
+          <textarea id="rf-descripcion" placeholder="Notas (opcional)">${r ? r.descripcion || '' : ''}</textarea>
+          <div class="reputacion-form-actions">
+            <button type="button" onclick="FichaReputacion.editor.cerrarFormulario()">Cancelar</button>
+            <button type="button" onclick="FichaReputacion.guardarDesdeFormulario()">💾 Guardar</button>
+          </div>
+        </div>
+      `,
+    });
+
+    function guardarDesdeFormulario() {
+      const faccion = document.getElementById('rf-faccion').value.trim();
+      if (!faccion) { alert('La facción necesita un nombre.'); return; }
+      editor.guardarDesdeFormulario({
+        faccion,
+        valor: parseInt(document.getElementById('rf-valor').value, 10) || 0,
+        descripcion: document.getElementById('rf-descripcion').value.trim(),
+      });
+    }
+    function ajustar(idx, delta) {
+      if (modoLectura) return;
+      editor.mutar(idx, (r) => { r.valor += delta; });
+    }
+
+    window.FichaReputacion = { editor, guardarDesdeFormulario, ajustar };
+  }
+
   window.FichaComun = {
     setCharRef, guardarCampo, sincronizarDatosDesdeNube, aplicarModoLectura,
     crearEditorDeLista, iniciarEditorHechizos, iniciarEditorInventario,
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
+    calcularProfBonus, calcularModificador, formatearMod,
+    iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
   };
 })();

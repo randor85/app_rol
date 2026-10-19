@@ -67,6 +67,40 @@
  label { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
  .nota-test { font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; }
  #btn-compartir { background: #3a7d44; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; display: none; }
+ .stat-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+ .stat-mini { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 14px; text-align: center; min-width: 110px; }
+ .stat-mini label { display: block; font-size: 0.72rem; margin-bottom: 4px; justify-content: center; }
+ .stat-mini .stat-base { font-size: 0.72rem; color: var(--text-muted); display: block; }
+ .stat-mini .buff-row { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 4px; }
+ .stat-mini input[type="number"], .nivel-input-row input, .ab-demo-score-row input { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 5px; text-align: center; font-size: 0.85rem; }
+ .stat-mini input[type="number"] { width: 50px; }
+ .nivel-input-row input, .ab-demo-score-row input { width: 60px; }
+ .stat-mini .stat-total { font-size: 1.15rem; font-weight: 800; color: var(--accent-gold); }
+ #prof-badge { font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); }
+ .nivel-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.85rem; }
+ .ab-demo-table td { text-align: center; }
+ .ab-demo-score-row .temp-label { font-size: 0.65rem; color: var(--text-muted); display: block; margin-top: 2px; }
+ .ab-mod { font-size: 0.75rem; color: var(--text-muted); margin: 4px 0; }
+ .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; font-size: 0.85rem; margin-top: 10px; }
+ .skill-item { display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed var(--border-color); padding: 4px 0; }
+ .skill-item .skill-name { flex: 1; }
+ .skill-item .skill-mod { font-weight: 700; min-width: 30px; text-align: right; }
+ .skill-item .skill-tag { font-size: 0.68rem; color: var(--accent-gold); font-weight: 700; margin-left: 3px; }
+ .reputacion-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .reputacion-item:last-child { border-bottom: none; }
+ .reputacion-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+ .reputacion-faccion { font-weight: 600; }
+ .reputacion-controles { display: flex; align-items: center; gap: 6px; }
+ .reputacion-controles button { background: none; border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; cursor: pointer; font-size: 0.8rem; padding: 2px 6px; }
+ .reputacion-valor { font-weight: 800; color: var(--accent-gold); min-width: 24px; text-align: center; display: inline-block; }
+ .reputacion-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+ .reputacion-empty { color: var(--text-muted); font-size: 0.85rem; }
+ .reputacion-form { background: var(--surface-mid); border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+ .reputacion-form input, .reputacion-form textarea { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 7px 9px; font-size: 0.85rem; font-family: inherit; width: 100%; }
+ .reputacion-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+ .reputacion-form-actions button { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
+ .reputacion-form-actions button:last-child { background: var(--accent-gold); color: #000; border: none; }
+ .reputacion-add-btn { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
  .bitacora-section { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
  .bitacora-section > summary { cursor: pointer; padding: 10px 14px; font-weight: 700; color: var(--accent-gold); list-style: none; font-size: 0.9rem; }
  .bitacora-section > summary::-webkit-details-marker { display: none; }
@@ -116,6 +150,52 @@
   </details>
 
   <div class="card">
+    <h2>📘 Nivel y Atributos</h2>
+    <p class="nota-test">El bono de competencia, los Check/Save y las skills se <strong>calculan</strong> desde el nivel + la puntuación + el aumento temporal (pociones, artefactos). Cambiá el nivel y mirá cómo se actualiza todo solo.</p>
+    <div class="nivel-input-row">
+      <label for="nivel-personaje">Nivel de personaje:</label>
+      <input type="number" id="nivel-personaje" value="9" min="1" max="20">
+      <span>Bono de Competencia: <span id="prof-badge">+4</span></span>
+    </div>
+    <table class="ab-demo-table">
+      <tr><th>Atributo</th><th>Puntuación</th><th>Aumento temporal</th><th>Modificador y tiradas</th></tr>
+      <tr class="ab-demo-score-row"><td>WIS</td><td><input type="number" id="wis-score" value="20"></td><td><input type="number" id="wis-temp" value="0"><span class="temp-label">ej. Potion of Wisdom +2</span></td>
+        <td id="ab-wis"><div class="ab-mod">(+5)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('WIS Check', this)">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('WIS Save', this)">Save</button></td></tr>
+      <tr class="ab-demo-score-row"><td>INT</td><td><input type="number" id="int-score" value="12"></td><td><input type="number" id="int-temp" value="0"></td>
+        <td id="ab-int"><div class="ab-mod">(+1)</div><button class="btn-roll btn-roll-sm btn-check" onclick="tirarD20('INT Check', this)">Check</button> <button class="btn-roll btn-roll-sm btn-save" onclick="tirarD20('INT Save', this)">Save</button></td></tr>
+    </table>
+    <div class="skills-grid">
+      <div class="skill-item" id="sk-perception"><button class="btn-roll" onclick="tirarD20('Perception', this)">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-insight"><button class="btn-roll" onclick="tirarD20('Insight', this)">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★★</span></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-nature"><button class="btn-roll" onclick="tirarD20('Nature', this)">🎲</button><span class="skill-name"><strong>Nature</strong><span class="skill-tag">★</span></span><span class="skill-mod">+0</span></div>
+      <div class="skill-item" id="sk-arcana"><button class="btn-roll" onclick="tirarD20('Arcana', this)">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
+    </div>
+    <p class="nota-test">★ = competencia (suma el bono), ★★ = expertise (suma el doble). Percepción pasiva: <strong id="percepcion-pasiva">10</strong></p>
+  </div>
+
+  <div class="card">
+    <h2>💪 HP Máx. / Iniciativa / Velocidad / Combate</h2>
+    <div class="stat-row">
+      <div class="stat-mini"><label>❤️ HP Máx.</label><span class="stat-base">Base: 75</span>
+        <div class="buff-row"><input type="number" id="hp-max-buff" value="0" title="Objeto/efecto"><div class="stat-total" id="hp-max-total">75</div></div></div>
+      <div class="stat-mini"><label>🎲 Iniciativa</label><span class="stat-base">Base: DEX</span>
+        <div class="buff-row"><input type="number" id="iniciativa-buff" value="0" title="Objeto/efecto"><div class="stat-total" id="iniciativa-total">+0</div></div></div>
+      <div class="stat-mini"><label>🏃 Velocidad</label><span class="stat-base">Base: 30 ft</span>
+        <div class="buff-row"><input type="number" id="velocidad-buff" value="0" title="Ej. Longstrider +10"><div class="stat-total" id="velocidad-total">30</div></div></div>
+      <div class="stat-mini"><label>✨ Atq. Conjuro</label><span class="stat-base">WIS+Prof</span>
+        <div class="buff-row"><input type="number" id="spell-atk-buff" value="0"><div class="stat-total" id="spell-atk-total">+0</div></div></div>
+      <div class="stat-mini"><label>📿 CD Conjuro</label><span class="stat-base">8+WIS+Prof</span>
+        <div class="buff-row"><input type="number" id="spell-dc-buff" value="0"><div class="stat-total" id="spell-dc-total">0</div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏅 Reputación / Honor <button type="button" class="reputacion-add-btn" onclick="FichaReputacion.editor.mostrarFormulario()">➕ Agregar Facción</button></h2>
+    <div id="reputacion-lista"></div>
+    <div id="reputacion-form-container"></div>
+  </div>
+
+  <div class="card">
     <h2>Espacios de Conjuro</h2>
     <div class="slot-row" id="slots-row">
       <div class="slot-card"><h4>Nivel 1</h4><div class="slot-val" id="slot-1-cur">4</div></div>
@@ -160,6 +240,10 @@
       { nombre: "Melf's Acid Arrow", nivel: 2, tiempo: '1 Acción', alcance: '90 ft', area: '', resumen: 'Dardo ácido a un objetivo.', duracion: 'Instantáneo', formula: { count: 4, sides: 4, mod: 0 }, slotCost: 2, ataque: { tipo: 'ataque', bonus: 7 } },
       { nombre: 'Conjure Animals (upcast variable)', nivel: 3, tiempo: '1 Acción', alcance: '60 ft', area: '', resumen: 'Invoca criaturas espectrales; el daño y la cantidad escalan según el nivel de espacio usado al lanzarlo, elegido en el momento.', duracion: '10 min, Conc.', formula: null, slotCost: null, especial: true, ataque: null },
     ],
+    reputacionInicial: [
+      { faccion: 'Círculo de Druidas', valor: 3, descripcion: 'Su orden de origen.' },
+      { faccion: 'Gremio de Mercaderes', valor: -1, descripcion: 'Un malentendido en el último pueblo.' },
+    ],
     inventarioInicial: [
       { nombre: 'Bastón de Mando', cantidad: 1, descripcion: 'Foco de lanzamiento druídico.', equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
       { nombre: 'Armadura de Cuero Tachonado', cantidad: 1, descripcion: 'Armadura ligera.', equipado: true, categoria: 'armadura', consumible: false, modAC: 12, dexCap: null },
@@ -187,6 +271,13 @@
     firebase.initializeApp(firebaseConfig);
   }
   const db = firebase.database();
+
+  // Tirada con el bono VIGENTE (dataset.bonus, lo mantiene iniciarAtributos), no un número fijo.
+  function tirarD20(etiqueta, btn) {
+    const bono = parseInt(btn.dataset.bonus, 10) || 0;
+    const d20 = Math.floor(Math.random() * 20) + 1;
+    alert(`🎲 ${etiqueta}: d20 (${d20}) ${FichaComun.formatearMod(bono)} = ${d20 + bono}`);
+  }
 
   const PERSONAJE_ID = FICHA_CONFIG.personajeId;
   const SISTEMA_PERSONAJE_PROPIO = FICHA_CONFIG.sistemaPropio;
@@ -217,7 +308,31 @@
     FichaComun.setCharRef(charRef);
     FichaComun.iniciarEditorHechizos();
     FichaComun.iniciarEditorInventario();
+    FichaComun.iniciarEditorReputacion();
     FichaComun.sincronizarDatosDesdeNube();
+
+    FichaComun.iniciarAtributos({
+      nivelInputId: 'nivel-personaje',
+      profBadgeId: 'prof-badge',
+      habilidades: [
+        { clave: 'WIS', scoreId: 'wis-score', tempId: 'wis-temp', contenedorId: 'ab-wis', saveCompetente: true },
+        { clave: 'INT', scoreId: 'int-score', tempId: 'int-temp', contenedorId: 'ab-int', saveCompetente: true },
+      ],
+      skills: [
+        { clave: 'Perception', contenedorId: 'sk-perception', habilidad: 'WIS', competente: true },
+        { clave: 'Insight', contenedorId: 'sk-insight', habilidad: 'WIS', competente: true, expertise: true },
+        { clave: 'Nature', contenedorId: 'sk-nature', habilidad: 'INT', competente: true },
+        { clave: 'Arcana', contenedorId: 'sk-arcana', habilidad: 'INT', competente: false },
+      ],
+      pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
+    });
+    // Base + buff = total. calcularBase puede leer atributos derivados.
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'hp-max-buff', totalElId: 'hp-max-total', calcularBase: () => 75 });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => 2, formatear: FichaComun.formatearMod });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30 });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: () => FichaAtributos.modDe('WIS') + FichaAtributos.profBonusActual(), formatear: FichaComun.formatearMod });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + FichaAtributos.modDe('WIS') + FichaAtributos.profBonusActual() });
+
     FichaComun.iniciarBitacora({ db, codigoCampana });
     FichaComun.iniciarPermisosYCompartir({ db, codigoCampana, uid: user.uid });
   });
