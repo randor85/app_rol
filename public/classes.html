@@ -61,6 +61,8 @@ header p { color: var(--accent-light); font-size: 0.95rem; }
 .class-card.active { box-shadow: 0 0 0 2px var(--accent-gold); }
 .class-card-name { font-weight: 800; font-size: 1.05rem; color: var(--text-light); }
 .class-card-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+.class-card-badge.custom, .custom-tag { color: var(--accent-light); border: 1px solid var(--accent-light); background: transparent; }
+.custom-tag { display:inline-block; font-size: 0.68rem; font-weight:700; border-radius: 4px; padding: 1px 7px; margin-left: 6px; vertical-align: middle; }
 .class-card-badge { display:inline-block; font-size: 0.68rem; font-weight:700; background: var(--surface-strong); color: var(--accent-gold); border-radius: 4px; padding: 2px 7px; margin-top: 6px; }
 
 /* --- PANEL DE DETALLE --- */
@@ -105,11 +107,15 @@ header p { color: var(--accent-light); font-size: 0.95rem; }
 
 .uncertain { color: var(--danger-color); font-weight: 700; }
 
+.aviso-campana { background: var(--surface-soft); border: 1px dashed var(--border-color); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.85rem; color: var(--text-muted); }
+.btn-nav:focus-visible, .class-card:focus-visible, .class-tab-btn:focus-visible, .subclass-btn:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+@media (max-width: 480px) { body { padding: 12px; } header h1 { font-size: 1.4rem; } .class-grid { grid-template-columns: 1fr; } }
 footer { text-align:center; margin-top: 30px; font-size: 0.75rem; color: var(--text-muted); }
 footer a { color: var(--accent-light); }
 </style>
 <script src="spells_data.js"></script>
 <script src="classes_data.js"></script>
+<script src="clases-custom.js"></script>
 <script src="subclases_catalogo.js"></script>
 </head>
 <body>
@@ -122,8 +128,12 @@ footer a { color: var(--accent-light); }
 
 <div class="top-actions">
   <a href="index.html" class="btn-nav">⬅ Volver al Menú</a>
-  <button class="btn-nav" id="theme-toggle" onclick="toggleTheme()">🌙 Modo Noche</button>
+  <span style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="creador-clases.html" class="btn-nav" id="enlace-creador" style="display:none;">➕ Crear clase o subclase</a>
+    <button class="btn-nav" id="theme-toggle" onclick="toggleTheme()">🌙 Modo Noche</button>
+  </span>
 </div>
+<div class="aviso-campana" id="aviso-campana" role="status" style="display:none;"></div>
 
 <div class="search-bar">
   <input type="text" id="search-input" placeholder="Buscar clase por nombre..." oninput="applyFilter()">
@@ -165,6 +175,12 @@ function toggleTheme() {
   }
 })();
 
+// ==== UTILIDADES ====
+// Las clases custom las escriben los jugadores: todo texto se escapa antes de ir a innerHTML.
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+const CAMPANA = (new URLSearchParams(window.location.search).get('campana') || '').trim();
+const INSIGNIA_CUSTOM = '<span class="custom-tag" title="Creada por el grupo">✨ custom</span>';
+
 // ==== ESTADO ====
 let claseAbiertaId = null;
 let subclaseElegidaPorClase = {}; // id de clase -> nombre de subclase elegida en el panel
@@ -179,12 +195,15 @@ function renderClassGrid(filtro) {
   noRes.style.display = lista.length ? 'none' : 'block';
   lista.forEach(c => {
     const card = document.createElement('div');
-    card.className = 'class-card' + (claseAbiertaId === c.id ? ' active' : '');
+    card.className = 'class-card' + (claseAbiertaId === c.id ? ' active' : '') + (c.custom ? ' custom' : '');
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
     card.innerHTML = `
-      <div class="class-card-name">${c.nombre_es} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem;">(${c.name})</span></div>
-      <div class="class-card-meta">Dado de Golpe: d${c.hitDie} · ${c.primaryAbility}</div>
-      <div class="class-card-badge">${c.subclassLabel} en Nivel ${c.subclassLevel}</div>
+      <div class="class-card-name">${esc(c.nombre_es)} <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem;">(${esc(c.name)})</span>${c.custom ? INSIGNIA_CUSTOM : ''}</div>
+      <div class="class-card-meta">Dado de Golpe: d${esc(c.hitDie)} · ${esc(c.primaryAbility)}</div>
+      <div class="class-card-badge">${esc(c.subclassLabel)} en Nivel ${esc(c.subclassLevel)}</div>
     `;
+    card.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggleClassDetail(c.id); } });
     card.addEventListener('click', () => toggleClassDetail(c.id));
     cont.appendChild(card);
   });
@@ -226,16 +245,17 @@ function renderClassDetail(id) {
   panel.innerHTML = `
     <div class="class-detail-head">
       <div>
-        <h2>${c.nombre_es} <span style="color:var(--text-muted);font-weight:400;font-size:0.95rem;">(${c.name})</span></h2>
-        <p>${c.resumen || ''}</p>
+        <h2>${esc(c.nombre_es)} <span style="color:var(--text-muted);font-weight:400;font-size:0.95rem;">(${esc(c.name)})</span>${c.custom ? INSIGNIA_CUSTOM : ''}</h2>
+        <p>${esc(c.resumen || '')}</p>
+        ${c.custom && c.autorNombre ? `<p style="font-size:0.75rem;">Creada por ${esc(c.autorNombre)}</p>` : ''}
       </div>
       <button class="class-detail-close" onclick="toggleClassDetail('${id}')" title="Cerrar">✖</button>
     </div>
     <div class="class-stat-row">
-      <div class="class-stat"><strong>Dado de Golpe</strong>d${c.hitDie}</div>
-      <div class="class-stat"><strong>Habilidad Principal</strong>${c.primaryAbility}</div>
-      <div class="class-stat"><strong>Salvaciones</strong>${c.savingThrows.join(', ')}</div>
-      <div class="class-stat"><strong>Subclase (${c.subclassLabel})</strong>Nivel ${c.subclassLevel}</div>
+      <div class="class-stat"><strong>Dado de Golpe</strong>d${esc(c.hitDie)}</div>
+      <div class="class-stat"><strong>Habilidad Principal</strong>${esc(c.primaryAbility)}</div>
+      <div class="class-stat"><strong>Salvaciones</strong>${esc(c.savingThrows.join(', '))}</div>
+      <div class="class-stat"><strong>Subclase (${esc(c.subclassLabel)})</strong>Nivel ${esc(c.subclassLevel)}</div>
       ${c.casterType ? `<div class="class-stat"><strong>Tipo de Lanzador</strong>${ { full:'Completo', half:'Medio', pact:'Pact Magic (Brujo)' }[c.casterType] }</div>` : ''}
     </div>
     <div class="class-tabs">
@@ -269,7 +289,7 @@ function renderProgresionTabla(c) {
   const cont = document.getElementById(`panel-progresion-${c.id}`);
   const maxNivelSlot = c.casterType === 'full' ? 9 : (c.casterType === 'half' ? 5 : 0);
   const featuresPorNivel = {};
-  c.features.forEach(f => { (featuresPorNivel[f.nivel] = featuresPorNivel[f.nivel] || []).push(f.nombre); });
+  c.features.forEach(f => { (featuresPorNivel[f.nivel] = featuresPorNivel[f.nivel] || []).push(esc(f.nombre)); });
 
   let headExtra = '';
   if (c.casterType === 'full' || c.casterType === 'half') {
@@ -277,7 +297,7 @@ function renderProgresionTabla(c) {
   } else if (c.casterType === 'pact') {
     headExtra += `<th>Esp. Pacto</th><th>Nivel del Espacio</th>`;
   }
-  if (c.resourceName) headExtra += `<th>${c.resourceName}</th>`;
+  if (c.resourceName) headExtra += `<th>${esc(c.resourceName)}</th>`;
 
   let rows = '';
   for (let n = 1; n <= 20; n++) {
@@ -290,7 +310,7 @@ function renderProgresionTabla(c) {
       extra += `<td>${info.count || ''}</td><td>${info.nivel || ''}</td>`;
     }
     if (c.resourceName && c.resourceProgression) {
-      extra += `<td>${c.resourceProgression[n] ?? ''}</td>`;
+      extra += `<td>${esc(c.resourceProgression[n] ?? '')}</td>`;
     } else if (c.resourceName) {
       extra += `<td></td>`;
     }
@@ -327,8 +347,8 @@ function renderRasgosClase(c) {
   const ordenados = c.features.slice().sort((a, b) => a.nivel - b.nivel);
   cont.innerHTML = ordenados.map(f => `
     <div class="feature-list-item">
-      <h4><span class="feat-level-tag">Nvl ${f.nivel}</span>${f.nombre}${f.incierto ? ' <span class="uncertain">⚠️</span>' : ''}</h4>
-      <p>${f.desc}</p>
+      <h4><span class="feat-level-tag">Nvl ${esc(f.nivel)}</span>${esc(f.nombre)}${f.incierto ? ' <span class="uncertain">⚠️</span>' : ''}</h4>
+      <p>${esc(f.desc)}</p>
     </div>
   `).join('');
 }
@@ -343,16 +363,16 @@ function renderSubclases(c) {
   const elegida = subclaseElegidaPorClase[c.id] || c.subclasses[0].name;
   const sub = c.subclasses.find(s => s.name === elegida) || c.subclasses[0];
   const picker = c.subclasses.map(s => `
-    <button type="button" class="subclass-btn ${s.name === elegida ? 'active' : ''}" onclick="elegirSubclase('${c.id}','${s.name.replace(/'/g, "\\'")}')">${s.name}</button>
+    <button type="button" class="subclass-btn ${s.name === elegida ? 'active' : ''}" data-nombre="${esc(s.name)}" onclick="elegirSubclase('${esc(c.id)}', this.dataset.nombre)">${esc(s.name)}${s.custom ? INSIGNIA_CUSTOM : ''}</button>
   `).join('');
   const featuresOrdenadas = sub.features.slice().sort((a, b) => a.nivel - b.nivel);
   cont.innerHTML = `
     <div class="subclass-picker">${picker}</div>
-    <div class="subclass-summary">${sub.resumen || ''}</div>
+    <div class="subclass-summary">${esc(sub.resumen || '')}${sub.custom && sub.autorNombre ? ` — creada por ${esc(sub.autorNombre)}` : ''}</div>
     ${featuresOrdenadas.map(f => `
       <div class="feature-list-item">
-        <h4><span class="feat-level-tag">Nvl ${f.nivel}</span>${f.nombre}${f.incierto ? ' <span class="uncertain">⚠️</span>' : ''}</h4>
-        <p>${f.desc}</p>
+        <h4><span class="feat-level-tag">Nvl ${esc(f.nivel)}</span>${esc(f.nombre)}${f.incierto ? ' <span class="uncertain">⚠️</span>' : ''}</h4>
+        <p>${esc(f.desc)}</p>
       </div>
     `).join('')}
     ${catalogoSubclases(c)}
@@ -382,17 +402,54 @@ function elegirSubclase(claseId, nombreSubclase) {
   if (c) renderSubclases(c);
 }
 
-renderClassGrid('');
-
-// Deep-link desde las fichas de personaje: classes.html?clase=wizard abre directo el
-// detalle de esa clase (pestaña Progresión, que ya es la que arranca activa) y hace
-// scroll hasta ahí, en vez de forzar a buscarla a mano en la grilla.
-(function abrirClaseDesdeURL() {
-  const claseUrl = new URLSearchParams(window.location.search).get('clase');
-  if (claseUrl && CLASSES.some(c => c.id === claseUrl)) {
-    toggleClassDetail(claseUrl);
+// ==== CLASES CUSTOM DE LA CAMPAÑA ====
+// Con ?campana=<código> se esperan la sesión y las clases/subclases custom ANTES de pintar la grilla.
+// Si no hay sesión o algo falla, la página sigue andando solo con las oficiales.
+const FIREBASE_CFG = {
+  apiKey: 'AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU', authDomain: 'personajes-rol.firebaseapp.com',
+  databaseURL: 'https://personajes-rol-default-rtdb.firebaseio.com', projectId: 'personajes-rol',
+  storageBucket: 'personajes-rol.appspot.com', messagingSenderId: '81108671440', appId: '1:81108671440:web:effb710af86054f4c6f7d5',
+};
+function cargarScriptExterno(src) {
+  return new Promise((ok, mal) => { const t = document.createElement('script'); t.src = src; t.onload = ok; t.onerror = () => mal(new Error('No se pudo cargar ' + src)); document.head.appendChild(t); });
+}
+function avisoCampana(html) {
+  const el = document.getElementById('aviso-campana');
+  if (el) { el.innerHTML = html; el.style.display = html ? 'block' : 'none'; }
+}
+async function cargarCustomDeLaCampana() {
+  const sdk = 'https://www.gstatic.com/firebasejs/9.22.0/';
+  if (!(window.firebase && firebase.auth && firebase.database)) {
+    await cargarScriptExterno(sdk + 'firebase-app-compat.js');
+    await cargarScriptExterno(sdk + 'firebase-database-compat.js');
+    await cargarScriptExterno(sdk + 'firebase-auth-compat.js');
   }
-})();
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
+  const user = await new Promise((resolve) => {
+    let hecho = false;
+    const fin = (u) => { if (!hecho) { hecho = true; resolve(u); } };
+    firebase.auth().onAuthStateChanged((u) => fin(u || null), () => fin(null));
+    setTimeout(() => fin(null), 8000);
+  });
+  if (!user) { avisoCampana('Iniciá sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver las clases y subclases custom de la campaña.'); return; }
+  await ClasesCustom.cargar(firebase.database(), CAMPANA);
+}
+
+async function iniciarCompendio() {
+  if (CAMPANA) {
+    const enl = document.getElementById('enlace-creador');
+    if (enl) { enl.href = 'creador-clases.html?campana=' + encodeURIComponent(CAMPANA); enl.style.display = 'inline-block'; }
+    try { await cargarCustomDeLaCampana(); }
+    catch (e) { console.warn('Clases custom no disponibles:', e); avisoCampana('No se pudieron cargar las clases custom de la campaña; se muestran solo las oficiales.'); }
+  }
+  renderClassGrid('');
+  // Deep-link desde las fichas de personaje: classes.html?clase=wizard abre directo el
+  // detalle de esa clase (pestaña Progresión, que ya es la que arranca activa) y hace
+  // scroll hasta ahí, en vez de forzar a buscarla a mano en la grilla.
+  const claseUrl = new URLSearchParams(window.location.search).get('clase');
+  if (claseUrl && CLASSES.some(c => c.id === claseUrl)) toggleClassDetail(claseUrl);
+}
+iniciarCompendio();
 </script>
 </body>
 </html>

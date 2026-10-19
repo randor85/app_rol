@@ -252,6 +252,10 @@
 <div class="seccion-campana" id="crear-personaje-container" style="display: none;">
     <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">Añadir Personaje a la Campaña</p>
     <select id="select-template-personaje" class="campana-input"></select>
+    <div id="creadores-campana" style="display:none; margin-top:12px; display:none; gap:8px; flex-wrap:wrap; justify-content:center;">
+        <a id="link-crear-personaje" class="btn-open" style="text-decoration:none;" href="#">✨ Crear personaje nuevo</a>
+        <a id="link-crear-clases" class="btn-open" style="text-decoration:none;" href="#">🛠️ Clases y subclases custom</a>
+    </div>
 </div>
         
 
@@ -347,6 +351,8 @@
         // personajes recibido — se guardan acá para poder re-renderizar la grilla tanto cuando
         // cambian los personajes como cuando cambia (o recién llega) el sistema de la campaña.
         let sistemaCampanaActual = null;
+        // Los nombres/clases de personajes ahora los escriben los jugadores (creador de personajes): siempre escapados al pintar.
+        const escHtml = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         let ultimoPersonajesSnap = null;
         let partyActual = {}, partyListener = null;
         let soyElGMActual = false;
@@ -561,9 +567,9 @@ btnLoginEmail.onclick = () => {
     card.className = 'character-card';
     card.innerHTML = `
         <div class="avatar-placeholder">🛡️</div>
-        <div class="character-name">${p.nombre || 'Héroe'}</div>
+        <div class="character-name">${escHtml(p.nombre || 'Héroe')}</div>
         <div class="character-title">
-            ${p.clase}
+            ${escHtml(p.clase || '')}
             ${esInvitado ? '<br><span style="font-size:0.75rem; background:#4a5568; padding:2px 6px; border-radius:4px; color:#fff;">👁️ Invitado</span>' : ''}
         </div>
 
@@ -581,7 +587,7 @@ btnLoginEmail.onclick = () => {
             // fichas de "El Último Chicle" lo elige cada jugador, así que no se puede
             // seguir adivinando el archivo de destino a partir del texto de p.nombre.
             const IDS_DND = ['dane', 'eldur', 'hannoghar', 'fiona_faraway', 'myrklogi_mangarisonn', 'ulreek'];
-            let destino = IDS_DND.includes(id) ? `ficha.html?pj=${id}` : `${id}.html`;
+            let destino = (IDS_DND.includes(id) || /^pc_/.test(id)) ? `ficha.html?pj=${id}` : `${id}.html`;
             if (SISTEMA_PERSONAJE[id] === 'chicle') {
                 const numeroJugador = id.replace('chicle', '');
                 destino = `chicle.html?jugador=${numeroJugador}`;
@@ -629,7 +635,7 @@ btnLoginEmail.onclick = () => {
         const gum = Number.isInteger(gumCurParsed) ? Math.max(0, Math.min(8, gumCurParsed)) : 8;
         const pctGum = (gum / 8) * 100;
         vital.innerHTML = `
-        <p style="font-weight:bold; color:var(--accent-gold);">${p.nombre || "Superviviente"}</p>
+        <p style="font-weight:bold; color:var(--accent-gold);">${escHtml(p.nombre || "Superviviente")}</p>
         <div style="background:#0f0f12; height:8px; border-radius:4px; overflow:hidden;">
             <div style="background:${gum === 0 ? '#c94a4a' : '#a6f079'}; width:${pctGum}%; height:100%;"></div>
         </div>
@@ -690,6 +696,12 @@ btnLoginEmail.onclick = () => {
 
         function activarSincronizacionCampana(campanaId) {
     crearPersonajeContainer.style.display = 'block';
+    const cc = document.getElementById('creadores-campana');
+    if (cc) {
+        cc.style.display = 'flex';
+        document.getElementById('link-crear-personaje').href = `crear-personaje.html?campana=${encodeURIComponent(campanaId)}`;
+        document.getElementById('link-crear-clases').href = `creador-clases.html?campana=${encodeURIComponent(campanaId)}`;
+    }
     bitacoraContainer.style.display = 'block';
     gridPersonajes.style.display = 'grid';
     btnReclamarGM.style.display = 'inline-block';
@@ -705,6 +717,8 @@ btnLoginEmail.onclick = () => {
     sistemaCampanaListener = db.ref(`lista_campanas/${campanaId}/sistema`);
     sistemaCampanaListener.on('value', sysSnap => {
         sistemaCampanaActual = sysSnap.val() || null;
+        const ccSis = document.getElementById('creadores-campana');
+        if (ccSis) ccSis.style.display = (!sistemaCampanaActual || sistemaCampanaActual === 'dnd') ? 'flex' : 'none';
 
         if (sistemaCampanaActual) {
             sistemaCampanaContainer.style.display = 'none';
@@ -854,13 +868,13 @@ btnLoginEmail.onclick = () => {
             // Se mantiene compatibilidad con entradas viejas del historial (resultado numérico u "Usado" sueltos).
             let texto;
             if (typeof t.resultado === 'number') {
-                texto = `sacó un 🎲 <strong>${t.resultado}</strong> ${t.tipo || ''}`;
+                texto = `sacó un 🎲 <strong>${escHtml(t.resultado)}</strong> ${escHtml(t.tipo || '')}`;
             } else if (t.resultado === 'Usado') {
-                texto = `usó ${t.tipo || ''}`;
+                texto = `usó ${escHtml(t.tipo || '')}`;
             } else {
-                texto = `${t.resultado} ${t.tipo || ''}`;
+                texto = `${escHtml(t.resultado)} ${escHtml(t.tipo || '')}`;
             }
-            div.innerHTML = `<strong>[${fecha}] ${t.personaje}:</strong> ${texto}`;
+            div.innerHTML = `<strong>[${fecha}] ${escHtml(t.personaje)}:</strong> ${texto}`;
             listaTiradas.appendChild(div);
         });
     });
@@ -986,9 +1000,9 @@ btnLoginEmail.onclick = () => {
                 div.style = "border-bottom: 1px solid var(--border-color); padding: 8px 0; display: flex; justify-content: space-between;";
                 div.innerHTML = `
                     <div>
-                        <small style="color:var(--accent-gold);">${fecha}</small>${log.personaje ? ` <small style="color:var(--text-muted);">· ${log.personaje}</small>` : ''}
-                        ${log.titulo ? `<h4>${log.titulo}</h4>` : ''}
-                        <p style="white-space: pre-wrap; font-size:0.85rem; margin-top:4px;">${log.texto}</p>
+                        <small style="color:var(--accent-gold);">${fecha}</small>${log.personaje ? ` <small style="color:var(--text-muted);">· ${escHtml(log.personaje)}</small>` : ''}
+                        ${log.titulo ? `<h4>${escHtml(log.titulo)}</h4>` : ''}
+                        <p style="white-space: pre-wrap; font-size:0.85rem; margin-top:4px;">${escHtml(log.texto)}</p>
                     </div>
                     <div style="display:flex; gap:6px; flex-shrink:0;">
                         <button class="btn-editar-log" style="background:none; border:none; color:var(--accent-gold); cursor:pointer;">✏️</button>

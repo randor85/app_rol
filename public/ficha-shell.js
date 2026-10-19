@@ -37,6 +37,13 @@
  *     rasgos[].acciones:[{ texto, roll } | { texto, uso:'Nombre' }]      (botón que tira una fórmula o anota un uso)
  *     iniciar(ctx)                                                       (opcional: código propio de la clase o del personaje)
  *   };
+ *
+ * PERSONAJES DINÁMICOS (creador de personajes): un id que empieza con `pc_` no tiene archivo; su definición vive en
+ *   campanas/<campaña>/personajes/<id>/definicion   (o usuarios/<uid>/personajes/<id>/definicion sin campaña)
+ * y es la MISMA forma pero solo con datos (JSON): nada de funciones. Lo que en los archivos es una función se declara así:
+ *   recursos[].max / recursos[].valor:  número | { fijo:n } | { por:n, clase? } | { tabla:{nivel:valor}, clase? } | { modificador:'CHA', min:1 }
+ *   ca:{ formula:['DEX','CON'] }       → 10 + esos modificadores mientras no haya armadura equipada
+ * (ver normalizarDefinicion). Las clases/subclases custom de la campaña se fusionan en CLASSES antes de arrancar los motores.
  */
 (function () {
   'use strict';
@@ -64,6 +71,75 @@
       s.src = src; s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar ' + src));
       document.head.appendChild(s);
     });
+  }
+
+  /* ---------- definiciones dinámicas (solo datos) ---------- */
+  function escalonado(tabla, niv) {
+    let v = null, mejor = -1;
+    Object.keys(tabla || {}).forEach(k => { const n = parseInt(k, 10); if (!isNaN(n) && n <= niv && n > mejor) { mejor = n; v = tabla[k]; } });
+    return v;
+  }
+  function declarativo(m) {
+    if (m == null || typeof m === 'function' || typeof m !== 'object') return m;
+    return (c) => {
+      const niv = m.clase ? c.clase(m.clase) : c.nivel;
+      if (m.tabla) { const v = escalonado(m.tabla, niv); return v == null ? 0 : v; }
+      if (m.por != null) return m.por * niv;
+      if (m.modificador) return Math.max(m.min != null ? m.min : 0, c.mod(m.modificador));
+      return m.fijo != null ? m.fijo : 0;
+    };
+  }
+  function aLista(v) { return Array.isArray(v) ? v.filter(x => x != null) : (v && typeof v === 'object' ? Object.keys(v).map(k => v[k]) : []); }
+  // Una definición dinámica la escribe un jugador: NADA de lo que trae se interpreta como HTML ni como código.
+  const escTxt = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const aHtmlSeguro = (t) => escTxt(t).replace(/\n/g, '<br>');
+  const idSeguro = (t, def) => String(t == null ? '' : t).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || def;
+  const ABIL_VALIDAS = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+  function normalizarDefinicion(D, id) {
+    const d = Object.assign({}, D, { id });
+    delete d.ganchos; delete d.iniciar; delete d.calculos; delete d.secciones; delete d.auras; delete d.nivel; delete d.badgeAtaque; delete d.espaciosModo;
+    ['clases', 'chips', 'salvaciones', 'ataques', 'hechizos', 'inventario', 'reputacion', 'recursos', 'rasgos', 'secciones', 'monedas', 'buffs', 'auras'].forEach(k => { if (d[k] != null) d[k] = aLista(d[k]); });
+    d.clases = (d.clases || []).map(c => Object.assign({}, c));
+    d.competencias = d.competencias ? aHtmlSeguro(d.competencias) : '';
+    d.trasfondo = (d.trasfondo && (d.trasfondo.texto || d.trasfondo.html)) ? { html: aHtmlSeguro(d.trasfondo.texto || d.trasfondo.html) } : undefined;
+    d.rasgos = (d.rasgos || []).map((r, i) => ({ id: idSeguro(r.id, 'txt-feat-' + (i + 1)), tag: r.tag, titulo: r.titulo, html: aHtmlSeguro(r.texto != null ? r.texto : r.html) }));
+    d.ataques = (d.ataques || []).map((a) => {
+      const x = Object.assign({}, a); delete x.html; delete x.bonoTexto; delete x.acciones;
+      if (x.dano) x.dano = { count: parseInt(x.dano.count, 10) || 1, sides: parseInt(x.dano.sides, 10) || 4, mod: ABIL_VALIDAS.includes(x.dano.mod) ? x.dano.mod : (parseInt(x.dano.mod, 10) || 0) };
+      if (!ABIL_VALIDAS.includes(x.habilidad)) x.habilidad = 'STR';
+      return x;
+    });
+    d.monedas = (d.monedas && d.monedas.length ? d.monedas : [{ id: 'gp-val', etiqueta: 'Oro (po)' }]).map(m => ({ id: idSeguro(m.id, 'gp-val'), etiqueta: m.etiqueta || 'Oro', valor: parseInt(m.valor, 10) || 0 }));
+    if (!ABIL_VALIDAS.includes(d.habilidadAtaque)) d.habilidadAtaque = 'STR';
+    if (d.habilidadConjuro && !ABIL_VALIDAS.includes(d.habilidadConjuro)) d.habilidadConjuro = null;
+    d.salvaciones = (d.salvaciones || []).filter(k => ABIL_VALIDAS.includes(k));
+    d.recursos = (d.recursos || []).map(r => {
+      const x = Object.assign({}, r);
+      x.id = idSeguro(x.id, 'recurso'); if (x.prefijo) x.prefijo = idSeguro(x.prefijo, x.id + '-use-'); if (x.campo) x.campo = idSeguro(x.campo, x.id + '-cur');
+      x.max = declarativo(x.max);
+      if (x.valor && typeof x.valor === 'object') { const f = declarativo(x.valor); x.valor = (c) => { const v = f(c); return v == null ? '—' : String(v); }; }
+      return x;
+    });
+    if (d.ca && Array.isArray(d.ca.formula) || (d.ca && d.ca.formula && typeof d.ca.formula === 'object')) {
+      const hs = aLista(d.ca.formula).filter(h => ABIL_VALIDAS.includes(h));
+      d.ca = Object.assign({}, d.ca, { sinArmadura: () => 10 + hs.reduce((s, h) => s + FichaAtributos.modDe(h), 0), texto: '10 + ' + (hs.join(' + ') || '0') });
+    }
+    return d;
+  }
+  function esperarUsuario() {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
+    return new Promise((ok) => {
+      let hecho = false, off = null;
+      off = firebase.auth().onAuthStateChanged((u) => { if (hecho) return; hecho = true; ok(u); if (typeof off === 'function') off(); });
+    });
+  }
+  async function cargarDefinicionDinamica() {
+    const user = await esperarUsuario();
+    if (!user) { location.href = 'index.html'; return null; }
+    const db = firebase.database();
+    const ruta = codigoCampana ? `campanas/${codigoCampana}/personajes/${pj}/definicion` : `usuarios/${user.uid}/personajes/${pj}/definicion`;
+    const D = (await db.ref(ruta).once('value')).val();
+    return D ? normalizarDefinicion(D, pj) : null;
   }
 
   /* ---------- toasts mínimos ---------- */
@@ -448,6 +524,8 @@
   async function arrancarMotores(user) {
     const db = firebase.database();
     let charRef;
+    // Clases y subclases custom de la campaña: se fusionan en CLASSES/PROGRESION_CLASES antes de que cualquier motor las consulte.
+    if (window.ClasesCustom && codigoCampana) { try { await ClasesCustom.cargar(db, codigoCampana); } catch (e) { console.warn('Clases custom no disponibles:', e); } }
     if (codigoCampana) {
       const sis = (await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value')).val();
       if (sis && sis !== (P.sistema || 'dnd')) { FichaComun.bloquearPorSistemaIncorrecto(sis, codigoCampana); return; }
@@ -560,9 +638,14 @@
 
   async function arrancar() {
     if (!pj) return mensaje('Falta el personaje en la dirección: usá <code>ficha.html?pj=&lt;id&gt;</code>.');
-    try { await cargarScript(`personajes/${pj}.js`); } catch (e) { return mensaje(`No existe el personaje “${pj}”.`); }
-    P = (window.PERSONAJES || {})[pj];
-    if (!P) return mensaje(`El archivo de “${pj}” no define el personaje.`);
+    if (/^pc_/.test(pj)) {
+      try { P = await cargarDefinicionDinamica(); } catch (e) { return mensaje('No se pudo leer el personaje: ' + (e && e.message ? e.message : e)); }
+      if (!P) return mensaje(`No existe el personaje “${pj}” en esta campaña.`);
+    } else {
+      try { await cargarScript(`personajes/${pj}.js`); } catch (e) { return mensaje(`No existe el personaje “${pj}”.`); }
+      P = (window.PERSONAJES || {})[pj];
+      if (!P) return mensaje(`El archivo de “${pj}” no define el personaje.`);
+    }
     document.title = P.nombre + ' — Ficha';
 
     SKILLS_CFG = Object.keys(FichaPlantilla.SKILL_HAB).map(n => ({ clave: n, contenedorId: FichaPlantilla.skillId(n), habilidad: FichaPlantilla.SKILL_HAB[n], competente: !!(P.habilidades || {})[n], expertise: (P.habilidades || {})[n] === 'exp' }));
@@ -572,6 +655,7 @@
     if (window.FichaPaleta) FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: P.paleta, clave: P.id });
     await cargarFragmentos();
 
+    try { await cargarScript('clases-custom.js'); } catch (e) { /* módulo opcional */ }
     for (const s of ['ficha-common.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
     bindClicks();
 
