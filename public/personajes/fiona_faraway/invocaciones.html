@@ -1,0 +1,148 @@
+<div class="invocation-note"><strong>🧭 Guía rápida de invocaciones:</strong> Bear Totem = supervivencia; Hawk Totem = potenciar un ataque; Unicorn = curación. Summon Beast = una criatura flexible y resistente; Summon Fey = control/movilidad; Pact of the Chain = exploración e infiltración; Conjure Woodland Beings = utilidad y control mediante varias Fey.</div>
+<h3>Fey Spirit (Summon Fey — Nivel 3 / 4)</h3>
+<div class="highlight-box">
+<strong>Stats Base:</strong> AC 12 + Slot (Slot 3 = AC 15, Slot 4 = AC 16) | 
+<strong>HP (con Mighty Summoner):</strong> Slot 3 = <strong>36 HP</strong>, Slot 4 = <strong>44 HP</strong> | 
+<strong>Velocidad:</strong> 40 ft | <strong>Ataque de Conjuro:</strong> Según Spell Atk Total
+ </div>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Acción / Habilidad</th>
+<th>Efecto Mecánico</th>
+<th>Tirar Dado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Multiattack</strong></td>
+<td>Ataques = mitad del nivel del slot (Slot 3: 1 ataque, Slot 4: 2 ataques).</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Shortsword (Melee)</strong></td>
+<td>Spell Atk, Reach 5 ft; Daño: 1d6 + 3 + Slot Piercing (Slot 3: 1d6+6, Slot 4: 1d6+7). *(Ataques mágicos por Mighty Summoner)*</td>
+<td>
+<button class="btn-roll" onclick="rollSpellAttack('Fey Shortsword Atk')">🎯 Spell Atk</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 6, 6, 'Fey Shortsword Slot 3')">🗡️ 1d6+6</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 6, 7, 'Fey Shortsword Slot 4')">🗡️ 1d6+7</button>
+</td>
+</tr>
+<tr>
+<td><strong>Longbow (Rango)</strong></td>
+<td>Spell Atk, Rango 150/600; Daño: 1d8 + 3 + Slot Piercing (Slot 3: 1d8+6, Slot 4: 1d8+7). *(Ataques mágicos por Mighty Summoner)*</td>
+<td>
+<button class="btn-roll" onclick="rollSpellAttack('Fey Longbow Atk')">🎯 Spell Atk</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Fey Longbow Slot 3')">🏹 1d8+6</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 7, 'Fey Longbow Slot 4')">🏹 1d8+7</button>
+</td>
+</tr>
+<tr>
+<td><strong>Fey Step (B.Action)</strong></td>
+<td>Teleport 30 ft + Aplica efecto según la variante elegida:</td>
+<td>-</td>
+</tr>
+<tr>
+<td>• <strong>Fuming Fey Step</strong></td>
+<td>Ventaja en el siguiente ataque que realice el espíritu antes del final de su turno.</td>
+<td>-</td>
+</tr>
+<tr>
+<td>• <strong>Mirthful Fey Step</strong></td>
+<td>Criatura a 10 ft debe superar WIS save DC <span class="js-calc" data-calc="cd">17</span> o queda <strong>Charmed</strong> por ti y el espíritu.</td>
+<td>-</td>
+</tr>
+<tr>
+<td>• <strong>Tricksy Fey Step</strong></td>
+<td>Crea un cubo de oscuridad mágica de 5 ft en un espacio a 5 ft que dura hasta tu siguiente turno.</td>
+<td>-</td>
+</tr>
+</tbody>
+</table></div>
+<h3 style="margin-top:20px;">Bestial Spirit (Summon Beast — Nivel 2 / 3 / 4)</h3>
+<div class="highlight-box">
+<strong>Stats Base:</strong> AC 11 + Slot (Slot 2 = AC 13, Slot 3 = AC 14) | 
+<strong>HP (con Mighty Summoner):</strong> Slot 2 = <strong>24 HP</strong>, Slot 3 = <strong>30 HP</strong>, Slot 4 = <strong>36 HP</strong>
+</div>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Movimiento / Pasiva</th>
+<th>Ataque Rend (Spell Atk) *(Mágico)*</th>
+<th>Tirar Daño</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Air (Aire)</strong></td>
+<td>Fly 60 ft / Flyby (no provoca Oportunidad)</td>
+<td>Slot 2: 1d8+6 P / Slot 3: 1d8+7 P</td>
+<td>
+<button class="btn-roll" onclick="rollSpellAttack('Beast Air Atk')">🎯 Spell Atk</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Beast Rend Slot 2')">💥 1d8+6</button>
+</td>
+</tr>
+<tr>
+<td><strong>Land (Tierra)</strong></td>
+<td>Speed 30 ft, Climb 30 ft / Pack Tactics (Adv con aliado a 5ft)</td>
+<td>Slot 2: 1d8+6 P / Slot 3: 1d8+7 P</td>
+<td>
+<button class="btn-roll" onclick="rollSpellAttack('Beast Land Atk')">🎯 Spell Atk</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Beast Rend Slot 2')">💥 1d8+6</button>
+</td>
+</tr>
+<tr>
+<td><strong>Water (Agua)</strong></td>
+<td>Swim 30 ft / Respiración Acuática</td>
+<td>Slot 2: 1d8+6 P / Slot 3: 1d8+7 P</td>
+<td>
+<button class="btn-roll" onclick="rollSpellAttack('Beast Water Atk')">🎯 Spell Atk</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 6, 'Beast Rend Slot 2')">💥 1d8+6</button>
+</td>
+</tr>
+</tbody>
+</table></div>
+<h3 style="margin-top:20px;">Giant Insect Stat Blocks (Giant Insect — Nivel 4)</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Insecto Gigante</th>
+<th>AC / HP / Speed</th>
+<th>Ataques &amp; Efectos</th>
+<th>Tirar Dados</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Giant Centipede</strong></td>
+<td>AC 13 / HP 4 / 30 ft, Climb 30 ft</td>
+<td>Bite +4 (1d4+2 P + CON save DC 11 o 3d6 Poison damage).</td>
+<td>
+<button class="btn-roll" onclick="rollAttack(4, 'Centipede Bite Atk')">🎯 +4</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 4, 2, 'Centipede Piercing')">💥 1d4+2</button>
+<button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Centipede Poison')">☣️ 3d6 Poison</button>
+</td>
+</tr>
+<tr>
+<td><strong>Giant Wasp / Bee</strong></td>
+<td>AC 12 / HP 13 / Fly 50 ft</td>
+<td>Sting +4 (1d6+2 P + CON save DC 11 o 3d6 Poison damage).</td>
+<td>
+<button class="btn-roll" onclick="rollAttack(4, 'Wasp Sting Atk')">🎯 +4</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 6, 2, 'Wasp Piercing')">💥 1d6+2</button>
+<button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Wasp Poison')">☣️ 3d6 Poison</button>
+</td>
+</tr>
+<tr>
+<td><strong>Giant Spider</strong></td>
+<td>AC 14 / HP 26 / 30 ft, Climb 30 ft</td>
+<td>Bite +5 (1d8+3 P + 2d8 Poison DC 11). Web ranged +5 (Restrained DC 12).</td>
+<td>
+<button class="btn-roll" onclick="rollAttack(5, 'Spider Bite')">🎯 +5</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Spider Piercing')">💥 1d8+3</button>
+<button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Spider Poison')">☣️ 2d8 Poison</button>
+</td>
+</tr>
+</tbody>
+</table></div>

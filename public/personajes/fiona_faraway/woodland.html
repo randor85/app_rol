@@ -1,0 +1,113 @@
+<div class="highlight-box">
+<strong>Reglas y Bono de Círculo (Mighty Summoner):</strong><br/>
+ Invoca criaturas tipo Fey. Puedes elegir una de las siguientes opciones según el Desafío (CR):<br/>
+ • <strong>1 criatura de CR 2 o menor</strong><br/>
+ • <strong>2 criaturas de CR 1 o menor</strong><br/>
+ • <strong>4 criaturas de CR 1/2 o menor</strong><br/>
+ • <strong>8 criaturas de CR 1/4 o menor</strong><br/>
+ ✨ <strong>Beneficio Shepherd (Mighty Summoner):</strong> Todas las criaturas Fey invocadas ganan <strong>+2 HP por Hit Die</strong> y sus ataques naturales cuentan como <strong>mágicos</strong>.
+ </div>
+<!-- CR 1/4 BEINGS -->
+<h3 style="margin-top:20px; color:var(--accent-gold);">Opciones CR 1/4 (Hasta 8 Criaturas)</h3>
+<!-- PIXIE -->
+<div class="stat-block">
+<div class="stat-block-header">
+<h4>Pixie (Hada) — CR 1/4</h4>
+<div class="stat-block-sub">Tiny Fey, Neutral Bueno | HP Base: 1 (1d4-1) → <strong>HP Mágico Shepherd: 3 HP (1d4+1)</strong></div>
+</div>
+<div class="stat-block-line"><strong>AC:</strong> 15 | <strong>Velocidad:</strong> 10 ft, Fly 30 ft</div>
+<div class="stat-block-line"><strong>Atributos:</strong> STR 2 (-4), DEX 20 (+5), CON 8 (-1), INT 10 (+0), WIS 14 (+2), CHA 15 (+2)</div>
+<div class="stat-block-line"><strong>Habilidades &amp; Resistencias:</strong> Stealth +7, Magic Resistance (Ventaja en salvaciones contra conjuros).</div>
+<div class="stat-block-line"><strong>Superior Invisibility:</strong> Se vuelve invisible mágicamente junto a su equipo. Concentración, termina si ataca o lanza un conjuro.</div>
+<div style="margin-top:10px;">
+<strong>Innate Spellcasting (WIS Save DC 12 / Spell Atk +4):</strong>
+<div class="spell-details-box">
+<h5>✨ Conjuros Innatos (1/día cada uno, Sin componentes):</h5>
+<p>• <strong>Confusion:</strong> 1 Acc / Rango 90 ft / Conc. 1 min / Esfera 10 ft. Cada criatura debe superar WIS Save DC 12 o tirar 1d10 para determinar sus acciones.</p>
+<p>• <strong>Polymorph:</strong> 1 Acc / Rango 60 ft / Conc. 1 hora. Transforma una criatura en una Bestia de CR igual o menor al objetivo (WIS Save DC 12).</p>
+<p>• <strong>Entangle:</strong> 1 Acc / Rango 90 ft / Conc. 1 min / Cuadrado 20 ft. Enredaderas dificultan terreno; STR Save DC 12 o Restrained.</p>
+<p>• <strong>Phantasmal Force:</strong> 1 Acc / Rango 60 ft / Conc. 1 min. Ilusión mental (INT Save DC 12); inflige 1d6 psíquico por turno.</p>
+<p>• <strong>Fly:</strong> 1 Acc / Rango Toque / Conc. 10 min. Otorga velocidad de vuelo (Fly Speed) de 60 ft.</p>
+<p>• <strong>Sleep:</strong> 1 Acc / Rango 90 ft / 1 min. Afecta 5d8 HP de criaturas en área de 20 ft.</p>
+<p>• <strong>Dispel Magic:</strong> 1 Acc / Rango 120 ft. Termina un conjuro de nivel 3 o inferior en el objetivo.</p>
+</div>
+</div>
+<div style="margin-top:10px;">
+<button class="btn-roll" onclick="rollCheckSave('d20', 7, 'Pixie Stealth', 'check')">🥷 Stealth +7</button>
+<button class="btn-roll" onclick="rollGenericDamage(5, 8, 0, 'Pixie Sleep Spell (5d8 HP)')">💤 Sleep (5d8 HP)</button>
+<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Pixie Dispel Magic Check', 'check')">✨ Dispel Check (+2)</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Phantasmal Force Damage')">🧠 Phantasmal 1d6</button>
+</div>
+</div>
+<!-- SPRITE -->
+<div class="stat-block">
+<div class="stat-block-header">
+<h4>Sprite (Elfo de los Bosques) — CR 1/4</h4>
+<div class="stat-block-sub">Tiny Fey, Neutral Bueno | HP Base: 2 (1d4) → <strong>HP Mágico Shepherd: 4 HP (1d4+2)</strong></div>
+</div>
+<div class="stat-block-line"><strong>AC:</strong> 15 (Leather Armor) | <strong>Velocidad:</strong> 10 ft, Fly 40 ft</div>
+<div class="stat-block-line"><strong>Atributos:</strong> STR 3 (-4), DEX 18 (+4), CON 10 (+0), INT 14 (+2), WIS 13 (+1), CHA 11 (+0)</div>
+<div class="stat-block-line"><strong>Habilidades:</strong> Perception +3, Stealth +8</div>
+<div class="spell-details-box">
+<h5>✨ Habilidades Mágicas Innatas:</h5>
+<p>• <strong>Heart Sight:</strong> 1 Acción / Rango Toque. CHA Save DC 10 o revela estado emocional actual y alineamiento moral.</p>
+<p>• <strong>Invisibility:</strong> 1 Acción. Se vuelve invisible mágicamente con su equipo.</p>
+</div>
+<div class="stat-block-line" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">
+<strong>Acciones de Ataque (Mágicos):</strong><br/>
+ • <strong>Longsword:</strong> +2 Atk, 1 slashing damage.<br/>
+ • <strong>Shortbow:</strong> +6 Atk, Rango 40/160; 1 piercing damage + Veneno. CON save DC 10 o Poisoned por 1 min (Unconscious si falla por 5+).
+ </div>
+<div style="margin-top:8px;">
+<button class="btn-roll" onclick="rollAttack(6, 'Sprite Shortbow')">🏹 Shortbow +6</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Sprite Sleep Duration (Horas)')">💤 Unconscious (1d4 hrs)</button>
+</div>
+</div>
+<!-- CR 1/2 BEINGS -->
+<h3 style="margin-top:20px; color:var(--accent-gold);">Opciones CR 1/2 (Hasta 4 Criaturas)</h3>
+<!-- SATYR -->
+<div class="stat-block">
+<div class="stat-block-header">
+<h4>Satyr (Sátiro) — CR 1/2</h4>
+<div class="stat-block-sub">Medium Fey, Caótico Neutral | HP Base: 31 (7d8) → <strong>HP Mágico Shepherd: 45 HP (7d8+14)</strong></div>
+</div>
+<div class="stat-block-line"><strong>AC:</strong> 14 (Leather Armor) | <strong>Velocidad:</strong> 40 ft</div>
+<div class="stat-block-line"><strong>Magic Resistance:</strong> Ventaja en salvaciones contra conjuros y efectos mágicos.</div>
+<div class="spell-details-box">
+<h5>🎶 Panpipes (Gaita Mágica):</h5>
+<p>1 Acción. WIS Save DC 13 o sufre: Charm, Frightened o Sleep por 1 min.</p>
+</div>
+<div class="stat-block-line" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">
+<strong>Acciones de Ataque (Mágicos):</strong><br/>
+ • <strong>Ram:</strong> +3 Atk, 2d4 + 1 bludgeoning.<br/>
+ • <strong>Shortsword:</strong> +5 Atk, 1d6 + 3 piercing.
+ </div>
+<div style="margin-top:8px;">
+<button class="btn-roll" onclick="rollAttack(3, 'Satyr Ram Atk')">🐏 Ram +3</button>
+<button class="btn-roll" onclick="rollGenericDamage(2, 4, 1, 'Satyr Ram Damage')">💥 2d4+1</button>
+<button class="btn-roll" onclick="rollAttack(5, 'Satyr Shortsword/Bow Atk')">🗡️ Atk +5</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 6, 3, 'Satyr Weapon Damage')">💥 1d6+3</button>
+</div>
+</div>
+<!-- CR 1 BEINGS -->
+<h3 style="margin-top:20px; color:var(--accent-gold);">Opciones CR 1 (Hasta 2 Criaturas)</h3>
+<!-- DRYAD -->
+<div class="stat-block">
+<div class="stat-block-header">
+<h4>Dryad (Dríada) — CR 1</h4>
+<div class="stat-block-sub">Medium Fey, Neutral | HP Base: 22 (5d8) → <strong>HP Mágico Shepherd: 32 HP (5d8+10)</strong></div>
+</div>
+<div class="stat-block-line"><strong>AC:</strong> 11 (16 con Barkskin) | <strong>Velocidad:</strong> 30 ft</div>
+<div class="spell-details-box">
+<h5>✨ Fey Charm &amp; Innate Spellcasting (WIS Save DC 12 / CHA DC 14):</h5>
+<p>• <strong>Fey Charm:</strong> WIS Save DC 14 o Charmed por 24 hrs.</p>
+<p>• <strong>Spells:</strong> Barkskin (1/día), Entangle (3/día), Goodberry (3/día), Pass without Trace (1/día), Shillelagh (1/día).</p>
+</div>
+<div class="stat-block-line" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">
+<strong>Club (con Shillelagh - Ataque Mágico):</strong> +6 Atk, 1d8 + 4 bludgeoning.
+ </div>
+<div style="margin-top:8px;">
+<button class="btn-roll" onclick="rollAttack(6, 'Dryad Shillelagh Atk')">🌳 Club +6</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 4, 'Dryad Club Damage')">💥 1d8+4</button>
+</div>
+</div>

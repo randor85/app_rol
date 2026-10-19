@@ -2,7 +2,7 @@
  * ficha-plantilla.js — HTML de la ficha, generado desde los datos de un personaje (personajes/<id>.js).
  *
  * Es la parte "qué se dibuja": cada función devuelve el marcado de UNA sección con los ids de siempre
- * (hp-cur, hd-N, ds-s1…, cond-*, slot-N-cur, <ab>-score, sk-<habilidad>, ca-buff, …), que son las claves bajo
+ * (hp-cur, hd-N, ds-s1…, cond-*, slot-N-cur, <ab>-score, sk-<habilidad>, ac-buff, …), que son las claves bajo
  * datos/ en Firebase. Por eso un personaje existente conserva todos sus datos al pasar a la ficha única.
  * ficha-shell.js decide el orden, carga los módulos y conecta los motores; los estilos salen de ficha-tema.css.
  *
@@ -69,10 +69,17 @@
   </div>`;
   }
 
+  /* ---------- efectos manuales (Bless, Bane, Haste…): casillas que el jugador marca a mano ---------- */
+  function efectosManuales(P) {
+    const l = (P.efectosManuales || []);
+    if (!l.length) return '';
+    return '<strong class="estados-titulo">Efectos y buffs</strong>' + l.map(e => `<label title="${esc(e.texto || '')}"><input type="checkbox" id="${esc(e.id)}" data-efecto="${esc(e.nombre)}" data-tipo="${esc(e.tipo || 'buff')}"> ${esc(e.icono || '✨')} ${esc(e.nombre)}${e.texto ? ' <small>(' + esc(e.texto) + ')</small>' : ''}</label>`).join('') + '<hr class="separador"><strong class="estados-titulo">Condiciones</strong>';
+  }
+
   /* ---------- vitales ---------- */
   function vitales(P) {
     const stats = [
-      ['ca', '🛡️ CA', 'ca-base', 'ca-buff', 'ca-total', true],
+      ['ca', '🛡️ CA', 'ac-base', 'ac-buff', 'ac-total', true],
       ['hpmax', '❤️ PG máx.', 'hp-max-base', 'hp-max-buff', 'hp-max-total'],
       ['ini', '🎲 Iniciativa', 'ini-base', 'iniciativa-buff', 'iniciativa-total'],
       ['vel', '🏃 Velocidad', 'vel-base', 'velocidad-buff', 'velocidad-total'],
@@ -124,7 +131,8 @@
           <div class="etiqueta-seccion" style="margin:var(--sp-2) 0 0">Estados</div>
           <div class="estados-linea" id="estados-activos"></div>
           <p class="texto-suave" id="estados-efectos"></p>
-          <details class="selector-estados"><summary class="btn btn-fantasma btn-sm">+ Estado</summary><div id="conditions-dropdown" class="estados-lista"></div></details>
+          <details class="selector-estados"><summary class="btn btn-fantasma btn-sm">+ Estado</summary><div id="conditions-dropdown" class="estados-lista">${efectosManuales(P)}</div></details>
+          ${P.sinConjuros ? '' : '<button type="button" class="btn btn-roll" data-tirar="concentracion">🧘 Save de concentración (CON <span id="conc-save-bonus">+0</span>)</button>'}
         </div>
 
         <div class="vitales-stats stats-grid">
@@ -182,7 +190,7 @@
         <div class="espacios" id="espacios-conjuro" aria-label="Espacios de conjuro"></div>
         <div class="fila"><span class="texto-suave" id="pacto-info"></span></div>
       </div>
-      <div class="fila" style="justify-content:flex-end"><button type="button" class="spell-add-btn" onclick="FichaHechizos.editor.mostrarFormulario()">➕ Agregar hechizo</button></div>
+      <div class="fila" style="justify-content:flex-end"><button type="button" class="btn btn-fantasma" data-compendio>📖 Agregar del compendio</button><button type="button" class="spell-add-btn" onclick="FichaHechizos.editor.mostrarFormulario()">➕ Agregar hechizo (en blanco)</button></div>
       <div class="tabla-scroll"><table class="tabla tabla-resp tabla-hechizos"><thead><tr><th>Nivel</th><th>Conjuro</th><th>Tiempo / alcance</th><th>Efecto</th><th>Acción</th></tr></thead><tbody id="hechizos-lista"></tbody></table></div>
       <div id="hechizos-form-container"></div>`;
   }
@@ -213,14 +221,17 @@
 
   /* ---------- rasgos ---------- */
   function rasgos(P) {
-    const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${r.html || ''}</div></div>`).join('');
+    const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${r.html || ''}</div>${(r.acciones || []).map(a => `<button type="button" class="btn-roll btn-roll-sm" data-roll="${esc(a.roll)}" data-etiqueta="${esc(a.etiqueta || a.texto)}">${esc(a.texto)}</button>`).join('')}</div>`).join('');
     return `<div class="feature-grid">${cards}</div>`;
   }
 
   /* ---------- inventario ---------- */
   function inventario(P) {
     const monedas = (P.monedas || [{ id: 'gp-val', etiqueta: 'Oro (po)' }]).map(m => `<label class="campo"><span>${esc(m.etiqueta)}</span><input type="number" id="${esc(m.id)}" value="${m.valor || 0}"></label>`).join('');
+    const contadores = (P.contadores || []).map(c => `<div class="panel"><h3>${esc(c.icono || '🔹')} ${esc(c.etiqueta)}</h3><div class="contador" role="group" aria-label="${esc(c.etiqueta)}"><button type="button" data-contador="${esc(c.id)}" data-delta="-1" aria-label="Restar">−</button><span class="contador-valor" id="${esc(c.id)}">${c.valor || 0}</span><button type="button" data-contador="${esc(c.id)}" data-delta="1" aria-label="Sumar">+</button></div></div>`).join('');
     return `<div class="form-grid">${monedas}</div>
+      ${contadores ? `<div class="form-grid">${contadores}</div>` : ''}
+      ${P.notaInventario ? `<div class="aviso"><span>${P.notaInventario}</span></div>` : ''}
       <div class="fila" style="justify-content:space-between"><span class="texto-suave">La CA se calcula con la armadura y el escudo equipados.</span><button type="button" class="inventory-add-btn" onclick="FichaInventario.editor.mostrarFormulario()">➕ Agregar ítem</button></div>
       <div id="inventario-lista"></div><div id="inventario-form-container"></div>`;
   }

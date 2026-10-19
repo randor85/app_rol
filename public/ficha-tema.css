@@ -518,9 +518,31 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 .estados-linea { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
 .skill-hab { color: var(--texto-suave); font-size: var(--fs-xs); }
 .recurso-cuenta { font-weight: 800; }
+.estados-titulo { font-size: var(--fs-xs); color: var(--acento); text-transform: uppercase; letter-spacing: 0.08em; }
+.pip-rotulo { font-size: var(--fs-sm); margin-left: var(--sp-1); }
+.recurso-valor .pips label.pip-casilla { align-items: center; gap: var(--sp-1); }
 .vitales-stats { grid-column: 1 / -1; }
 .xp-linea { flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
 .xp-linea input { width: 9rem; min-height: 36px; }
+
+/* ---- Contenido propio de cada personaje (secciones con HTML a mano: stat blocks, tablas, notas) ---- */
+.seccion-propia { min-width: 0; display: grid; gap: var(--sp-3); }
+.seccion-propia h3 { font-size: var(--fs-md); color: var(--acento); }
+.table-scroll { overflow-x: auto; max-width: 100%; }
+.seccion-propia table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); min-width: 560px; }
+.seccion-propia th { text-align: left; padding: var(--sp-2) var(--sp-3); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-suave); border-bottom: 2px solid var(--borde-fuerte); }
+.seccion-propia td { padding: var(--sp-3); border-bottom: 1px solid var(--borde); vertical-align: top; }
+.seccion-propia tbody tr:nth-child(even) { background: color-mix(in srgb, var(--texto) 3%, transparent); }
+.stat-block { background: var(--bg); border: 1px solid var(--acento); border-radius: var(--radio-sm); padding: var(--sp-3) var(--sp-4); }
+.stat-block-header { border-bottom: 2px solid var(--acento); padding-bottom: var(--sp-1); margin-bottom: var(--sp-2); }
+.stat-block-header h4 { font-size: var(--fs-lg); color: var(--acento); }
+.stat-block-sub { font-size: var(--fs-sm); color: var(--texto-suave); font-style: italic; }
+.stat-block-line { font-size: var(--fs-sm); margin-bottom: var(--sp-1); }
+.stat-block-line strong { color: var(--acento-2); }
+.spell-details-box { background: var(--surface-2); border-left: 3px solid var(--acento); padding: var(--sp-2) var(--sp-3); margin-top: var(--sp-2); border-radius: 0 var(--radio-sm) var(--radio-sm) 0; font-size: var(--fs-sm); }
+.spell-details-box h5 { color: var(--acento); font-size: var(--fs-sm); margin-bottom: var(--sp-1); }
+.highlight-box, .invocation-note { background: color-mix(in srgb, var(--acento) 8%, transparent); border: 1px dashed var(--acento); padding: var(--sp-3); border-radius: var(--radio-sm); font-size: var(--fs-sm); }
+.editable-text { min-width: 0; overflow-wrap: anywhere; }
 
 /* ============================================================
    LANZADOR DE DADOS + HISTORIAL (ficha-dados.js) — solo tokens

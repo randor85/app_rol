@@ -181,16 +181,19 @@
     const cont = $('recurso-' + r.id); if (!cont) return;
     const cuerpo = cont.querySelector('.recurso-valor'); if (!cuerpo) return;
     if (r.tipo === 'pips') {
-      const n = maxDe(r);
+      const n = r.ids ? r.ids.length : maxDe(r);
       if (cuerpo.querySelectorAll('input[type="checkbox"]').length !== n) {
         cuerpo.textContent = '';
         const grupo = document.createElement('div'); grupo.className = 'pips'; grupo.setAttribute('role', 'group'); grupo.setAttribute('aria-label', r.nombre);
         for (let i = 1; i <= n; i++) {
           const lab = document.createElement('label'); lab.className = 'pip-casilla';
-          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = r.prefijo + i; cb.dataset.recurso = r.id;
-          cb.setAttribute('aria-label', r.nombre + ' — uso ' + i);
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = r.ids ? r.ids[i - 1] : r.prefijo + i; cb.dataset.recurso = r.id;
+          const rot = r.etiquetas ? r.etiquetas[i - 1] : null;
+          cb.setAttribute('aria-label', r.nombre + ' — ' + (rot || 'uso ' + i));
           const sp = document.createElement('span'); sp.className = 'pip'; sp.setAttribute('aria-hidden', 'true');
-          lab.append(cb, sp); grupo.appendChild(lab);
+          lab.append(cb, sp);
+          if (rot) { const t = document.createElement('span'); t.className = 'pip-rotulo'; t.textContent = rot; lab.appendChild(t); }
+          grupo.appendChild(lab);
         }
         cuerpo.appendChild(grupo);
         if (window.FichaComun) FichaComun.reaplicarDatos();
@@ -285,6 +288,12 @@
       x.addEventListener('click', () => { const cb = $('cond-' + id); if (cb && !soloLectura()) { cb.checked = false; disparar(cb, 'change'); } });
       chip.appendChild(x); cont.appendChild(chip);
     });
+    document.querySelectorAll('input[data-efecto]:checked').forEach(cb => {
+      const chip = document.createElement('span'); chip.className = 'cond-chip'; chip.textContent = cb.dataset.efecto + ' ';
+      const x = document.createElement('button'); x.type = 'button'; x.className = 'btn-clear'; x.textContent = '✖'; x.setAttribute('aria-label', 'Quitar ' + cb.dataset.efecto);
+      x.addEventListener('click', () => { if (!soloLectura()) { cb.checked = false; disparar(cb, 'change'); } });
+      chip.appendChild(x); cont.appendChild(chip);
+    });
     if (e.agotamiento) {
       const chip = document.createElement('span'); chip.className = 'cond-chip'; chip.textContent = '🥱 Agotamiento ' + e.agotamiento;
       const n = FichaReglas.datos().agotamiento.find(x => x.nivel === e.agotamiento); if (n) chip.title = n.texto;
@@ -320,6 +329,7 @@
     document.addEventListener('ficha:buffs', pintarHP);
     document.addEventListener('ficha:estados', pintarEstados);
     document.addEventListener('input', (e) => { if (e.target && (e.target.id === 'hp-max-buff' || e.target.id === 'exhaustion-level')) { pintarHP(); if (e.target.id === 'exhaustion-level') pintarEstados(); } });
+    document.addEventListener('change', (e) => { if (e.target && e.target.dataset && e.target.dataset.efecto) pintarEstados(); });
     document.addEventListener('change', (e) => { if (e.target && /^hd-\d+$/.test(e.target.id || '')) pintarHD(); if (e.target && e.target.dataset && e.target.dataset.recurso) { const r = cfg.recursos.find(x => x.id === e.target.dataset.recurso); if (r) { renderRecurso(r); if (e.target.checked) aviso(r.nombre + ': usó 1', 'recurso'); } } });
     const hp = $('hp-cur'); if (hp) hp.addEventListener('change', () => fijarHP(num(hp.value, 0)));
     refrescar();

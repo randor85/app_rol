@@ -125,6 +125,7 @@
         cont.appendChild(card);
       } else { const m = $(`slot-${n}-max`); if (m) m.textContent = String(max); }
     });
+    if (window.FichaComun) FichaComun.reaplicarDatos();   // las tarjetas nuevas (subida de nivel) reciben su valor guardado
     const info = $('pacto-info');
     if (e.pacto) {
       let card = cont.querySelector('[data-slot-pacto]');
@@ -152,7 +153,7 @@
     set('prof-badge', f(prof)); set('prof-badge-2', f(prof)); set('barra-prof', f(prof));
     set('chip-nivel', 'Nivel ' + FichaVitales.nivelTotal());
     set('prof-nivel', 'Nivel ' + FichaVitales.nivelTotal());
-    set('barra-ca', ($('ca-total') || {}).textContent || '—');
+    set('barra-ca', ($('ac-total') || {}).textContent || '—');
     const hm = $('hp-max-total'); if (hm) hm.textContent = String(FichaVitales.hpMaxActual());
     FichaVitales.pintarHP();
     // ataques
@@ -194,7 +195,7 @@
   function etiquetaHab(k) { return k; }
   function bindClicks() {
     document.addEventListener('click', (e) => {
-      const t = e.target.closest('[data-tirar],[data-ataque],[data-hp-delta],[data-hp-accion],[data-slot],[data-pool],[data-descanso],[data-recurso-formula],.tab');
+      const t = e.target.closest('[data-tirar],[data-roll],[data-contador],[data-compendio],[data-ataque],[data-hp-delta],[data-hp-accion],[data-slot],[data-pool],[data-descanso],[data-recurso-formula],.tab');
       if (!t) return;
       if (t.dataset.tirar) {
         const bono = num(t.dataset.bonus || (t.closest('.skill-item') || {}).dataset && t.closest('.skill-item').dataset.bonus, 0);
@@ -206,7 +207,11 @@
           return FichaDados.d20({ mod: m, etiqueta: 'Iniciativa', categoria: 'pruebas' });
         }
       }
+      if (t.dataset.tirar === 'concentracion') return FichaDados.d20({ mod: num(($('ab-con') && $('ab-con').querySelector('.btn-save') || {}).dataset && $('ab-con').querySelector('.btn-save').dataset.bonus, 0), etiqueta: 'CON Save (concentración)', categoria: 'salvaciones' });
       if (t.dataset.ataque !== undefined) return tirarAtaque(t);
+      if (t.dataset.contador) return FichaVitales.cambiarContador(t.dataset.contador, num(t.dataset.delta, 0), t.closest('.panel') ? t.closest('.panel').querySelector('h3').textContent.trim() : t.dataset.contador);
+      if (t.dataset.roll) return FichaDados.tirar(t.dataset.roll, t.dataset.etiqueta || t.dataset.roll);
+      if (t.dataset.compendio !== undefined) return FichaCompendio.abrir();
       if (t.dataset.hpDelta) return FichaVitales.cambiarHP(num(t.dataset.hpDelta, 0));
       if (t.dataset.hpAccion) {
         const a = t.dataset.hpAccion, cant = $('hp-cantidad');
@@ -245,6 +250,14 @@
     });
   }
 
+  // Un modificador de daño puede ser un número, una habilidad ('STR') o { hab:'DEX', prof:true } (habilidad + competencia).
+  function valorMod(m) {
+    if (m == null) return 0;
+    if (typeof m === 'number') return m;
+    if (typeof m === 'string') return FichaAtributos.modDe(m);
+    return (m.hab ? FichaAtributos.modDe(m.hab) : 0) + (m.prof ? FichaAtributos.profBonusActual() : 0) + (m.fijo || 0);
+  }
+
   function tirarAtaque(btn) {
     const idx = btn.dataset.ataque, modo = btn.dataset.modo;
     const prof = FichaAtributos.profBonusActual();
@@ -259,7 +272,7 @@
     }
     const dado = modo === 'extra' ? (a.extras[num(btn.dataset.extra, 0)] || {}).dado : a.dano;
     if (!dado) return;
-    const modDano = modo === 'extra' ? (dado.mod || 0) : (typeof dado.mod === 'string' ? FichaAtributos.modDe(dado.mod) : (dado.mod || 0));
+    const modDano = valorMod(dado.mod);
     const nombre = modo === 'extra' ? a.extras[num(btn.dataset.extra, 0)].nombre : 'Daño ' + a.nombre;
     const base = FichaDados.calcular({ count: dado.count, sides: dado.sides, mod: modDano });
     if (base.error) return;
@@ -267,6 +280,52 @@
     const ex = FichaBuffs.tirarDados('dano');
     ex.partes.forEach(p => { total += p.valor; detalle += ' | ' + p.texto; });
     FichaDados.mostrar(total, nombre, detalle);
+  }
+
+  /* ---------- compatibilidad para fragmentos HTML propios ----------
+     Los stat blocks escritos a mano en cada ficha llaman a estas funciones desde onclick; se conservan con la misma
+     firma que tenían (rollAttack, rollGenericDamage…) para no reescribir cientos de botones. */
+  function instalarCompat() {
+    const mod = (h) => FichaAtributos.modDe(h), prof = () => FichaAtributos.profBonusActual();
+    window.armaBono = (hab) => mod(hab) + prof();
+    window.bonoAtaqueConjuro = () => mod(P.habilidadConjuro) + prof();
+    window.rollAttack = (bono, etiqueta) => FichaDados.d20({ mod: bono + num(($('atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque'), etiqueta, categoria: 'ataque' });
+    window.rollSpellAttack = (etiqueta) => FichaDados.d20({ mod: window.bonoAtaqueConjuro() + num(($('spell-atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque-conjuro'), etiqueta, categoria: 'ataque' });
+    window.rollGenericDamage = (count, sides, m, etiqueta) => FichaDados.tirar({ count, sides, mod: m }, etiqueta + ` (${count}d${sides})`);
+    window.rollManualDice = window.rollGenericDamage;
+    window.rollCheckSave = (dado, m, etiqueta, tipo, categoria) => FichaDados.d20({ mod: m, etiqueta, categoria: categoria || (tipo === 'save' ? 'salvaciones' : 'pruebas') });
+    window.rollCoin = () => FichaDados.moneda();
+    window.changeVal = (id, delta) => FichaVitales.cambiarContador(id, delta, id);
+  }
+
+  // Textos derivados dentro de HTML propio: <span class="js-calc" data-calc="armaBono|mod|prof|cd" data-hab="DEX" data-fmt="num">
+  function aplicarJsCalc() {
+    if (!window.FichaAtributos) return;
+    const f = FichaComun.formatearMod, prof = FichaAtributos.profBonusActual();
+    document.querySelectorAll('.js-calc').forEach(el => {
+      const hab = el.dataset.hab; let t;
+      switch (el.dataset.calc) {
+        case 'armaBono': { const v = FichaAtributos.modDe(hab) + prof; t = el.dataset.fmt === 'num' ? String(v) : f(v); break; }
+        case 'mod': t = f(FichaAtributos.modDe(hab)); break;
+        case 'prof': t = f(prof); break;
+        case 'cd': t = String(8 + FichaAtributos.modDe(P.habilidadConjuro) + prof); break;
+      }
+      if (t !== undefined && el.textContent !== t) el.textContent = t;
+    });
+    const cb = $('conc-save-bonus'), b = $('ab-con') && $('ab-con').querySelector('.btn-save');
+    if (cb && b) cb.textContent = f(num(b.dataset.bonus, 0));
+  }
+
+  // Elegir el nivel de upcast autoguarda el <select> (tiene id); el eco dispara 'ficha:atributos' y la tabla de hechizos
+  // se vuelve a dibujar devolviendo el selector al nivel base antes de tirar. Se recuerda la elección y se restaura.
+  function protegerSelectoresUpcast() {
+    const guardado = {};
+    ['input', 'change'].forEach(t => document.addEventListener(t, (e) => { if (/^upcast-sel-/.test(e.target.id || '')) guardado[e.target.id] = e.target.value; }, true));
+    const lista = $('hechizos-lista');
+    if (lista) new MutationObserver(() => {
+      aplicarJsCalc();
+      Object.entries(guardado).forEach(([id, v]) => { const sel = $(id); if (sel && sel.value !== v && Array.from(sel.options).some(o => o.value === v)) sel.value = v; });
+    }).observe(lista, { childList: true, subtree: true });
   }
 
   /* ---------- permisos / hp-max para la pantalla del GM ---------- */
@@ -322,7 +381,7 @@
       pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
     });
     // Base + buff = total
-    FichaComun.iniciarCA({ buffInputId: 'ca-buff', totalElId: 'ca-total', baseElId: 'ca-base' });
+    FichaComun.iniciarCA({ buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base' });
     FichaComun.iniciarConcentracion('concentracion-panel');
     const mod = (h) => FichaAtributos.modDe(h), prof = () => FichaAtributos.profBonusActual();
     const f = FichaComun.formatearMod;
@@ -334,7 +393,8 @@
       FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: () => mod(P.habilidadConjuro) + prof(), formatear: f, objetivoBuff: 'ataque-conjuro' });
       FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + mod(P.habilidadConjuro) + prof(), objetivoBuff: 'cd-conjuro' });
     }
-    document.addEventListener('ficha:atributos', refrescarDerivados);
+    instalarCompat(); protegerSelectoresUpcast();
+    document.addEventListener('ficha:atributos', () => { refrescarDerivados(); aplicarJsCalc(); });
     document.addEventListener('ficha:datos-sincronizados', () => { refrescarDerivados(); pintarXP(); });
 
     FichaComun.iniciarBitacora({ db, codigoCampana });
@@ -343,7 +403,7 @@
 
     FichaNivel.iniciar({
       clases: window.CONFIG_NIVEL.clases, skills: SKILLS_CFG, hpMax: FichaVitales.hpMaxActual,
-      refrescarEspacios: renderEspacios,
+      refrescarEspacios: renderEspacios, abrirCompendio: () => FichaCompendio.abrir(),
       agregarHD: () => FichaVitales.pintarHD(), quitarHD: () => FichaVitales.pintarHD(),
       recursos: [],
     });
@@ -354,7 +414,7 @@
     FichaParty.iniciar({ db, codigoCampana, personajeId: P.id, nombre: P.nombre });
     if (typeof P.iniciar === 'function') P.iniciar({ db, charRef, codigoCampana, uid: user.uid, P, toast });
 
-    refrescarDerivados(); pintarXP();
+    refrescarDerivados(); aplicarJsCalc(); pintarXP();
     window.__fichaLista = true;
     document.dispatchEvent(new CustomEvent('ficha:lista'));
   }
@@ -373,7 +433,7 @@
     if (window.FichaPaleta) FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: P.paleta, clave: P.id });
     await cargarFragmentos();
 
-    for (const s of ['ficha-common.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js']) await cargarScript(s);
+    for (const s of ['ficha-common.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
     bindClicks();
 
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
