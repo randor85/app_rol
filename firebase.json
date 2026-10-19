@@ -9,6 +9,6 @@
     ]
   },
   "database": {
-    "rules": "public/db_rules.txt"
+    "rules": "database.rules.json"
   }
 }
