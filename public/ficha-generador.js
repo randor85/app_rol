@@ -233,13 +233,14 @@
       const comp = Object.keys(form.habilidades || {}).length;
       if (comp < hc.cantidad) e.push(`Elegí al menos ${hc.cantidad} habilidades con competencia (la clase da ${hc.cantidad}).`);
     }
-    (form.clases || []).forEach((c) => {
-      const l = limitesHechizos(c);
-      if (!l.maxNivel && !l.trucos) return;
+    // Los hechizos van en una lista plana: se valida contra el nivel máximo que alcanza CUALQUIERA de las clases lanzadoras.
+    const lanzadoras = (form.clases || []).map((c) => ({ c, l: limitesHechizos(c) })).filter((x) => x.l.maxNivel || x.l.trucos);
+    if (lanzadoras.length) {
+      const maxNivel = Math.max.apply(null, lanzadoras.map((x) => x.l.maxNivel));
       const sel = (form.hechizos || []).map((n) => (typeof SPELLS !== 'undefined' ? SPELLS.find((s) => s.name === n) : null)).filter(Boolean);
-      const fuera = sel.filter((s) => s.nivel > l.maxNivel);
-      if (fuera.length) e.push(`Hechizos de nivel demasiado alto para ${datosClase(c.id).nombre_es}: ${fuera.map((s) => s.name).join(', ')} (máximo nivel ${l.maxNivel}).`);
-    });
+      const fuera = sel.filter((s) => s.nivel > maxNivel);
+      if (fuera.length) e.push(`Hechizos de nivel demasiado alto: ${fuera.map((s) => s.name).join(', ')} (tus clases llegan a nivel ${maxNivel}).`);
+    }
     return e;
   }
 

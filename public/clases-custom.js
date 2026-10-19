@@ -223,7 +223,10 @@
     const l = [4, 8, 12, 16].map((n) => ({ nivel: n, nombre: 'Mejora de Puntuación de Característica', desc: TXT_ASI }));
     l.push({ nivel: 19, nombre: 'Mejora de Puntuación de Característica / Don Épico', desc: 'Última mejora de característica, o un Don Épico.' });
     const sl = entero(subclassLevel);
-    if (sl >= 1 && sl <= 20) l.unshift({ nivel: sl, nombre: (str(subclassLabel) || 'Subclase') + ' (Subclase)', desc: 'Elegís tu ' + (str(subclassLabel) || 'subclase').toLowerCase() + '.' });
+    if (sl >= 1 && sl <= 20) {
+      const et = str(subclassLabel) || 'Subclase';
+      l.unshift({ nivel: sl, nombre: (et.toLowerCase() === 'subclase' ? 'Elección de subclase' : et) + ' (Subclase)', desc: 'Elegís tu ' + et.toLowerCase() + '.' });
+    }
     return l.sort((a, b) => a.nivel - b.nivel);
   }
 

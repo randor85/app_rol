@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crear personaje</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ficha-tema.css">
+<script src="ficha-paleta.js"></script>
+<script>
+  // Paleta guardada aplicada antes de pintar, para evitar el parpadeo.
+  FichaPaleta.aplicarGuardada({ porDefecto: 'bosque' });
+</script>
+<style>
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--texto); font-family: var(--fuente-texto); }
+  .asistente { max-width: 880px; padding-top: var(--sp-4); }
+  .asis-cab { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-3) 0 var(--sp-2); }
+  .asis-cab h1 { font-size: clamp(1.5rem, 5vw, 2.1rem); color: var(--acento); letter-spacing: 0.02em; }
+  .asis-cab p { margin: var(--sp-1) 0 0; color: var(--texto-suave); font-size: var(--fs-sm); }
+  .asistente .campo { display: grid; gap: var(--sp-1); min-width: 0; }
+  .asistente .campo > span { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-suave); }
+  .asistente .op { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 32px; cursor: pointer; color: var(--texto); font-size: var(--fs-sm); }
+  .asistente .op small { color: var(--texto-suave); }
+  .asistente fieldset { border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: var(--sp-3); margin: 0; min-width: 0; }
+  .asistente legend { padding: 0 var(--sp-2); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-suave); }
+  .asistente h2 { font-size: var(--fs-xl); color: var(--acento); margin-bottom: var(--sp-2); }
+  .asistente h3 { font-size: var(--fs-lg); color: var(--texto); margin: 0; }
+  .asistente h2:focus { outline: none; }
+  .asistente details > summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; color: var(--acento); font-weight: 700; }
+
+  /* progreso y pasos */
+  .progreso-texto { display: flex; justify-content: space-between; gap: var(--sp-3); font-size: var(--fs-sm); color: var(--texto-suave); margin-bottom: var(--sp-1); }
+  .pasos { display: flex; justify-content: space-between; gap: var(--sp-1); list-style: none; margin: var(--sp-3) 0 var(--sp-4); padding: 0; }
+  .pasos li { flex: 1 1 0; min-width: 0; display: flex; justify-content: center; }
+  .paso-btn { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); background: none; border: 0; padding: var(--sp-1); color: var(--texto-suave); font: 700 var(--fs-xs) var(--fuente-texto); cursor: pointer; min-width: 0; max-width: 100%; }
+  .paso-btn .num { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--borde-fuerte); display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-sm); background: var(--surface); }
+  .paso-btn .lbl { display: none; }
+  .paso-btn[disabled] { cursor: not-allowed; opacity: 0.5; }
+  .paso-btn.hecho .num { border-color: var(--bien); color: var(--bien); }
+  .paso-btn.omitido .num { border-style: dashed; }
+  .paso-btn[aria-current="step"] { color: var(--acento); }
+  .paso-btn[aria-current="step"] .num { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  @media (min-width: 720px) { .paso-btn .lbl { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; } }
+
+  .paso-panel { background: var(--surface); border: 1px solid var(--borde); border-radius: var(--radio); padding: var(--sp-4); box-shadow: var(--sombra); display: grid; gap: var(--sp-4); min-width: 0; }
+  .paso-panel > p, .paso-panel p { margin: 0; }
+  .intro { color: var(--texto-suave); font-size: var(--fs-sm); }
+  .asis-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-4); }
+  #errores-paso { margin-top: var(--sp-4); display: block; }
+  #errores-paso[hidden] { display: none; }
+  #errores-paso ul { margin: 0; padding-left: var(--sp-5); }
+  .aviso ul { margin: 0; padding-left: var(--sp-5); }
+  .aviso p { margin: 0; }
+  #puntos-restantes { justify-content: flex-start; gap: var(--sp-2); }
+
+  .tarjeta { background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: var(--sp-3) var(--sp-4); display: grid; gap: var(--sp-3); min-width: 0; }
+  .tarjeta-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+  .total-nivel { font-weight: 800; }
+  .total-nivel.mal { color: var(--mal); }
+  .rasgo { padding: var(--sp-2) 0; border-bottom: 1px dashed var(--borde); }
+  .rasgo:last-child { border-bottom: 0; }
+  .rasgo h4 { font-family: var(--fuente-texto); font-size: var(--fs-sm); margin: 0 0 2px; }
+  .rasgo p { font-size: var(--fs-sm); color: var(--texto-suave); white-space: pre-line; }
+
+  /* atributos */
+  .attr-lista { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .attr-card { background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: var(--sp-3); display: grid; gap: var(--sp-2); min-width: 0; }
+  .attr-nombre { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+  .attr-controles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); align-items: end; }
+  .attr-total { font-size: var(--fs-sm); color: var(--texto-suave); }
+  .attr-total strong { font-family: var(--fuente-titulo); font-size: var(--fs-xl); color: var(--acento); }
+  .attr-card .contador-valor { font-size: var(--fs-xl); min-width: 2ch; }
+  .attr-card .contador button { width: 40px; height: 40px; }
+  .attr-card .contador button[disabled] { opacity: 0.4; cursor: not-allowed; }
+  .attr-card .fila input { flex: 1 1 70px; min-width: 0; }
+  .nota-tirada { font-size: var(--fs-xs); color: var(--texto-suave); }
+
+  /* habilidades */
+  .hab-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+  .hab-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--borde); border-radius: var(--radio-sm); background: var(--surface-2); }
+  .hab-item.comp { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 8%, var(--surface-2)); }
+  .hab-item small { color: var(--texto-suave); }
+  .hab-mod { font-weight: 800; min-width: 3ch; text-align: right; color: var(--acento); }
+
+  /* equipo */
+  .armas-lista { display: grid; gap: var(--sp-1) var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); max-height: 340px; overflow-y: auto; padding: var(--sp-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+  .fila-extra { display: grid; gap: var(--sp-2); grid-template-columns: minmax(0, 2fr) 90px minmax(0, 3fr) auto; align-items: end; }
+  @media (max-width: 640px) { .fila-extra { grid-template-columns: 1fr 90px; } .fila-extra .campo:nth-child(3) { grid-column: 1 / -1; } }
+
+  /* hechizos */
+  .lim-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+  .lim-chip { display: inline-flex; gap: var(--sp-1); align-items: center; padding: 2px 12px; border-radius: 99px; border: 1px solid var(--borde-fuerte); font-size: var(--fs-sm); font-weight: 700; background: var(--surface); }
+  .lim-chip.sobre { border-color: var(--aviso); color: var(--aviso); }
+  .lim-chip.justo { border-color: var(--bien); color: var(--bien); }
+  .hech-lista { display: grid; gap: 2px; max-height: 360px; overflow-y: auto; padding: var(--sp-1); border: 1px solid var(--borde); border-radius: var(--radio-sm); background: var(--bg); }
+  .hech-fila { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--sp-2); padding: 2px var(--sp-2); border-radius: 6px; }
+  .hech-fila:hover { background: color-mix(in srgb, var(--acento) 8%, transparent); }
+  .hech-fila.elegido { background: color-mix(in srgb, var(--acento) 14%, transparent); }
+  .hech-nombre { background: none; border: 0; color: var(--texto); font: 700 var(--fs-sm) var(--fuente-texto); text-align: left; cursor: pointer; min-height: 36px; padding: 0 var(--sp-1); text-decoration: underline dotted; text-underline-offset: 3px; overflow-wrap: anywhere; }
+  .hech-nombre[aria-pressed="true"] { color: var(--acento); }
+  .hech-meta { font-size: var(--fs-xs); color: var(--texto-suave); white-space: nowrap; }
+  .vista-hech { background: var(--surface); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); padding: var(--sp-3) var(--sp-4); display: grid; gap: var(--sp-2); }
+  .vista-hech .texto { white-space: pre-line; font-size: var(--fs-sm); }
+  .vista-hech .meta { font-size: var(--fs-xs); color: var(--texto-suave); }
+
+  /* revisión */
+  .rev-grid { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .rev-grid dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px var(--sp-3); font-size: var(--fs-sm); }
+  .rev-grid dt { color: var(--texto-suave); }
+  .rev-grid dd { margin: 0; overflow-wrap: anywhere; }
+  .rev-attrs { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: var(--sp-2); }
+  .rev-attr { text-align: center; background: var(--surface); border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: var(--sp-2); }
+  .rev-attr small { display: block; color: var(--texto-suave); font-size: var(--fs-xs); }
+  .rev-attr strong { font-family: var(--fuente-titulo); font-size: var(--fs-lg); color: var(--acento); }
+  .rev-pg { font-family: var(--fuente-titulo); font-size: var(--fs-xl); color: var(--acento); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--sp-1); align-items: flex-start; align-content: flex-start; }
+  .exito { text-align: center; display: grid; gap: var(--sp-3); justify-items: center; padding: var(--sp-5) var(--sp-2); }
+  .exito h2 { font-size: var(--fs-2xl); }
+  @media (max-width: 480px) {
+    .attr-controles { grid-template-columns: 1fr; }
+    .asis-nav .btn { flex: 1 1 120px; }
+  }
+</style>
+</head>
+<body>
+<main class="ficha asistente" id="asistente">
+  <header class="asis-cab">
+    <div>
+      <h1>Crear personaje</h1>
+      <p id="sub-campana">Asistente paso a paso para armar tu ficha de D&amp;D.</p>
+    </div>
+    <div class="fila">
+      <a class="btn btn-fantasma btn-sm" id="enlace-volver" href="index.html">← Volver al menú</a>
+    </div>
+  </header>
+
+  <div id="aviso-global" role="alert" hidden></div>
+
+  <div id="asistente-cuerpo" hidden>
+    <div class="progreso-texto"><span id="progreso-texto">Paso 1 de 7</span><span id="progreso-nombre"></span></div>
+    <div class="progreso gruesa" id="progreso" role="progressbar" aria-label="Progreso del asistente" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progreso-barra" style="width:0%"></span></div>
+    <nav aria-label="Pasos del asistente"><ol class="pasos" id="pasos"></ol></nav>
+
+    <section class="paso-panel" id="paso-panel" aria-labelledby="paso-titulo"></section>
+    <div id="errores-paso" class="aviso aviso-mal" role="alert" tabindex="-1" hidden></div>
+    <div class="asis-nav" id="asis-nav">
+      <button type="button" class="btn btn-fantasma" id="btn-anterior">← Anterior</button>
+      <button type="button" class="btn btn-primario" id="btn-siguiente">Siguiente →</button>
+    </div>
+  </div>
+  <p id="cargando" class="texto-suave" role="status">Cargando el asistente…</p>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="spells_data.js"></script>
+<script src="classes_data.js"></script>
+<script src="clases-custom.js"></script>
+<script src="ficha-generador.js"></script>
+<script src="crear-personaje.js"></script>
+</body>
+</html>
