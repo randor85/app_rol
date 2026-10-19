@@ -25,6 +25,18 @@ pjs/app/                        ← raíz del proyecto Firebase
     └── trabajo en progreso/    ← borradores viejos descartados, no tocar salvo que el usuario lo pida
 ```
 
+## Arquitectura actual: `ficha-common.js` (desde la v56.0)
+
+Las 6 fichas D&D cargan `public/ficha-common.js` (mismo mecanismo `<script src>` que `spells_data.js`/`classes_data.js`, pero con funciones) y definen un `FICHA_CONFIG` ANTES de cargarlo. **Un fix del motor se hace una vez en `ficha-common.js`**, no en 6 archivos. Lo que cada ficha conserva: su HTML/CSS, su `FICHA_CONFIG`, sus rasgos de clase, y su lógica propia (dados de Dane, Pact Magic de Ulreek, owner/GM con efecto lateral de `hp-max`, etc.).
+
+`FICHA_CONFIG`: `personajeId`, `nombrePersonaje`, `sistemaPropio`, `habilidadConjuro` (para DC/ataque automáticos), `hechizosIniciales`, `inventarioInicial`, `reputacionInicial`, `caBase` (CA fija mientras no haya armadura equipada) o `caSinArmadura()` (fórmula de clase), `wrapperSelector` (default `.sheet`; Fiona usa `.container`), `mostrarTirada(total, etiqueta, detalle)`, y los ganchos opcionales `resolverSlotId(h, nivel)` / `alGastarSlot(nivel, h, slotId)`.
+
+Piezas del motor: autoguardado y sincronización genéricos (`FichaComun.sincronizarDatosDesdeNube`, evento `ficha:datos-sincronizados`), `crearEditorDeLista` (base de los editores de hechizos, inventario y reputación; guarda JSON en `datos/<clave>-json`), `iniciarAtributos` (bono de competencia por nivel + Check/Save/skills con competencia y expertise + percepción pasiva + aumento temporal por atributo; lee `dataset.bonus`, nunca números fijos en los `onclick`), `iniciarEstadisticaConBuff` (patrón base + buff manual + buffs activados: ataque, CD, iniciativa, velocidad, HP máx.), `iniciarCA` (armadura/escudo equipados con tope de DEX; reconoce armaduras SRD por nombre), `iniciarConcentracion`, buffs activables en hechizos (`FichaBuffs`: efectos plano/dado/atributo, panel `#buffs-activos`), upcast (`dado` o `tabla`), bitácora, permisos/compartir/modo lectura.
+
+Reglas que costaron bugs reales: (1) **nunca escribir bonos de competencia a mano** (`Save +8★`, `DC 16`…): usar el motor; es lo que dejó 25 números viejos al subir Fiona a nivel 9 (v55.0). (2) Los campos de formularios temporales (`hf-`, `if-`, `rf-`, `upcast-sel-`, `bitacora-ficha-`) no deben guardarse en `datos/` (`FichaComun.esCampoEfimero`), y la casilla de concentración no lleva `id`. (3) Leer valores de elementos dentro de `<details>` colapsados con `.textContent`, no `.innerText`. (4) Antes de migrar o tocar una ficha: respaldo en `legacy estable/N.0 …/`, comparar los valores calculados contra los de la ficha en vivo, y no "corregir" datos del personaje sin confirmar.
+
+El resto de esta sección describe el patrón anterior (cada ficha con su propia copia del autoguardado), que sigue siendo la base conceptual pero ya no es el código que corre.
+
 ## Arquitectura de cada ficha D&D (patrón compartido por las 6)
 
 Eldur, Hannoghar, Myrklogi, Ulreek, Fiona y Dane comparten el mismo patrón de código (Dane se unificó al resto el 27 ago 2026 — antes tenía autoguardado y nomenclatura propios, ver "Dane: única pieza que sigue siendo distinta" más abajo):

@@ -303,27 +303,43 @@
     ['chain mail', 16, 0], ['scale mail', 14, 2], ['ring mail', 14, 0], ['padded', 11, null],
     ['leather', 11, null], ['splint', 17, 0], ['plate', 18, 0], ['hide', 12, 2],
   ];
-  function reconocerArmadura(item) {
+  // Alias en español (mismo orden de prioridad: los nombres más específicos primero).
+  const ARMADURAS_ES = [
+    ['semiplacas', 15, 2], ['coraza', 14, 2], ['cuero tachonado', 12, null], ['camisote de mallas', 13, 2],
+    ['cota de mallas', 16, 0], ['cota de escamas', 14, 2], ['cota de anillas', 14, 0], ['acolchada', 11, null],
+    ['cuero', 11, null], ['laminas', 17, 0], ['láminas', 17, 0], ['placas', 18, 0], ['pieles', 12, 2],
+  ];
+  // Devuelve la lista de piezas que aportan CA reconocidas en el nombre (una armadura y/o un escudo,
+  // p.ej. "Plate Armor & Shield" aporta las dos).
+  function reconocerArmaduras(item) {
     const n = (item.nombre || '').toLowerCase();
-    if (/\bshield\b/.test(n) && !/\bshield of\b|\bspell\b/.test(n)) return { tipo: 'escudo', bono: 2 };
+    const piezas = [];
+    if ((/\bshield\b/.test(n) && !/\bshield of\b|\bspell\b/.test(n)) || /\bescudo\b/.test(n)) piezas.push({ tipo: 'escudo', bono: 2 });
     const hit = ARMADURAS_SRD.find(a => new RegExp('\\b' + a[0] + '\\b').test(n));
-    return hit ? { tipo: 'armadura', base: hit[1], dexCap: hit[2] } : null;
+    if (hit) piezas.push({ tipo: 'armadura', base: hit[1], dexCap: hit[2] });
+    else {
+      const es = ARMADURAS_ES.find(a => n.includes(a[0]));
+      if (es) piezas.push({ tipo: 'armadura', base: es[1], dexCap: es[2] });
+    }
+    return piezas;
   }
+  function reconocerArmadura(item) { return reconocerArmaduras(item)[0] || null; }
   function calcularCA() {
     const dex = window.FichaAtributos ? FichaAtributos.modDe('DEX') : 0;
     const equipados = (window.FichaInventario ? FichaInventario.editor.items() : []).filter(i => i.equipado);
     let mejor = null;
     let escudo = 0;
     equipados.forEach(i => {
-      let info = null;
-      if (i.categoria === 'armadura') info = (i.modAC != null) ? { tipo: 'armadura', base: i.modAC, dexCap: i.dexCap === undefined ? null : i.dexCap } : reconocerArmadura(i);
-      else if (i.categoria === 'escudo') info = { tipo: 'escudo', bono: i.modAC != null ? i.modAC : 2 };
-      else if (!i.categoria || i.categoria === 'general') info = reconocerArmadura(i);
-      if (!info) return;
-      if (info.tipo === 'escudo') { escudo += info.bono; return; }
-      const aporteDex = info.dexCap === null ? dex : (info.dexCap === 0 ? 0 : Math.min(dex, info.dexCap));
-      const total = info.base + aporteDex;
-      if (!mejor || total > mejor.total) mejor = { total, nombre: i.nombre, base: info.base, aporteDex };
+      let infos = [];
+      if (i.categoria === 'armadura') infos = (i.modAC != null) ? [{ tipo: 'armadura', base: i.modAC, dexCap: i.dexCap === undefined ? null : i.dexCap }] : reconocerArmaduras(i);
+      else if (i.categoria === 'escudo') infos = [{ tipo: 'escudo', bono: i.modAC != null ? i.modAC : 2 }];
+      else if (!i.categoria || i.categoria === 'general') infos = reconocerArmaduras(i);
+      infos.forEach(info => {
+        if (info.tipo === 'escudo') { escudo += info.bono; return; }
+        const aporteDex = info.dexCap === null ? dex : (info.dexCap === 0 ? 0 : Math.min(dex, info.dexCap));
+        const total = info.base + aporteDex;
+        if (!mejor || total > mejor.total) mejor = { total, nombre: i.nombre, base: info.base, aporteDex };
+      });
     });
     if (!mejor && !escudo) {
       // Fórmula de clase sin armadura (monje 10+DEX+WIS, bárbaro 10+DEX+CON, hechicero dracónico...).
@@ -495,7 +511,10 @@
           // Hechizo con upcast: un selector de nivel de espacio (desde el nivel
           // base hasta 9) + un solo botón que usa el nivel elegido — mantiene la
           // mecánica real de subir de nivel en vez de quedar fijo a un nivel.
-          const nivelMax = 9;
+          // Hasta el mayor nivel que tenga contador de espacios en la ficha (o 9 si no hay ninguno visible).
+          let nivelMax = 0;
+          for (let n = 1; n <= 9; n++) if (document.getElementById(`slot-${n}-cur`)) nivelMax = n;
+          if (nivelMax < h.upcast.nivelBase) nivelMax = 9;
           const opciones = [];
           for (let n = h.upcast.nivelBase; n <= nivelMax; n++) opciones.push(n);
           const elegido = upcastElegido[idx] || h.upcast.nivelBase;
@@ -581,6 +600,8 @@
               <input type="number" id="hf-upcast-dado-cant" placeholder="cant." min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.count : ''}">
               <span>d</span>
               <input type="number" id="hf-upcast-dado-caras" placeholder="caras" min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.sides : ''}">
+              <span>+</span>
+              <input type="number" id="hf-upcast-dado-mod" placeholder="fijo" style="width:55px;" title="Bono fijo por nivel (opcional)" value="${h && h.upcast && h.upcast.tipo === 'dado' && h.upcast.dado.mod ? h.upcast.dado.mod : ''}">
             </div>
             <div id="hf-upcast-tabla-campos" style="display:${h && h.upcast && h.upcast.tipo === 'tabla' ? 'block' : 'none'};">
               <span class="spell-form-mini-label">Una línea por nivel, formato "nivel: efecto":</span>
@@ -668,6 +689,7 @@
           dado: {
             count: parseInt(document.getElementById('hf-upcast-dado-cant').value, 10) || 1,
             sides: parseInt(document.getElementById('hf-upcast-dado-caras').value, 10) || 1,
+            mod: parseInt(document.getElementById('hf-upcast-dado-mod').value, 10) || 0,
           },
         };
       } else if (tipoUpcast === 'tabla') {
@@ -725,13 +747,16 @@
         // Id directo ('slot-N-cur'), no indexado por posición en FICHA_CONFIG.slotsIds
         // — esa indexación se rompía (undefined) para cualquier nivel más allá de
         // slotsIds.length, como pasó de verdad al probar contra los datos reales de Fiona.
-        const slotId = `slot-${nivelGastado}-cur`;
+        // FICHA_CONFIG.resolverSlotId(h, nivel) permite otra reserva (p.ej. Pact Magic); por defecto 'slot-N-cur'.
+        const slotId = FICHA_CONFIG.resolverSlotId ? FICHA_CONFIG.resolverSlotId(h, nivelGastado) : `slot-${nivelGastado}-cur`;
         const el = document.getElementById(slotId);
         if (el) {
           const actual = parseInt(el.textContent) || 0;
           if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivelGastado} disponibles.`); return; }
           el.textContent = actual - 1;
           guardarCampo(slotId, actual - 1);
+          // FICHA_CONFIG.alGastarSlot(nivel, hechizo, slotId): registro de uso, casillas espejo, etc.
+          if (FICHA_CONFIG.alGastarSlot) FICHA_CONFIG.alGastarSlot(nivelGastado, h, slotId);
         }
       }
 
@@ -755,9 +780,11 @@
 
       let count = h.formula ? h.formula.count : 0;
       let sides = h.formula ? h.formula.sides : (h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.sides : 0);
-      const mod = h.formula ? h.formula.mod : 0;
+      let mod = h.formula ? h.formula.mod : 0;
       if (h.upcast && h.upcast.tipo === 'dado') {
-        count += h.upcast.dado.count * Math.max(0, nivelGastado - h.upcast.nivelBase);
+        const extraNiveles = Math.max(0, nivelGastado - h.upcast.nivelBase);
+        count += h.upcast.dado.count * extraNiveles;
+        mod += (h.upcast.dado.mod || 0) * extraNiveles; // bono fijo por nivel (p.ej. Magic Missile: +1 por nivel)
       }
       if (count > 0 && sides > 0) {
         const tiradas = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);

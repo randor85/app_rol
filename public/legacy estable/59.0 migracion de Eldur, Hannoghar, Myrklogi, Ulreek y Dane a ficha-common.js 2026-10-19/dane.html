@@ -444,70 +444,11 @@
 .inventory-form-actions button:last-child { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; font-weight: bold; border: none; }
 .inventory-total { font-size: 0.78rem; color: var(--accent-gold, var(--accent-silver, #d4af37)); font-weight: bold; margin-bottom: 8px; min-height: 1em; }
 .inventory-empty { font-size: 0.8rem; color: var(--text-muted, #999); font-style: italic; }
-
-/* === Migración a ficha-common.js: componentes del motor compartido === */
-.buffs-activos { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0; font-size: 0.78rem; }
-.buffs-vacio { color: var(--text-muted); }
-.buff-chip { background: #1f5a55; border: 1px solid var(--accent-teal); color: #dff3f1; border-radius: 14px; padding: 3px 10px; }
-.buff-chip small { color: #a9d3cf; margin-left: 4px; }
-.buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
-.buff-dano-btn { border: 1px solid var(--accent-teal); border-radius: 6px; color: #dff3f1; padding: 3px 8px; }
-.btn-buff { background: none; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; padding: 3px 7px; cursor: pointer; font-size: 0.7rem; font-weight: 700; }
-.btn-buff.on { background: #1f5a55; border-color: var(--accent-teal); color: #dff3f1; }
-.conc-casilla { background: #2a2540; border: 1px solid #5a4f8a; color: #d9d2f5; border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 6px; }
-.buff-efecto-row select, .buff-efecto-row input { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 4px 6px; font-size: 0.78rem; }
-.btn-clear { background: none; border: 1px solid #823a3a; color: #e08888; border-radius: 4px; padding: 3px 7px; cursor: pointer; font-size: 0.78rem; }
-.tag-atk { background: var(--surface-strong); color: var(--accent-gold); border: 1px solid var(--border-color); font-size: 0.68rem; }
-.spell-item-actions { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-.tabla-hechizos th, .tabla-hechizos td { text-align: left; vertical-align: top; }
-.tabla-hechizos td select { background: var(--surface-mid); color: var(--text-light); border: 1px solid var(--border-color); border-radius: 4px; padding: 2px 4px; font-size: 0.75rem; }
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.table-scroll table { min-width: 640px; }
-.spell-form { background: var(--surface-strong); border: 1px dashed var(--accent-teal); border-radius: 6px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
-.spell-form > input, .spell-form > textarea, .spell-form > select,
-.inventory-form > input, .inventory-form > textarea, .inventory-form > select {
-    background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-light);
-    border-radius: 4px; padding: 6px 8px; font-size: 0.85rem; font-family: inherit; width: 100%;
-}
-.spell-form-label { margin: 0; font-weight: bold; color: var(--accent-teal); font-size: 0.85rem; }
-.spell-form-row-dado { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); flex-wrap: wrap; }
-.spell-form-row-dado input { width: 70px; }
-.spell-form-row-dado select { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 5px 7px; font-size: 0.8rem; }
-.spell-form-mini-label { white-space: nowrap; }
-.spell-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
-.spell-form-actions button { padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
-.spell-form-actions button.add { background: var(--accent-teal); color: #000; border: none; }
-.inventory-armadura-campos { display: flex; gap: 6px; }
-.inventory-armadura-campos select { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 7px 9px; font-size: 0.85rem; }
-.inventory-form label { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-.inventory-form label input[type="checkbox"] { width: auto; }
-.mini-buff { background: var(--surface-soft); border: 1px solid var(--border-color); color: var(--accent-light); border-radius: 4px; width: 46px; padding: 2px; font-size: 0.8rem; font-weight: 700; text-align: center; }
-.stat-box .stat-extra { margin-top: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.stat-box .stat-base { font-size: 0.64rem; color: var(--text-muted); line-height: 1.2; }
-input.ab-score { width: 56px; text-align: center; background: transparent; border: 1px dashed var(--border-color); border-radius: 4px; outline: none; }
-input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft); border: 1px solid var(--border-color); border-radius: 4px; color: var(--accent-light); font-size: 0.72rem; margin-left: 4px; padding: 1px; }
-.slot-resumen { margin-left: 8px; font-size: 0.78rem; color: var(--text-muted); }
-.slot-resumen span { color: var(--accent-teal); font-weight: 800; }
-.reputacion-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
-.reputacion-item:last-child { border-bottom: none; }
-.reputacion-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.reputacion-faccion { font-weight: 600; }
-.reputacion-controles { display: flex; align-items: center; gap: 6px; }
-.reputacion-controles button { background: none; border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; cursor: pointer; font-size: 0.8rem; padding: 2px 6px; }
-.reputacion-valor { font-weight: 800; color: var(--accent-teal); min-width: 24px; text-align: center; display: inline-block; }
-.reputacion-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-.reputacion-empty { color: var(--text-muted); font-size: 0.85rem; }
-.reputacion-form { background: var(--surface-mid); border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
-.reputacion-form input, .reputacion-form textarea { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 7px 9px; font-size: 0.85rem; font-family: inherit; width: 100%; }
-.reputacion-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
-.reputacion-form-actions button { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
-.reputacion-form-actions button:last-child { background: var(--accent-teal); color: #000; border: none; }
-.reputacion-add-btn { background: var(--accent-teal); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; margin-bottom: 8px; }
 </style>
 </head>
 <body>
 
-<div class="container sheet">
+<div class="container">
     <div id="readonly-banner" class="readonly-banner">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
 
     <!-- NAV: VOLVER, TEMA Y COMPARTIR -->
@@ -525,8 +466,8 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         <div class="scb-name">🏹 Dane</div>
         <div class="scb-stats">
             <div class="scb-stat"><div class="scb-label">❤️ HP</div><div class="scb-value" id="scb-hp">0/0</div></div>
-            <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value" id="scb-ac">16</div></div>
-            <div class="scb-stat"><div class="scb-label">⚔️ Atq</div><div class="scb-value" id="scb-atk">+12/+7</div></div>
+            <div class="scb-stat"><div class="scb-label">🛡️ AC</div><div class="scb-value">16</div></div>
+            <div class="scb-stat"><div class="scb-label">⚔️ Atq</div><div class="scb-value">+12/+7</div></div>
         </div>
         <div class="scb-actions">
             <button class="btn-rest" onclick="restShort()" title="Descanso Corto">☕</button>
@@ -581,7 +522,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         </div>
         <table class="info-table">
             <tr>
-                <td style="width: 50%;"><strong>Class & Level:</strong> Ranger (Gloom Stalker) <span class="js-calc" data-calc="nivelClase" data-clase="Ranger">5</span> / Rogue (Assassin) <span class="js-calc" data-calc="nivelClase" data-clase="Rogue">4</span></td>
+                <td style="width: 50%;"><strong>Class & Level:</strong> Ranger (Gloom Stalker) 5 / Rogue (Assassin) 4</td>
                 <td><strong>Race:</strong> Winged Tiefling</td>
             </tr>
             <tr>
@@ -590,54 +531,25 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             </tr>
             <tr>
                 <td><strong>Professions:</strong> Blacksmith, Pilot</td>
-                <td><strong>Total Level:</strong> <span class="js-calc" data-calc="nivelTotal">9</span></td>
+                <td><strong>Total Level:</strong> 9</td>
             </tr>
         </table>
-<div id="concentracion-panel" class="buffs-activos" style="margin-top:12px;"></div>
-        <div id="buffs-activos" class="buffs-activos"></div>
         <div class="grid-3" style="grid-template-columns: repeat(4, 1fr); margin-top:12px;">
             <div class="stat-box">
-                <div class="val"><span id="ac-total">16</span></div>
+                <div class="val">16</div>
                 <div class="lbl">Armor Class (18 w/ Haste)</div>
-                <div class="stat-extra">
-                    <span class="stat-base" id="ac-base">16 (fija — equipá una armadura para calcularla)</span>
-                    <input type="number" id="ac-buff" class="mini-buff" value="0" title="Buff a la CA (ej. Haste +2)">
-                </div>
             </div>
             <div class="stat-box">
-                <div class="val"><span id="iniciativa-total">+7</span> <button class="btn-roll-sm btn-roll" style="font-size: 14px; padding: 4px 8px;" onclick="rollIniciativa()">🎲</button></div>
-                <div class="lbl">Initiative (DEX + WIS · Dread Ambusher)</div>
-                <div class="stat-extra"><input type="number" id="iniciativa-buff" class="mini-buff" value="0" title="Buff a la iniciativa"></div>
+                <div class="val">+7 <button class="btn-roll-sm btn-roll" style="font-size: 14px; padding: 4px 8px;" onclick="rollAttack('Initiative', 7)">🎲</button></div>
+                <div class="lbl">Initiative</div>
             </div>
             <div class="stat-box">
-                <div class="val"><span id="velocidad-total">30 ft</span> <span style="font-size:0.6em;">/ 🦇30 Fly</span></div>
+                <div class="val">30 ft <span style="font-size:0.6em;">/ 🦇30 Fly</span></div>
                 <div class="lbl">Speed (Winged Tiefling)</div>
-                <div class="stat-extra"><input type="number" id="velocidad-buff" class="mini-buff" value="0" title="Buff a la velocidad (ej. +10 ft)"></div>
             </div>
             <div class="stat-box">
-                <div class="val"><span id="percepcion-pasiva">21</span></div>
+                <div class="val">21</div>
                 <div class="lbl">Passive Perception</div>
-            </div>
-        </div>
-        <div class="grid-3" style="grid-template-columns: repeat(4, 1fr); margin-top:12px;">
-            <div class="stat-box">
-                <div class="val"><span id="prof-badge">+4</span></div>
-                <div class="lbl">Proficiency Bonus</div>
-            </div>
-            <div class="stat-box">
-                <div class="val"><span id="atk-total">+12/+7</span></div>
-                <div class="lbl">Attack (normal / Sharpshooter)</div>
-                <div class="stat-extra"><input type="number" id="atk-buff" class="mini-buff" value="0" title="Buff al ataque"></div>
-            </div>
-            <div class="stat-box">
-                <div class="val"><span id="spell-atk-total">+7</span></div>
-                <div class="lbl">Spell Attack (WIS)</div>
-                <div class="stat-extra"><input type="number" id="spell-atk-buff" class="mini-buff" value="0" title="Buff al ataque de conjuro"></div>
-            </div>
-            <div class="stat-box">
-                <div class="val"><span id="spell-dc-total">15</span></div>
-                <div class="lbl">Spell Save DC</div>
-                <div class="stat-extra"><input type="number" id="spell-dc-buff" class="mini-buff" value="0" title="Buff a la CD de conjuro"></div>
             </div>
         </div>
     </div>
@@ -651,7 +563,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                     <button class="btn-cnt" onclick="changeInputVal('hp-cur', -1)">-</button>
                     <input type="number" id="hp-cur" class="editable-cnt-val" value="73" min="0">
                     <span class="cnt-max">/ <span id="hp-max-label">73</span></span>
-                    <input type="number" id="hp-max-buff" class="mini-buff" value="0" title="Buff a HP máx. (objeto/efecto)">
                     <button class="btn-cnt" onclick="changeInputVal('hp-cur', 1)">+</button>
                 </div>
             </div>
@@ -740,52 +651,46 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     <table class="ability-table">
         <tr><th>STR</th><th>DEX</th><th>CON</th><th>INT</th><th>WIS</th><th>CHA</th></tr>
         <tr>
-            <td id="ab-str">
-                <input type="number" class="ab-score" id="str-score" value="8" title="Puntuación base"><input type="number" class="ab-temp" id="str-temp" value="0" title="Aumento temporal (pociones, artefactos)">
-                <div class="ab-mod">(-1)</div>
+            <td>
+                <div class="ab-score">8</div><div class="ab-mod">(-1)</div>
                 <div class="ab-btns">
-                    <button class="btn-roll btn-roll-sm btn-check" data-bonus="-1" onclick="rollAttack('STR Check', +this.dataset.bonus, 'pruebas')">Check -1</button>
-                    <button class="btn-roll btn-roll-sm btn-save" data-bonus="3" onclick="rollAttack('STR Save', +this.dataset.bonus, 'salvaciones')">Save +3★</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('STR Check', -1)">Check -1</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('STR Save', 3)">Save +3</button>
                 </div>
             </td>
-            <td id="ab-dex">
-                <input type="number" class="ab-score" id="dex-score" value="18" title="Puntuación base"><input type="number" class="ab-temp" id="dex-temp" value="0" title="Aumento temporal (pociones, artefactos)">
-                <div class="ab-mod">(+4)</div>
+            <td>
+                <div class="ab-score">18</div><div class="ab-mod">(+4)</div>
                 <div class="ab-btns">
-                    <button class="btn-roll btn-roll-sm btn-check" data-bonus="4" onclick="rollAttack('DEX Check', +this.dataset.bonus, 'pruebas')">Check +4</button>
-                    <button class="btn-roll btn-roll-sm btn-save" data-bonus="8" onclick="rollAttack('DEX Save', +this.dataset.bonus, 'salvaciones')">Save +8★</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('DEX Check', 4)">Check +4</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('DEX Save', 8)">Save +8</button>
                 </div>
             </td>
-            <td id="ab-con">
-                <input type="number" class="ab-score" id="con-score" value="14" title="Puntuación base"><input type="number" class="ab-temp" id="con-temp" value="0" title="Aumento temporal (pociones, artefactos)">
-                <div class="ab-mod">(+2)</div>
+            <td>
+                <div class="ab-score">14</div><div class="ab-mod">(+2)</div>
                 <div class="ab-btns">
-                    <button class="btn-roll btn-roll-sm btn-check" data-bonus="2" onclick="rollAttack('CON Check', +this.dataset.bonus, 'pruebas')">Check +2</button>
-                    <button class="btn-roll btn-roll-sm btn-save" data-bonus="2" onclick="rollAttack('CON Save', +this.dataset.bonus, 'salvaciones')">Save +2</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('CON Check', 2)">Check +2</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('CON Save', 2)">Save +2</button>
                 </div>
             </td>
-            <td id="ab-int">
-                <input type="number" class="ab-score" id="int-score" value="10" title="Puntuación base"><input type="number" class="ab-temp" id="int-temp" value="0" title="Aumento temporal (pociones, artefactos)">
-                <div class="ab-mod">(+0)</div>
+            <td>
+                <div class="ab-score">10</div><div class="ab-mod">(+0)</div>
                 <div class="ab-btns">
-                    <button class="btn-roll btn-roll-sm btn-check" data-bonus="0" onclick="rollAttack('INT Check', +this.dataset.bonus, 'pruebas')">Check +0</button>
-                    <button class="btn-roll btn-roll-sm btn-save" data-bonus="0" onclick="rollAttack('INT Save', +this.dataset.bonus, 'salvaciones')">Save +0</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('INT Check', 0)">Check +0</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('INT Save', 0)">Save +0</button>
                 </div>
             </td>
-            <td id="ab-wis">
-                <input type="number" class="ab-score" id="wis-score" value="16" title="Puntuación base"><input type="number" class="ab-temp" id="wis-temp" value="0" title="Aumento temporal (pociones, artefactos)">
-                <div class="ab-mod">(+3)</div>
+            <td>
+                <div class="ab-score">16</div><div class="ab-mod">(+3)</div>
                 <div class="ab-btns">
-                    <button class="btn-roll btn-roll-sm btn-check" data-bonus="3" onclick="rollAttack('WIS Check', +this.dataset.bonus, 'pruebas')">Check +3</button>
-                    <button class="btn-roll btn-roll-sm btn-save" data-bonus="3" onclick="rollAttack('WIS Save', +this.dataset.bonus, 'salvaciones')">Save +3</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('WIS Check', 3)">Check +3</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('WIS Save', 3)">Save +3</button>
                 </div>
             </td>
-            <td id="ab-cha">
-                <input type="number" class="ab-score" id="cha-score" value="10" title="Puntuación base"><input type="number" class="ab-temp" id="cha-temp" value="0" title="Aumento temporal (pociones, artefactos)">
-                <div class="ab-mod">(+0)</div>
+            <td>
+                <div class="ab-score">10</div><div class="ab-mod">(+0)</div>
                 <div class="ab-btns">
-                    <button class="btn-roll btn-roll-sm btn-check" data-bonus="0" onclick="rollAttack('CHA Check', +this.dataset.bonus, 'pruebas')">Check +0</button>
-                    <button class="btn-roll btn-roll-sm btn-save" data-bonus="0" onclick="rollAttack('CHA Save', +this.dataset.bonus, 'salvaciones')">Save +0</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('CHA Check', 0)">Check +0</button>
+                    <button class="btn-roll btn-roll-sm" onclick="rollAttack('CHA Save', 0)">Save +0</button>
                 </div>
             </td>
         </tr>
@@ -802,26 +707,26 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                 <p><strong>Tools:</strong> Blacksmith's Tools, Thieves' Tools, Disguise Kit, Poisoner's Kit</p>
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
 
-                <p style="margin-bottom: 8px;"><strong>All Skills:</strong> <small>(PB: <span class="js-calc" data-calc="prof">+4</span> · ★ competencia · ★★ pericia/expertise)</small></p>
+                <p style="margin-bottom: 8px;"><strong>All Skills:</strong> <small>(PB: +4)</small></p>
                 <div class="skills-grid">
-                    <div class="skill-item" id="sk-acrobatics"><button class="btn-roll-sm btn-roll" data-bonus="8" onclick="rollAttack('Acrobatics', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Acrobatics</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-                    <div class="skill-item" id="sk-animal-handling"><button class="btn-roll-sm btn-roll" data-bonus="3" onclick="rollAttack('Animal Handling', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Animal Handling</strong></span><span class="skill-mod">+3</span></div>
-                    <div class="skill-item" id="sk-arcana"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Arcana', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-athletics"><button class="btn-roll-sm btn-roll" data-bonus="-1" onclick="rollAttack('Athletics', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">-1</span></div>
-                    <div class="skill-item" id="sk-deception"><button class="btn-roll-sm btn-roll" data-bonus="4" onclick="rollAttack('Deception', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Deception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+4</span></div>
-                    <div class="skill-item" id="sk-history"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('History', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-insight"><button class="btn-roll-sm btn-roll" data-bonus="7" onclick="rollAttack('Insight', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+7</span></div>
-                    <div class="skill-item" id="sk-intimidation"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Intimidation', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-investigation"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Investigation', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-medicine"><button class="btn-roll-sm btn-roll" data-bonus="3" onclick="rollAttack('Medicine', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Medicine</strong></span><span class="skill-mod">+3</span></div>
-                    <div class="skill-item" id="sk-nature"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Nature', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Nature</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-perception"><button class="btn-roll-sm btn-roll" data-bonus="11" onclick="rollAttack('Perception', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★★</span></span><span class="skill-mod">+11</span></div>
-                    <div class="skill-item" id="sk-performance"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Performance', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-persuasion"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Persuasion', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-religion"><button class="btn-roll-sm btn-roll" data-bonus="0" onclick="rollAttack('Religion', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Religion</strong></span><span class="skill-mod">+0</span></div>
-                    <div class="skill-item" id="sk-sleight-of-hand"><button class="btn-roll-sm btn-roll" data-bonus="12" onclick="rollAttack('Sleight of Hand', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong><span class="skill-tag">★★</span></span><span class="skill-mod">+12</span></div>
-                    <div class="skill-item" id="sk-stealth"><button class="btn-roll-sm btn-roll" data-bonus="12" onclick="rollAttack('Stealth', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Stealth</strong><span class="skill-tag">★★</span></span><span class="skill-mod">+12</span></div>
-                    <div class="skill-item" id="sk-survival"><button class="btn-roll-sm btn-roll" data-bonus="3" onclick="rollAttack('Survival', +this.dataset.bonus, 'pruebas')">🎲</button><span class="skill-name"><strong>Survival</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Acrobatics', 8)">🎲</button><span class="skill-name"><strong>Acrobatics</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Animal Handling', 3)">🎲</button><span class="skill-name"><strong>Animal Handling</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Arcana', 0)">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Athletics', -1)">🎲</button><span class="skill-name"><strong>Athletics</strong></span><span class="skill-mod">-1</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Deception', 4)">🎲</button><span class="skill-name"><strong>Deception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+4</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('History', 0)">🎲</button><span class="skill-name"><strong>History</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Insight', 7)">🎲</button><span class="skill-name"><strong>Insight</strong><span class="skill-tag">★</span></span><span class="skill-mod">+7</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Intimidation', 0)">🎲</button><span class="skill-name"><strong>Intimidation</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Investigation', 0)">🎲</button><span class="skill-name"><strong>Investigation</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Medicine', 3)">🎲</button><span class="skill-name"><strong>Medicine</strong></span><span class="skill-mod">+3</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Nature', 0)">🎲</button><span class="skill-name"><strong>Nature</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Perception', 11)">🎲</button><span class="skill-name"><strong>Perception</strong><span class="skill-tag">★</span></span><span class="skill-mod">+11</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Performance', 0)">🎲</button><span class="skill-name"><strong>Performance</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Persuasion', 0)">🎲</button><span class="skill-name"><strong>Persuasion</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Religion', 0)">🎲</button><span class="skill-name"><strong>Religion</strong></span><span class="skill-mod">+0</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Sleight of Hand', 12)">🎲</button><span class="skill-name"><strong>Sleight of Hand</strong><span class="skill-tag">★</span></span><span class="skill-mod">+12</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Stealth', 12)">🎲</button><span class="skill-name"><strong>Stealth</strong><span class="skill-tag">★</span></span><span class="skill-mod">+12</span></div>
+                    <div class="skill-item"><button class="btn-roll-sm btn-roll" onclick="rollAttack('Survival', 3)">🎲</button><span class="skill-name"><strong>Survival</strong></span><span class="skill-mod">+3</span></div>
                 </div>
             </div>
         </div>
@@ -842,10 +747,10 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                         <strong>Hyperborean Crossbow</strong><br><small>Normal</small>
                     </td>
                     <td style="vertical-align: middle;">
-                        <button class="btn-roll-sm btn-roll" onclick="rollAttack('Crossbow (Normal) Atk', ataqueBallestaTotal(), 'ataque')">🎲</button> <span class="js-calc" data-calc="ballesta">+12</span>
+                        <button class="btn-roll-sm btn-roll" onclick="rollAttack('Crossbow (Normal) Atk', 12)">🎲</button> +12
                     </td>
                     <td style="vertical-align: middle;">
-                        <button class="btn-roll-sm btn-roll" onclick="rollGenericDamage('Crossbow (Normal) Dmg', 1, 8, danoBallesta())">🎲</button> 1d8 + <span class="js-calc" data-calc="danoBallesta" data-fmt="num">6</span>
+                        <button class="btn-roll-sm btn-roll" onclick="rollGenericDamage('Crossbow (Normal) Dmg', 1, 8, 6)">🎲</button> 1d8 + 6
                     </td>
                 </tr>
                 <tr>
@@ -853,10 +758,10 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                         <strong>Hyperborean Crossbow</strong><br><small>Sharpshooter</small>
                     </td>
                     <td style="vertical-align: middle;">
-                        <button class="btn-roll-sm btn-roll" onclick="rollAttack('Crossbow (SS) Atk', ataqueBallestaTotal() - SS_PENAL, 'ataque')">🎲</button> <span class="js-calc" data-calc="ballestaSS">+7</span>
+                        <button class="btn-roll-sm btn-roll" onclick="rollAttack('Crossbow (SS) Atk', 7)">🎲</button> +7
                     </td>
                     <td style="vertical-align: middle;">
-                        <button class="btn-roll-sm btn-roll" onclick="rollGenericDamage('Crossbow (SS) Dmg', 1, 8, danoBallesta() + SS_BONO)">🎲</button> 1d8 + <span class="js-calc" data-calc="danoBallestaSS" data-fmt="num">16</span>
+                        <button class="btn-roll-sm btn-roll" onclick="rollGenericDamage('Crossbow (SS) Dmg', 1, 8, 16)">🎲</button> 1d8 + 16
                     </td>
                 </tr>
                 <!-- EXTRA DAMAGES ADDED TO THE TABLE -->
@@ -882,11 +787,11 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
 
             <h4 class="subsection-heading">Damage Calculation Breakdown</h4>
             <div class="box-container" style="font-size: 13px;">
-                <p style="margin-top: 0;"><strong>To Hit (<span class="js-calc" data-calc="ballesta">+12</span>):</strong> <span class="js-calc" data-calc="mod" data-hab="DEX">+4</span> (Dexterity) <span class="js-calc" data-calc="prof">+4</span> (Proficiency) +2 (Archery Style) +1 (Magic Weapon) +1 (Blacksmith).</p>
-                <p><strong>To Hit w/ Sharpshooter (<span class="js-calc" data-calc="ballestaSS">+7</span>):</strong> <span class="js-calc" data-calc="ballesta" data-fmt="num">12</span> (Base) - 5 (Penalty).</p>
+                <p style="margin-top: 0;"><strong>To Hit (+12):</strong> +4 (Dexterity) +4 (Proficiency) +2 (Archery Style) +1 (Magic Weapon) +1 (Blacksmith).</p>
+                <p><strong>To Hit w/ Sharpshooter (+7):</strong> 12 (Base) - 5 (Penalty).</p>
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
-                <p><strong>Damage (<span class="js-calc" data-calc="danoBallesta">+6</span>):</strong> <span class="js-calc" data-calc="mod" data-hab="DEX">+4</span> (Dexterity) +1 (Magic Weapon) +1 (Blacksmith).</p>
-                <p style="margin-bottom: 0;"><strong>Damage w/ Sharpshooter (<span class="js-calc" data-calc="danoBallestaSS">+16</span>):</strong> <span class="js-calc" data-calc="danoBallesta" data-fmt="num">6</span> (Base) + 10 (Sharpshooter Bonus).</p>
+                <p><strong>Damage (+6):</strong> +4 (Dexterity) +1 (Magic Weapon) +1 (Blacksmith).</p>
+                <p style="margin-bottom: 0;"><strong>Damage w/ Sharpshooter (+16):</strong> 6 (Base) + 10 (Sharpshooter Bonus).</p>
             </div>
 
             <h4 class="subsection-heading">Nova Strike Summary (Turn 1)</h4>
@@ -900,47 +805,45 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                     <li><strong>Attack 4 (Haste Action):</strong> 1d8 + 16 + 1d6 <em>(Mark)</em></li>
                 </ul>
                 <p style="margin-top: 10px; font-weight: bold; border-top: 1px dashed var(--accent-gold); padding-top: 10px; margin-bottom: 0;">
-                    Total Dice: 5d8 + 5d6 | Fixed Damage: <span class="js-calc" data-calc="novaFijo">+64</span>
+                    Total Dice: 5d8 + 5d6 | Fixed Damage: +64
                 </p>
             </div>
         </div>
     </details>
 
-    <!-- SECCIÓN 3: CONJUROS (tarjeta única de ficha-common.js) -->
+    <!-- SECCIÓN 3: CONJUROS -->
     <details class="v2-section" id="section-spells" open>
         <summary>📜 3. Conjuros</summary>
         <div class="section-content">
             <div class="box-container">
-                <div id="slots-container">
-                <div class="spell-slots" data-slot-nivel="1">
+                <div class="spell-slots">
                     <strong style="width: 150px;">1st Level (4 Slots):</strong>
                     <input type="checkbox" id="chk-slot1-1" title="Slot 1">
                     <input type="checkbox" id="chk-slot1-2" title="Slot 2">
                     <input type="checkbox" id="chk-slot1-3" title="Slot 3">
                     <input type="checkbox" id="chk-slot1-4" title="Slot 4">
-                    <span class="slot-resumen">Disp.: <span id="slot-1-cur">4</span>/<span id="slot-1-max">4</span></span>
                 </div>
-                <div class="spell-slots" data-slot-nivel="2">
+                <ul style="font-size: 13px; margin-bottom: 15px;">
+                    <li><strong>Hunter's Mark</strong> <em class="editable-text" contenteditable="true" id="txt-spell-hunters-mark">(Bonus Action, +1d6 extra dmg, Conc.)</em></li>
+                    <li><strong>Absorb Elements</strong> <em class="editable-text" contenteditable="true" id="txt-spell-absorb-elements">(Reaction: Resistance. Upcast: +1d6 extra melee dmg per slot above 1st)</em></li>
+                    <li><strong>Cure Wounds</strong> <em class="editable-text" contenteditable="true" id="txt-spell-cure-wounds-dane">(1d8 + 3 healing, Touch. Upcast: +1d8 healing per slot above 1st)</em></li>
+                    <li><strong>Disguise Self</strong> <em class="editable-text" contenteditable="true" id="txt-spell-disguise-self">(Gloom Stalker Feature)</em></li>
+                </ul>
+
+                <div class="spell-slots">
                     <strong style="width: 150px;">2nd Level (2 Slots):</strong>
                     <input type="checkbox" id="chk-slot2-1" title="Slot 1">
                     <input type="checkbox" id="chk-slot2-2" title="Slot 2">
-                    <span class="slot-resumen">Disp.: <span id="slot-2-cur">2</span>/<span id="slot-2-max">2</span></span>
                 </div>
+                <ul style="font-size: 13px; margin-bottom: 0;">
+                    <li><strong>Pass without Trace</strong> <em class="editable-text" contenteditable="true" id="txt-spell-pass-without-trace">(+10 Stealth to party, Conc.)</em></li>
+                    <li><strong>Rope Trick</strong> <em class="editable-text" contenteditable="true" id="txt-spell-rope-trick">(Gloom Stalker Feature)</em></li>
+                </ul>
+
+                <div class="hechizos-adicionales-box">
+                    <h4>✨ Hechizos Adicionales Aprendidos <button type="button" class="btn-add-spell" onclick="toggleSpellPicker()">➕ Agregar Hechizo</button></h4>
+                    <ul id="hechizos-adicionales-lista" style="font-size: 13px; margin-bottom: 0;"></ul>
                 </div>
-                <p style="font-size:0.72rem; color:var(--text-muted); margin:4px 0 10px;">Los espacios se marcan al gastarlos (☑ = usado). Lanzar un hechizo de la tabla marca uno solo; un descanso largo los libera.</p>
-                <!-- Tarjeta única de hechizos (ficha-common.js): reemplaza la lista en prosa + la caja de
-                     "Hechizos Adicionales". Todos los hechizos (de clase + del compendio) viven en esta tabla editable. -->
-                <div class="table-scroll"><table class="data tabla-hechizos">
-                    <thead>
-                        <tr><th>Nivel</th><th>Conjuro</th><th>Tiempo / Rango</th><th>Resumen y Efecto</th><th>Tirar / Efecto</th></tr>
-                    </thead>
-                    <tbody id="hechizos-lista"></tbody>
-                </table></div>
-                <div id="hechizos-form-container"></div>
-                <p style="margin-top:10px;">
-                    <button type="button" class="btn-add-spell" onclick="FichaHechizos.editor.mostrarFormulario()">➕ Agregar Hechizo (en blanco)</button>
-                    <button type="button" class="btn-add-spell" onclick="toggleSpellPicker()">📖 Agregar del Compendio</button>
-                </p>
             </div>
         </div>
     </details>
@@ -1073,9 +976,11 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         <summary>🎒 5. Inventario</summary>
         <div class="section-content">
             <div class="box-container equipment-list">
-                <button type="button" class="inventory-add-btn" onclick="FichaInventario.editor.mostrarFormulario()">➕ Agregar Ítem</button>
+                <div class="inventory-total" id="inventario-total"></div>
+                <button type="button" class="inventory-add-btn" onclick="mostrarFormularioInventario()">➕ Agregar Ítem</button>
                 <div id="inventario-form-container"></div>
                 <div class="inventory-list" id="inventario-lista"></div>
+                <input type="hidden" id="inventario-json" value="">
 
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
                 <p style="margin-bottom: 5px; font-size: 13px;"><strong>Armor:</strong> Studded Leather Armor</p>
@@ -1086,17 +991,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                     <input type="number" id="gold-input" class="gold-input" value="0" min="0">
                 </div>
             </div>
-        </div>
-    </details>
-
-    <!-- SECCIÓN: REPUTACIÓN / HONOR (ficha-common.js) -->
-    <details class="v2-section" id="section-reputacion">
-        <summary>🏅 Reputación / Honor</summary>
-        <div class="section-content">
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Tracker personalizable: agregá facciones, ajustá su valor con ➖/➕, renombralas o quitalas.</p>
-            <button type="button" class="reputacion-add-btn" onclick="FichaReputacion.editor.mostrarFormulario()">➕ Agregar Facción</button>
-            <div id="reputacion-lista"></div>
-            <div id="reputacion-form-container"></div>
         </div>
     </details>
 
@@ -1119,6 +1013,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     </details>
 
     <input type="hidden" id="habilidades-agregadas-nivel" value="">
+    <input type="hidden" id="hechizos-agregados" value="">
     <input type="hidden" id="subidas-nivel-registro" value="">
 </div>
 
@@ -1187,47 +1082,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-<!-- CONFIG PROPIA DE ESTA FICHA (migración a ficha-common.js) + motor compartido -->
-<script>
-  // hechizosIniciales: los 6 conjuros que antes vivían en la lista en prosa de la sección 3.
-  // Dane no tiene datos/hechizos-agregados en la base real (comprobado), así que no hay hechizos
-  // agregados del compendio que migrar. Los dos "Gloom Stalker Feature" se lanzan con espacios.
-  // El inventario real YA existe en Firebase (inventario-json, 8 ítems): la semilla de abajo solo se
-  // usaría si estuviera vacío. Hunter's Mark lleva su buff (+1d6 de daño, se tira con "Daño extra").
-  const FICHA_CONFIG = {
-    personajeId: 'dane',
-    nombrePersonaje: 'Dane',
-    sistemaPropio: 'dnd',
-    // Dane usa displayRollResult(nombre, resultado, detalle): el orden difiere del resto de la flota.
-    mostrarTirada: (total, etiqueta, detalle) => displayRollResult(etiqueta, total, detalle),
-    caBase: 16, // Studded Leather 12 + DEX 4 hoy; fija hasta que se equipe una armadura en el inventario
-    habilidadConjuro: 'WIS', // Ranger
-    hechizosIniciales: [
-      { nombre: "Hunter's Mark", nivel: 1, tiempo: '1 Acc. Adicional', alcance: '90 ft', area: '', resumen: '+1d6 de daño extra a la criatura marcada (se tira con "Daño extra" del panel de buffs).', duracion: 'Conc., hasta 1 hora', formula: null, slotCost: 1, ataque: null, concentracion: true,
-        buff: { activo: false, efectos: [{ tipo: 'dado', objetivo: 'dano', dado: { count: 1, sides: 6 } }] } },
-      { nombre: 'Absorb Elements', nivel: 1, tiempo: '1 Reacción', alcance: 'Personal', area: '', resumen: 'Reacción: resistencia al daño elemental recibido. Upcast: +1d6 de daño cuerpo a cuerpo extra por cada nivel de espacio sobre el 1º.', duracion: '1 ronda', formula: { count: 1, sides: 6, mod: 0 }, slotCost: 1, ataque: null, concentracion: false,
-        upcast: { tipo: 'dado', nivelBase: 1, dado: { count: 1, sides: 6 } } },
-      { nombre: 'Cure Wounds', nivel: 1, tiempo: '1 Acción', alcance: 'Toque', area: '', resumen: 'Cura 1d8 + 3. Upcast: +1d8 de curación por cada nivel de espacio sobre el 1º.', duracion: 'Instantáneo', formula: { count: 1, sides: 8, mod: 3 }, slotCost: 1, ataque: null, concentracion: false,
-        upcast: { tipo: 'dado', nivelBase: 1, dado: { count: 1, sides: 8 } } },
-      { nombre: 'Disguise Self', nivel: 1, tiempo: '1 Acción', alcance: 'Personal', area: '', resumen: 'Gloom Stalker Feature (siempre preparado).', duracion: '1 hora', formula: null, slotCost: 1, ataque: null, concentracion: false },
-      { nombre: 'Pass without Trace', nivel: 2, tiempo: '1 Acción', alcance: 'Personal', area: 'Aura de 30 ft', resumen: '+10 a Stealth para el grupo.', duracion: 'Conc., hasta 1 hora', formula: null, slotCost: 2, ataque: null, concentracion: true },
-      { nombre: 'Rope Trick', nivel: 2, tiempo: '1 Acción', alcance: 'Toque', area: '', resumen: 'Gloom Stalker Feature (siempre preparado).', duracion: '1 hora', formula: null, slotCost: 2, ataque: null, concentracion: false },
-    ],
-    inventarioInicial: [
-      { nombre: 'Amulet of the Linked Minds', descripcion: 'Telepathic communication across any distance/plane with its twin. Shares thoughts/emotions exclusively.', cantidad: 1, precio: 0, equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-      { nombre: 'Hyperborean Crossbow', descripcion: '+1 Weapon. Deals damage -> DC 15 Con save or speed halved. Can target a surface for 5ft radius frozen difficult terrain (1 min).', cantidad: 1, precio: 0, equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-      { nombre: 'Mindmugger Mitts', descripcion: 'Advantage on Sleight of Hand. (3/day) Bonus Action touch: DC 10 + 1/2 level Wis save or target forgets the entire round.', cantidad: 1, precio: 0, equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-      { nombre: 'Phantom Steps', descripcion: 'Move silently, leave no trace, bypass floor traps. (1/day) Click heels to move through creatures/objects until end of turn.', cantidad: 1, precio: 0, equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-      { nombre: 'Ring of the Smiling Sphinx', descripcion: 'Immune to mind/emotion reading and Divination (Scrying). Disadvantage on Insight checks against you. Can store 1 perfect memory.', cantidad: 1, precio: 0, equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-      { nombre: 'The Corpse Mask', descripcion: '(2/day) For 1 hour, take the appearance of a humanoid you saw die while wearing the mask (stores up to 5 faces).', cantidad: 1, precio: 0, equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-      { nombre: 'Potion of Choice', descripcion: 'Drink to gain Advantage on one check/save/attack within 10 mins, OR reroll one and use the new result.', cantidad: 1, precio: 0, equipado: false, categoria: 'general', consumible: true, modAC: null, dexCap: null },
-      { nombre: 'Reveal (Mask)', descripcion: 'Passively reveals AC of creatures within 60ft. Advantage on perception/surprise initiative. (Prof. Bonus/day) Advantage on a check, save, or attack.', cantidad: 1, precio: 0, equipado: false, categoria: 'general', consumible: false, modAC: null, dexCap: null },
-    ],
-    reputacionInicial: [],
-  };
-</script>
-<script src="ficha-common.js"></script>
-
 <!-- SCRIPTS -->
 <script>
        // --- CONFIGURACIÓN DE FIREBASE ---
@@ -1289,10 +1143,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         const scbHp = document.getElementById('scb-hp');
         const max = (typeof hpMaxActual === 'function') ? hpMaxActual() : HP_MAX_DANE;
         if (scbHp && cur) scbHp.innerText = `${cur.value || 0}/${max}`;
-        const ac = document.getElementById('ac-total'), scbAc = document.getElementById('scb-ac');
-        if (ac && scbAc) scbAc.innerText = ac.textContent.trim();
-        const atk = document.getElementById('atk-total'), scbAtk = document.getElementById('scb-atk');
-        if (atk && scbAtk) scbAtk.innerText = atk.textContent.trim();
     }
 
     function updateHPDisplay() {
@@ -1462,26 +1312,62 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         renderizarProximasHabilidades(nivelPorXP(parseInt(document.getElementById('xp-val')?.value) || 0));
     }
 
-    // === PICKER DEL COMPENDIO (spells_data.js) ===
-    // Agregar desde el compendio empuja directo a la tarjeta única de hechizos (FichaHechizos, en
-    // ficha-common.js), copiando upcast/buff/ataque/fórmula si el hechizo del compendio los trae.
+    // === EDITOR DE HECHIZOS ADICIONALES (compendio compartido, spells_data.js) ===
+    // Nota: Dane usa su propio sistema de tiradas (rollAttack/displayRollResult, ver CLAUDE.md) —
+    // este shim reusa displayRollResult para loggear "Usado" sin fabricar una tirada.
+    function registrarUsoRecursoGenerico(etiqueta) {
+        displayRollResult(`🔧 ${etiqueta}`, 'Usado', '');
+    }
+    function obtenerHechizosAgregados() {
+        try {
+            const raw = document.getElementById('hechizos-agregados')?.value || '[]';
+            return JSON.parse(raw);
+        } catch(e) { return []; }
+    }
+    function guardarHechizosAgregados(lista) {
+        const hidden = document.getElementById('hechizos-agregados');
+        if (hidden) hidden.value = JSON.stringify(lista);
+        if (typeof guardarCampo === 'function') guardarCampo('hechizos-agregados', JSON.stringify(lista));
+    }
+    // A diferencia del resto de la flota, la sección de Conjuros de Dane es una lista en
+    // prosa (<ul><li>), no una tabla -- se mantiene ese mismo formato acá (en vez de tarjetas
+    // sueltas) para que los hechizos agregados se vean integrados con el resto. El "✨" junto
+    // al nombre es la única marca de que es un hechizo adicional del compendio.
+    function renderHechizosAdicionales() {
+        const cont = document.getElementById('hechizos-adicionales-lista');
+        if (!cont) return;
+        const nombres = obtenerHechizosAgregados();
+        if (!nombres.length) {
+            cont.innerHTML = '<li style="color:var(--text-muted);list-style:none;margin-left:-20px;">Sin hechizos adicionales agregados todavía — usá "➕ Agregar Hechizo" para sumar uno del compendio.</li>';
+            return;
+        }
+        cont.innerHTML = nombres.map(n => {
+            const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === n) : null;
+            const nombreEsc = n.replace(/'/g, "\\'");
+            if (!s) return `<li>${n} <span style="color:var(--text-muted);">(no encontrado en el compendio actual)</span> <button class="btn-clear" title="Quitar" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button></li>`;
+            return `<li><strong>${s.name}</strong> ✨ <em>(${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel} · ${s.tiempo} · ${s.alcance}: ${s.desc} · ${s.duracion})</em>
+                <button class="btn-roll btn-roll-sm" onclick="registrarUsoRecursoGenerico('${nombreEsc}')" title="Registrar uso en el historial">✅ Usar</button>
+                <button class="btn-clear" title="Quitar de la ficha" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button>
+            </li>`;
+        }).join('');
+    }
+    function quitarHechizoAdicional(nombre) {
+        if (!confirm(`¿Quitar "${nombre}" de tus hechizos aprendidos?`)) return;
+        const lista = obtenerHechizosAgregados().filter(n => n !== nombre);
+        guardarHechizosAgregados(lista);
+        renderHechizosAdicionales();
+    }
+    // Nota: a diferencia del resto de la flota, acá "✅ Usar" se deja como solo registro
+    // (registrarUsoRecursoGenerico), sin intentar descontar un espacio — Dane es la única
+    // ficha cuyos espacios de conjuro son checkboxes sueltos en prosa en vez de un contador
+    // slot-N-cur, así que no hay ningún elemento numérico del que descontar automáticamente.
     function agregarHechizoDesdeCompendio(nombre) {
-        const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === nombre) : null;
-        if (!s) return;
-        FichaHechizos.editor.guardarDesdeFormulario({
-            nombre: s.name,
-            nivel: s.nivel,
-            tiempo: s.tiempo,
-            alcance: s.alcance,
-            area: '',
-            resumen: s.desc,
-            duracion: s.duracion,
-            formula: s.formula || null,
-            slotCost: s.nivel > 0 ? s.nivel : null,
-            ataque: s.ataque || null,
-            upcast: s.upcast || null,
-            buff: s.buff ? JSON.parse(JSON.stringify(s.buff)) : null,
-        });
+        const lista = obtenerHechizosAgregados();
+        if (!lista.includes(nombre)) {
+            lista.push(nombre);
+            guardarHechizosAgregados(lista);
+            renderHechizosAdicionales();
+        }
         toggleSpellPicker(false);
     }
     function toggleSpellPicker(show) {
@@ -1500,7 +1386,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         if (!cont || typeof SPELLS === 'undefined') return;
         const q = (document.getElementById('spell-picker-search')?.value || '').trim().toLowerCase();
         const nivelFiltro = document.getElementById('spell-picker-nivel')?.value || '';
-        const ya = FichaHechizos.editor.items().map(h => h.nombre);
+        const ya = obtenerHechizosAgregados();
         let lista = SPELLS.filter(s => {
             if (q && !s.name.toLowerCase().includes(q)) return false;
             if (nivelFiltro !== '' && String(s.nivel) !== nivelFiltro) return false;
@@ -1530,7 +1416,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         const card = document.getElementById('spell-preview-card');
         const overlay = document.getElementById('spell-preview-overlay');
         if (!s || !card || !overlay) return;
-        const yaAgregado = FichaHechizos.editor.items().some(h => h.nombre === s.name);
+        const yaAgregado = obtenerHechizosAgregados().includes(s.name);
         const nombreEsc = s.name.replace(/'/g, "\\'");
         card.innerHTML = `
             <h3>${s.name} <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></h3>
@@ -1551,8 +1437,10 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     // ============================================
     // SUBIR DE NIVEL (guiado) — HD/HP, features de clase, espacios de conjuro, hechizos
     // Nada se aplica automáticamente: cada paso requiere confirmación explícita del jugador.
-    // Caso particular: Dane combina Ranger (half caster) con Rogue (no lanzador); sus espacios de
-    // conjuro son checkboxes (☑ = usado) y asegurarSlots() agrega los que falten al subir de nivel.
+    // Caso particular: Dane combina Ranger (half caster) con Rogue (no lanzador), y su UI de
+    // espacios de conjuro es de checkboxes en prosa (no tarjetas con tope numérico como el resto
+    // de la flota) — por eso el paso de "espacios de conjuro" acá es solo informativo: muestra
+    // el nuevo total correcto pero no inserta checkboxes nuevos automáticamente en esa sección.
     // ============================================
     const CONFIG_NIVEL = {
         clases: [
@@ -1574,11 +1462,8 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     function obtenerBonusHPNivel() {
         return obtenerSubidasNivel().reduce((s, r) => s + (r.hpGanado || 0), 0);
     }
-    function obtenerBuffHPMax() {
-        return parseInt(document.getElementById('hp-max-buff')?.value, 10) || 0;
-    }
     function hpMaxActual() {
-        return HP_MAX_DANE + obtenerBonusHPNivel() + obtenerBuffHPMax() + (window.FichaBuffs ? FichaBuffs.plano('hp-max') : 0);
+        return HP_MAX_DANE + obtenerBonusHPNivel();
     }
     function nivelClaseActual(nombreClase) {
         const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nombreClase);
@@ -1666,9 +1551,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         const lista = obtenerSubidasNivel();
         lista.push({ clase: cfg.nombre, nivelNuevo: nuevoNivelClase, dado: cfg.dado, tirada: nivelUpEstado.tirada, modo: nivelUpEstado.modo, hpGanado, fecha: Date.now() });
         guardarSubidasNivel(lista);
-        // El nivel total cambió: bono de competencia, saves, skills, ataques y espacios se recalculan solos.
-        if (window.FichaAtributos) FichaAtributos.recalcular();
-        asegurarSlots();
 
         const hpEl = document.getElementById('hp-cur');
         if (hpEl) {
@@ -1742,15 +1624,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             return;
         }
 
-        const nivelTotalAhora = nivelTotalPersonaje();
-        const profAntes = FichaComun.calcularProfBonus(nivelTotalAhora - 1);
-        const profAhora = FichaComun.calcularProfBonus(nivelTotalAhora);
-        if (profAhora !== profAntes) {
-            html += `<div class="nivelup-step"><h4>📘 Bono de competencia</h4>
-                <div class="nivelup-roll-result">Bono de competencia: ${FichaComun.formatearMod(profAntes)} → ${FichaComun.formatearMod(profAhora)} (saves, skills, ataques y CD se actualizaron solos)</div>
-            </div>`;
-        }
-
         const nuevoNivel = nivelUpEstado.nuevoNivelClase;
         const agregadas = obtenerHabilidadesAgregadas();
         const candidatas = (typeof PROXIMAS_HABILIDADES !== 'undefined' ? PROXIMAS_HABILIDADES : [])
@@ -1774,7 +1647,8 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             const maxes = SLOTS_HALF_CASTER[Math.min(nivelClaseActual(cfg.nombre), 20)] || [];
             const resumen = maxes.map((m, i) => m > 0 ? `Nvl ${i+1}: ${m}` : null).filter(Boolean).join(' · ') || 'Sin espacios todavía';
             html += `<div class="nivelup-step"><h4>4️⃣ Espacios de conjuro</h4>
-                <p style="font-size:0.82rem;">Espacios actualizados en la ficha: ${resumen}</p>
+                <p style="font-size:0.82rem;">Total correcto según tabla: ${resumen}</p>
+                <p style="font-size:0.72rem;color:var(--text-muted);">⚠️ La sección de Conjuros de Dane usa checkboxes en prosa, no tarjetas con tope — si el número de arriba cambió respecto a lo que ves en la ficha, agregá/quitá checkboxes ahí a mano.</p>
             </div>`;
         }
 
@@ -1867,10 +1741,91 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         }
     });
 
-    // === BITÁCORA DESDE LA FICHA: ver FichaComun.iniciarBitacora() en ficha-common.js ===
+    // === BITÁCORA DESDE LA FICHA ===
+    let bitacoraFichaCache = {}; // key de Firebase -> {titulo, texto}, para poblar el form al editar sin re-escapar comillas en el onclick
+    let editandoKeyBitacoraFicha = null;
+    function renderizarBitacoraFicha(logs) {
+        const cont = document.getElementById('bitacora-ficha-lista');
+        if (!cont) return;
+        bitacoraFichaCache = {};
+        const entradas = Object.entries(logs || {}).map(([key, log]) => ({ key, ...log })).sort((a, b) => (b.fecha || 0) - (a.fecha || 0)).slice(0, 8);
+        if (!entradas.length) {
+            cont.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);">Sin entradas todavía.</p>';
+            return;
+        }
+        cont.innerHTML = entradas.map(log => {
+            bitacoraFichaCache[log.key] = { titulo: log.titulo || '', texto: log.texto || '' };
+            const esMia = log.personaje === NOMBRE_PERSONAJE_FICHA;
+            return `
+            <div class="bf-entrada">
+                <div class="bf-entrada-head">
+                    <div class="bf-fecha">${log.fecha ? new Date(log.fecha).toLocaleString() : ''}${log.personaje ? ' · ' + log.personaje : ''}</div>
+                    ${esMia ? `<div class="bf-entrada-actions">
+                        <button type="button" onclick="editarEntradaBitacoraFicha('${log.key}')" title="Editar">✏️</button>
+                        <button type="button" onclick="eliminarEntradaBitacoraFicha('${log.key}')" title="Eliminar">🗑️</button>
+                    </div>` : ''}
+                </div>
+                ${log.titulo ? `<strong>${log.titulo}</strong>` : ''}
+                <p style="white-space:pre-wrap;margin:2px 0 0;">${log.texto || ''}</p>
+            </div>
+        `;
+        }).join('');
+    }
+    function editarEntradaBitacoraFicha(key) {
+        const entry = bitacoraFichaCache[key];
+        if (!entry) return;
+        editandoKeyBitacoraFicha = key;
+        document.getElementById('bitacora-ficha-titulo').value = entry.titulo;
+        document.getElementById('bitacora-ficha-texto').value = entry.texto;
+        const btn = document.getElementById('btn-guardar-bitacora-ficha');
+        if (btn) btn.innerText = '💾 Guardar Cambios';
+        const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
+        if (btnCancelar) btnCancelar.style.display = 'inline-block';
+        document.getElementById('bitacora-ficha-texto')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function cancelarEdicionBitacoraFicha() {
+        editandoKeyBitacoraFicha = null;
+        document.getElementById('bitacora-ficha-titulo').value = '';
+        document.getElementById('bitacora-ficha-texto').value = '';
+        const btn = document.getElementById('btn-guardar-bitacora-ficha');
+        if (btn) btn.innerText = 'Guardar Entrada';
+        const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
+        if (btnCancelar) btnCancelar.style.display = 'none';
+    }
+    function eliminarEntradaBitacoraFicha(key) {
+        if (!codigoCampana) return;
+        if (!confirm('¿Eliminar esta entrada de la bitácora?')) return;
+        db.ref(`campanas/${codigoCampana}/bitacora/${key}`).remove()
+            .catch(err => alert('No se pudo eliminar la entrada: ' + err.message));
+    }
+    function guardarEntradaBitacoraFicha() {
+        if (!codigoCampana) { alert('Esta ficha no está asociada a ninguna campaña.'); return; }
+        const tituloEl = document.getElementById('bitacora-ficha-titulo');
+        const textoEl = document.getElementById('bitacora-ficha-texto');
+        const texto = (textoEl.value || '').trim();
+        if (!texto) return;
+        if (editandoKeyBitacoraFicha) {
+            db.ref(`campanas/${codigoCampana}/bitacora/${editandoKeyBitacoraFicha}`).update({
+                titulo: (tituloEl.value || '').trim(),
+                texto: texto
+            }).then(() => {
+                cancelarEdicionBitacoraFicha();
+            }).catch(err => alert('No se pudo guardar la edición en la bitácora: ' + err.message));
+            return;
+        }
+        db.ref(`campanas/${codigoCampana}/bitacora`).push({
+            titulo: (tituloEl.value || '').trim(),
+            texto: texto,
+            fecha: firebase.database.ServerValue.TIMESTAMP,
+            personaje: NOMBRE_PERSONAJE_FICHA
+        }).then(() => {
+            tituloEl.value = '';
+            textoEl.value = '';
+        }).catch(err => alert('No se pudo guardar la entrada en la bitácora: ' + err.message));
+    }
     document.getElementById('xp-val')?.addEventListener('input', actualizarNivelYProximaXP);
     document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); restaurarSubidasNivel(); asegurarSlots(); refrescarSlotCur(); }, 800);
+        setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); renderHechizosAdicionales(); restaurarSubidasNivel(); }, 800);
     });
 
     // --- 3. DICE ROLLER SYSTEM ---
@@ -1878,8 +1833,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
 
     // Ataques: desventaja automática si Dane está Cegado o Envenenado (igual que el resto de la flota)
-    // categoria (opcional): 'ataque' | 'salvaciones' | 'pruebas' -> suma los dados extra de los buffs activados.
-    function rollAttack(name, modifier, categoria) {
+    function rollAttack(name, modifier) {
         let rollType = getAdvantage();
         const estaCegado = document.getElementById('cond-blinded')?.checked;
         const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
@@ -1907,11 +1861,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         const bane = document.getElementById('debuff-bane');
         if (bless && bless.checked) { const r = Math.floor(Math.random() * 4) + 1; result += r; calc += ` + Bless: ${r}`; }
         if (bane && bane.checked) { const r = Math.floor(Math.random() * 4) + 1; result -= r; calc += ` - Bane: ${r}`; }
-        // Dados extra de buffs activados en hechizos (configurables por hechizo en la tarjeta de conjuros).
-        if (categoria && window.FichaBuffs) {
-            const extra = FichaBuffs.tirarDados(categoria);
-            extra.partes.forEach(pt => { result += pt.valor; calc += ` + ${pt.texto}`; });
-        }
         displayRollResult(name, result, calc);
     }
 
@@ -2124,8 +2073,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
             if (cb.id) guardarCampo(cb.id, false);
         });
         if (typeof updateConditions === 'function') updateConditions();
-        if (window.FichaConcentracion) FichaConcentracion.fijar('');
-        if (typeof refrescarSlotCur === 'function') refrescarSlotCur();
         if (typeof syncStickyBar === 'function') syncStickyBar();
         alert("🌙 Descanso Largo completado. Puntos de Golpe, Dados de Golpe, Espacios de Conjuro y Favored Foe restablecidos.");
     }
@@ -2154,9 +2101,6 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         container.querySelectorAll('input, select, textarea').forEach(el => {
             el.disabled = soloLectura;
         });
-        // Puente al motor compartido: FichaComun tiene su PROPIO flag de modo lectura (lo usan
-        // FichaHechizos.usar, FichaInventario.usar, la reputación, etc.).
-        if (window.FichaComun) FichaComun.aplicarModoLectura(soloLectura);
     }
 
     // Autoguardado: 'input' es el disparador primario (cubre tipeo y contenteditable en vivo);
@@ -2164,7 +2108,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     document.addEventListener('input', (e) => {
         if (e.target.matches('input, textarea, select, [contenteditable="true"]')) {
             const fieldId = e.target.id;
-            if (fieldId && !FichaComun.esCampoEfimero(fieldId)) {
+            if (fieldId) {
                 const val = e.target.type === 'checkbox' ? e.target.checked : (e.target.isContentEditable ? e.target.innerText : e.target.value);
                 guardarCampo(fieldId, val);
             }
@@ -2174,7 +2118,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     document.addEventListener('change', (e) => {
         if (e.target.matches('input[type="checkbox"], select, textarea')) {
             const fieldId = e.target.id;
-            if (fieldId && !FichaComun.esCampoEfimero(fieldId)) {
+            if (fieldId) {
                 const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
                 guardarCampo(fieldId, val);
             }
@@ -2186,9 +2130,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         charRef.child('datos').on('value', (snapshot) => {
             const datos = snapshot.val();
             if (!datos) return;
-            window.__ultimosDatos = datos;
             Object.keys(datos).forEach(id => {
-                if (FichaComun.esCampoEfimero(id)) return; // formularios temporales: nunca se restauran desde datos/
                 const el = document.getElementById(id);
                 if (!el) return;
                 if (el.type === 'checkbox') {
@@ -2200,21 +2142,17 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
                 } else if (document.activeElement !== el && el.value !== String(datos[id])) {
                     el.value = datos[id];
                     if (id === 'hp-cur') updateHPDisplay();
+                    // El inventario se guarda como un único blob JSON (no campo por campo como el resto de
+                    // la ficha) — si no se re-sincroniza acá, una pestaña vieja abierta (o dos dispositivos)
+                    // puede pisar con datos viejos un ítem agregado/editado en otro lado. Se salta mientras
+                    // el formulario de agregar/editar está abierto para no perder una edición en curso.
+                    if (id === 'inventario-json' && typeof restaurarInventarioDesdeDatos === 'function') {
+                        const formAbierto = (document.getElementById('inventario-form-container')?.innerHTML || '').trim().length > 0;
+                        if (!formAbierto) restaurarInventarioDesdeDatos(datos[id]);
+                    }
                 }
             });
-            // Las subidas de nivel y las puntuaciones recién llegadas ya están en el DOM: recalcular lo derivado.
-            nivelDatosSincronizados = true;
-            if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
-            if (typeof asegurarSlots === 'function') asegurarSlots();
-            if (typeof refrescarSlotCur === 'function') refrescarSlotCur();
-            if (window.FichaAtributos) FichaAtributos.recalcular();
-            if (typeof updateConditions === 'function') updateConditions();
-            if (typeof updateHPDisplay === 'function') updateHPDisplay();
-            if (typeof syncStickyBar === 'function') syncStickyBar();
-            // Motor de subida de nivel: se re-sincroniza acá porque este callback dispara cada vez que
-            // llegan datos reales (xp-val y habilidades-agregadas-nivel ya están actualizados en el DOM).
-            if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();
-            if (typeof restaurarHabilidadesAgregadas === 'function') restaurarHabilidadesAgregadas();
+            syncStickyBar();
         });
     }
 
@@ -2251,17 +2189,13 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
 
             sincronizarDatosDesdeNube();
 
-            // Motor compartido (ficha-common.js): editores unificados de hechizos/inventario/reputación.
-            // Se registran ANTES de pedirle a FichaComun que sincronice, para que la siembra inicial los vea.
-            FichaComun.setCharRef(charRef);
-            FichaComun.iniciarEditorHechizos();
-            puenteUsarHechizo();
-            FichaComun.iniciarEditorInventario();
-            FichaComun.iniciarEditorReputacion();
-            FichaComun.sincronizarDatosDesdeNube();
-
-            // Bitácora (ficha-common.js): maneja tanto el caso con campaña como sin ella.
-            FichaComun.iniciarBitacora({ db, codigoCampana });
+            if (codigoCampana) {
+                bitacoraCampanaListener = db.ref(`campanas/${codigoCampana}/bitacora`);
+                bitacoraCampanaListener.on('value', snap => renderizarBitacoraFicha(snap.val() || {}));
+            } else {
+                const bitacoraWrap = document.getElementById('bitacora-section');
+                if (bitacoraWrap) bitacoraWrap.style.display = 'none';
+            }
 
             const gmRefPromise = codigoCampana
                 ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
@@ -2313,196 +2247,168 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     });
 
 
-    // ==========================================
-    // VALORES DERIVADOS (motor compartido: FichaComun.iniciarAtributos / iniciarEstadisticaConBuff)
-    // Bono de competencia, saves, skills, pasiva, ataques y CD se CALCULAN desde el nivel total
-    // (suma de niveles de clase) + puntuaciones (+ aumento temporal): subir de nivel ya no deja
-    // números viejos en la ficha.
-    // ==========================================
-    let nivelDatosSincronizados = false;
-    const CLAVE_CACHE_NIVEL = `nivel_cache_${PERSONAJE_ID}`;
-    // Hasta que llegan las subidas desde Firebase se usa el último nivel conocido de este dispositivo
-    // para no mostrar un bono viejo un instante.
-    function nivelTotalPersonaje() {
-        const real = CONFIG_NIVEL.clases.reduce((suma, c) => suma + nivelClaseActual(c.nombre), 0);
-        try {
-            if (!nivelDatosSincronizados) {
-                const cache = parseInt(localStorage.getItem(CLAVE_CACHE_NIVEL), 10);
-                if (cache > real) return cache;
-            } else {
-                localStorage.setItem(CLAVE_CACHE_NIVEL, String(real));
-            }
-        } catch (e) { /* almacenamiento no disponible */ }
-        return real;
-    }
-    // Ballesta Hiperbórea: DEX + competencia + 4 fijos (+2 Archery, +1 magia, +1 Blacksmith); daño: DEX + 2 (magia + Blacksmith).
-    const BALLESTA_EXTRA_ATAQUE = 4, BALLESTA_EXTRA_DANO = 2, SS_PENAL = 5, SS_BONO = 10;
-    function ataqueBallestaBase() { return FichaAtributos.modDe('DEX') + FichaAtributos.profBonusActual() + BALLESTA_EXTRA_ATAQUE; }
-    function ataqueBallestaTotal() {
-        return ataqueBallestaBase() + (parseInt(document.getElementById('atk-buff')?.value, 10) || 0) + FichaBuffs.plano('ataque');
-    }
-    function danoBallesta() { return FichaAtributos.modDe('DEX') + BALLESTA_EXTRA_DANO; }
-    function bonoAtaqueConjuro() { return FichaAtributos.modDe(FICHA_CONFIG.habilidadConjuro) + FichaAtributos.profBonusActual(); }
-    // Dread Ambusher: +WIS a la iniciativa.
-    function iniciativaBase() { return FichaAtributos.modDe('DEX') + FichaAtributos.modDe('WIS'); }
-    function rollIniciativa() {
-        const buff = parseInt(document.getElementById('iniciativa-buff')?.value, 10) || 0;
-        rollAttack('Initiative', iniciativaBase() + buff + FichaBuffs.plano('iniciativa'), 'pruebas');
-    }
-    function aplicarValoresCalculados() {
-        const fmt = FichaComun.formatearMod;
-        document.querySelectorAll('.js-calc').forEach(el => {
-            const hab = el.dataset.hab;
-            const num = el.dataset.fmt === 'num';
-            let txt;
-            switch (el.dataset.calc) {
-                case 'prof': txt = fmt(FichaAtributos.profBonusActual()); break;
-                case 'mod': txt = fmt(FichaAtributos.modDe(hab)); break;
-                case 'ballesta': { const v = ataqueBallestaBase(); txt = num ? String(v) : fmt(v); break; }
-                case 'ballestaSS': txt = fmt(ataqueBallestaBase() - SS_PENAL); break;
-                case 'danoBallesta': { const v = danoBallesta(); txt = num ? String(v) : fmt(v); break; }
-                case 'danoBallestaSS': { const v = danoBallesta() + SS_BONO; txt = num ? String(v) : fmt(v); break; }
-                case 'novaFijo': txt = fmt(4 * (danoBallesta() + SS_BONO)); break;
-                case 'nivelClase': txt = String(nivelClaseActual(el.dataset.clase)); break;
-                case 'nivelTotal': txt = String(nivelTotalPersonaje()); break;
-            }
-            if (txt !== undefined && el.textContent !== txt) el.textContent = txt;
-        });
-    }
-    function iniciarEstadisticasDerivadas() {
-        const fmt = FichaComun.formatearMod;
-        const habilidad = (clave) => ({ clave, scoreId: `${clave.toLowerCase()}-score`, tempId: `${clave.toLowerCase()}-temp`, contenedorId: `ab-${clave.toLowerCase()}`, saveCompetente: clave === 'STR' || clave === 'DEX' });
-        const skill = (clave, hab, competente, expertise) => ({ clave, contenedorId: 'sk-' + clave.toLowerCase().replace(/ /g, '-'), habilidad: hab, competente, expertise });
-        FichaComun.iniciarAtributos({
-            obtenerNivel: nivelTotalPersonaje,
-            profBadgeId: 'prof-badge',
-            habilidades: ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(habilidad),
-            skills: [
-                skill('Acrobatics', 'DEX', true), skill('Animal Handling', 'WIS', false),
-                skill('Arcana', 'INT', false), skill('Athletics', 'STR', false),
-                skill('Deception', 'CHA', true), skill('History', 'INT', false),
-                skill('Insight', 'WIS', true), skill('Intimidation', 'CHA', false),
-                skill('Investigation', 'INT', false), skill('Medicine', 'WIS', false),
-                skill('Nature', 'INT', false), skill('Perception', 'WIS', true, true),
-                skill('Performance', 'CHA', false), skill('Persuasion', 'CHA', false),
-                skill('Religion', 'INT', false), skill('Sleight of Hand', 'DEX', true, true),
-                skill('Stealth', 'DEX', true, true), skill('Survival', 'WIS', false),
-            ],
-            pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
-        });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', calcularBase: ataqueBallestaBase, formatear: (n) => `${fmt(n)}/${fmt(n - SS_PENAL)}`, objetivoBuff: 'ataque' });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: bonoAtaqueConjuro, formatear: fmt, objetivoBuff: 'ataque-conjuro' });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + bonoAtaqueConjuro(), objetivoBuff: 'cd-conjuro' });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: iniciativaBase, formatear: fmt, objetivoBuff: 'iniciativa' });
-        FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, formatear: (n) => n + ' ft', objetivoBuff: 'velocidad' });
-        // CA calculada desde el inventario (armadura/escudo equipados) + buff manual + buffs activados.
-        FichaComun.iniciarCA({ buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base' });
-        // Casilla de concentración (se marca sola al lanzar un hechizo con concentración).
-        FichaComun.iniciarConcentracion('concentracion-panel');
-        // Buffs activados / cambios de equipo: refrescar HP máx. y la barra sticky.
-        document.addEventListener('ficha:buffs', () => updateHPDisplay());
-        document.addEventListener('ficha:inventario', () => syncStickyBar());
-        document.addEventListener('ficha:atributos', () => { aplicarValoresCalculados(); syncStickyBar(); });
-        // La tabla de hechizos se re-renderiza al sincronizar: se recuerda el nivel de upcast elegido.
-        const listaHechizos = document.getElementById('hechizos-lista');
-        if (listaHechizos) new MutationObserver(() => aplicarValoresCalculados()).observe(listaHechizos, { childList: true, subtree: true });
-        document.addEventListener('input', (e) => { if (e.target.id === 'hp-max-buff') updateHPDisplay(); });
-        document.addEventListener('ficha:datos-sincronizados', updateHPDisplay);
-        aplicarValoresCalculados();
-        syncStickyBar();
-    }
+const INVENTARIO_INICIAL = [
+  { nombre: `Amulet of the Linked Minds`, descripcion: `Telepathic communication across any distance/plane with its twin. Shares thoughts/emotions exclusively.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Hyperborean Crossbow`, descripcion: `+1 Weapon. Deals damage -> DC 15 Con save or speed halved. Can target a surface for 5ft radius frozen difficult terrain (1 min).`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Mindmugger Mitts`, descripcion: `Advantage on Sleight of Hand. (3/day) Bonus Action touch: DC 10 + 1/2 level Wis save or target forgets the entire round.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Phantom Steps`, descripcion: `Move silently, leave no trace, bypass floor traps. (1/day) Click heels to move through creatures/objects until end of turn.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Ring of the Smiling Sphinx`, descripcion: `Immune to mind/emotion reading and Divination (Scrying). Disadvantage on Insight checks against you. Can store 1 perfect memory.`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `The Corpse Mask`, descripcion: `(2/day) For 1 hour, take the appearance of a humanoid you saw die while wearing the mask (stores up to 5 faces).`, cantidad: 1, precio: 0, equipado: true },
+  { nombre: `Potion of Choice`, descripcion: `Drink to gain Advantage on one check/save/attack within 10 mins, OR reroll one and use the new result.`, cantidad: 1, precio: 0, equipado: false },
+  { nombre: `Reveal (Mask)`, descripcion: `Passively reveals AC of creatures within 60ft. Advantage on perception/surprise initiative. (Prof. Bonus/day) Advantage on a check, save, or attack.`, cantidad: 1, precio: 0, equipado: false }
+];
 
-    // ==========================================
-    // ESPACIOS DE CONJURO: checkboxes (☑ = usado) con contadores espejo slot-N-cur
-    // La tarjeta única de ficha-common.js descuenta de un elemento numérico `slot-N-cur` (estándar de la
-    // flota). Dane lleva sus espacios como checkboxes: los checkboxes siguen siendo la fuente de verdad y
-    // `slot-N-cur` es un espejo (disponibles = sin marcar). puenteUsarHechizo() envuelve FichaHechizos.usar:
-    // si el motor baja el contador, se marca el checkbox de ese nivel (con su evento 'change': autoguardado +
-    // registro "usó"); si el jugador marca/desmarca a mano, hace un descanso largo o llega un sync de Firebase,
-    // el contador se recalcula desde los checkboxes.
-    // ==========================================
-    const ORDINALES_SLOT = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
-    let enUsarHechizo = false; // mientras el motor gasta un espacio, el sync NO debe re-derivar el espejo
-    function slotCheckboxes(n) { return Array.from(document.querySelectorAll(`.spell-slots[data-slot-nivel="${n}"] input[type="checkbox"]`)); }
-    function refrescarSlotCur() {
-        if (enUsarHechizo) return;
-        document.querySelectorAll('.spell-slots[data-slot-nivel]').forEach(row => {
-            const n = row.dataset.slotNivel;
-            const cbs = slotCheckboxes(n);
-            const cur = document.getElementById(`slot-${n}-cur`), max = document.getElementById(`slot-${n}-max`);
-            const disp = String(cbs.filter(c => !c.checked).length);
-            if (cur && cur.textContent !== disp) cur.textContent = disp;
-            if (max && max.textContent !== String(cbs.length)) max.textContent = cbs.length;
-        });
-    }
-    function marcarSlot(n) {
-        const cb = slotCheckboxes(n).find(c => !c.checked);
-        if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); } // autoguardado + registro "usó"
-    }
-    // Envuelve FichaHechizos.usar: el motor descuenta del contador `slot-N-cur` (espejo) y acá se traslada ese
-    // gasto al checkbox. El nivel gastado se calcula igual que en el motor (nivel del selector de upcast o slotCost).
-    function puenteUsarHechizo() {
-        if (!window.FichaHechizos || FichaHechizos.__puente) return;
-        const usarOriginal = FichaHechizos.usar;
-        FichaHechizos.usar = function (idx) {
-            const h = FichaHechizos.editor.items()[idx];
-            let n = h && h.slotCost;
-            if (h && h.upcast) { const sel = document.getElementById(`upcast-sel-${idx}`); n = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase; }
-            refrescarSlotCur(); // el espejo parte de los checkboxes (fuente de verdad)
-            const el = n ? document.getElementById(`slot-${n}-cur`) : null;
-            const antes = el ? parseInt(el.textContent, 10) : NaN;
-            enUsarHechizo = true;
-            try { usarOriginal(idx); } finally { enUsarHechizo = false; }
-            if (el && !isNaN(antes) && parseInt(el.textContent, 10) === antes - 1) marcarSlot(n);
-            refrescarSlotCur();
-        };
-        FichaHechizos.__puente = true;
-    }
-    // Agrega (nunca quita) los checkboxes/filas que la tabla de Ranger pide para su nivel actual.
-    function asegurarSlots() {
-        const cont = document.getElementById('slots-container');
-        if (!cont || typeof SLOTS_HALF_CASTER === 'undefined') return;
-        const maxes = SLOTS_HALF_CASTER[Math.min(nivelClaseActual('Ranger'), 20)] || [];
-        const datos = window.__ultimosDatos || {};
-        maxes.forEach((m, i) => {
-            const n = i + 1;
-            if (m <= 0) return;
-            let row = cont.querySelector(`.spell-slots[data-slot-nivel="${n}"]`);
-            if (!row) {
-                row = document.createElement('div');
-                row.className = 'spell-slots';
-                row.dataset.slotNivel = n;
-                row.innerHTML = `<strong style="width: 150px;"></strong><span class="slot-resumen">Disp.: <span id="slot-${n}-cur">${m}</span>/<span id="slot-${n}-max">${m}</span></span>`;
-                cont.appendChild(row);
-            }
-            const resumen = row.querySelector('.slot-resumen');
-            let cbs = slotCheckboxes(n);
-            for (let k = cbs.length + 1; k <= m; k++) {
-                const cb = document.createElement('input');
-                cb.type = 'checkbox'; cb.id = `chk-slot${n}-${k}`; cb.title = `Slot ${k}`;
-                if (datos[cb.id] === true) cb.checked = true;
-                row.insertBefore(cb, resumen);
-            }
-            cbs = slotCheckboxes(n);
-            row.querySelector('strong').textContent = `${ORDINALES_SLOT[i]} Level (${Math.max(m, cbs.length)} Slots):`;
-        });
-        refrescarSlotCur();
-    }
-    // Marcar/desmarcar a mano un espacio actualiza el contador espejo.
-    document.addEventListener('change', (e) => { if (e.target.matches('.spell-slots input[type="checkbox"]')) refrescarSlotCur(); });
-    // El sync del motor puede reponer en slot-N-cur un valor viejo guardado en Firebase (el espejo no es la fuente
-    // de verdad): se vuelve a derivar de los checkboxes de forma síncrona, ANTES de que el observador lo aplique.
-    document.addEventListener('ficha:datos-sincronizados', () => refrescarSlotCur());
+// === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) ===
+let inventario = [];
+let editandoIdxInventario = null;
 
-    asegurarSlots();
-    iniciarEstadisticasDerivadas();
+function cargarInventarioInicialSiVacio() {
+  if (!inventario.length && typeof INVENTARIO_INICIAL !== 'undefined') {
+    inventario = INVENTARIO_INICIAL.map(it => ({...it}));
+  }
+}
 
-    // Primer pintado inmediato (usa el valor por defecto de xp-val hasta que llegue el sync real)
-    if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();
-    if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
+function guardarInventario() {
+  const json = JSON.stringify(inventario);
+  const hidden = document.getElementById('inventario-json');
+  if (hidden) hidden.value = json;
+  if (typeof guardarCampo === 'function') {
+    guardarCampo('inventario-json', json);
+  } else if (hidden) {
+    hidden.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
 
-// Inventario: ver FichaComun.iniciarEditorInventario() en ficha-common.js, con
-// FICHA_CONFIG.inventarioInicial como semilla (la misma INVENTARIO_INICIAL de antes + categoría/consumible).
+function renderizarInventario() {
+  const cont = document.getElementById('inventario-lista');
+  const totalEl = document.getElementById('inventario-total');
+  if (!cont) return;
+  cont.innerHTML = '';
+  if (!inventario.length) {
+    cont.innerHTML = '<p class="inventory-empty">No hay ítems en el inventario.</p>';
+  }
+  let valorTotal = 0;
+  inventario.forEach((item, idx) => {
+    const cant = parseFloat(item.cantidad) || 1;
+    const precio = parseFloat(item.precio) || 0;
+    valorTotal += cant * precio;
+    const div = document.createElement('div');
+    div.className = 'inventory-item';
+    div.innerHTML = `
+      <div class="inventory-item-top">
+        <div class="inventory-item-name">
+          <input type="checkbox" ${item.equipado ? 'checked' : ''} onchange="toggleEquipadoInventario(${idx}, this.checked)" title="Equipado / Portado">
+          ${item.nombre || '(sin nombre)'}
+          <span class="inventory-item-meta">${cant != 1 ? '×' + cant : ''} ${precio ? '· ' + precio + ' po' : ''}</span>
+        </div>
+        <div class="inventory-item-actions">
+          <button type="button" onclick="editarItemInventario(${idx})">✏️ Editar</button>
+          <button type="button" onclick="eliminarItemInventario(${idx})">🗑️</button>
+        </div>
+      </div>
+      ${item.descripcion ? `<div class="inventory-item-desc">${item.descripcion}</div>` : ''}
+    `;
+    cont.appendChild(div);
+  });
+  if (totalEl) totalEl.textContent = valorTotal > 0 ? `💰 Valor total estimado: ${valorTotal} po` : '';
+}
+
+function toggleEquipadoInventario(idx, checked) {
+  if (!inventario[idx]) return;
+  inventario[idx].equipado = checked;
+  guardarInventario();
+}
+
+function mostrarFormularioInventario(idx) {
+  editandoIdxInventario = (typeof idx === 'number') ? idx : null;
+  const item = (editandoIdxInventario !== null) ? inventario[editandoIdxInventario] : { nombre: '', descripcion: '', cantidad: 1, precio: 0, equipado: false };
+  const cont = document.getElementById('inventario-form-container');
+  if (!cont) return;
+  cont.innerHTML = `
+    <div class="inventory-form">
+      <div class="inventory-form-row">
+        <label>Nombre<input type="text" id="inv-form-nombre" value="${(item.nombre || '').replace(/"/g,'&quot;')}"></label>
+        <label>Cantidad<input type="number" id="inv-form-cantidad" value="${item.cantidad ?? 1}" min="1"></label>
+        <label>Precio (po)<input type="number" id="inv-form-precio" value="${item.precio ?? 0}" min="0"></label>
+      </div>
+      <div class="inventory-form-row">
+        <label style="flex: 1 1 100%;">Descripción / Notas<textarea id="inv-form-descripcion" rows="2">${item.descripcion || ''}</textarea></label>
+      </div>
+      <div class="inventory-form-row">
+        <label style="flex-direction: row; align-items: center; gap: 6px;"><input type="checkbox" id="inv-form-equipado" ${item.equipado ? 'checked' : ''}> Equipado / Portado</label>
+      </div>
+      <div class="inventory-form-actions">
+        <button type="button" onclick="cerrarFormularioInventario()">Cancelar</button>
+        <button type="button" onclick="guardarItemDesdeFormulario()">💾 Guardar</button>
+      </div>
+    </div>
+  `;
+}
+
+function cerrarFormularioInventario() {
+  editandoIdxInventario = null;
+  const cont = document.getElementById('inventario-form-container');
+  if (cont) cont.innerHTML = '';
+}
+
+function guardarItemDesdeFormulario() {
+  const nombreEl = document.getElementById('inv-form-nombre');
+  const nombre = nombreEl ? nombreEl.value.trim() : '';
+  if (!nombre) { alert('El ítem necesita un nombre.'); return; }
+  const descEl = document.getElementById('inv-form-descripcion');
+  const cantEl = document.getElementById('inv-form-cantidad');
+  const precioEl = document.getElementById('inv-form-precio');
+  const equipEl = document.getElementById('inv-form-equipado');
+  const nuevoItem = {
+    nombre: nombre,
+    descripcion: descEl ? descEl.value.trim() : '',
+    cantidad: cantEl ? (parseInt(cantEl.value) || 1) : 1,
+    precio: precioEl ? (parseFloat(precioEl.value) || 0) : 0,
+    equipado: equipEl ? equipEl.checked : false
+  };
+  if (editandoIdxInventario !== null) {
+    inventario[editandoIdxInventario] = nuevoItem;
+  } else {
+    inventario.push(nuevoItem);
+  }
+  cerrarFormularioInventario();
+  guardarInventario();
+  renderizarInventario();
+}
+
+function editarItemInventario(idx) {
+  mostrarFormularioInventario(idx);
+}
+
+function eliminarItemInventario(idx) {
+  if (!inventario[idx]) return;
+  if (!confirm('¿Eliminar "' + inventario[idx].nombre + '" del inventario?')) return;
+  inventario.splice(idx, 1);
+  guardarInventario();
+  renderizarInventario();
+}
+
+function restaurarInventarioDesdeDatos(json) {
+  try {
+    const parsed = JSON.parse(json);
+    if (Array.isArray(parsed) && parsed.length) {
+      inventario = parsed;
+    } else {
+      cargarInventarioInicialSiVacio();
+    }
+  } catch(e) {
+    cargarInventarioInicialSiVacio();
+  }
+  renderizarInventario();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const raw = (document.getElementById('inventario-json') || {}).value || '[]';
+    restaurarInventarioDesdeDatos(raw);
+  }, 900);
+});
+
 </script>
 
 </body>

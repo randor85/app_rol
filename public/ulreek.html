@@ -1000,6 +1000,61 @@
 .inventory-form-actions button:last-child { background: var(--accent-gold, var(--accent-silver, #d4af37)); color: #000; font-weight: bold; border: none; }
 .inventory-total { font-size: 0.78rem; color: var(--accent-gold, var(--accent-silver, #d4af37)); font-weight: bold; margin-bottom: 8px; min-height: 1em; }
 .inventory-empty { font-size: 0.8rem; color: var(--text-muted, #999); font-style: italic; }
+
+/* === Migración a ficha-common.js (estilos compartidos con Fiona) === */
+ .btn-buff { background: none; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; padding: 3px 7px; cursor: pointer; font-size: 0.7rem; font-weight: 700; }
+ .btn-buff.on { background: #2b4c38; border-color: #4a7a52; color: #bfe8c4; }
+ .buffs-activos { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0; font-size: 0.78rem; }
+ .buff-chip { background: #2b4c38; border: 1px solid #4a7a52; color: #dff3e3; border-radius: 14px; padding: 3px 10px; }
+ .buff-chip small { color: #a9d3b0; margin-left: 4px; }
+ .buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
+ .buff-dano-btn { border: 1px solid #4a7a52; border-radius: 6px; color: #dff3e3; padding: 3px 8px; }
+ .buffs-vacio { color: var(--text-muted); }
+ .reputacion-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .reputacion-item:last-child { border-bottom: none; }
+ .reputacion-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+ .reputacion-faccion { font-weight: 600; }
+ .reputacion-controles { display: flex; align-items: center; gap: 6px; }
+ .reputacion-controles button { background: none; border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; cursor: pointer; font-size: 0.8rem; padding: 2px 6px; }
+ .reputacion-valor { font-weight: 800; color: var(--accent-gold); min-width: 24px; text-align: center; display: inline-block; }
+ .reputacion-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+ .reputacion-empty { color: var(--text-muted); font-size: 0.85rem; }
+ .reputacion-form { background: var(--surface-mid, rgba(0,0,0,0.2)); border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+ .reputacion-form input, .reputacion-form textarea { background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 7px 9px; font-size: 0.85rem; font-family: inherit; width: 100%; }
+ .reputacion-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+ .reputacion-form-actions button { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
+ .reputacion-form-actions button:last-child { background: var(--accent-gold); color: #000; border: none; }
+ .reputacion-add-btn { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+ .conc-casilla { background: #2a2540; border: 1px solid #5a4f8a; color: #d9d2f5; border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 0.78rem; }
+ .buff-efecto-row select, .buff-efecto-row input { background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 4px 6px; font-size: 0.78rem; }
+ .ability-table .ab-score input, .ability-table .ab-temp { width: 52px; text-align: center; background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: inherit; border-radius: 6px; padding: 2px 4px; font: inherit; }
+ .ability-table .ab-temp { width: 40px; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+ .ability-table .ab-temp-row { font-size: 0.62rem; color: var(--text-muted); margin-bottom: 2px; }
+ .hp-max-buff-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); }
+ .hp-max-buff-row input { width: 52px; text-align: center; background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 2px 4px; }
+/* === Tarjeta única de Hechizos (ficha-common.js) === */
+.tag-atk { background: var(--surface-strong, var(--bg-card-header, #27362d)); color: var(--accent-gold); border: 1px solid var(--border-color); font-size: 0.68rem; }
+.spell-item-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.spell-form { background: var(--surface-strong, var(--bg-card-header, rgba(255,255,255,0.06))); border: 1px dashed var(--accent-gold); border-radius: 6px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+.spell-form > input, .spell-form > textarea, .spell-form > select,
+.inventory-form > input, .inventory-form > textarea, .inventory-form > select {
+    background: var(--surface-mid, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color); color: var(--text-light);
+    border-radius: 4px; padding: 6px 8px; font-size: 0.85rem; font-family: inherit; width: 100%;
+}
+.spell-form-label { margin: 0; font-weight: bold; color: var(--accent-gold); font-size: 0.85rem; }
+.spell-form-row-dado { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); flex-wrap: wrap; }
+.spell-form-row-dado input { width: 70px; }
+.spell-form-row-dado select { background: var(--surface-mid, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 5px 7px; font-size: 0.8rem; }
+.spell-form-mini-label { white-space: nowrap; }
+.spell-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.spell-form-actions button { padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
+.spell-form-actions button.add { background: var(--accent-gold); color: #000; border: none; }
+.inventory-armadura-campos { display: flex; gap: 6px; }
+.inventory-armadura-campos select { background: var(--surface-mid, var(--bg-card, rgba(0,0,0,0.2))); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 7px 9px; font-size: 0.85rem; }
+
+/* === Selector de pool de espacios por hechizo (Sorcerer / Pact Magic) — solo Ulreek === */
+.pool-sel { background: var(--surface-mid); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; padding: 2px 4px; font-size: 0.7rem; }
+.hp-max-buff-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); }
 </style>
 </head>
 
@@ -1078,8 +1133,10 @@
 <button class="nivel-popover-btn" onclick="toggleNivelUp()" type="button" style="margin-left:6px;">⬆️ Subir de Nivel</button>
 </div>
 <input type="hidden" id="habilidades-agregadas-nivel" value="">
-<input type="hidden" id="hechizos-agregados" value="">
 <input type="hidden" id="subidas-nivel-registro" value="">
+<input type="hidden" id="hechizos-pool" value="">
+<div id="concentracion-panel" class="buffs-activos"></div>
+<div id="buffs-activos" class="buffs-activos"></div>
 <div class="grid-identity">
 <div class="stat-badge">
 <label>❤️ Puntos Golpe (HP)</label>
@@ -1087,7 +1144,7 @@
 </div>
 <div class="stat-badge">
 <label>🛡️ AC (Clase de Armadura)</label>
-<span class="stat-base">Base: 12</span>
+<span class="stat-base" id="ac-base">12 (sin armadura: 10 + DEX)</span>
 <div class="buff-row">
 <input id="ac-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
 <div class="stat-total" id="ac-total">12</div>
@@ -1095,7 +1152,7 @@
 </div>
 <div class="stat-badge">
 <label>⚔️ Bono Ataque Melee</label>
-<span class="stat-base">Base: +3 (STR + Prof)</span>
+<span class="stat-base">Base: <span id="atk-base">+3</span> (STR + Prof)</span>
 <div class="buff-row">
 <input id="atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
 <div class="stat-total" id="atk-total">+3</div>
@@ -1103,7 +1160,7 @@
 </div>
 <div class="stat-badge">
 <label>✨ Spell Atk Bonus</label>
-<span class="stat-base">Base: +8 (CHA + Prof)</span>
+<span class="stat-base">Base: <span id="spell-atk-base">+8</span> (CHA + Prof)</span>
 <div class="buff-row">
 <input id="spell-atk-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
 <div class="stat-total" id="spell-atk-total">+8</div>
@@ -1111,7 +1168,7 @@
 </div>
 <div class="stat-badge">
 <label>📜 Spell Save DC</label>
-<span class="stat-base">Base: 16 (8+CHA+Prof)</span>
+<span class="stat-base">Base: <span id="spell-dc-base">16</span> (8+CHA+Prof)</span>
 <div class="buff-row">
 <input id="spell-dc-buff" onchange="recalcStats()" type="number" value="0" title="Bono Buffs"/>
 <div class="stat-total" id="spell-dc-total">16</div>
@@ -1119,19 +1176,27 @@
 </div>
 <div class="stat-badge">
 <label>🎲 Iniciativa</label>
-<button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Iniciativa', 'check')" style="margin-top:4px; padding:3px 8px; font-size:0.8rem;">🎲 +2</button>
+<span class="stat-base">DEX</span>
+<div class="buff-row">
+<input id="iniciativa-buff" type="number" value="0" title="Bono Buffs (objetos/efectos)"/>
+<button class="btn-roll" id="iniciativa-total" onclick="rollIniciativa()" style="padding:3px 8px; font-size:0.8rem;">🎲 +2</button>
+</div>
 </div>
 <div class="stat-badge">
 <label>🏃 Velocidad</label>
-<span>30 ft</span>
+<span class="stat-base">Base 30 ft</span>
+<div class="buff-row">
+<input id="velocidad-buff" type="number" value="0" title="Bono Buffs (botas, hechizos, etc.)"/>
+<div class="stat-total" id="velocidad-total">30 ft</div>
+</div>
 </div>
 <div class="stat-badge">
 <label>📘 Prof. Bonus</label>
-<span>+3</span>
+<span id="prof-badge">+3</span>
 </div>
 <div class="stat-badge">
 <label>👁️ Percepción Pasiva</label>
-<span>10</span>
+<span id="percepcion-pasiva">10</span>
 </div>
 </div>
 </header>
@@ -1140,7 +1205,7 @@
 <div class="advantage-bar">
 <div class="adv-card" style="border-color: var(--accent-light);">
 <label>🧘 Save Concentración</label>
-<button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (+5)</button>
+<button class="btn-roll" onclick="rollConcentrationSave()" style="width:100%; justify-content:center;">🧘 Tirar CON Save (<span id="conc-save-bonus">+5</span>)</button>
 </div>
 </div>
 
@@ -1148,46 +1213,58 @@
 <table class="ability-table">
 <tr><th>STR</th><th>DEX</th><th>CON</th><th>INT</th><th>WIS</th><th>CHA</th></tr>
 <tr>
-<td>
-<div class="ab-score">10</div><div class="ab-mod">(+0)</div>
+<td id="ab-str">
+<div class="ab-score"><input type="number" id="str-score" value="10" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="str-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+0)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'Fuerza Check', 'check')">Check +0</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'Fuerza Save', 'save')">Save +0</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Fuerza Check', 'check')" data-bonus="0">Check +0</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Fuerza Save', 'save')" data-bonus="0">Save +0</button>
 </div>
 </td>
-<td>
-<div class="ab-score">14</div><div class="ab-mod">(+2)</div>
+<td id="ab-dex">
+<div class="ab-score"><input type="number" id="dex-score" value="14" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="dex-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+2)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'Destreza Check', 'check')">Check +2</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'Destreza Save', 'save')">Save +2</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Destreza Check', 'check')" data-bonus="2">Check +2</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Destreza Save', 'save')" data-bonus="2">Save +2</button>
 </div>
 </td>
-<td>
-<div class="ab-score">14</div><div class="ab-mod">(+2)</div>
+<td id="ab-con">
+<div class="ab-score"><input type="number" id="con-score" value="14" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="con-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+2)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 2, 'Constitución Check', 'check')">Check +2</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 5, 'Constitución Save', 'save')">Save +5★</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Constitución Check', 'check')" data-bonus="2">Check +2</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Constitución Save', 'save')" data-bonus="5">Save +5★</button>
 </div>
 </td>
-<td>
-<div class="ab-score">10</div><div class="ab-mod">(+0)</div>
+<td id="ab-int">
+<div class="ab-score"><input type="number" id="int-score" value="10" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="int-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+0)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'Inteligencia Check', 'check')">Check +0</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'Inteligencia Save', 'save')">Save +0</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Inteligencia Check', 'check')" data-bonus="0">Check +0</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Inteligencia Save', 'save')" data-bonus="0">Save +0</button>
 </div>
 </td>
-<td>
-<div class="ab-score">10</div><div class="ab-mod">(+0)</div>
+<td id="ab-wis">
+<div class="ab-score"><input type="number" id="wis-score" value="10" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="wis-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+0)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'Sabiduría Check', 'check')">Check +0</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 0, 'Sabiduría Save', 'save')">Save +0</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Sabiduría Check', 'check')" data-bonus="0">Check +0</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Sabiduría Save', 'save')" data-bonus="0">Save +0</button>
 </div>
 </td>
-<td>
-<div class="ab-score">20</div><div class="ab-mod">(+5)</div>
+<td id="ab-cha">
+<div class="ab-score"><input type="number" id="cha-score" value="20" title="Puntuación base"/></div>
+<div class="ab-temp-row">temp <input type="number" class="ab-temp" id="cha-temp" value="0" title="Aumento temporal (pociones, artefactos)"/></div>
+<div class="ab-mod">(+5)</div>
 <div class="ab-btns">
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 5, 'Carisma Check', 'check')">Check +5</button>
-<button class="btn-roll btn-roll-sm" onclick="rollCheckSave('d20', 8, 'Carisma Save', 'save')">Save +8★</button>
+<button class="btn-roll btn-roll-sm btn-check" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Carisma Check', 'check')" data-bonus="5">Check +5</button>
+<button class="btn-roll btn-roll-sm btn-save" onclick="rollCheckSave('d20', +this.dataset.bonus, 'Carisma Save', 'save')" data-bonus="8">Save +8★</button>
 </div>
 </td>
 </tr>
@@ -1205,6 +1282,10 @@
 <input type="number" id="hp-cur" class="editable-cnt-val" value="51" min="0" style="font-size: 1.8rem; color: var(--accent-gold); text-align:center;">
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', 1)">+1</button>
 <button class="btn-cnt" onclick="changeInputVal('hp-cur', 5)">+5</button>
+</div>
+<div class="hp-max-buff-row">
+<span>Bono a HP máx. (objetos/efectos):</span>
+<input type="number" id="hp-max-buff" value="0" title="Se suma al HP máximo mientras esté activo"/>
 </div>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
 <label style="font-size:0.85rem; color:var(--text-muted);">HP Temporal:</label>
@@ -1283,24 +1364,24 @@
 <summary>🎯 1. Habilidades y Competencias (Skills)</summary>
 <div class="section-content">
 <div class="skills-grid">
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Acrobacias', 'skill')">🎲</button><span class="skill-name"><strong>Acrobacias (Acrobatics)</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Trato con Animales', 'skill')">🎲</button><span class="skill-name"><strong>Trato con Animales (Animal Handling)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Arcana', 'skill')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Atletismo', 'skill')">🎲</button><span class="skill-name"><strong>Atletismo (Athletics)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Engaño', 'skill')">🎲</button><span class="skill-name"><strong>Engaño (Deception)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Historia', 'skill')">🎲</button><span class="skill-name"><strong>Historia (History)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Perspicacia', 'skill')">🎲</button><span class="skill-name"><strong>Perspicacia (Insight)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Intimidación', 'skill')">🎲</button><span class="skill-name"><strong>Intimidación (Intimidation)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Investigación', 'skill')">🎲</button><span class="skill-name"><strong>Investigación (Investigation)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Medicina', 'skill')">🎲</button><span class="skill-name"><strong>Medicina (Medicine)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Naturaleza', 'skill')">🎲</button><span class="skill-name"><strong>Naturaleza (Nature)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Percepción', 'skill')">🎲</button><span class="skill-name"><strong>Percepción (Perception)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Interpretación', 'skill')">🎲</button><span class="skill-name"><strong>Interpretación (Performance)</strong></span><span class="skill-mod">+5</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 8, 'Persuasión', 'skill')">🎲</button><span class="skill-name"><strong>Persuasión (Persuasion)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Religión', 'skill')">🎲</button><span class="skill-name"><strong>Religión (Religion)</strong></span><span class="skill-mod">+0</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 2, 'Juego de Manos', 'skill')">🎲</button><span class="skill-name"><strong>Juego de Manos (Sleight of Hand)</strong></span><span class="skill-mod">+2</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 5, 'Sigilo', 'skill')">🎲</button><span class="skill-name"><strong>Sigilo (Stealth)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
-<div class="skill-item"><button class="btn-roll" onclick="rollCheckSave('d20', 0, 'Supervivencia', 'skill')">🎲</button><span class="skill-name"><strong>Supervivencia (Survival)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-acrobatics" data-bonus="2"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Acrobacias', 'skill')">🎲</button><span class="skill-name"><strong>Acrobacias (Acrobatics)</strong></span><span class="skill-mod">+2</span></div>
+<div class="skill-item" id="sk-animal-handling" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Trato con Animales', 'skill')">🎲</button><span class="skill-name"><strong>Trato con Animales (Animal Handling)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-arcana" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Arcana', 'skill')">🎲</button><span class="skill-name"><strong>Arcana</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-athletics" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Atletismo', 'skill')">🎲</button><span class="skill-name"><strong>Atletismo (Athletics)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-deception" data-bonus="8"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Engaño', 'skill')">🎲</button><span class="skill-name"><strong>Engaño (Deception)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item" id="sk-history" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Historia', 'skill')">🎲</button><span class="skill-name"><strong>Historia (History)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-insight" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Perspicacia', 'skill')">🎲</button><span class="skill-name"><strong>Perspicacia (Insight)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-intimidation" data-bonus="8"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Intimidación', 'skill')">🎲</button><span class="skill-name"><strong>Intimidación (Intimidation)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item" id="sk-investigation" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Investigación', 'skill')">🎲</button><span class="skill-name"><strong>Investigación (Investigation)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-medicine" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Medicina', 'skill')">🎲</button><span class="skill-name"><strong>Medicina (Medicine)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-nature" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Naturaleza', 'skill')">🎲</button><span class="skill-name"><strong>Naturaleza (Nature)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-perception" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Percepción', 'skill')">🎲</button><span class="skill-name"><strong>Percepción (Perception)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-performance" data-bonus="5"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Interpretación', 'skill')">🎲</button><span class="skill-name"><strong>Interpretación (Performance)</strong></span><span class="skill-mod">+5</span></div>
+<div class="skill-item" id="sk-persuasion" data-bonus="8"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Persuasión', 'skill')">🎲</button><span class="skill-name"><strong>Persuasión (Persuasion)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+8</span></div>
+<div class="skill-item" id="sk-religion" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Religión', 'skill')">🎲</button><span class="skill-name"><strong>Religión (Religion)</strong></span><span class="skill-mod">+0</span></div>
+<div class="skill-item" id="sk-sleight-of-hand" data-bonus="2"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Juego de Manos', 'skill')">🎲</button><span class="skill-name"><strong>Juego de Manos (Sleight of Hand)</strong></span><span class="skill-mod">+2</span></div>
+<div class="skill-item" id="sk-stealth" data-bonus="5"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Sigilo', 'skill')">🎲</button><span class="skill-name"><strong>Sigilo (Stealth)</strong><span class="skill-tag">★</span></span><span class="skill-mod">+5</span></div>
+<div class="skill-item" id="sk-survival" data-bonus="0"><button class="btn-roll" onclick="rollCheckSave('d20', +this.closest('.skill-item').dataset.bonus, 'Supervivencia', 'skill')">🎲</button><span class="skill-name"><strong>Supervivencia (Survival)</strong></span><span class="skill-mod">+0</span></div>
 </div>
 </div>
 </details>
@@ -1322,7 +1403,7 @@
 <tbody>
 <tr>
 <td><strong>Unarmed Strike</strong></td><td>Ataque Melee</td><td>1 Acción</td><td>Melee (1d1 + STR)</td>
-<td><button class="btn-roll" onclick="rollAttack(3, 'Ataque Unarmed')">⚔️ Atk (+3)</button></td>
+<td><button class="btn-roll js-calc" data-calc="unarmedBtn" onclick="rollAttack(armaBono('STR'), 'Ataque Unarmed')">⚔️ Atk (+3)</button></td>
 </tr>
 </tbody>
 </table></div>
@@ -1385,122 +1466,27 @@
 </div>
 </div>
 
+<!-- Tarjeta única de hechizos (ficha-common.js): reemplaza la tabla fija de conjuros (columnas
+     Conjuro/Nivel/Tiempo/Rango/Acción) + la caja separada "Hechizos Adicionales". Todos los hechizos
+     (de clase migrados + agregados del compendio) viven en una sola tabla editable. Cada fila de
+     nivel 1+ trae un selector de pool de espacios (Sorcerer / Pact Magic), propio de Ulreek. -->
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Conjuro</th>
 <th>Nivel</th>
-<th>Tiempo de Caneo</th>
-<th>Rango / Detalles</th>
-<th>Acción</th>
+<th>Conjuro</th>
+<th>Tiempo / Rango</th>
+<th>Resumen y Efecto Mecánico</th>
+<th>Tirar / Efecto / Pool</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td><strong>Guidance</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-guidance">Tacto, V/S, Conc.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(1, 4, 0, 'Guidance')">🎲 1d4</button></td>
-</tr>
-<tr>
-<td><strong>Fire Bolt</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-fire-bolt">120 ft, V/S. Atq. a distancia; 1d10 fuego.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(1, 10, 0, 'Fire Bolt (1d10)')">🔥 1d10</button></td>
-</tr>
-<tr>
-<td><strong>Mage Hand</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-mage-hand">30 ft, V/S. Mano espectral, 1 min, hasta 10 lb.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Mage Hand')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Eldritch Blast</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-eldritch-blast">120 ft, V/S. Atq. a distancia; 2 rayos de 1d10 fuerza c/u (nivel de personaje 8).</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(2, 10, 0, 'Eldritch Blast (2 rayos, 1d10 c/u)')">🔥 2d10</button></td>
-</tr>
-<tr>
-<td><strong>Minor Illusion</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-minor-illusion">30 ft, S/M. Sonido o imagen, 1 min.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Minor Illusion')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Prestidigitation</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-prestidigitation">10 ft, V/S. Truco menor, hasta 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Prestidigitation')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Ray of Frost</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-ray-of-frost">60 ft, V/S. Atq. a distancia; 1d8 frío, -10ft veloc.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(1, 8, 0, 'Ray of Frost (1d8)')">❄️ 1d8</button></td>
-</tr>
-<tr>
-<td><strong>Light</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-light">Tacto, V/M. Luz brillante 20ft + tenue 20ft, 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Light')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>mind sliver</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-mind-sliver">60 ft, V. INT save; 2d6 psíquico (nivel de personaje 8) y -1d4 a próxima salvación.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(2, 6, 0, 'mind sliver (2d6)')">🧠 2d6</button></td>
-</tr>
-<tr>
-<td><strong>Booming Blade</strong></td><td>Truco (Cantrip)</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-booming-blade">Self (5ft), S/M. Atq. cuerpo a cuerpo con arma; +1d8 trueno si el objetivo se mueve.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Booming Blade')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Fog Cloud</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-fog-cloud">120 ft, V/S, Conc. Esfera de niebla 20ft radio, hasta 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Fog Cloud')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Shield</strong></td><td>Nivel 1</td><td>1 Reacción</td><td class="editable-text" contenteditable="true" id="txt-spell-shield">Self, V/S. +5 CA hasta el inicio de tu próximo turno; inmune a magic missile.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Shield')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Sleep</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-sleep">90 ft, V/S/M. 5d8 HP de criaturas dormidas, 1 min.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(5, 8, 0, 'Sleep (5d8 HP afectados)'); gastarSlotContador(1)">💤 5d8</button></td>
-</tr>
-<tr>
-<td><strong>Disonant whisper</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-disonant-whisper">60 ft, V. WIS save; 3d6 psíquico (mitad si salva) y el objetivo huye.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Dissonant Whispers (3d6)'); gastarSlotContador(1)">🧠 3d6</button></td>
-</tr>
-<tr>
-<td><strong>Armor of Agathys</strong></td><td>Nivel 1</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-armor-of-agathys">Self, V/S/M. 5 HP temp; quien te golpee cuerpo a cuerpo recibe 5 frío.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Armor of Agathys')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Hex</strong></td><td>Nivel 1</td><td>1 Acción Adicional</td><td class="editable-text" contenteditable="true" id="txt-spell-hex">90 ft, V/S/M, Conc. +1d6 necrótico por golpe, 1h; desventaja en una característica elegida.</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(1, 6, 0, 'Hex (daño extra 1d6)')">🩸 1d6</button></td>
-</tr>
-<tr>
-<td><strong>Misty Step</strong></td><td>Nivel 2</td><td>1 Acción Adicional</td><td class="editable-text" contenteditable="true" id="txt-spell-misty-step">Self, V. Teletransporte hasta 30ft a espacio visible.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Misty Step')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Suggestion</strong></td><td>Nivel 2</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-suggestion">30 ft, V/M, Conc. WIS save; sigue el curso de acción sugerido, hasta 8h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Suggestion')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Web</strong></td><td>Nivel 2</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-web">60 ft, V/S/M, Conc. Cubo de telaraña 20ft, DEX save o restringido, hasta 1h.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Web')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Fireball</strong></td><td>Nivel 3</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-fireball">150 ft / esfera 20ft, V/S/M. DEX save DC 16; 8d6 fuego (mitad si salva).</td>
-<td><button class="btn-roll" onclick="rollGenericDamage(8, 6, 0, 'Fireball (8d6)'); gastarSlotContador(3)">🔥 8d6</button></td>
-</tr>
-<tr>
-<td><strong>Haste</strong></td><td>Nivel 3</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-haste">30 ft, V/S/M, Conc. Doble velocidad, +2 CA, ventaja en DEX save, acción extra, 1 min.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Haste')">✅ Usar</button></td>
-</tr>
-<tr>
-<td><strong>Greater Invisibility</strong></td><td>Nivel 4</td><td>1 Acción</td><td class="editable-text" contenteditable="true" id="txt-spell-greater-invisibility">Tacto, V/S, Conc. Invisibilidad hasta 1 min, incluso en combate.</td>
-<td><button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Greater Invisibility')">✅ Usar</button></td>
-</tr>
-</tbody>
+<tbody id="hechizos-lista"></tbody>
 </table></div>
- <div class="hechizos-adicionales-box">
- <h4>✨ Hechizos Adicionales Aprendidos <button type="button" class="btn-add-spell" onclick="toggleSpellPicker()">➕ Agregar Hechizo</button></h4>
- <div class="table-scroll"><table>
- <thead>
- <tr>
- <th>Conjuro</th>
- <th>Nivel</th>
- <th>Tiempo de Caneo</th>
- <th>Rango / Detalles</th>
- <th>Acción</th>
- </tr>
- </thead>
- <tbody id="hechizos-adicionales-lista"></tbody>
- </table></div>
- </div>
+<div id="hechizos-form-container"></div>
+<p style="margin-top:10px;">
+<button type="button" class="btn-add-spell" onclick="FichaHechizos.editor.mostrarFormulario()">➕ Agregar Hechizo (en blanco)</button>
+<button type="button" class="btn-add-spell" onclick="toggleSpellPicker()">📖 Agregar del Compendio</button>
+</p>
  </div>
  </details>
 
@@ -1556,7 +1542,7 @@
 <div class="section-content">
 <div class="feature-grid">
 <div class="feature-card"><h4><span class="tag">Sorcerer</span> Spellcasting & Sorcerous Origin</h4><div class="editable-text" contenteditable="true" id="txt-feat-sorcerer-spellcasting-sorcerous-origin">
-<p>• <strong>Spellcasting:</strong> Carisma es tu característica de lanzamiento (Spell Save DC 16, Spell Atk +8). Conocés 9 hechizos de Sorcerer y 5 trucos a nivel 7.</p>
+<p>• <strong>Spellcasting:</strong> Carisma es tu característica de lanzamiento (Spell Save DC <span class="js-calc" data-calc="cd">16</span>, Spell Atk <span class="js-calc" data-calc="spellAtk">+8</span>). Conocés 9 hechizos de Sorcerer y 5 trucos a nivel 7.</p>
 <p>• <strong>Sorcerous Origin: Wild Magic.</strong></p>
 
 <button class="btn-roll btn-roll-sm" onclick="registrarUsoRecurso('Spellcasting & Sorcerous Origin')" style="margin-top:6px;">✅ Usar</button></div></div>
@@ -1602,11 +1588,18 @@
 </div>
 </div>
 
-<div class="inventory-total" id="inventario-total"></div>
-<button type="button" class="inventory-add-btn" onclick="mostrarFormularioInventario()">➕ Agregar Ítem</button>
+<button type="button" class="inventory-add-btn" onclick="FichaInventario.editor.mostrarFormulario()">➕ Agregar Ítem</button>
 <div id="inventario-form-container"></div>
 <div class="inventory-list" id="inventario-lista"></div>
-<input type="hidden" id="inventario-json" value="">
+</div>
+</details>
+<details class="v2-section" id="section-reputacion">
+<summary>🏅 Reputación / Honor</summary>
+<div class="section-content">
+<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Tracker personalizable: agregá facciones, ajustá su valor con ➖/➕, renombralas o quitalas.</p>
+<button type="button" class="reputacion-add-btn" onclick="FichaReputacion.editor.mostrarFormulario()">➕ Agregar Facción</button>
+<div id="reputacion-lista"></div>
+<div id="reputacion-form-container"></div>
 </div>
 </details>
 
@@ -1692,6 +1685,59 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
 <script>
+  // === CONFIG PROPIA DE ESTA FICHA (migración a ficha-common.js) ===
+  // hechizosIniciales: los 22 conjuros que antes vivían a mano en la tabla fija (10 trucos, 6 de nivel 1,
+  // 3 de nivel 2, 2 de nivel 3 y 1 de nivel 4), migrados a datos. Textos tomados de su tabla; los DC/ataques
+  // son "automáticos" (dcAuto/bonusAuto = 8 + mod(CHA) + competencia). Shield, Haste y Hex traen buff
+  // activable (+5 CA, +2 CA, +1d6 de daño) porque su propio texto lo describe. No había hechizos
+  // agregados del compendio en su Firebase real (datos/hechizos-agregados no existe).
+  // Pool de espacios por hechizo (Sorcerer vs Pact Magic): no existe en el motor — ver instalarPoolDeEspacios().
+  const FICHA_CONFIG = {
+    personajeId: 'ulreek',
+    nombrePersonaje: 'Ulreek',
+    sistemaPropio: 'dnd',
+    wrapperSelector: '.container',
+    mostrarTirada: (total, etiqueta, detalle) => displayRollResult(total, etiqueta, detalle), // tiradas del motor (p.ej. "Daño extra" de buffs)
+    habilidadConjuro: 'CHA', // DC/ataque de hechizos "automáticos" = 8 + mod(CHA) + competencia
+    // Sin armadura equipada: 10 + DEX (evidencia: su ficha mostraba CA 12 con DEX 14, sin armadura en el inventario).
+    caSinArmadura: () => 10 + FichaAtributos.modDe('DEX'),
+    caSinArmaduraTexto: '10 + DEX',
+    hechizosIniciales: [
+      {"nombre": "Guidance", "nivel": 0, "tiempo": "1 Acción", "alcance": "Tacto", "area": "", "resumen": "V/S, Conc. Suma 1d4 a una prueba de característica.", "duracion": "Conc., hasta 1 min", "formula": {"count": 1, "sides": 4, "mod": 0}, "slotCost": null, "ataque": null},
+      {"nombre": "Fire Bolt", "nivel": 0, "tiempo": "1 Acción", "alcance": "120 ft", "area": "", "resumen": "V/S. Atq. a distancia; 1d10 fuego.", "duracion": "Instantáneo", "formula": {"count": 1, "sides": 10, "mod": 0}, "slotCost": null, "ataque": {"tipo": "ataque", "bonus": 8, "bonusAuto": true}},
+      {"nombre": "Mage Hand", "nivel": 0, "tiempo": "1 Acción", "alcance": "30 ft", "area": "", "resumen": "V/S. Mano espectral, 1 min, hasta 10 lb.", "duracion": "1 min", "formula": null, "slotCost": null, "ataque": null},
+      {"nombre": "Eldritch Blast", "nivel": 0, "tiempo": "1 Acción", "alcance": "120 ft", "area": "", "resumen": "V/S. Atq. a distancia; 2 rayos de 1d10 fuerza c/u (nivel de personaje 8).", "duracion": "Instantáneo", "formula": {"count": 2, "sides": 10, "mod": 0}, "slotCost": null, "ataque": {"tipo": "ataque", "bonus": 8, "bonusAuto": true}},
+      {"nombre": "Minor Illusion", "nivel": 0, "tiempo": "1 Acción", "alcance": "30 ft", "area": "", "resumen": "S/M. Sonido o imagen, 1 min.", "duracion": "1 min", "formula": null, "slotCost": null, "ataque": null},
+      {"nombre": "Prestidigitation", "nivel": 0, "tiempo": "1 Acción", "alcance": "10 ft", "area": "", "resumen": "V/S. Truco menor, hasta 1h.", "duracion": "1 hora", "formula": null, "slotCost": null, "ataque": null},
+      {"nombre": "Ray of Frost", "nivel": 0, "tiempo": "1 Acción", "alcance": "60 ft", "area": "", "resumen": "V/S. Atq. a distancia; 1d8 frío, -10ft veloc.", "duracion": "Instantáneo", "formula": {"count": 1, "sides": 8, "mod": 0}, "slotCost": null, "ataque": {"tipo": "ataque", "bonus": 8, "bonusAuto": true}},
+      {"nombre": "Light", "nivel": 0, "tiempo": "1 Acción", "alcance": "Tacto", "area": "", "resumen": "V/M. Luz brillante 20ft + tenue 20ft, 1h.", "duracion": "1 hora", "formula": null, "slotCost": null, "ataque": null},
+      {"nombre": "Mind Sliver", "nivel": 0, "tiempo": "1 Acción", "alcance": "60 ft", "area": "", "resumen": "V. INT save; 2d6 psíquico (nivel de personaje 8) y -1d4 a próxima salvación.", "duracion": "Instantáneo", "formula": {"count": 2, "sides": 6, "mod": 0}, "slotCost": null, "ataque": {"tipo": "salvacion", "habilidad": "INT", "dc": 16, "dcAuto": true}},
+      {"nombre": "Booming Blade", "nivel": 0, "tiempo": "1 Acción", "alcance": "Self (5ft)", "area": "", "resumen": "S/M. Atq. cuerpo a cuerpo con arma; +1d8 trueno si el objetivo se mueve.", "duracion": "1 asalto", "formula": null, "slotCost": null, "ataque": null},
+      {"nombre": "Fog Cloud", "nivel": 1, "tiempo": "1 Acción", "alcance": "120 ft", "area": "Esfera 20 ft", "resumen": "V/S, Conc. Esfera de niebla 20ft radio, hasta 1h.", "duracion": "Conc., hasta 1 hora", "formula": null, "slotCost": 1, "ataque": null},
+      {"nombre": "Shield", "nivel": 1, "tiempo": "1 Reacción", "alcance": "Self", "area": "", "resumen": "V/S. +5 CA hasta el inicio de tu próximo turno; inmune a magic missile.", "duracion": "1 asalto", "formula": null, "slotCost": 1, "ataque": null, "buff": {"activo": false, "efectos": [{"tipo": "plano", "objetivo": "ca", "valor": 5}]}},
+      {"nombre": "Sleep", "nivel": 1, "tiempo": "1 Acción", "alcance": "90 ft", "area": "Área 20 ft", "resumen": "V/S/M. 5d8 HP de criaturas dormidas, 1 min.", "duracion": "1 min", "formula": {"count": 5, "sides": 8, "mod": 0}, "slotCost": 1, "ataque": null},
+      {"nombre": "Dissonant Whispers", "nivel": 1, "tiempo": "1 Acción", "alcance": "60 ft", "area": "", "resumen": "V. WIS save; 3d6 psíquico (mitad si salva) y el objetivo huye.", "duracion": "Instantáneo", "formula": {"count": 3, "sides": 6, "mod": 0}, "slotCost": 1, "ataque": {"tipo": "salvacion", "habilidad": "WIS", "dc": 16, "dcAuto": true}},
+      {"nombre": "Armor of Agathys", "nivel": 1, "tiempo": "1 Acción", "alcance": "Self", "area": "", "resumen": "V/S/M. 5 HP temp; quien te golpee cuerpo a cuerpo recibe 5 frío.", "duracion": "1 hora", "formula": null, "slotCost": 1, "ataque": null},
+      {"nombre": "Hex", "nivel": 1, "tiempo": "1 Acción Adicional", "alcance": "90 ft", "area": "", "resumen": "V/S/M, Conc. +1d6 necrótico por golpe, 1h; desventaja en una característica elegida.", "duracion": "Conc., hasta 1 hora", "formula": {"count": 1, "sides": 6, "mod": 0}, "slotCost": 1, "ataque": null, "buff": {"activo": false, "efectos": [{"tipo": "dado", "objetivo": "dano", "dado": {"count": 1, "sides": 6}}]}},
+      {"nombre": "Misty Step", "nivel": 2, "tiempo": "1 Acción Adicional", "alcance": "Self", "area": "", "resumen": "V. Teletransporte hasta 30ft a espacio visible.", "duracion": "Instantáneo", "formula": null, "slotCost": 2, "ataque": null},
+      {"nombre": "Suggestion", "nivel": 2, "tiempo": "1 Acción", "alcance": "30 ft", "area": "", "resumen": "V/M, Conc. WIS save; sigue el curso de acción sugerido, hasta 8h.", "duracion": "Conc., hasta 8 horas", "formula": null, "slotCost": 2, "ataque": {"tipo": "salvacion", "habilidad": "WIS", "dc": 16, "dcAuto": true}},
+      {"nombre": "Web", "nivel": 2, "tiempo": "1 Acción", "alcance": "60 ft", "area": "Cubo 20 ft", "resumen": "V/S/M, Conc. Cubo de telaraña 20ft, DEX save o restringido, hasta 1h.", "duracion": "Conc., hasta 1 hora", "formula": null, "slotCost": 2, "ataque": {"tipo": "salvacion", "habilidad": "DEX", "dc": 16, "dcAuto": true}},
+      {"nombre": "Fireball", "nivel": 3, "tiempo": "1 Acción", "alcance": "150 ft", "area": "Esfera 20 ft", "resumen": "V/S/M. DEX save DC <span class=\"js-calc\" data-calc=\"cd\">16</span>; 8d6 fuego (mitad si salva).", "duracion": "Instantáneo", "formula": {"count": 8, "sides": 6, "mod": 0}, "slotCost": 3, "ataque": {"tipo": "salvacion", "habilidad": "DEX", "dc": 16, "dcAuto": true}},
+      {"nombre": "Haste", "nivel": 3, "tiempo": "1 Acción", "alcance": "30 ft", "area": "", "resumen": "V/S/M, Conc. Doble velocidad, +2 CA, ventaja en DEX save, acción extra, 1 min.", "duracion": "Conc., hasta 1 min", "formula": null, "slotCost": 3, "ataque": null, "buff": {"activo": false, "efectos": [{"tipo": "plano", "objetivo": "ca", "valor": 2}]}},
+      {"nombre": "Greater Invisibility", "nivel": 4, "tiempo": "1 Acción", "alcance": "Tacto", "area": "", "resumen": "V/S, Conc. Invisibilidad hasta 1 min, incluso en combate.", "duracion": "Conc., hasta 1 min", "formula": null, "slotCost": 4, "ataque": null}
+    ],
+    reputacionInicial: [],
+    inventarioInicial: [
+      {"nombre": "Poción \"shoes\"", "descripcion": "Permite adquirir cualquier apariencia como disfraz. Investigaciones y checks de percepción tienen desventaja contra ti. Dura hasta medianoche.", "cantidad": 1, "precio": 0, "equipado": true, "categoria": "general", "consumible": false, "modAC": null, "dexCap": null},
+      {"nombre": "Potion of Wild", "descripcion": "Efecto inmediato: Tiras en la tabla de Wild Magic Surge.", "cantidad": 1, "precio": 0, "equipado": true, "categoria": "general", "consumible": false, "modAC": null, "dexCap": null},
+      {"nombre": "Horn of the Brave", "descripcion": "Contiene hidromiel sin fin. Concede inmunidad al miedo y ventaja en salvaciones de Sabiduría por 1 hora. Se recarga en descanso corto.", "cantidad": 1, "precio": 0, "equipado": true, "categoria": "general", "consumible": false, "modAC": null, "dexCap": null},
+      {"nombre": "baculo de light", "descripcion": "sacasc", "cantidad": 1, "precio": 0, "equipado": true, "categoria": "general", "consumible": false, "modAC": null, "dexCap": null},
+      {"nombre": "healing potion", "descripcion": "2d4+3", "cantidad": 1, "precio": 0, "equipado": true, "categoria": "general", "consumible": true, "modAC": null, "dexCap": null}
+    ],
+  };
+</script>
+<script src="ficha-common.js"></script>
+<script>
   // ==========================================
   // 1. CONFIGURACIÓN E INSTANCIAS DE FIREBASE
   // ==========================================
@@ -1717,7 +1763,6 @@
   const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
   const HP_MAX_ULREEK = 51; // HP base a nivel actual (Sorcerer 7/Warlock 1); el botón "Subir de Nivel" suma un bonus aparte, ver hpMaxActual()
   let charRef = null;
-  let bitacoraCampanaListener = null;
 
   const btnVolver = document.querySelector('a[href="index.html"]');
   if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
@@ -1735,6 +1780,9 @@
     container.querySelectorAll('input, select, textarea').forEach(el => {
       el.disabled = soloLectura;
     });
+    // Puente al motor compartido: FichaComun tiene su PROPIO flag de modo lectura (guardarCampo,
+    // FichaHechizos.usar, FichaInventario.usar...) y hay que mantenerlo sincronizado con el de esta ficha.
+    if (window.FichaComun) FichaComun.aplicarModoLectura(soloLectura);
   }
 
   // Antes la ficha no exigía sesión y cualquiera podía editarla; ahora exige
@@ -1769,13 +1817,21 @@
 
       sincronizarDatosDesdeNube();
 
-      if (codigoCampana) {
-        bitacoraCampanaListener = db.ref(`campanas/${codigoCampana}/bitacora`);
-        bitacoraCampanaListener.on('value', snap => renderizarBitacoraFicha(snap.val() || {}));
-      } else {
-        const bitacoraWrap = document.getElementById('bitacora-section');
-        if (bitacoraWrap) bitacoraWrap.style.display = 'none';
-      }
+      // Motor compartido (ficha-common.js): editores unificados de hechizos/inventario/reputación.
+      // Se registran ANTES de pedirle a FichaComun que sincronice, para que la siembra inicial
+      // (si Firebase todavía no tiene hechizos-json/reputacion-json) los vea. Su propio
+      // sincronizarDatosDesdeNube() además vuelve a recorrer los campos simples — redundante con
+      // la línea de arriba pero inofensivo, y es la única forma pública de que los editores de
+      // lista reciban los datos reales.
+      FichaComun.setCharRef(charRef);
+      FichaComun.iniciarEditorHechizos();
+      FichaComun.iniciarEditorInventario();
+      FichaComun.iniciarEditorReputacion();
+      instalarPoolDeEspacios();
+      FichaComun.sincronizarDatosDesdeNube();
+
+      // Bitácora (ficha-common.js): ya maneja tanto el caso con campaña como sin ella.
+      FichaComun.iniciarBitacora({ db, codigoCampana });
 
       const gmRefPromise = codigoCampana
         ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
@@ -1827,6 +1883,8 @@
 
   function guardarCampo(fieldId, value) {
     if (modoLectura) return;
+    // Formularios temporales (hf-/if-/rf-/upcast-sel-/bitacora-ficha-): nunca son datos del personaje.
+    if (window.FichaComun && FichaComun.esCampoEfimero(fieldId)) return;
     if (charRef) charRef.child('datos/' + fieldId).set(value);
   }
 
@@ -1859,6 +1917,7 @@
       const data = snapshot.val();
       if (!data) return;
       Object.keys(data).forEach(id => {
+        if (FichaComun.esCampoEfimero(id)) return; // formularios temporales: nunca se restauran desde datos/
         const el = document.getElementById(id);
         if (el) {
           if (el.type === 'checkbox') {
@@ -1871,20 +1930,17 @@
             if (el.value !== String(data[id]) && document.activeElement !== el) {
               el.value = data[id];
               if (id === 'hp-cur') updateHPDisplay();
-              // El inventario se guarda como un único blob JSON (no campo por campo como el resto de
-              // la ficha) — si no se re-sincroniza acá, una pestaña vieja abierta (o dos dispositivos)
-              // puede pisar con datos viejos un ítem agregado/editado en otro lado. Se salta mientras
-              // el formulario de agregar/editar está abierto para no perder una edición en curso.
-              if (id === 'inventario-json' && typeof restaurarInventarioDesdeDatos === 'function') {
-                const formAbierto = (document.getElementById('inventario-form-container')?.innerHTML || '').trim().length > 0;
-                if (!formAbierto) restaurarInventarioDesdeDatos(data[id]);
-              }
             }
           }
         }
       });
       if (typeof recalcStats === 'function') recalcStats();
       if (typeof updateConditions === 'function') updateConditions();
+      // Motor de subida de nivel: se re-sincroniza acá porque este callback dispara cada vez que llegan
+      // datos reales de Firebase (xp-val y subidas-nivel-registro ya están actualizados en el DOM).
+      if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();
+      if (typeof restaurarHabilidadesAgregadas === 'function') restaurarHabilidadesAgregadas();
+      if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
     });
   }
 
@@ -2088,142 +2144,91 @@
     renderizarProximasHabilidades(nivelPorXP(parseInt(document.getElementById('xp-val')?.value) || 0));
   }
 
-  // === EDITOR DE HECHIZOS ADICIONALES (compendio compartido, spells_data.js) ===
-  function obtenerHechizosAgregados() {
-    try {
-      const raw = document.getElementById('hechizos-agregados')?.value || '[]';
-      return JSON.parse(raw);
-    } catch(e) { return []; }
-  }
-  function guardarHechizosAgregados(lista) {
-    const hidden = document.getElementById('hechizos-agregados');
-    if (hidden) hidden.value = JSON.stringify(lista);
-    if (typeof guardarCampo === 'function') guardarCampo('hechizos-agregados', JSON.stringify(lista));
-  }
-  // Ulreek no usa .tag para el nivel en su tabla de conjuros (es texto plano "Nivel N" /
-  // "Truco (Cantrip)") ni el mismo orden de columnas que el resto de la flota (acá es
-  // Conjuro/Nivel, no Nivel/Conjuro) -- se respeta ese mismo formato acá para que las filas
-  // agregadas se vean iguales a las de la tabla fija. El "✨" junto al nombre es la única
-  // marca de que es un hechizo adicional del compendio.
-  function renderHechizosAdicionales() {
-    const cont = document.getElementById('hechizos-adicionales-lista');
-    if (!cont) return;
-    const nombres = obtenerHechizosAgregados();
-    if (!nombres.length) {
-      cont.innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);font-size:0.85rem;">Sin hechizos adicionales agregados todavía — usá "➕ Agregar Hechizo" para sumar uno del compendio.</td></tr>';
-      return;
-    }
-    cont.innerHTML = nombres.map(n => {
-      const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === n) : null;
-      const nombreEsc = n.replace(/'/g, "\\'");
-      if (!s) return `<tr><td colspan="4">${n} <span style="color:var(--text-muted);font-size:0.8rem;">(no encontrado en el compendio actual)</span></td><td><button class="btn-clear" title="Quitar" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button></td></tr>`;
-      return `
-        <tr>
-          <td><strong>${s.name}</strong> ✨</td>
-          <td>${s.nivel === 0 ? 'Truco (Cantrip)' : 'Nivel ' + s.nivel}</td>
-          <td>${s.tiempo}</td>
-          <td>${s.alcance} — ${s.desc} <em>(${s.duracion})</em></td>
-          <td style="display:flex; gap:4px; flex-wrap:wrap;">
-            <button class="btn-roll btn-roll-sm" onclick="usarHechizoAdicional('${nombreEsc}', ${s.nivel})" title="${s.nivel === 0 ? 'Registrar uso en el historial' : 'Gasta un espacio de nivel ' + s.nivel + ' (Sorcerer) y lo registra'}">✅ Usar</button>
-            <button class="btn-clear" title="Quitar de la ficha" onclick="quitarHechizoAdicional('${nombreEsc}')">🗑️</button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-  function quitarHechizoAdicional(nombre) {
-    if (!confirm(`¿Quitar "${nombre}" de tus hechizos aprendidos?`)) return;
-    const lista = obtenerHechizosAgregados().filter(n => n !== nombre);
-    guardarHechizosAgregados(lista);
-    renderHechizosAdicionales();
-  }
-  // "Usar" un hechizo adicional del compendio gasta un espacio de conjuro real (igual que
-  // los conjuros de la tabla fija) en vez de solo anotarlo en el historial sin efecto.
-  // Los trucos (nivel 0) no gastan espacio. Igual que el resto de la ficha, por defecto
-  // descuenta del pool de Sorcerer (slot-N-cur) — si en realidad se lanzó con Pact Magic,
-  // hay que corregirlo a mano, mismo criterio que ya usa gastarSlotContador().
-  function usarHechizoAdicional(nombre, nivel) {
-    if (nivel > 0) {
-      const el = document.getElementById(`slot-${nivel}-cur`);
-      if (el) {
-        const actual = parseInt(el.textContent) || 0;
-        if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivel} (Sorcerer) disponibles.`); return; }
-        changeVal(`slot-${nivel}-cur`, -1);
-      }
-    }
-    registrarUsoRecurso(nombre);
-  }
+  // Agregar desde el compendio ahora empuja directo a la tarjeta única de hechizos
+  // (FichaHechizos, en ficha-common.js) en vez de a la vieja lista de nombres aparte.
+  // Se mantiene el mismo picker/preview de siempre (toggleSpellPicker/previsualizarHechizo),
+  // solo cambia a dónde va el resultado de "➕ Agregar".
   function agregarHechizoDesdeCompendio(nombre) {
-    const lista = obtenerHechizosAgregados();
-    if (!lista.includes(nombre)) {
-      lista.push(nombre);
-      guardarHechizosAgregados(lista);
-      renderHechizosAdicionales();
-    }
-    toggleSpellPicker(false);
+      const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === nombre) : null;
+      if (!s) return;
+      FichaHechizos.editor.guardarDesdeFormulario({
+          nombre: s.name,
+          nivel: s.nivel,
+          tiempo: s.tiempo,
+          alcance: s.alcance,
+          area: '',
+          resumen: s.desc,
+          duracion: s.duracion,
+          formula: s.formula || null,
+          slotCost: s.nivel > 0 ? s.nivel : null,
+          ataque: s.ataque || null,
+          upcast: s.upcast || null,
+          buff: s.buff ? JSON.parse(JSON.stringify(s.buff)) : null,
+      });
+      toggleSpellPicker(false);
   }
   function toggleSpellPicker(show) {
-    const overlay = document.getElementById('spell-picker-overlay');
-    if (!overlay) return;
-    if (show === undefined) show = !overlay.classList.contains('open');
-    overlay.classList.toggle('open', show);
-    if (show) {
-      const search = document.getElementById('spell-picker-search');
-      if (search) search.value = '';
-      renderSpellPickerList();
-    }
+      const overlay = document.getElementById('spell-picker-overlay');
+      if (!overlay) return;
+      if (show === undefined) show = !overlay.classList.contains('open');
+      overlay.classList.toggle('open', show);
+      if (show) {
+          const search = document.getElementById('spell-picker-search');
+          if (search) search.value = '';
+          renderSpellPickerList();
+      }
   }
   function renderSpellPickerList() {
-    const cont = document.getElementById('spell-picker-list');
-    if (!cont || typeof SPELLS === 'undefined') return;
-    const q = (document.getElementById('spell-picker-search')?.value || '').trim().toLowerCase();
-    const nivelFiltro = document.getElementById('spell-picker-nivel')?.value || '';
-    const ya = obtenerHechizosAgregados();
-    let lista = SPELLS.filter(s => {
-      if (q && !s.name.toLowerCase().includes(q)) return false;
-      if (nivelFiltro !== '' && String(s.nivel) !== nivelFiltro) return false;
-      return true;
-    });
-    lista = lista.slice().sort((a, b) => a.nivel - b.nivel || a.name.localeCompare(b.name)).slice(0, 60);
-    if (!lista.length) { cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">Sin resultados.</p>'; return; }
-    cont.innerHTML = lista.map(s => {
-      const yaAgregado = ya.includes(s.name);
-      const nombreEsc = s.name.replace(/'/g, "\\'");
-      return `
-        <div class="spell-picker-item">
-          <div>
-            <strong class="spell-picker-name" title="Ver detalle" onclick="previsualizarHechizo('${nombreEsc}')">👁️ ${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span>
-            <div style="font-size:0.72rem; color:var(--text-muted);">${s.escuela} · ${s.clases.join(', ')}</div>
-          </div>
-          ${yaAgregado ? '<span style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">✅ Ya la tenés</span>' : `<button type="button" onclick="agregarHechizoDesdeCompendio('${nombreEsc}')">➕ Agregar</button>`}
-        </div>
-      `;
-    }).join('');
+      const cont = document.getElementById('spell-picker-list');
+      if (!cont || typeof SPELLS === 'undefined') return;
+      const q = (document.getElementById('spell-picker-search')?.value || '').trim().toLowerCase();
+      const nivelFiltro = document.getElementById('spell-picker-nivel')?.value || '';
+      const ya = FichaHechizos.editor.items().map(h => h.nombre);
+      let lista = SPELLS.filter(s => {
+          if (q && !s.name.toLowerCase().includes(q)) return false;
+          if (nivelFiltro !== '' && String(s.nivel) !== nivelFiltro) return false;
+          return true;
+      });
+      lista = lista.slice().sort((a, b) => a.nivel - b.nivel || a.name.localeCompare(b.name)).slice(0, 60);
+      if (!lista.length) { cont.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">Sin resultados.</p>'; return; }
+      cont.innerHTML = lista.map(s => {
+          const yaAgregado = ya.includes(s.name);
+          const nombreEsc = s.name.replace(/'/g, "\\'");
+          return `
+              <div class="spell-picker-item">
+                  <div>
+                      <strong class="spell-picker-name" title="Ver detalle" onclick="previsualizarHechizo('${nombreEsc}')">👁️ ${s.name}</strong> <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span>
+                      <div style="font-size:0.72rem; color:var(--text-muted);">${s.escuela} · ${s.clases.join(', ')}</div>
+                  </div>
+                  ${yaAgregado ? '<span style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">✅ Ya la tenés</span>' : `<button type="button" onclick="agregarHechizoDesdeCompendio('${nombreEsc}')">➕ Agregar</button>`}
+              </div>
+          `;
+      }).join('');
   }
 
   // Vista previa (ventana emergente) de un hechizo antes de agregarlo: se dispara al
   // tocar el nombre en la lista del compendio, sin cerrar el picker de fondo.
   function previsualizarHechizo(nombre) {
-    const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === nombre) : null;
-    const card = document.getElementById('spell-preview-card');
-    const overlay = document.getElementById('spell-preview-overlay');
-    if (!s || !card || !overlay) return;
-    const yaAgregado = obtenerHechizosAgregados().includes(s.name);
-    const nombreEsc = s.name.replace(/'/g, "\\'");
-    card.innerHTML = `
-      <h3>${s.name} <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></h3>
-      <div class="spell-preview-meta">${s.escuela} · ${s.clases.join(', ')}<br>${s.tiempo} · ${s.alcance} · ${s.duracion}</div>
-      <div class="spell-preview-desc">${s.desc}</div>
-      <div class="spell-preview-actions">
-        <button type="button" onclick="cerrarPreviewHechizo()">Cerrar</button>
-        ${yaAgregado ? '' : `<button type="button" class="add" onclick="agregarHechizoDesdeCompendio('${nombreEsc}'); cerrarPreviewHechizo();">➕ Agregar este hechizo</button>`}
-      </div>
-    `;
-    overlay.classList.add('open');
+      const s = (typeof SPELLS !== 'undefined') ? SPELLS.find(x => x.name === nombre) : null;
+      const card = document.getElementById('spell-preview-card');
+      const overlay = document.getElementById('spell-preview-overlay');
+      if (!s || !card || !overlay) return;
+      const yaAgregado = FichaHechizos.editor.items().some(h => h.nombre === s.name);
+      const nombreEsc = s.name.replace(/'/g, "\\'");
+      card.innerHTML = `
+          <h3>${s.name} <span class="hechizo-badge">${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</span></h3>
+          <div class="spell-preview-meta">${s.escuela} · ${s.clases.join(', ')}<br>${s.tiempo} · ${s.alcance} · ${s.duracion}</div>
+          <div class="spell-preview-desc">${s.desc}</div>
+          <div class="spell-preview-actions">
+              <button type="button" onclick="cerrarPreviewHechizo()">Cerrar</button>
+              ${yaAgregado ? '' : `<button type="button" class="add" onclick="agregarHechizoDesdeCompendio('${nombreEsc}'); cerrarPreviewHechizo();">➕ Agregar este hechizo</button>`}
+          </div>
+      `;
+      overlay.classList.add('open');
   }
   function cerrarPreviewHechizo() {
-    const overlay = document.getElementById('spell-preview-overlay');
-    if (overlay) overlay.classList.remove('open');
+      const overlay = document.getElementById('spell-preview-overlay');
+      if (overlay) overlay.classList.remove('open');
   }
 
   // ============================================
@@ -2252,8 +2257,11 @@
   function obtenerBonusHPNivel() {
     return obtenerSubidasNivel().reduce((s, r) => s + (r.hpGanado || 0), 0);
   }
+  function obtenerBuffHPMax() {
+    return parseInt(document.getElementById('hp-max-buff')?.value, 10) || 0;
+  }
   function hpMaxActual() {
-    return HP_MAX_ULREEK + obtenerBonusHPNivel();
+    return HP_MAX_ULREEK + obtenerBonusHPNivel() + obtenerBuffHPMax() + (window.FichaBuffs ? FichaBuffs.plano('hp-max') : 0);
   }
   function nivelClaseActual(nombreClase) {
     const cfg = CONFIG_NIVEL.clases.find(c => c.nombre === nombreClase);
@@ -2382,6 +2390,8 @@
     const lista = obtenerSubidasNivel();
     lista.push({ clase: cfg.nombre, nivelNuevo: nuevoNivelClase, dado: cfg.dado, tirada: nivelUpEstado.tirada, modo: nivelUpEstado.modo, hpGanado, fecha: Date.now() });
     guardarSubidasNivel(lista);
+    // El nivel total cambió: bono de competencia, saves, skills, ataques y CD se recalculan solos.
+    if (window.FichaAtributos) FichaAtributos.recalcular();
 
     const hpEl = document.getElementById('hp-cur');
     if (hpEl) {
@@ -2459,6 +2469,16 @@
       return;
     }
 
+    // Aviso cuando el nivel total cruza un salto del bono de competencia (5, 9, 13, 17).
+    const nivelTotalAhora = nivelTotalPersonaje();
+    const profAntes = FichaComun.calcularProfBonus(nivelTotalAhora - 1);
+    const profAhora = FichaComun.calcularProfBonus(nivelTotalAhora);
+    if (profAhora !== profAntes) {
+      html += `<div class="nivelup-step"><h4>📘 Bono de competencia</h4>
+        <div class="nivelup-roll-result">Bono de competencia: ${FichaComun.formatearMod(profAntes)} → ${FichaComun.formatearMod(profAhora)} (saves, skills, ataques y CD se actualizaron solos)</div>
+      </div>`;
+    }
+
     const nuevoNivel = nivelUpEstado.nuevoNivelClase;
     const agregadas = obtenerHabilidadesAgregadas();
     const candidatas = (typeof PROXIMAS_HABILIDADES !== 'undefined' ? PROXIMAS_HABILIDADES : [])
@@ -2532,91 +2552,10 @@
     }
   });
 
-  // === BITÁCORA DESDE LA FICHA ===
-  let bitacoraFichaCache = {}; // key de Firebase -> {titulo, texto}, para poblar el form al editar sin re-escapar comillas en el onclick
-  let editandoKeyBitacoraFicha = null;
-  function renderizarBitacoraFicha(logs) {
-    const cont = document.getElementById('bitacora-ficha-lista');
-    if (!cont) return;
-    bitacoraFichaCache = {};
-    const entradas = Object.entries(logs || {}).map(([key, log]) => ({ key, ...log })).sort((a, b) => (b.fecha || 0) - (a.fecha || 0)).slice(0, 8);
-    if (!entradas.length) {
-      cont.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);">Sin entradas todavía.</p>';
-      return;
-    }
-    cont.innerHTML = entradas.map(log => {
-      bitacoraFichaCache[log.key] = { titulo: log.titulo || '', texto: log.texto || '' };
-      const esMia = log.personaje === NOMBRE_PERSONAJE_FICHA;
-      return `
-      <div class="bf-entrada">
-        <div class="bf-entrada-head">
-          <div class="bf-fecha">${log.fecha ? new Date(log.fecha).toLocaleString() : ''}${log.personaje ? ' · ' + log.personaje : ''}</div>
-          ${esMia ? `<div class="bf-entrada-actions">
-            <button type="button" onclick="editarEntradaBitacoraFicha('${log.key}')" title="Editar">✏️</button>
-            <button type="button" onclick="eliminarEntradaBitacoraFicha('${log.key}')" title="Eliminar">🗑️</button>
-          </div>` : ''}
-        </div>
-        ${log.titulo ? `<strong>${log.titulo}</strong>` : ''}
-        <p style="white-space:pre-wrap;margin:2px 0 0;">${log.texto || ''}</p>
-      </div>
-    `;
-    }).join('');
-  }
-  function editarEntradaBitacoraFicha(key) {
-    const entry = bitacoraFichaCache[key];
-    if (!entry) return;
-    editandoKeyBitacoraFicha = key;
-    document.getElementById('bitacora-ficha-titulo').value = entry.titulo;
-    document.getElementById('bitacora-ficha-texto').value = entry.texto;
-    const btn = document.getElementById('btn-guardar-bitacora-ficha');
-    if (btn) btn.innerText = '💾 Guardar Cambios';
-    const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
-    if (btnCancelar) btnCancelar.style.display = 'inline-block';
-    document.getElementById('bitacora-ficha-texto')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  function cancelarEdicionBitacoraFicha() {
-    editandoKeyBitacoraFicha = null;
-    document.getElementById('bitacora-ficha-titulo').value = '';
-    document.getElementById('bitacora-ficha-texto').value = '';
-    const btn = document.getElementById('btn-guardar-bitacora-ficha');
-    if (btn) btn.innerText = 'Guardar Entrada';
-    const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
-    if (btnCancelar) btnCancelar.style.display = 'none';
-  }
-  function eliminarEntradaBitacoraFicha(key) {
-    if (!codigoCampana) return;
-    if (!confirm('¿Eliminar esta entrada de la bitácora?')) return;
-    db.ref(`campanas/${codigoCampana}/bitacora/${key}`).remove()
-      .catch(err => alert('No se pudo eliminar la entrada: ' + err.message));
-  }
-  function guardarEntradaBitacoraFicha() {
-    if (!codigoCampana) { alert('Esta ficha no está asociada a ninguna campaña.'); return; }
-    const tituloEl = document.getElementById('bitacora-ficha-titulo');
-    const textoEl = document.getElementById('bitacora-ficha-texto');
-    const texto = (textoEl.value || '').trim();
-    if (!texto) return;
-    if (editandoKeyBitacoraFicha) {
-      db.ref(`campanas/${codigoCampana}/bitacora/${editandoKeyBitacoraFicha}`).update({
-        titulo: (tituloEl.value || '').trim(),
-        texto: texto
-      }).then(() => {
-        cancelarEdicionBitacoraFicha();
-      }).catch(err => alert('No se pudo guardar la edición en la bitácora: ' + err.message));
-      return;
-    }
-    db.ref(`campanas/${codigoCampana}/bitacora`).push({
-      titulo: (tituloEl.value || '').trim(),
-      texto: texto,
-      fecha: firebase.database.ServerValue.TIMESTAMP,
-      personaje: NOMBRE_PERSONAJE_FICHA
-    }).then(() => {
-      tituloEl.value = '';
-      textoEl.value = '';
-    }).catch(err => alert('No se pudo guardar la entrada en la bitácora: ' + err.message));
-  }
+  // Bitácora: ver FichaComun.iniciarBitacora() en ficha-common.js (mismas funciones globales de siempre).
   document.getElementById('xp-val')?.addEventListener('input', actualizarNivelYProximaXP);
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); renderHechizosAdicionales(); restaurarSubidasNivel(); }, 800);
+    setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); restaurarSubidasNivel(); }, 800);
   });
 
   // --- MODO DÍA/NOCHE (replicado del mismo mecanismo que usa Eldur) ---
@@ -2695,16 +2634,9 @@
     guardarCampo('hp-cur', val);
   });
 
+  // CA, ataque, ataque de conjuro, CD, iniciativa y velocidad ya NO se calculan acá: salen de
+  // FichaComun.iniciarCA / iniciarEstadisticaConBuff (base calculada + buff manual + buffs activados).
   function recalcStats() {
-    const acBuff = parseInt(document.getElementById('ac-buff')?.value) || 0;
-    const atkBuff = parseInt(document.getElementById('atk-buff')?.value) || 0;
-    const spellAtkBuff = parseInt(document.getElementById('spell-atk-buff')?.value) || 0;
-    const spellDcBuff = parseInt(document.getElementById('spell-dc-buff')?.value) || 0;
-
-    document.getElementById('ac-total').innerText = 12 + acBuff;
-    document.getElementById('atk-total').innerText = (3 + atkBuff >= 0 ? '+' : '') + (3 + atkBuff);
-    document.getElementById('spell-atk-total').innerText = (8 + spellAtkBuff >= 0 ? '+' : '') + (8 + spellAtkBuff);
-    document.getElementById('spell-dc-total').innerText = 16 + spellDcBuff;
     syncStickyBar();
   }
 
@@ -2969,191 +2901,243 @@
       adv = 'disadvantage';
       label += " 🛑 (Desventaja por Condición)";
     }
-    const totalBonus = bonus + (parseInt(document.getElementById('atk-buff')?.value) || 0);
-    rollD20WithMechanics(totalBonus, label, adv, true);
+    const totalBonus = bonus + (parseInt(document.getElementById('atk-buff')?.value) || 0) + FichaBuffs.plano('ataque');
+    rollD20WithMechanics(totalBonus, label, adv, true, 'ataque');
   }
 
   // Checks/Saves: el envenenamiento da desventaja solo en checks (igual que el resto de la flota)
-  function rollCheckSave(diceStr, mod, label, type) {
+  function rollCheckSave(diceStr, mod, label, type, categoria) {
     let adv = getAdvantage();
     const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
     if (estaEnvenenado && type === 'check') {
       adv = 'disadvantage';
       label += " 🛑 (Desventaja: Envenenado)";
     }
-    rollD20WithMechanics(mod, label, adv, type === 'save');
+    rollD20WithMechanics(mod, label, adv, type === 'save', categoria || (type === 'save' ? 'salvaciones' : 'pruebas'));
+  }
+  // --- Valores derivados (ver FichaComun.iniciarAtributos en ficha-common.js) ---
+  function bonoAtaqueConjuro() { return FichaAtributos.modDe(FICHA_CONFIG.habilidadConjuro) + FichaAtributos.profBonusActual(); }
+  function armaBono(hab) { return FichaAtributos.modDe(hab) + FichaAtributos.profBonusActual(); }
+  function rollIniciativa() {
+    const buff = parseInt(document.getElementById('iniciativa-buff')?.value, 10) || 0;
+    rollCheckSave('d20', FichaAtributos.modDe('DEX') + buff + FichaBuffs.plano('iniciativa'), 'Iniciativa', 'check', 'pruebas');
   }
 
   function rollConcentrationSave() {
-    rollD20WithMechanics(5, 'Concentración CON Save', getAdvantage(), true);
+    const btn = document.querySelector('#ab-con .btn-save');
+    rollD20WithMechanics(parseInt(btn?.dataset.bonus, 10) || 0, 'Concentración CON Save', getAdvantage(), true, 'salvaciones');
   }
 
-  function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk) {
+  function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk, categoria) {
     let r1 = Math.floor(Math.random() * 20) + 1;
     let r2 = Math.floor(Math.random() * 20) + 1;
     let chosen = advState === 'advantage' ? Math.max(r1, r2) : (advState === 'disadvantage' ? Math.min(r1, r2) : r1);
     let detailStr = advState === 'advantage' ? `Ventaja: [${r1}, ${r2}] ➔ ${chosen}` : (advState === 'disadvantage' ? `Desventaja: [${r1}, ${r2}] ➔ ${chosen}` : `(${r1})`);
-    const total = chosen + flatMod;
-    displayRollResult(total, label, `${detailStr} ${flatMod >= 0 ? '+' : ''}${flatMod}`);
-  }
-
-const INVENTARIO_INICIAL = [
-  { nombre: `Poción "shoes"`, descripcion: `Permite adquirir cualquier apariencia como disfraz. Investigaciones y checks de percepción tienen desventaja contra ti. Dura hasta medianoche.`, cantidad: 1, precio: 0, equipado: true },
-  { nombre: `Potion of Wild`, descripcion: `Efecto inmediato: Tiras en la tabla de Wild Magic Surge.`, cantidad: 1, precio: 0, equipado: true },
-  { nombre: `Horn of the Brave`, descripcion: `Contiene hidromiel sin fin. Concede inmunidad al miedo y ventaja en salvaciones de Sabiduría por 1 hora. Se recarga en descanso corto.`, cantidad: 1, precio: 0, equipado: true }
-];
-
-// === INVENTARIO EDITABLE (agregar / editar / eliminar ítems manualmente) ===
-let inventario = [];
-let editandoIdxInventario = null;
-
-function cargarInventarioInicialSiVacio() {
-  if (!inventario.length && typeof INVENTARIO_INICIAL !== 'undefined') {
-    inventario = INVENTARIO_INICIAL.map(it => ({...it}));
-  }
-}
-
-function guardarInventario() {
-  const json = JSON.stringify(inventario);
-  const hidden = document.getElementById('inventario-json');
-  if (hidden) hidden.value = json;
-  if (typeof guardarCampo === 'function') {
-    guardarCampo('inventario-json', json);
-  } else if (hidden) {
-    hidden.dispatchEvent(new Event('input', { bubbles: true }));
-  }
-}
-
-function renderizarInventario() {
-  const cont = document.getElementById('inventario-lista');
-  const totalEl = document.getElementById('inventario-total');
-  if (!cont) return;
-  cont.innerHTML = '';
-  if (!inventario.length) {
-    cont.innerHTML = '<p class="inventory-empty">No hay ítems en el inventario.</p>';
-  }
-  let valorTotal = 0;
-  inventario.forEach((item, idx) => {
-    const cant = parseFloat(item.cantidad) || 1;
-    const precio = parseFloat(item.precio) || 0;
-    valorTotal += cant * precio;
-    const div = document.createElement('div');
-    div.className = 'inventory-item';
-    div.innerHTML = `
-      <div class="inventory-item-top">
-        <div class="inventory-item-name">
-          <input type="checkbox" ${item.equipado ? 'checked' : ''} onchange="toggleEquipadoInventario(${idx}, this.checked)" title="Equipado / Portado">
-          ${item.nombre || '(sin nombre)'}
-          <span class="inventory-item-meta">${cant != 1 ? '×' + cant : ''} ${precio ? '· ' + precio + ' po' : ''}</span>
-        </div>
-        <div class="inventory-item-actions">
-          <button type="button" onclick="editarItemInventario(${idx})">✏️ Editar</button>
-          <button type="button" onclick="eliminarItemInventario(${idx})">🗑️</button>
-        </div>
-      </div>
-      ${item.descripcion ? `<div class="inventory-item-desc">${item.descripcion}</div>` : ''}
-    `;
-    cont.appendChild(div);
-  });
-  if (totalEl) totalEl.textContent = valorTotal > 0 ? `💰 Valor total estimado: ${valorTotal} po` : '';
-}
-
-function toggleEquipadoInventario(idx, checked) {
-  if (!inventario[idx]) return;
-  inventario[idx].equipado = checked;
-  guardarInventario();
-}
-
-function mostrarFormularioInventario(idx) {
-  editandoIdxInventario = (typeof idx === 'number') ? idx : null;
-  const item = (editandoIdxInventario !== null) ? inventario[editandoIdxInventario] : { nombre: '', descripcion: '', cantidad: 1, precio: 0, equipado: false };
-  const cont = document.getElementById('inventario-form-container');
-  if (!cont) return;
-  cont.innerHTML = `
-    <div class="inventory-form">
-      <div class="inventory-form-row">
-        <label>Nombre<input type="text" id="inv-form-nombre" value="${(item.nombre || '').replace(/"/g,'&quot;')}"></label>
-        <label>Cantidad<input type="number" id="inv-form-cantidad" value="${item.cantidad ?? 1}" min="1"></label>
-        <label>Precio (po)<input type="number" id="inv-form-precio" value="${item.precio ?? 0}" min="0"></label>
-      </div>
-      <div class="inventory-form-row">
-        <label style="flex: 1 1 100%;">Descripción / Notas<textarea id="inv-form-descripcion" rows="2">${item.descripcion || ''}</textarea></label>
-      </div>
-      <div class="inventory-form-row">
-        <label style="flex-direction: row; align-items: center; gap: 6px;"><input type="checkbox" id="inv-form-equipado" ${item.equipado ? 'checked' : ''}> Equipado / Portado</label>
-      </div>
-      <div class="inventory-form-actions">
-        <button type="button" onclick="cerrarFormularioInventario()">Cancelar</button>
-        <button type="button" onclick="guardarItemDesdeFormulario()">💾 Guardar</button>
-      </div>
-    </div>
-  `;
-}
-
-function cerrarFormularioInventario() {
-  editandoIdxInventario = null;
-  const cont = document.getElementById('inventario-form-container');
-  if (cont) cont.innerHTML = '';
-}
-
-function guardarItemDesdeFormulario() {
-  const nombreEl = document.getElementById('inv-form-nombre');
-  const nombre = nombreEl ? nombreEl.value.trim() : '';
-  if (!nombre) { alert('El ítem necesita un nombre.'); return; }
-  const descEl = document.getElementById('inv-form-descripcion');
-  const cantEl = document.getElementById('inv-form-cantidad');
-  const precioEl = document.getElementById('inv-form-precio');
-  const equipEl = document.getElementById('inv-form-equipado');
-  const nuevoItem = {
-    nombre: nombre,
-    descripcion: descEl ? descEl.value.trim() : '',
-    cantidad: cantEl ? (parseInt(cantEl.value) || 1) : 1,
-    precio: precioEl ? (parseFloat(precioEl.value) || 0) : 0,
-    equipado: equipEl ? equipEl.checked : false
-  };
-  if (editandoIdxInventario !== null) {
-    inventario[editandoIdxInventario] = nuevoItem;
-  } else {
-    inventario.push(nuevoItem);
-  }
-  cerrarFormularioInventario();
-  guardarInventario();
-  renderizarInventario();
-}
-
-function editarItemInventario(idx) {
-  mostrarFormularioInventario(idx);
-}
-
-function eliminarItemInventario(idx) {
-  if (!inventario[idx]) return;
-  if (!confirm('¿Eliminar "' + inventario[idx].nombre + '" del inventario?')) return;
-  inventario.splice(idx, 1);
-  guardarInventario();
-  renderizarInventario();
-}
-
-function restaurarInventarioDesdeDatos(json) {
-  try {
-    const parsed = JSON.parse(json);
-    if (Array.isArray(parsed) && parsed.length) {
-      inventario = parsed;
-    } else {
-      cargarInventarioInicialSiVacio();
+    let total = chosen + flatMod;
+    let desglose = `${detailStr} ${flatMod >= 0 ? '+' : ''}${flatMod}`;
+    // Dados extra de buffs activados en hechizos (ataques / salvaciones / pruebas), configurables por hechizo.
+    if (categoria && window.FichaBuffs) {
+      const extra = FichaBuffs.tirarDados(categoria);
+      extra.partes.forEach(pt => { total += pt.valor; desglose += ' | ' + pt.texto; });
     }
-  } catch(e) {
-    cargarInventarioInicialSiVacio();
+    displayRollResult(total, label, desglose);
   }
-  renderizarInventario();
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    const raw = (document.getElementById('inventario-json') || {}).value || '[]';
-    restaurarInventarioDesdeDatos(raw);
-  }, 900);
-});
 
+  // ==========================================
+  // VALORES DERIVADOS (motor compartido: FichaComun.iniciarAtributos / iniciarEstadisticaConBuff / iniciarCA)
+  // Bono de competencia, saves, skills, pasiva, ataques y CD se CALCULAN desde el nivel total
+  // + puntuaciones (+ aumento temporal): subir de nivel ya no deja números viejos en la ficha.
+  // ==========================================
+  let nivelDatosSincronizados = false;
+  const CLAVE_CACHE_NIVEL = `nivel_cache_${PERSONAJE_ID}`;
+  // Nivel total = suma de niveles de clase (Sorcerer 7 + Warlock 1 + subidas guardadas en Firebase). Es la
+  // fuente de verdad (la misma que usa el asistente de subida y los espacios de conjuro); el nivel por XP es solo
+  // informativo. Hasta que llegan las subidas desde Firebase, se usa el último nivel conocido de este dispositivo.
+  function nivelTotalPersonaje() {
+    const real = CONFIG_NIVEL.clases.reduce((suma, c) => suma + nivelClaseActual(c.nombre), 0);
+    try {
+      if (!nivelDatosSincronizados) {
+        const cache = parseInt(localStorage.getItem(CLAVE_CACHE_NIVEL), 10);
+        if (cache > real) return cache;
+      } else {
+        localStorage.setItem(CLAVE_CACHE_NIVEL, String(real));
+      }
+    } catch (e) { /* almacenamiento no disponible */ }
+    return real;
+  }
+  function aplicarValoresCalculados() {
+    const prof = FichaAtributos.profBonusActual();
+    const fmt = FichaComun.formatearMod;
+    document.querySelectorAll('.js-calc').forEach(el => {
+      const hab = el.dataset.hab;
+      let txt;
+      switch (el.dataset.calc) {
+        case 'armaBono': txt = fmt(armaBono(hab)); break;
+        case 'mod': txt = fmt(FichaAtributos.modDe(hab)); break;
+        case 'prof': txt = fmt(prof); break;
+        case 'cd': txt = String(8 + bonoAtaqueConjuro()); break;
+        case 'spellAtk': txt = fmt(bonoAtaqueConjuro()); break;
+        case 'unarmedBtn': txt = `⚔️ Atk (${fmt(armaBono('STR'))})`; break;
+      }
+      if (txt !== undefined && el.textContent !== txt) el.textContent = txt;
+    });
+    const conc = document.getElementById('conc-save-bonus');
+    const btnCon = document.querySelector('#ab-con .btn-save');
+    if (conc && btnCon) conc.textContent = fmt(parseInt(btnCon.dataset.bonus, 10) || 0);
+  }
+  function iniciarEstadisticasDerivadas() {
+    document.addEventListener('ficha:datos-sincronizados', () => { nivelDatosSincronizados = true; });
+    const fmt = FichaComun.formatearMod;
+    const habilidad = (clave) => ({ clave, scoreId: `${clave.toLowerCase()}-score`, tempId: `${clave.toLowerCase()}-temp`, contenedorId: `ab-${clave.toLowerCase()}`, saveCompetente: clave === 'CON' || clave === 'CHA' });
+    const skill = (clave, id, hab, competente) => ({ clave, contenedorId: id, habilidad: hab, competente });
+    FichaComun.iniciarAtributos({
+      obtenerNivel: nivelTotalPersonaje,
+      profBadgeId: 'prof-badge',
+      habilidades: ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(habilidad),
+      skills: [
+        skill('Acrobatics', 'sk-acrobatics', 'DEX', false), skill('Animal Handling', 'sk-animal-handling', 'WIS', false),
+        skill('Arcana', 'sk-arcana', 'INT', false), skill('Athletics', 'sk-athletics', 'STR', false),
+        skill('Deception', 'sk-deception', 'CHA', true), skill('History', 'sk-history', 'INT', false),
+        skill('Insight', 'sk-insight', 'WIS', false), skill('Intimidation', 'sk-intimidation', 'CHA', true),
+        skill('Investigation', 'sk-investigation', 'INT', false), skill('Medicine', 'sk-medicine', 'WIS', false),
+        skill('Nature', 'sk-nature', 'INT', false), skill('Perception', 'sk-perception', 'WIS', false),
+        skill('Performance', 'sk-performance', 'CHA', false), skill('Persuasion', 'sk-persuasion', 'CHA', true),
+        skill('Religion', 'sk-religion', 'INT', false), skill('Sleight of Hand', 'sk-sleight-of-hand', 'DEX', false),
+        skill('Stealth', 'sk-stealth', 'DEX', true), skill('Survival', 'sk-survival', 'WIS', false),
+      ],
+      pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
+    });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', baseElId: 'atk-base', calcularBase: () => armaBono('STR'), formatear: fmt, objetivoBuff: 'ataque' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', baseElId: 'spell-atk-base', calcularBase: bonoAtaqueConjuro, formatear: fmt, objetivoBuff: 'ataque-conjuro' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', baseElId: 'spell-dc-base', calcularBase: () => 8 + bonoAtaqueConjuro(), objetivoBuff: 'cd-conjuro' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => FichaAtributos.modDe('DEX'), formatear: (n) => '🎲 ' + fmt(n), objetivoBuff: 'iniciativa' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => 30, formatear: (n) => n + ' ft', objetivoBuff: 'velocidad' });
+    // CA calculada desde el inventario (armadura/escudo equipados) + buff manual + buffs activados.
+    FichaComun.iniciarCA({ buffInputId: 'ac-buff', totalElId: 'ac-total', baseElId: 'ac-base' });
+    // Casilla de concentración (se marca sola al lanzar un hechizo con concentración).
+    FichaComun.iniciarConcentracion('concentracion-panel');
+    // Buffs activados / cambios de equipo: refrescar HP máx. y la barra sticky (la CA la recalcula el motor).
+    document.addEventListener('ficha:buffs', () => { recalcStats(); updateHPDisplay(); });
+    document.addEventListener('ficha:inventario', () => syncStickyBar());
+    // Textos derivados sueltos (notas de CD, botón de ataque desarmado) + barra sticky, tras cada recálculo.
+    document.addEventListener('ficha:atributos', () => { aplicarValoresCalculados(); syncStickyBar(); });
+    // La tabla de hechizos se re-renderiza al sincronizar: refrescar los "DC N" del texto y los selectores de pool.
+    const listaHechizos = document.getElementById('hechizos-lista');
+    if (listaHechizos) new MutationObserver(() => { aplicarValoresCalculados(); decorarFilasConPool(); }).observe(listaHechizos, { childList: true });
+    // Bono a HP máx.: se suma en hpMaxActual() (que además se sincroniza a datos/hp-max para el GM).
+    document.addEventListener('input', (e) => { if (e.target.id === 'hp-max-buff') updateHPDisplay(); });
+    document.addEventListener('ficha:datos-sincronizados', () => { updateHPDisplay(); decorarFilasConPool(); });
+    aplicarValoresCalculados();
+    syncStickyBar();
+  }
+
+  // ==========================================
+  // POOL DE ESPACIOS POR HECHIZO (Sorcerer vs Pact Magic) — propio de Ulreek
+  // El motor (FichaHechizos.usar) solo sabe gastar `slot-N-cur`. Para que un hechizo se pueda lanzar con Pact Magic
+  // SIN tocar ficha-common.js:
+  //   1) cada fila de nivel 1+ recibe un selector "Sorcerer / Pact" (la elección se guarda por NOMBRE de hechizo en
+  //      datos/hechizos-pool, así sobrevive a editar el hechizo);
+  //   2) FichaHechizos.usar se envuelve: con pool Pact gasta slot-pact-cur y le OCULTA al motor los contadores
+  //      slot-N-cur (cambiándoles el id mientras dura la llamada) para que no gaste uno de Sorcerer; con pool
+  //      Sorcerer deja que el motor gaste el espacio como siempre;
+  //   3) los mensajes del motor (alert) se redirigen al lanzador de dados/historial de esta ficha, que además
+  //      empuja la tirada al panel del GM (el motor solo muestra un alert).
+  // Hook ideal para el motor: un campo h.pool (o FICHA_CONFIG.resolverSlotId(h, nivel)) en FichaHechizos.usar.
+  // ==========================================
+  function poolMapa() {
+    try { return JSON.parse(document.getElementById('hechizos-pool')?.value || '{}') || {}; } catch (e) { return {}; }
+  }
+  function poolDe(nombre) { return poolMapa()[nombre] === 'pact' ? 'pact' : 'sorc'; }
+  function fijarPool(nombre, pool) {
+    const m = poolMapa();
+    if (pool === 'pact') m[nombre] = 'pact'; else delete m[nombre];
+    const json = JSON.stringify(m);
+    const hidden = document.getElementById('hechizos-pool');
+    if (hidden) hidden.value = json;
+    guardarCampo('hechizos-pool', json);
+  }
+  function nivelPact() {
+    const m = (document.getElementById('pact-card-title')?.textContent || '').match(/Nivel\s+(\d+)/);
+    return m ? parseInt(m[1], 10) : 1;
+  }
+  function decorarFilasConPool() {
+    if (!window.FichaHechizos) return;
+    const items = FichaHechizos.editor.items();
+    document.querySelectorAll('#hechizos-lista tr').forEach(tr => {
+      const btn = tr.querySelector('button[onclick^="FichaHechizos.usar("]');
+      const cell = tr.querySelector('.spell-item-actions');
+      if (!btn || !cell) return;
+      const idx = parseInt(btn.getAttribute('onclick').match(/usar\((\d+)\)/)[1], 10);
+      const h = items[idx];
+      let sel = cell.querySelector('.pool-sel');
+      if (!h || h.nivel === 0) { if (sel) sel.remove(); return; }
+      if (!sel) {
+        sel = document.createElement('select');
+        sel.className = 'pool-sel';
+        sel.title = '¿De qué pool de espacios gasta al lanzarlo? (Sorcerer o Pact Magic de Warlock)';
+        sel.innerHTML = '<option value="sorc">Sorcerer</option><option value="pact">Pact</option>';
+        sel.addEventListener('change', () => fijarPool(sel.dataset.nombre, sel.value));
+        cell.insertBefore(sel, cell.firstChild);
+      }
+      sel.dataset.nombre = h.nombre;
+      sel.value = poolDe(h.nombre);
+    });
+  }
+  function instalarPoolDeEspacios() {
+    if (!window.FichaHechizos || FichaHechizos.__poolInstalado) return;
+    const usarMotor = FichaHechizos.usar;
+    FichaHechizos.__poolInstalado = true;
+    FichaHechizos.usar = function (idx) {
+      const h = FichaHechizos.editor.items()[idx];
+      if (!h || modoLectura) return;
+      const pool = h.nivel > 0 ? poolDe(h.nombre) : 'sorc';
+      const mensajes = [];
+      const alertReal = window.alert;
+      const ocultos = [];
+      window.alert = (m) => { if (/^⚠️/.test(String(m))) alertReal(m); else mensajes.push(String(m)); };
+      let nivelGastado = h.slotCost;
+      if (h.upcast) { const sel = document.getElementById(`upcast-sel-${idx}`); nivelGastado = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase; }
+      let gastoPact = false;
+      try {
+        if (pool === 'pact') {
+          const np = nivelPact();
+          if (h.nivel > np) { alertReal(`⚠️ El espacio de Pact Magic es de nivel ${np}: no alcanza para "${h.nombre}" (nivel ${h.nivel}).`); return; }
+          const pactEl = document.getElementById('slot-pact-cur');
+          if (!pactEl || (parseInt(pactEl.textContent) || 0) <= 0) { alertReal('⚠️ No te quedan espacios de Pact Magic (Warlock) disponibles.'); return; }
+          changeVal('slot-pact-cur', -1);
+          gastoPact = true;
+          document.querySelectorAll('[id^="slot-"][id$="-cur"]').forEach(el => {
+            if (el.id !== 'slot-pact-cur') { el.dataset.idReal = el.id; el.id = 'oculto-' + el.id; ocultos.push(el); }
+          });
+        }
+        usarMotor(idx);
+      } finally {
+        ocultos.forEach(el => { el.id = el.dataset.idReal; delete el.dataset.idReal; });
+        window.alert = alertReal;
+      }
+      if (!mensajes.length) return; // el motor abortó (p.ej. sin espacios de Sorcerer): ya avisó con su ⚠️
+      if (gastoPact) registrarUsoRecurso(`Pact Magic (Warlock, Nivel ${nivelPact()}) — ${h.nombre}`);
+      else if (h.nivel > 0 && nivelGastado) registrarUsoRecurso(`Espacio de Nivel ${nivelGastado} (Sorcerer) — ${h.nombre}`);
+      const lineas = mensajes.join('\n').split('\n').map(l => l.trim()).filter(Boolean);
+      const extras = lineas.slice(1);
+      const etiquetaPool = gastoPact ? ' [Pact Magic]' : '';
+      const m = lineas[0].match(/^🎲 (.+?): (\[.*?\].*?) = (-?\d+)$/);
+      if (m) displayRollResult(parseInt(m[3], 10), m[1] + etiquetaPool, m[2] + (extras.length ? ' · ' + extras.join(' · ') : ''));
+      else if (lineas[0].startsWith('📜')) displayRollResult('📜', lineas[0].replace(/^📜\s*/, '').split(':')[0] + etiquetaPool, lineas[0].split(':').slice(1).join(':').trim() + (extras.length ? ' · ' + extras.join(' · ') : ''));
+      else registrarUsoRecurso(h.nombre + etiquetaPool + (extras.length ? ' — ' + extras.join(' · ') : ''));
+    };
+    decorarFilasConPool();
+  }
+  iniciarEstadisticasDerivadas();
+
+  // Primer pintado inmediato (usa el valor por defecto de xp-val hasta que llegue el sync real)
+  if (typeof actualizarNivelYProximaXP === 'function') actualizarNivelYProximaXP();
+  if (typeof restaurarSubidasNivel === 'function') restaurarSubidasNivel();
+
+// Inventario: ver FichaComun.iniciarEditorInventario() en ficha-common.js, con
+// FICHA_CONFIG.inventarioInicial como semilla (el inventario real de Firebase tiene prioridad: la semilla
+// solo se escribe si datos/inventario-json está vacío).
 </script>
 </body>
 </html>
