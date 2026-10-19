@@ -1,0 +1,71 @@
+/*
+ * ficha-party.css — visor del grupo (ficha-party.js). Solo tokens de color; ningún color literal.
+ *
+ * Con ficha-tema.css la página ya tiene los tokens. Sin ella, ficha-party.js marca el contenedor con
+ * data-puente="true" y el bloque de abajo traduce los tokens a las variables de cada ficha (--bg-card, --accent-gold…).
+ */
+.party[data-puente="true"] {
+  --fuente-titulo: 'Cinzel', 'Georgia', 'Times New Roman', serif;
+  --fuente-texto: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-xs: 0.75rem; --fs-sm: 0.85rem; --fs-md: 1rem; --fs-lg: 1.15rem;
+  --sp-1: 0.25rem; --sp-2: 0.5rem; --sp-3: 0.75rem; --sp-4: 1rem;
+  --radio: 12px; --radio-sm: 8px; --gutter: 16px; --toque: 44px;
+  --bg: var(--bg-primary);
+  --surface: var(--bg-card);
+  --surface-2: var(--bg-card-header);
+  --texto: var(--text-light);
+  --texto-suave: var(--text-muted);
+  --borde: var(--border-color);
+  --borde-fuerte: var(--accent-light, var(--accent-silver));
+  --acento: var(--accent-gold, var(--accent-silver, var(--accent-light)));
+  --sobre-acento: var(--bg-primary);
+  --bien: var(--heal-color, var(--accent-light, var(--accent-silver)));
+  --mal: var(--danger-color);
+  --aviso: var(--accent-gold, var(--accent-silver, var(--accent-light)));
+  --sombra: var(--shadow);
+  font-family: var(--fuente-texto);
+}
+
+.party { color: var(--texto); }
+.party[data-modo="flotante"] { position: fixed; left: var(--gutter); bottom: var(--gutter); z-index: 94; }
+.party-fab { position: relative; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--borde-fuerte); background: var(--surface-2); color: var(--texto); font-size: 1.3rem; line-height: 1; cursor: pointer; box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center; }
+.party-fab:hover { background: var(--surface); }
+.party-fab:focus-visible, .party-cerrar:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.party-fab-badge { position: absolute; top: -6px; right: -6px; min-width: 22px; padding: 0 5px; border-radius: 999px; background: var(--mal); color: var(--bg); font-size: var(--fs-xs); font-weight: 800; text-align: center; }
+.party-fab-badge[hidden] { display: none; }
+.party-panel { position: absolute; left: 0; bottom: calc(48px + var(--sp-3)); width: min(340px, calc(100vw - 2 * var(--gutter))); max-height: min(70vh, 560px); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--borde-fuerte); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
+.party-panel[hidden] { display: none; }
+.party-panel-cab { display: flex; justify-content: space-between; align-items: center; padding: var(--sp-2) var(--sp-3); background: var(--surface-2); border-bottom: 1px solid var(--borde); }
+.party-panel-cab h3 { margin: 0; font-size: var(--fs-md); color: var(--acento); }
+.party-cerrar { min-width: 36px; min-height: 36px; background: none; border: 0; color: var(--texto-suave); font-size: var(--fs-lg); cursor: pointer; border-radius: var(--radio-sm); }
+.party-cerrar:hover { color: var(--texto); background: var(--surface); }
+
+.party-lista { display: grid; gap: var(--sp-2); padding: var(--sp-3); overflow-y: auto; align-content: start; }
+.party[data-modo="pagina"] .party-lista { padding: 0; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-3); }
+.party-vacio { margin: 0; color: var(--texto-suave); font-size: var(--fs-sm); text-align: center; padding: var(--sp-3); }
+
+.party-card { display: grid; gap: var(--sp-1); padding: var(--sp-2) var(--sp-3); background: var(--bg); border: 1px solid var(--borde); border-left: 5px solid var(--bien); border-radius: var(--radio-sm); min-width: 0; }
+.party-card[data-estado="herido"] { border-left-color: var(--aviso); }
+.party-card[data-estado="critico"], .party-card[data-estado="caido"] { border-left-color: var(--mal); }
+.party-card[data-yo="true"] { box-shadow: 0 0 0 1px var(--acento); }
+.party-cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-1) var(--sp-2); min-width: 0; }
+.party-nombre { overflow-wrap: anywhere; }
+.party-clase { color: var(--texto-suave); font-size: var(--fs-xs); }
+.party-fila { display: grid; grid-template-columns: 1fr auto auto; gap: var(--sp-2); align-items: center; }
+.party-barra { height: 10px; background: var(--surface-2); border: 1px solid var(--borde); border-radius: 999px; overflow: hidden; }
+.party-relleno { display: block; height: 100%; background: var(--bien); }
+.party-card[data-estado="herido"] .party-relleno { background: var(--aviso); }
+.party-card[data-estado="critico"] .party-relleno, .party-card[data-estado="caido"] .party-relleno { background: var(--mal); }
+.party-hp, .party-ca { font-size: var(--fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.party-extra { display: flex; flex-wrap: wrap; gap: var(--sp-1); align-items: center; }
+.party-conc { font-size: var(--fs-xs); padding: 1px var(--sp-2); border: 1px solid var(--acento); border-radius: 999px; color: var(--acento); overflow-wrap: anywhere; }
+.party-conds { display: contents; }
+.party-cond { font-size: var(--fs-xs); padding: 1px var(--sp-2); border: 1px solid var(--borde-fuerte); border-radius: 999px; background: var(--surface-2); color: var(--texto); }
+.party-hora { color: var(--texto-suave); font-size: var(--fs-xs); }
+
+@media (max-width: 600px) {
+  .party[data-modo="flotante"] { left: var(--sp-3); bottom: var(--sp-3); }
+  .party[data-modo="flotante"][data-abierto="true"] { left: 0; right: 0; bottom: 0; }
+  .party[data-abierto="true"] .party-fab { display: none; }
+  .party-panel { position: static; width: auto; max-height: 70vh; border-radius: var(--radio) var(--radio) 0 0; border-bottom: 0; }
+}

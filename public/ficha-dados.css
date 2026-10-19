@@ -18,12 +18,13 @@
   --texto: var(--text-light);
   --texto-suave: var(--text-muted);
   --borde: var(--border-color);
-  --borde-fuerte: var(--accent-light);
-  --acento: var(--accent-gold, var(--accent-light));
-  --acento-2: var(--accent-light);
+  --borde-fuerte: var(--accent-light, var(--accent-silver));
+  --acento: var(--accent-gold, var(--accent-silver, var(--accent-light)));
+  --acento-2: var(--accent-light, var(--accent-silver));
   --sobre-acento: var(--bg-primary);
   --mal: var(--danger-color);
-  --aviso: var(--accent-gold, var(--accent-light));
+  --bien: var(--heal-color, var(--accent-light, var(--accent-silver)));
+  --aviso: var(--accent-gold, var(--accent-silver, var(--accent-light)));
   --sombra: var(--shadow);
   font-family: var(--fuente-texto);
 }
@@ -38,6 +39,11 @@
 .dados-fab { position: relative; width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--borde-fuerte); background: var(--acento); color: var(--sobre-acento); font-size: 1.6rem; line-height: 1; cursor: pointer; box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center; }
 .dados-fab:hover { background: var(--acento-2); }
 .dados-fab:focus-visible, .dados-cerrar:focus-visible, .dados-rapido:focus-visible, .dados-tab:focus-visible, .dados-tirar:focus-visible { outline: 3px solid var(--acento-2); outline-offset: 2px; }
+.dados-adv { display: block; margin: 0 0 var(--sp-2) auto; min-height: 32px; padding: 0 var(--sp-3); background: var(--surface-2); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: 999px; font: inherit; font-size: var(--fs-xs); font-weight: 800; cursor: pointer; box-shadow: var(--sombra); }
+.dados-adv[data-valor="advantage"] { border-color: var(--bien, var(--acento)); }
+.dados-adv[data-valor="disadvantage"] { border-color: var(--mal); }
+.dados-adv:focus-visible { outline: 3px solid var(--acento-2); outline-offset: 2px; }
+.dados[data-abierto="true"] .dados-adv { display: none; }
 .dados-fab-badge { position: absolute; top: -8px; right: -8px; min-width: 26px; padding: 1px 6px; border-radius: 999px; border: 2px solid var(--acento); background: var(--surface); color: var(--texto); font-family: var(--fuente-texto); font-size: var(--fs-xs); font-weight: 800; text-align: center; }
 .dados-panel { position: absolute; right: 0; bottom: calc(56px + var(--sp-3)); width: min(380px, calc(100vw - 2 * var(--gutter))); max-height: min(78vh, 680px); display: flex; flex-direction: column; background: var(--surface); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
 .dados-panel[hidden] { display: none; }

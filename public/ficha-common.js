@@ -53,7 +53,7 @@
   }
   // Campos de formularios temporales y selectores de acción (no son datos del
   // personaje): no deben ir a datos/ ni sincronizarse de vuelta.
-  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla'];
+  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla', 'dice-', 'dados-'];
   function esCampoEfimero(id) {
     return PREFIJOS_EFIMEROS.some(p => id.startsWith(p));
   }
@@ -1214,7 +1214,7 @@
     document.addEventListener('ficha:buffs', recalcular);
     // Se publica ANTES del primer recálculo: los listeners de 'ficha:atributos'
     // (hechizos con DC automático, estadísticas con buff) lo necesitan ya disponible.
-    window.FichaAtributos = { recalcular, profBonusActual: () => estadoAtributos.prof, modDe: (clave) => estadoAtributos.mods[clave] ?? 0, bonoSkill: (clave) => estadoAtributos.bonosSkill[clave] ?? 0 };
+    window.FichaAtributos = { recalcular, nivel: nivelActual, profBonusActual: () => estadoAtributos.prof, modDe: (clave) => estadoAtributos.mods[clave] ?? 0, bonoSkill: (clave) => estadoAtributos.bonosSkill[clave] ?? 0 };
     recalcular();
     return window.FichaAtributos;
   }

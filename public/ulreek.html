@@ -4,6 +4,8 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Ulreek Pico Maldito — Character Sheet</title>
+<link href="ficha-dados.css" rel="stylesheet"/>
+<link rel="stylesheet" href="ficha-party.css">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&amp;family=Metamorphous&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
 
 <style>
@@ -791,108 +793,6 @@
  font-weight: 700;
  }
 
- /* FLOATING DICE ROLLER */
- .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
- .dice-roller-panel {
- position: fixed;
- bottom: 0;
- left: 0;
- right: 0;
- background: var(--bg-card-header);
- border-top: 3px solid var(--accent-gold);
- box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
- padding: 12px 20px;
- z-index: 1000;
- }
-
- .dice-container {
- max-width: 1200px;
- margin: 0 auto;
- display: flex;
- flex-wrap: wrap;
- gap: 15px;
- align-items: center;
- justify-content: space-between;
- }
-
- .dice-btns {
- display: flex;
- flex-wrap: wrap;
- gap: 8px;
- align-items: center;
- }
-
- .btn-dice {
- background: var(--bg-card);
- border: 1px solid var(--border-color);
- color: var(--accent-gold);
- font-family: 'Cinzel', serif;
- font-weight: 800;
- font-size: 0.95rem;
- padding: 8px 14px;
- border-radius: 8px;
- cursor: pointer;
- transition: all 0.2s;
- display: flex;
- flex-direction: column;
- align-items: center;
- }
-
- .btn-dice:hover {
- background: var(--accent-purple);
- color: #fff;
- border-color: var(--accent-gold);
- transform: translateY(-2px);
- }
-
- .dice-mod-input {
- width: 60px;
- background: var(--bg-card);
- border: 1px solid var(--border-color);
- -moz-appearance: textfield;
- color: var(--text-on-surface);
- padding: 6px;
- border-radius: 6px;
- text-align: center;
- font-size: 1rem;
- font-weight: bold;
- }
- .dice-mod-input::-webkit-outer-spin-button,
- .dice-mod-input::-webkit-inner-spin-button {
- -webkit-appearance: none;
- margin: 0;
- }
-
- .dice-result-box {
- background: var(--surface-strong);
- border: 1px solid var(--accent-gold);
- border-radius: 8px;
- padding: 8px 16px;
- min-width: 150px;
- text-align: center;
- }
-
- .dice-result-val {
- font-size: 1.8rem;
- font-weight: 800;
- color: var(--accent-gold);
- line-height: 1;
- }
-
- .dice-result-details {
- font-size: 0.8rem;
- color: var(--text-muted);
- margin-top: 4px;
- }
-
- .dice-history {
- font-size: 0.75rem;
- color: var(--accent-light);
- max-height: 58px;
- overflow-y: auto;
- margin-top: 4px;
- }
-
  .currency-grid {
  display: grid;
  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -951,9 +851,6 @@
  .mini-detail-content strong { color: var(--accent-gold); }
 
  @media (max-width: 768px) {
- body { padding-bottom: 340px; }
- .dice-container { flex-direction: column; align-items: stretch; }
- .dice-btns { justify-content: center; }
  .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
  }
 
@@ -1627,56 +1524,6 @@
 
 </div>
 
-<div class="dice-roller-panel">
-<div class="dice-container">
-<div class="dice-btns">
-<button class="btn-dice" onclick="rollDice(4)">d4</button>
-<button class="btn-dice" onclick="rollDice(6)">d6</button>
-<button class="btn-dice" onclick="rollDice(8)">d8</button>
-<button class="btn-dice" onclick="rollDice(10)">d10</button>
-<button class="btn-dice" onclick="rollDice(12)">d12</button>
-<button class="btn-dice" onclick="rollDice(20)">d20</button>
-<button class="btn-dice" onclick="rollDice(100)">d100</button>
-<button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
-<label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">×</label>
-<input class="dice-mod-input" id="dice-qty" type="number" value="1" min="1" style="width:32px;"/>
-</div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Modificador aplicado a la próxima tirada">
-<label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">±</label>
-<input class="dice-mod-input" id="dice-mod" type="number" value="0" style="width:32px;"/>
-</div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;">
-<label style="font-size:0.75rem; color:var(--text-muted);" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">🎯</label>
-<select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;">
-<option value="normal">Normal</option>
-<option value="advantage">🟢 Ventaja</option>
-<option value="disadvantage">🔴 Desventaja</option>
-</select>
-</div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Cuántos dados descartar de la tirada (0 = ninguno) y si se descartan los peores o los mejores. Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
-<label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">−</label>
-<div style="display:flex; gap:2px;">
-<input class="dice-mod-input" id="dice-drop-count" type="number" value="0" min="0" style="width:28px;"/>
-<button type="button" id="dice-drop-mode" value="low" class="btn-dice" style="padding:6px 6px; font-size:0.8rem;" onclick="toggleDropMode()">▼</button>
-</div>
-</div>
-<div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:6px;" title="Dado custom: caras del dado">
-<label style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">d</label>
-<div style="display:flex; gap:2px;">
-<input class="dice-mod-input" id="dice-custom-sides" type="number" value="20" min="2" style="width:38px;"/>
-<button class="btn-dice" onclick="rollCustomDice()" title="Tirar el dado custom">🎲</button>
-</div>
-</div>
-</div>
-<div class="dice-result-box">
-<div class="dice-result-val" id="dice-result-val">-</div>
-<div class="dice-result-details" id="dice-result-details">Haz clic en un dado para tirar</div>
-<div class="dice-history" id="dice-history"></div>
-</div>
-</div>
-</div>
-
 <!-- Firebase SDKs (Compat v9) -->
 <script src="spells_data.js"></script>
 
@@ -1737,6 +1584,10 @@
   };
 </script>
 <script src="ficha-common.js"></script>
+<script src="ficha-dados.js"></script>
+<script src="reglas_srd2014_data.js"></script>
+<script src="ficha-reglas.js"></script>
+<script src="ficha-party.js"></script>
 <script>
   // ==========================================
   // 1. CONFIGURACIÓN E INSTANCIAS DE FIREBASE
@@ -1763,6 +1614,13 @@
   const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
   const HP_MAX_ULREEK = 51; // HP base a nivel actual (Sorcerer 7/Warlock 1); el botón "Subir de Nivel" suma un bonus aparte, ver hpMaxActual()
   let charRef = null;
+
+  // Lanzador de dados compartido (ficha-dados.js): panel flotante, historial de tiradas y de recursos.
+  // publicarUsos: los usos de recurso siguen llegando a la pantalla del GM como antes ("🔧 … usó").
+  FichaDados.iniciar({ personaje: FICHA_CONFIG.nombrePersonaje, db, codigoCampana, publicarUsos: true });
+  // Estados del SRD (condiciones y agotamiento) y visor del grupo (ficha-reglas.js / ficha-party.js).
+  FichaReglas.poblarDesplegable('conditions-dropdown', { idioma: 'es' });
+  FichaParty.iniciar({ db, codigoCampana, personajeId: FICHA_CONFIG.personajeId, nombre: FICHA_CONFIG.nombrePersonaje });
 
   const btnVolver = document.querySelector('a[href="index.html"]');
   if (btnVolver && codigoCampana) btnVolver.href = `index.html?campana=${codigoCampana}`;
@@ -1947,8 +1805,6 @@
   // ==========================================
   // 3. LÓGICA DE INTERFAZ, RECURSOS Y DADOS
   // ==========================================
-  function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
-
   // --- POPOVER DE XP ---
   function toggleXpPopover() {
     const p = document.getElementById('xp-popover-panel');
@@ -1977,9 +1833,9 @@
     if (p && p.classList.contains('open')) posicionarXpPopover(p);
   });
 
-  // === TOGGLE DE BARRAS FIJAS (sticky combat bar + lanzador de dados) ===
+  // === TOGGLE DE BARRAS FIJAS (sticky combat bar; el lanzador de dados ahora es un botón flotante) ===
   function aplicarBarrasFijas(off) {
-    document.querySelectorAll('.sticky-combat-bar, .dice-roller-panel').forEach(el => el.classList.toggle('unstuck', off));
+    document.querySelectorAll('.sticky-combat-bar').forEach(el => el.classList.toggle('unstuck', off));
     const btn = document.getElementById('barras-fijas-toggle');
     if (btn) btn.textContent = off ? '📌 Barras: sueltas' : '📌 Barras: fijas';
   }
@@ -2703,33 +2559,15 @@
     });
   }
 
-  var rollHistory = [];
+  // === TIRADAS: envoltorios finos sobre el lanzador compartido (ficha-dados.js) ===
+  // Mismas firmas de siempre para no tocar los onclick. El historial, la publicación en
+  // campanas/<c>/tiradas ({personaje, tipo, resultado, fecha}) y el panel los maneja FichaDados.
   function displayRollResult(total, label, breakdownStr) {
-    document.getElementById('dice-result-val').innerText = total;
-    document.getElementById('dice-result-details').innerText = `${label}: ${breakdownStr}`;
-
-    rollHistory.unshift(`${label}: ${breakdownStr} = <strong>${total}</strong>`);
-    if (rollHistory.length > 4) rollHistory.pop();
-    document.getElementById('dice-history').innerHTML = rollHistory.join(' | ');
-
-    if (codigoCampana) {
-      db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Ulreek",
-        tipo: label,
-        resultado: (typeof total === 'number') ? `sacó un 🎲 ${total}` : total,
-        fecha: firebase.database.ServerValue.TIMESTAMP
-      });
-    }
+    FichaDados.mostrar(total, label, breakdownStr);
   }
 
   function rollManualDice(num, sides, mod, label) {
-    let rolls = []; let total = 0;
-    for (let i = 0; i < num; i++) {
-      let r = Math.floor(Math.random() * sides) + 1;
-      rolls.push(r); total += r;
-    }
-    total += mod;
-    displayRollResult(total, label || `${num}d${sides}`, `[${rolls.join(', ')}] ${mod >= 0 ? '+' : ''}${mod}`);
+    FichaDados.tirar({ count: num, sides: sides, mod: mod || 0 }, label || `${num}d${sides}`);
   }
 
   function rollGenericDamage(num, sides, mod, label) { rollManualDice(num, sides, mod, label); }
@@ -2759,17 +2597,7 @@
     return grupoTexto ? `${grupoTexto} — ${texto}` : texto;
   }
   function registrarUsoRecurso(etiqueta) {
-    rollHistory.unshift(`🔧 ${etiqueta}: <strong>Usado</strong>`);
-    if (rollHistory.length > 4) rollHistory.pop();
-    document.getElementById('dice-history').innerHTML = rollHistory.join(' | ');
-    if (codigoCampana) {
-      db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Ulreek",
-        tipo: `🔧 ${etiqueta}`,
-        resultado: 'usó',
-        fecha: firebase.database.ServerValue.TIMESTAMP
-      });
-    }
+    FichaDados.registrarUso(etiqueta, 'recurso'); // con publicarUsos también sale al panel del GM ("🔧 … usó")
   }
 
   // === SALVACIÓN DE MUERTE (bugs.md 26 ago): tira 1d20, marca el checkbox correspondiente y pushea texto claro ===
@@ -2798,6 +2626,7 @@
   }
   document.addEventListener('change', e => {
     if (!e.target.matches('.resources-bar input[type="checkbox"]')) return;
+    if (/^(cond-|buff-|debuff-)/.test(e.target.id || '')) return; // estados y buffs manuales no son recursos
     if (!e.target.checked) return;
     if (/^hd-\d+$/.test(e.target.id)) return;
     if (/^ds-[sf]\d+$/.test(e.target.id)) return;
@@ -2840,79 +2669,22 @@
     displayRollResult(total, 'Dado de Golpe Warlock (1d8+2 CON)', `[${tirada}] + 2`);
   }
 
-  function getCantidad() { return Math.max(1, parseInt(document.getElementById('dice-qty')?.value) || 1); }
-  function getDropCount() { return Math.max(0, parseInt(document.getElementById('dice-drop-count')?.value) || 0); }
-  function getDropMode() { return document.getElementById('dice-drop-mode')?.value || 'low'; }
-  function toggleDropMode() {
-      const btn = document.getElementById('dice-drop-mode');
-      if (!btn) return;
-      const nuevo = btn.value === 'low' ? 'high' : 'low';
-      btn.value = nuevo;
-      btn.textContent = nuevo === 'low' ? '▼' : '▲';
-      btn.title = nuevo === 'low' ? 'Descartando los PEORES — click para cambiar a mejores' : 'Descartando los MEJORES — click para cambiar a peores';
-  }
-
-  // === TIRADA DEL PANEL FLOTANTE (Cantidad + Mod + Quitar N peores/mejores) ===
-  // No reemplaza a rollManualDice/rollGenericDamage (siguen igual para daño de hechizos, etc.),
-  // solo se usa desde los botones del lanzador de dados manual.
-  function rollDice(sides) {
-    const num = getCantidad();
-    const mod = getMod();
-    const rolls = [];
-    for (let i = 0; i < num; i++) rolls.push(Math.floor(Math.random() * sides) + 1);
-
-    const dropCount = Math.min(getDropCount(), Math.max(0, num - 1));
-    let kept = rolls;
-    let dropped = [];
-    if (dropCount > 0) {
-      const dropModo = getDropMode();
-      const orden = rolls.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
-      const aDescartar = new Set((dropModo === 'low' ? orden.slice(0, dropCount) : orden.slice(-dropCount)).map(x => x.i));
-      kept = rolls.filter((v, i) => !aDescartar.has(i));
-      dropped = rolls.filter((v, i) => aDescartar.has(i));
-    }
-    const total = kept.reduce((a, b) => a + b, 0) + mod;
-    let breakdown = `[${rolls.join(', ')}]`;
-    if (dropped.length) breakdown += ` — se descartan ${dropped.length} ${getDropMode() === 'low' ? 'peores' : 'mejores'} (${dropped.join(', ')})`;
-    breakdown += ` Mod: ${mod}`;
-    displayRollResult(total, num > 1 ? `d${sides} (${num}d${sides})` : `d${sides}`, breakdown);
-  }
-  function rollCustomDice() {
-    const sides = Math.max(2, parseInt(document.getElementById('dice-custom-sides')?.value) || 20);
-    rollDice(sides);
-  }
-
-  // === MONEDA DEL DESTINO (D2) — sin Mod, muestra Cara/Cruz en vez de 1/2 ===
-  function rollCoin() {
-    const r = Math.floor(Math.random() * 2) + 1;
-    const cara = r === 1 ? 'Cara' : 'Cruz';
-    displayRollResult(`🪙 ${cara}`, 'Moneda del Destino', `[${r}]`);
-  }
+  // Moneda del Destino (d2): ahora la tira el lanzador compartido (botón 🪙 del panel).
+  function rollCoin() { FichaDados.moneda(); }
 
   // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
-  function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
+  function getAdvantage() { return FichaDados.getVentaja(); }
 
-  // Ataques: desventaja automática si Ulreek está Cegado o Envenenado (igual que el resto de la flota)
+  // Ataques: la desventaja por estados (Cegado, Envenenado, Asustado…) la aplica el lanzador (ficha-reglas.js).
   function rollAttack(bonus, label) {
-    let adv = getAdvantage();
-    const estaCegado = document.getElementById('cond-blinded')?.checked;
-    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-    if (estaCegado || estaEnvenenado) {
-      adv = 'disadvantage';
-      label += " 🛑 (Desventaja por Condición)";
-    }
+    const adv = getAdvantage();
     const totalBonus = bonus + (parseInt(document.getElementById('atk-buff')?.value) || 0) + FichaBuffs.plano('ataque');
     rollD20WithMechanics(totalBonus, label, adv, true, 'ataque');
   }
 
-  // Checks/Saves: el envenenamiento da desventaja solo en checks (igual que el resto de la flota)
+  // Checks/Saves: los estados que dan ventaja o desventaja los aplica el lanzador (ficha-reglas.js).
   function rollCheckSave(diceStr, mod, label, type, categoria) {
-    let adv = getAdvantage();
-    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-    if (estaEnvenenado && type === 'check') {
-      adv = 'disadvantage';
-      label += " 🛑 (Desventaja: Envenenado)";
-    }
+    const adv = getAdvantage();
     rollD20WithMechanics(mod, label, adv, type === 'save', categoria || (type === 'save' ? 'salvaciones' : 'pruebas'));
   }
   // --- Valores derivados (ver FichaComun.iniciarAtributos en ficha-common.js) ---
@@ -2928,19 +2700,10 @@
     rollD20WithMechanics(parseInt(btn?.dataset.bonus, 10) || 0, 'Concentración CON Save', getAdvantage(), true, 'salvaciones');
   }
 
+  // d20 con ventaja/desventaja + dados extra de buffs activados (ataques / salvaciones / pruebas): lo resuelve
+  // FichaDados.d20, que también muestra el resultado y lo publica. La desventaja por condición se decide arriba.
   function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk, categoria) {
-    let r1 = Math.floor(Math.random() * 20) + 1;
-    let r2 = Math.floor(Math.random() * 20) + 1;
-    let chosen = advState === 'advantage' ? Math.max(r1, r2) : (advState === 'disadvantage' ? Math.min(r1, r2) : r1);
-    let detailStr = advState === 'advantage' ? `Ventaja: [${r1}, ${r2}] ➔ ${chosen}` : (advState === 'disadvantage' ? `Desventaja: [${r1}, ${r2}] ➔ ${chosen}` : `(${r1})`);
-    let total = chosen + flatMod;
-    let desglose = `${detailStr} ${flatMod >= 0 ? '+' : ''}${flatMod}`;
-    // Dados extra de buffs activados en hechizos (ataques / salvaciones / pruebas), configurables por hechizo.
-    if (categoria && window.FichaBuffs) {
-      const extra = FichaBuffs.tirarDados(categoria);
-      extra.partes.forEach(pt => { total += pt.valor; desglose += ' | ' + pt.texto; });
-    }
-    displayRollResult(total, label, desglose);
+    FichaDados.d20({ mod: flatMod, etiqueta: label, ventaja: advState, categoria: categoria });
   }
 
 
@@ -3041,8 +2804,8 @@
   //   2) FichaHechizos.usar se envuelve: con pool Pact gasta slot-pact-cur y le OCULTA al motor los contadores
   //      slot-N-cur (cambiándoles el id mientras dura la llamada) para que no gaste uno de Sorcerer; con pool
   //      Sorcerer deja que el motor gaste el espacio como siempre;
-  //   3) los mensajes del motor (alert) se redirigen al lanzador de dados/historial de esta ficha, que además
-  //      empuja la tirada al panel del GM (el motor solo muestra un alert).
+  //   3) con ficha-dados.js el motor ya muestra la tirada en el lanzador compartido (que además la empuja al panel
+  //      del GM) y anota el uso con 'ficha:uso'; para Pact Magic se marca la tirada y se anota el uso de Pact.
   // Hook ideal para el motor: un campo h.pool (o FICHA_CONFIG.resolverSlotId(h, nivel)) en FichaHechizos.usar.
   // ==========================================
   function poolMapa() {
@@ -3092,40 +2855,33 @@
       const h = FichaHechizos.editor.items()[idx];
       if (!h || modoLectura) return;
       const pool = h.nivel > 0 ? poolDe(h.nombre) : 'sorc';
-      const mensajes = [];
-      const alertReal = window.alert;
+      // Con ficha-dados.js el motor ya muestra la tirada en el lanzador y anota el uso con 'ficha:uso'
+      // (hechizo, concentración, buff); acá solo se corrige lo que es de Pact Magic.
+      if (pool !== 'pact') { usarMotor(idx); return; }
+      const np = nivelPact();
+      if (h.nivel > np) { alert(`⚠️ El espacio de Pact Magic es de nivel ${np}: no alcanza para "${h.nombre}" (nivel ${h.nivel}).`); return; }
+      const pactEl = document.getElementById('slot-pact-cur');
+      if (!pactEl || (parseInt(pactEl.textContent) || 0) <= 0) { alert('⚠️ No te quedan espacios de Pact Magic (Warlock) disponibles.'); return; }
+      changeVal('slot-pact-cur', -1);
+      const quedan = parseInt(pactEl.textContent) || 0;
+      // Mientras el motor lanza el hechizo: se le OCULTAN los contadores slot-N-cur (para que no gaste uno de
+      // Sorcerer), se marca la tirada como [Pact Magic] y se reemplaza su aviso "con espacio de nivel N" por el de Pact.
       const ocultos = [];
-      window.alert = (m) => { if (/^⚠️/.test(String(m))) alertReal(m); else mensajes.push(String(m)); };
-      let nivelGastado = h.slotCost;
-      if (h.upcast) { const sel = document.getElementById(`upcast-sel-${idx}`); nivelGastado = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase; }
-      let gastoPact = false;
+      document.querySelectorAll('[id^="slot-"][id$="-cur"]').forEach(el => {
+        if (el.id !== 'slot-pact-cur') { el.dataset.idReal = el.id; el.id = 'oculto-' + el.id; ocultos.push(el); }
+      });
+      const mostrarReal = FichaDados.mostrar;
+      FichaDados.mostrar = (total, etiqueta, detalle) => mostrarReal(total, etiqueta + ' [Pact Magic]', detalle);
+      const silenciarAviso = (e) => { if (e.detail && e.detail.tipo === 'hechizo') e.stopPropagation(); };
+      window.addEventListener('ficha:uso', silenciarAviso, true); // captura en window: corta antes de llegar al historial
       try {
-        if (pool === 'pact') {
-          const np = nivelPact();
-          if (h.nivel > np) { alertReal(`⚠️ El espacio de Pact Magic es de nivel ${np}: no alcanza para "${h.nombre}" (nivel ${h.nivel}).`); return; }
-          const pactEl = document.getElementById('slot-pact-cur');
-          if (!pactEl || (parseInt(pactEl.textContent) || 0) <= 0) { alertReal('⚠️ No te quedan espacios de Pact Magic (Warlock) disponibles.'); return; }
-          changeVal('slot-pact-cur', -1);
-          gastoPact = true;
-          document.querySelectorAll('[id^="slot-"][id$="-cur"]').forEach(el => {
-            if (el.id !== 'slot-pact-cur') { el.dataset.idReal = el.id; el.id = 'oculto-' + el.id; ocultos.push(el); }
-          });
-        }
         usarMotor(idx);
       } finally {
+        window.removeEventListener('ficha:uso', silenciarAviso, true);
+        FichaDados.mostrar = mostrarReal;
         ocultos.forEach(el => { el.id = el.dataset.idReal; delete el.dataset.idReal; });
-        window.alert = alertReal;
       }
-      if (!mensajes.length) return; // el motor abortó (p.ej. sin espacios de Sorcerer): ya avisó con su ⚠️
-      if (gastoPact) registrarUsoRecurso(`Pact Magic (Warlock, Nivel ${nivelPact()}) — ${h.nombre}`);
-      else if (h.nivel > 0 && nivelGastado) registrarUsoRecurso(`Espacio de Nivel ${nivelGastado} (Sorcerer) — ${h.nombre}`);
-      const lineas = mensajes.join('\n').split('\n').map(l => l.trim()).filter(Boolean);
-      const extras = lineas.slice(1);
-      const etiquetaPool = gastoPact ? ' [Pact Magic]' : '';
-      const m = lineas[0].match(/^🎲 (.+?): (\[.*?\].*?) = (-?\d+)$/);
-      if (m) displayRollResult(parseInt(m[3], 10), m[1] + etiquetaPool, m[2] + (extras.length ? ' · ' + extras.join(' · ') : ''));
-      else if (lineas[0].startsWith('📜')) displayRollResult('📜', lineas[0].replace(/^📜\s*/, '').split(':')[0] + etiquetaPool, lineas[0].split(':').slice(1).join(':').trim() + (extras.length ? ' · ' + extras.join(' · ') : ''));
-      else registrarUsoRecurso(h.nombre + etiquetaPool + (extras.length ? ' — ' + extras.join(' · ') : ''));
+      FichaDados.registrarUso(`Lanzó ${h.nombre} con Pact Magic (Warlock, nivel ${np}) (quedan ${quedan})`, 'hechizo');
     };
     decorarFilasConPool();
   }

@@ -4,6 +4,8 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <title>Eldur Redmane — Firelord Sheet</title>
+ <link rel="stylesheet" href="ficha-dados.css">
+<link rel="stylesheet" href="ficha-party.css">
  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Metamorphous&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
  
  
@@ -40,7 +42,7 @@
    --accent-light: #a8531c;
  }
  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
- body { background-color: var(--bg-primary); color: var(--text-light); padding: 20px; padding-bottom: 280px; transition: background-color .3s, color .3s; }
+ body { background-color: var(--bg-primary); color: var(--text-light); padding: 20px; padding-bottom: 90px; transition: background-color .3s, color .3s; }
  .container { max-width: 1200px; margin: 0 auto; }
  header { background: linear-gradient(135deg, #3d1a14 0%, #170806 100%); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
  body.light-mode header { background: linear-gradient(135deg, #fff3df 0%, #f4ecd8 100%); }
@@ -210,11 +212,6 @@
  .skill-item .skill-tag { font-size: 0.68rem; color: var(--accent-gold); font-weight: 700; margin-left: 3px; }
  .skill-item .skill-mod { font-weight: 700; min-width: 30px; text-align: right; }
  @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
- .dice-roller-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-header); border-top: 3px solid var(--accent-gold); box-shadow: 0 -6px 20px rgba(0,0,0,0.5); padding: 12px 20px; z-index: 1000; }
- .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
- .dice-container { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; }
- .btn-dice { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--accent-gold); font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.95rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
- .btn-dice:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-gold); transform: translateY(-2px); }
  .adv-card select { width: 100%; background: var(--bg-card-header); border: 1px solid var(--accent-red); color: var(--text-light); font-weight: 700; padding: 6px; border-radius: 6px; outline: none; cursor: pointer; }
  .multiselect-container { position: relative; width: 100%; }
  .select-box { background: var(--bg-card-header); border: 1px solid var(--accent-red); color: var(--text-light); font-weight: 700; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; text-align: left; display: flex; justify-content: space-between; align-items: center; }
@@ -235,22 +232,18 @@
  .check-box-item input[type="checkbox"] { accent-color: var(--accent-gold); width: 16px; height: 16px; cursor: pointer; }
  .input-qty { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--accent-gold); font-weight: bold; text-align: center; width: 60px; padding: 4px; border-radius: 4px; outline: none; }
  .input-qty:focus { border-color: var(--accent-gold); }
- .dice-mod-input { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--accent-gold); font-weight: bold; text-align: center; padding: 6px; border-radius: 6px; -moz-appearance: textfield; }
- .dice-mod-input::-webkit-outer-spin-button, .dice-mod-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
- .dice-result-box { background: var(--surface-strong); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 8px 16px; min-width: 150px; text-align: center; }
- .dice-result-val { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); line-height: 1; }
- .dice-result-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
- .dice-history { font-size: 0.75rem; color: var(--accent-light); max-height: 58px; overflow-y: auto; margin-top: 4px; }
  .currency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 16px; }
  .currency-box { background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; text-align: center; }
  .currency-box label { display: block; font-size: 0.75rem; font-weight: bold; color: var(--accent-gold); }
  .currency-box input { width: 100%; background: transparent; border: none; color: var(--text-on-surface); font-size: 1.2rem; font-weight: bold; text-align: center; outline: none; }
 
  @media (max-width: 768px) {
-   body { padding-bottom: 340px; }
-   .dice-container { flex-direction: column; align-items: stretch; }
    .character-title { flex-direction: column; align-items: flex-start; gap: 10px; }
  }
+
+ /* El selector global `header` de esta ficha también alcanza al encabezado del lanzador (ficha-dados.js usa <header>). */
+ .dados .dados-cab { background: var(--surface-2); border: 0; border-bottom: 1px solid var(--borde); border-radius: 0; margin: 0; box-shadow: none; overflow: visible; position: static; }
+ .dados .dados-cab::before { content: none; }
 
  /* MODO SOLO LECTURA (unificado con el resto de fichas) */
  .readonly-banner {
@@ -1066,60 +1059,6 @@
  </details>
 </div>
 
-<!-- PANEL FLOTANTE DE DADOS -->
-<div class="dice-roller-panel">
- <div class="dice-container">
- <div>
- <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-gold); font-size:0.9rem; margin-bottom:4px;">
- 🎲 LANZADOR DE DADOS DE FIRELORD
- </div>
- <div class="dice-btns">
- <button class="btn-dice" onclick="rollPanelDice(4, 'd4')">d4</button>
- <button class="btn-dice" onclick="rollPanelDice(6, 'd6')">d6</button>
- <button class="btn-dice" onclick="rollPanelDice(8, 'd8')">d8</button>
- <button class="btn-dice" onclick="rollPanelDice(10, 'd10')">d10</button>
- <button class="btn-dice" onclick="rollPanelDice(12, 'd12')">d12</button>
- <button class="btn-dice" onclick="rollPanelDice(20, 'd20')">d20</button>
- <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
- <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">×</label>
- <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:32px;">
- </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Modificador aplicado a la próxima tirada">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">±</label>
- <input type="number" id="dice-mod" class="dice-mod-input" value="0" style="width:32px;">
- </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;">
- <label style="font-size:0.8rem; color:var(--text-muted);" title="Ventaja/Desventaja para el próximo ataque, salvación o check — un solo selector para toda la ficha">🎯</label>
- <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;">
- <option value="normal">Normal</option>
- <option value="advantage">🟢 Ventaja</option>
- <option value="disadvantage">🔴 Desventaja</option>
- </select>
- </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados descartar de la tirada (0 = ninguno) y si se descartan los peores o los mejores. Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">−</label>
- <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:28px;">
- <button type="button" id="dice-drop-mode" value="low" class="btn-dice" style="padding:6px 8px; font-size:0.85rem;" onclick="toggleDropMode()">▼</button>
- </div>
- <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Dado custom: caras del dado">
- <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">d</label>
- <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:38px;">
- <button class="btn-dice" onclick="rollCustomDice()" title="Tirar el dado custom">🎲</button>
- </div>
- </div>
- </div>
-
- <div class="dice-result-box">
- <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
- <div class="dice-result-val" id="dice-total">0</div>
- <div class="dice-result-details" id="dice-details">Esperando tirada...</div>
- <div class="dice-history" id="dice-history"></div>
- </div>
- </div>
-</div>
-
 <!-- Compendio compartido de hechizos (búsqueda/picker de "Hechizos Adicionales") -->
 <script src="spells_data.js"></script>
 
@@ -1175,6 +1114,10 @@
   };
 </script>
 <script src="ficha-common.js"></script>
+<script src="ficha-dados.js"></script>
+<script src="reglas_srd2014_data.js"></script>
+<script src="ficha-reglas.js"></script>
+<script src="ficha-party.js"></script>
 <script>
   // ==========================================
   // 1. CONFIGURACIÓN E INSTANCIAS DE FIREBASE
@@ -1198,6 +1141,13 @@
   const SISTEMA_PERSONAJE_PROPIO = 'dnd'; // Sistema de juego de esta ficha (ver index.html)
   const HP_MAX_ELDUR = 52; // HP base a nivel actual (Monk 5/Cleric 2); el botón "Subir de Nivel" suma un bonus aparte, ver hpMaxActual()
   let charRef = null;
+
+  // Lanzador de dados, historial y registro de recursos (ficha-dados.js): común a todas las fichas.
+  // publicarUsos: los usos de recurso también salen a la pantalla del GM (campanas/<c>/tiradas), como antes.
+  FichaDados.iniciar({ personaje: NOMBRE_PERSONAJE_FICHA, db, codigoCampana, publicarUsos: true });
+  // Estados del SRD (condiciones y agotamiento) y visor del grupo (ficha-reglas.js / ficha-party.js).
+  FichaReglas.poblarDesplegable('conditions-dropdown', { idioma: 'en' });
+  FichaParty.iniciar({ db, codigoCampana, personajeId: FICHA_CONFIG.personajeId, nombre: FICHA_CONFIG.nombrePersonaje });
   let bitacoraCampanaListener = null;
 
   // Hacer que el botón "Volver" recuerde tu campaña activa al regresar
@@ -1381,49 +1331,6 @@
   // ==========================================
   // 3. LÓGICA DE INTERFAZ, RECURSOS Y DADOS
   // ==========================================
-  function getMod() { return parseInt(document.getElementById('dice-mod').value) || 0; }
-  function getCantidad() { return Math.max(1, parseInt(document.getElementById('dice-qty')?.value) || 1); }
-  function getDropCount() { return Math.max(0, parseInt(document.getElementById('dice-drop-count')?.value) || 0); }
-  function getDropMode() { return document.getElementById('dice-drop-mode')?.value || 'low'; }
-  function toggleDropMode() {
-    const btn = document.getElementById('dice-drop-mode');
-    if (!btn) return;
-    const nuevo = btn.value === 'low' ? 'high' : 'low';
-    btn.value = nuevo;
-    btn.textContent = nuevo === 'low' ? '▼' : '▲';
-    btn.title = nuevo === 'low' ? 'Descartando los PEORES — click para cambiar a mejores' : 'Descartando los MEJORES — click para cambiar a peores';
-  }
-
-  // === TIRADA DEL PANEL FLOTANTE (Cantidad + Mod + Quitar N peores/mejores) ===
-  // No reemplaza a rollManualDice/rollGenericDamage (siguen igual para daño de hechizos, etc.),
-  // solo se usa desde los botones del lanzador de dados manual.
-  function rollPanelDice(sides, label) {
-    const num = getCantidad();
-    const mod = getMod();
-    const rolls = [];
-    for (let i = 0; i < num; i++) rolls.push(Math.floor(Math.random() * sides) + 1);
-
-    const dropCount = Math.min(getDropCount(), Math.max(0, num - 1));
-    let kept = rolls;
-    let dropped = [];
-    if (dropCount > 0) {
-      const dropModo = getDropMode();
-      const orden = rolls.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
-      const aDescartar = new Set((dropModo === 'low' ? orden.slice(0, dropCount) : orden.slice(-dropCount)).map(x => x.i));
-      kept = rolls.filter((v, i) => !aDescartar.has(i));
-      dropped = rolls.filter((v, i) => aDescartar.has(i));
-    }
-    const total = kept.reduce((a, b) => a + b, 0) + mod;
-    let breakdown = `[${rolls.join(', ')}]`;
-    if (dropped.length) breakdown += ` — se descartan ${dropped.length} ${getDropMode() === 'low' ? 'peores' : 'mejores'} (${dropped.join(', ')})`;
-    breakdown += ` Mod: ${mod}`;
-    displayRollResult(total, num > 1 ? `${label} (${num}d${sides})` : label, breakdown);
-  }
-  function rollCustomDice() {
-    const sides = Math.max(2, parseInt(document.getElementById('dice-custom-sides')?.value) || 20);
-    rollPanelDice(sides, `d${sides}`);
-  }
-
   // --- MODO DÍA/NOCHE (replicado del mismo mecanismo que usa Dane) ---
   function applyTheme(isDark) {
     document.body.classList.toggle('light-mode', !isDark);
@@ -1470,8 +1377,7 @@
     if (!wrap) return;
     const margin = 10;
     const btnRect = wrap.getBoundingClientRect();
-    const diceBar = document.querySelector('.dice-roller-panel');
-    const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
+    const limiteInferior = window.innerHeight;
     const panelWidth = Math.min(p.offsetWidth || 170, window.innerWidth - margin * 2);
     let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
     let top = btnRect.bottom + 6;
@@ -1487,7 +1393,7 @@
 
   // === TOGGLE DE BARRAS FIJAS (sticky combat bar + lanzador de dados) ===
   function aplicarBarrasFijas(off) {
-    document.querySelectorAll('.sticky-combat-bar, .dice-roller-panel').forEach(el => el.classList.toggle('unstuck', off));
+    document.querySelectorAll('.sticky-combat-bar').forEach(el => el.classList.toggle('unstuck', off));
     const btn = document.getElementById('barras-fijas-toggle');
     if (btn) btn.textContent = off ? '📌 Barras: sueltas' : '📌 Barras: fijas';
   }
@@ -2015,8 +1921,7 @@
     if (!wrap) return;
     const margin = 10;
     const btnRect = wrap.getBoundingClientRect();
-    const diceBar = document.querySelector('.dice-roller-panel');
-    const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
+    const limiteInferior = window.innerHeight;
     const panelWidth = Math.min(p.offsetWidth || 300, window.innerWidth - margin * 2);
     let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
     let top = btnRect.bottom + 6;
@@ -2128,43 +2033,16 @@
     alert("🌙 Descanso Largo completado.");
   }
 
-  var rollHistory = [];
+  // Lanzador común (ficha-dados.js): muestra el resultado, lo anota en el historial y lo publica en campanas/<c>/tiradas.
   function displayRollResult(total, label, breakdownStr) {
-    document.getElementById('dice-label').innerText = label;
-    document.getElementById('dice-total').innerText = total;
-    document.getElementById('dice-details').innerText = breakdownStr;
-    rollHistory.unshift(`<strong>${label}:</strong> ${total} <span style="color:#c29b8c;">(${breakdownStr})</span>`);
-    if (rollHistory.length > 10) rollHistory.pop();
-    const hist = document.getElementById('dice-history');
-    if (hist) hist.innerHTML = rollHistory.join('<br>');
-
-    if (codigoCampana) {
-      db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
-        tipo: label,
-        resultado: (typeof total === 'number') ? `sacó un 🎲 ${total}` : total,
-        fecha: firebase.database.ServerValue.TIMESTAMP
-      });
-    }
+    FichaDados.mostrar(total, label, breakdownStr);
   }
 
   function rollManualDice(num, sides, mod, label) {
-    let rolls = []; let total = 0;
-    for (let i = 0; i < num; i++) {
-      let r = Math.floor(Math.random() * sides) + 1;
-      rolls.push(r); total += r;
-    }
-    displayRollResult(total + mod, label + ` (${num}d${sides})`, `[${rolls.join(', ')}] Mod: ${mod}`);
+    FichaDados.tirar({ count: num, sides: sides, mod: mod }, label + ` (${num}d${sides})`);
   }
 
   function rollGenericDamage(num, sides, mod, label) { rollManualDice(num, sides, mod, label); }
-
-  // === MONEDA DEL DESTINO (D2) — sin Mod, muestra Cara/Cruz en vez de 1/2 ===
-  function rollCoin() {
-    const r = Math.floor(Math.random() * 2) + 1;
-    const cara = r === 1 ? 'Cara' : 'Cruz';
-    displayRollResult(`🪙 ${cara}`, 'Moneda del Destino', `[${r}]`);
-  }
 
   // Upcast: ahora es un campo del propio hechizo (selector de nivel en la tarjeta única, ver ficha-common.js).
 
@@ -2179,23 +2057,11 @@
   }
   document.addEventListener('change', e => {
     if (!e.target.matches('.resources-bar input[type="checkbox"]')) return;
+    if (/^(cond-|buff-|debuff-)/.test(e.target.id || '')) return; // estados y buffs manuales no son recursos
     if (!e.target.checked) return;
     if (/^hd-\d+$/.test(e.target.id)) return;
     if (/^ds-[sf]\d+$/.test(e.target.id)) return; // las salvaciones de muerte pushean vía rollDeathSave()
-    const etiqueta = obtenerEtiquetaRecurso(e.target);
-    const entry = `<strong>🔧 Recurso:</strong> ${etiqueta}`;
-    rollHistory.unshift(entry);
-    if (rollHistory.length > 10) rollHistory.pop();
-    const hist = document.getElementById('dice-history');
-    if (hist) hist.innerHTML = rollHistory.join('<br>');
-    if (codigoCampana) {
-      db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
-        tipo: `🔧 ${etiqueta}`,
-        resultado: 'usó',
-        fecha: firebase.database.ServerValue.TIMESTAMP
-      });
-    }
+    FichaDados.registrarUso(obtenerEtiquetaRecurso(e.target), 'recurso');
   });
 
   // === DADO DE GOLPE (Hit Die) ===
@@ -2221,18 +2087,7 @@
   // === AUTO-MARCADO DE SLOT AL USAR UN HECHIZO ===
   // === REGISTRO GENÉRICO DE USO DE RECURSO (contadores +/-, no checkbox — estilo Ulreek) ===
   function registrarUsoRecursoGenerico(etiqueta) {
-    rollHistory.unshift(`🔧 ${etiqueta}: <strong>Usado</strong>`);
-    if (rollHistory.length > 10) rollHistory.pop();
-    const hist = document.getElementById('dice-history');
-    if (hist) hist.innerHTML = rollHistory.join('<br>');
-    if (codigoCampana) {
-      db.ref(`campanas/${codigoCampana}/tiradas`).push({
-        personaje: "Eldur Redmane",
-        tipo: `🔧 ${etiqueta}`,
-        resultado: 'usó',
-        fecha: firebase.database.ServerValue.TIMESTAMP
-      });
-    }
+    FichaDados.registrarUso(etiqueta, 'recurso');
   }
 
   // === SALVACIÓN DE MUERTE (bugs.md 26 ago): tira 1d20, marca el checkbox correspondiente y pushea texto claro ===
@@ -2271,18 +2126,11 @@
   }
 
   // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados) ===
-  function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
+  function getAdvantage() { return FichaDados.getVentaja(); }
 
-  // Ataques: desventaja automática si Eldur está Cegado o Envenenado
+  // Ataques: la desventaja por condiciones (Cegado, Envenenado, Asustado…) la aplica el lanzador (ficha-reglas.js).
   function tirarAtaque(totalBonus, name) {
-    let adv = getAdvantage();
-    const estaCegado = document.getElementById('cond-blinded')?.checked;
-    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-    if (estaCegado || estaEnvenenado) {
-      adv = 'disadvantage';
-      name += " 🛑 (Desventaja por Condición)";
-    }
-    rollD20WithMechanics(totalBonus, `Atk: ${name}`, adv, true, 'ataque');
+    rollD20WithMechanics(totalBonus, `Atk: ${name}`, getAdvantage(), true, 'ataque');
   }
   // Ataque con arma / golpe desarmado: bono base + campo de buff manual + buffs activados de hechizos.
   function rollAttack(bonus, name) {
@@ -2299,16 +2147,10 @@
     tirarAtaque(totalBonus, name);
   }
 
-  // Checks/Saves: el envenenamiento da desventaja solo en checks.
-  // categoria ('salvaciones' | 'pruebas') decide qué dados extra de buffs activados se suman.
+  // Checks/Saves. categoria ('salvaciones' | 'pruebas') decide qué dados extra de buffs activados se suman y qué
+  // estados (ficha-reglas.js) dan ventaja o desventaja.
   function rollCheckSave(dice, mod, label, type, categoria) {
-    let adv = getAdvantage();
-    const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-    if (estaEnvenenado && type === 'check') {
-      adv = 'disadvantage';
-      label += " 🛑 (Desventaja: Envenenado)";
-    }
-    rollD20WithMechanics(mod, label, adv, type === 'save', categoria || (type === 'save' ? 'salvaciones' : 'pruebas'));
+    rollD20WithMechanics(mod, label, getAdvantage(), type === 'save', categoria || (type === 'save' ? 'salvaciones' : 'pruebas'));
   }
   function rollIniciativa() {
     const buff = parseInt(document.getElementById('iniciativa-buff')?.value, 10) || 0;
@@ -2321,25 +2163,8 @@
   }
 
   function rollD20WithMechanics(flatMod, label, advState, isSaveOrAtk, categoria) {
-    let d1 = Math.floor(Math.random() * 20) + 1;
-    let d2 = Math.floor(Math.random() * 20) + 1;
-    let chosen = advState === 'advantage' ? Math.max(d1, d2) : (advState === 'disadvantage' ? Math.min(d1, d2) : d1);
-    let advText = advState === 'advantage' ? ` [Ventaja: ${d1}, ${d2} -> ${chosen}]` : (advState === 'disadvantage' ? ` [Desventaja: ${d1}, ${d2} -> ${chosen}]` : ` [d20: ${d1}]`);
-    let total = chosen + flatMod;
-    let b = [`Base: ${chosen}`];
-    if (flatMod !== 0) b.push(`Mod: ${flatMod > 0 ? '+' + flatMod : flatMod}`);
-    if (isSaveOrAtk) {
-      const bless = document.getElementById('buff-bless');
-      const bane = document.getElementById('debuff-bane');
-      if (bless && bless.checked) { let r = Math.floor(Math.random() * 4) + 1; total += r; b.push(`Bless: +${r}`); }
-      if (bane && bane.checked) { let r = Math.floor(Math.random() * 4) + 1; total -= r; b.push(`Bane: -${r}`); }
-    }
-    // Dados extra de buffs activados en hechizos (ataques / salvaciones / pruebas), configurables por hechizo.
-    if (categoria && window.FichaBuffs) {
-      const extra = FichaBuffs.tirarDados(categoria);
-      extra.partes.forEach(pt => { total += pt.valor; b.push(pt.texto); });
-    }
-    displayRollResult(total, label + advText, b.join(' | '));
+    // Ventaja/desventaja (selector + estados), Bless/Bane, dados extra de buffs, crítico y registro: lanzador común.
+    FichaDados.d20({ mod: flatMod, etiqueta: label, ventaja: advState, categoria: categoria });
   }
 
   function toggleConditionsDropdown() {

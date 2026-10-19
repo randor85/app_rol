@@ -47,7 +47,7 @@
             background-color: var(--bg-primary);
             color: var(--text-light);
             padding: 20px;
-            padding-bottom: 280px;
+            padding-bottom: 90px; /* aire para el botón flotante del lanzador de dados */
             font-size: 14px;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -319,21 +319,6 @@
             font-size: 0.85rem;
         }
         .roll-controls input[type="radio"] { accent-color: var(--accent-teal); }
-        .roll-history {
-            background: transparent;
-            color: var(--accent-light);
-            border-radius: 6px;
-            max-height: 58px;
-            overflow-y: auto;
-            padding: 0;
-            font-size: 0.75rem;
-            text-align: left;
-        }
-        .log-entry { border-bottom: 1px solid var(--border-color); padding: 3px 0; display: flex; justify-content: space-between; align-items: center; }
-        .log-entry:last-child { border-bottom: none; }
-        .log-entry b { font-size: 0.85rem; color: var(--accent-gold); margin-left: 10px; }
-        .log-calc { color: var(--text-muted); font-size: 0.7rem; }
-        .clear-btn { background-color: var(--danger-color); color: white; border: none; padding: 1px 5px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
 
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -353,18 +338,6 @@
         .btn-roll { background-color: var(--accent-teal); color: #fff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-top: 5px; transition: background-color 0.2s; }
         .btn-roll:hover { background-color: var(--accent-hover); }
 
-        /* PANEL FLOTANTE DE DADOS (bugs.md 26 ago: réplica del lanzador de dados del resto de la flota) */
-        .dice-roller-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-header); border-top: 3px solid var(--accent-teal); box-shadow: 0 -6px 20px rgba(0,0,0,0.5); padding: 12px 20px; z-index: 1000; }
-        .dice-roller-panel.unstuck { position: static; margin-top: 16px; border-radius: 10px; box-shadow: none; }
-        .dice-container { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; }
-        .dice-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .btn-dice { background: var(--bg-card-header); border: 1px solid var(--accent-teal); color: var(--accent-teal); font-family: 'Cinzel', serif; font-weight: 800; font-size: 0.95rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .btn-dice:hover { background: var(--accent-teal); color: #fff; transform: translateY(-2px); }
-        .dice-mod-input { width: 60px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 6px; text-align: center; -moz-appearance: textfield; }
-        .dice-mod-input::-webkit-outer-spin-button, .dice-mod-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .dice-result-box { background: var(--surface-strong); border: 1px solid var(--accent-teal); border-radius: 8px; padding: 8px 16px; min-width: 150px; text-align: center; }
-        .dice-result-val { font-size: 1.8rem; font-weight: 800; color: var(--accent-teal); line-height: 1; }
-        .dice-result-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
         .btn-roll-sm { background-color: var(--accent-teal); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 3px 6px; display: inline-flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
         .btn-roll-sm:hover { background-color: var(--accent-hover); }
         .btn-rest { background: var(--bg-card-header); border: 1px solid var(--accent-teal); color: var(--accent-teal); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 11px; transition: all 0.2s; }
@@ -409,13 +382,12 @@
         }
 
         @media (max-width: 768px) {
-            body { padding: 5px; padding-bottom: 340px; }
+            body { padding: 5px; padding-bottom: 90px; }
             .container { padding: 15px; }
             .header { margin: 0 -15px 15px -15px; padding: 15px; }
             .hp-section { justify-content: space-between; width: 100%; }
             .hp-box { flex-grow: 1; justify-content: center; }
             .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 15px; }
-            .dice-container { flex-direction: column; align-items: stretch; }
             .info-table td { display: block; width: 100% !important; padding: 2px 0; }
             table.data th, table.data td { padding: 6px 2px; font-size: 12px; }
             .skills-grid { grid-template-columns: 1fr; }
@@ -504,6 +476,8 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
 .reputacion-form-actions button:last-child { background: var(--accent-teal); color: #000; border: none; }
 .reputacion-add-btn { background: var(--accent-teal); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; margin-bottom: 8px; }
 </style>
+<link rel="stylesheet" href="ficha-dados.css">
+<link rel="stylesheet" href="ficha-party.css">
 </head>
 <body>
 
@@ -1122,63 +1096,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     <input type="hidden" id="subidas-nivel-registro" value="">
 </div>
 
-<!-- PANEL FLOTANTE DE DADOS -->
-<div class="dice-roller-panel">
-    <div class="dice-container">
-        <div>
-            <div style="font-family:'Cinzel', serif; font-weight:700; color:var(--accent-teal); font-size:0.9rem; margin-bottom:4px;">
-                🎲 LANZADOR DE DADOS DE DANE
-            </div>
-            <div class="dice-btns">
-                <button class="btn-dice" onclick="rollPanelDice(4, 'd4')">d4</button>
-                <button class="btn-dice" onclick="rollPanelDice(6, 'd6')">d6</button>
-                <button class="btn-dice" onclick="rollPanelDice(8, 'd8')">d8</button>
-                <button class="btn-dice" onclick="rollPanelDice(10, 'd10')">d10</button>
-                <button class="btn-dice" onclick="rollPanelDice(12, 'd12')">d12</button>
-                <button class="btn-dice" onclick="rollPanelDice(20, 'd20')">d20</button>
-                <button class="btn-dice" onclick="rollPanelDice(100, 'd100')">d100</button>
-                <button class="btn-dice" onclick="rollCoin()" title="Moneda del Destino / D2">🪙 Moneda</button>
-                <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados tirar en el próximo click de cualquier dado (afecta también al dado custom)">
-                    <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">×</label>
-                    <input type="number" id="dice-qty" class="dice-mod-input" value="1" min="1" style="width:32px;">
-                </div>
-                <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Modificador aplicado a la próxima tirada">
-                    <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">±</label>
-                    <input type="number" id="dice-mod" class="dice-mod-input" value="0" style="width:32px;">
-                </div>
-                <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;">
-                    <label style="font-size:0.8rem; color:var(--text-muted);" title="Ventaja/Desventaja para el próximo ataque — un solo selector para toda la ficha">🎯</label>
-                    <select id="dice-adv" class="dice-mod-input" style="width:auto; padding:6px 4px;">
-                        <option value="normal">Normal</option>
-                        <option value="advantage">🟢 Ventaja</option>
-                        <option value="disadvantage">🔴 Desventaja</option>
-                    </select>
-                </div>
-                <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Cuántos dados descartar de la tirada (0 = ninguno) y si se descartan los peores o los mejores. Sirve para ventaja/desventaja de varios dados, ej. 6d6 y descartar los 2 peores.">
-                    <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">−</label>
-                    <input type="number" id="dice-drop-count" class="dice-mod-input" value="0" min="0" style="width:28px;">
-                    <button type="button" id="dice-drop-mode" value="low" class="btn-dice" style="padding:6px 6px; font-size:0.8rem;" onclick="toggleDropMode()">▼</button>
-                </div>
-                <div style="display:inline-flex; align-items:center; gap:3px; margin-left:6px;" title="Dado custom: caras del dado">
-                    <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">d</label>
-                    <input type="number" id="dice-custom-sides" class="dice-mod-input" value="20" min="2" style="width:38px;">
-                    <button class="btn-dice" onclick="rollCustomDice()" title="Tirar el dado custom">🎲</button>
-                </div>
-            </div>
-        </div>
-        <div class="dice-result-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-                <div style="font-size:0.75rem; color:var(--text-muted);" id="dice-label">Último Tiro</div>
-                <button class="clear-btn" onclick="clearDiceHistory()" title="Limpiar historial">🗑️</button>
-            </div>
-            <div class="dice-result-val" id="dice-total">0</div>
-            <div class="dice-result-details" id="dice-details">Esperando tirada...</div>
-            <div class="roll-history" id="rollHistory">
-                <!-- Dice results -->
-            </div>
-        </div>
-    </div>
-</div>
+<!-- El lanzador de dados, el historial de tiradas y el registro de recursos los dibuja ficha-dados.js (botón flotante 🎲) -->
 
 <!-- LIBRERÍAS DE COMPATIBILIDAD DE FIREBASE -->
 <script src="spells_data.js"></script>
@@ -1227,6 +1145,10 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
   };
 </script>
 <script src="ficha-common.js"></script>
+<script src="ficha-dados.js"></script>
+<script src="reglas_srd2014_data.js"></script>
+<script src="ficha-reglas.js"></script>
+<script src="ficha-party.js"></script>
 
 <!-- SCRIPTS -->
 <script>
@@ -1254,6 +1176,13 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     // Obtener campaña desde la URL
     const urlParams = new URLSearchParams(window.location.search);
     const codigoCampana = urlParams.get('campana');
+
+    // Lanzador de dados compartido (ficha-dados.js): tiradas, historial y registro de recursos.
+    // publicarUsos: los usos de recurso salen también a la pantalla del GM, como antes.
+    FichaDados.iniciar({ personaje: FICHA_CONFIG.nombrePersonaje, db, codigoCampana, publicarUsos: true });
+    // Estados del SRD (condiciones y agotamiento) y visor del grupo (ficha-reglas.js / ficha-party.js).
+    FichaReglas.poblarDesplegable('conditions-dropdown', { idioma: 'en' });
+    FichaParty.iniciar({ db, codigoCampana, personajeId: FICHA_CONFIG.personajeId, nombre: FICHA_CONFIG.nombrePersonaje });
 
     // Hacer que el botón "Volver" recuerde tu campaña activa al regresar
     const btnVolver = document.querySelector('a[href="index.html"]');
@@ -1797,8 +1726,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         if (!wrap) return;
         const margin = 10;
         const btnRect = wrap.getBoundingClientRect();
-        const diceBar = document.querySelector('.dice-roller-panel');
-        const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
+        const limiteInferior = window.innerHeight;
         const panelWidth = Math.min(p.offsetWidth || 300, window.innerWidth - margin * 2);
         let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
         let top = btnRect.bottom + 6;
@@ -1823,8 +1751,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         if (!wrap) return;
         const margin = 10;
         const btnRect = wrap.getBoundingClientRect();
-        const diceBar = document.querySelector('.dice-roller-panel');
-        const limiteInferior = diceBar ? diceBar.getBoundingClientRect().top : window.innerHeight;
+        const limiteInferior = window.innerHeight;
         const panelWidth = Math.min(p.offsetWidth || 170, window.innerWidth - margin * 2);
         let left = Math.max(margin, Math.min(btnRect.right - panelWidth, window.innerWidth - panelWidth - margin));
         let top = btnRect.bottom + 6;
@@ -1840,7 +1767,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
 
     // === TOGGLE DE BARRAS FIJAS (sticky combat bar) ===
     function aplicarBarrasFijas(off) {
-        document.querySelectorAll('.sticky-combat-bar, .dice-roller-panel').forEach(el => el.classList.toggle('unstuck', off));
+        document.querySelectorAll('.sticky-combat-bar').forEach(el => el.classList.toggle('unstuck', off));
         const btn = document.getElementById('barras-fijas-toggle');
         if (btn) btn.textContent = off ? '📌 Barras: sueltas' : '📌 Barras: fijas';
     }
@@ -1873,148 +1800,31 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         setTimeout(() => { restaurarHabilidadesAgregadas(); actualizarNivelYProximaXP(); restaurarSubidasNivel(); asegurarSlots(); refrescarSlotCur(); }, 800);
     });
 
-    // --- 3. DICE ROLLER SYSTEM ---
-    // === SELECTOR ÚNICO DE VENTAJA/DESVENTAJA (bugs.md 29 ago: unificado en el lanzador de dados, igual que el resto de la flota) ===
-    function getAdvantage() { return document.getElementById('dice-adv')?.value || 'normal'; }
+    // --- 3. TIRADAS DE DADOS ---
+    // El lanzador, el historial y la publicación a campanas/<c>/tiradas viven en ficha-dados.js (FichaDados).
+    // Acá quedan solo las funciones con las firmas propias de Dane (rollAttack, rollGenericDamage, displayRollResult…),
+    // como envoltorios finos: los onclick de la ficha no cambian.
+    // getAdvantage: el selector #dice-adv lo crea FichaDados.
+    function getAdvantage() { return FichaDados.getVentaja(); }
 
-    // Ataques: desventaja automática si Dane está Cegado o Envenenado (igual que el resto de la flota)
-    // categoria (opcional): 'ataque' | 'salvaciones' | 'pruebas' -> suma los dados extra de los buffs activados.
+    // Ataques/checks/saves. categoria (opcional): 'ataque' | 'salvaciones' | 'pruebas' -> suma los dados extra de los
+    // buffs activados. La ventaja/desventaja por selector y por estados (Cegado, Envenenado, Asustado…), Bless/Bane y
+    // el crítico los resuelve el lanzador compartido (ficha-dados.js + ficha-reglas.js).
     function rollAttack(name, modifier, categoria) {
-        let rollType = getAdvantage();
-        const estaCegado = document.getElementById('cond-blinded')?.checked;
-        const estaEnvenenado = document.getElementById('cond-poisoned')?.checked;
-        if (estaCegado || estaEnvenenado) {
-            rollType = 'disadvantage';
-            name += " 🛑 (Desventaja por Condición)";
-        }
-        const d1 = Math.floor(Math.random() * 20) + 1;
-        const d2 = Math.floor(Math.random() * 20) + 1;
-
-        let result = 0;
-        let calc = "";
-
-        if (rollType === 'advantage') {
-            result = Math.max(d1, d2) + modifier;
-            calc = `[d20: max(${d1}, ${d2}) + ${modifier}]`;
-        } else if (rollType === 'disadvantage') {
-            result = Math.min(d1, d2) + modifier;
-            calc = `[d20: min(${d1}, ${d2}) + ${modifier}]`;
-        } else {
-            result = d1 + modifier;
-            calc = `[d20: ${d1} + ${modifier}]`;
-        }
-        const bless = document.getElementById('buff-bless');
-        const bane = document.getElementById('debuff-bane');
-        if (bless && bless.checked) { const r = Math.floor(Math.random() * 4) + 1; result += r; calc += ` + Bless: ${r}`; }
-        if (bane && bane.checked) { const r = Math.floor(Math.random() * 4) + 1; result -= r; calc += ` - Bane: ${r}`; }
-        // Dados extra de buffs activados en hechizos (configurables por hechizo en la tarjeta de conjuros).
-        if (categoria && window.FichaBuffs) {
-            const extra = FichaBuffs.tirarDados(categoria);
-            extra.partes.forEach(pt => { result += pt.valor; calc += ` + ${pt.texto}`; });
-        }
-        displayRollResult(name, result, calc);
+        FichaDados.d20({ mod: modifier, etiqueta: name, categoria, ventaja: getAdvantage() });
     }
 
     function rollGenericDamage(name, count, size, modifier) {
-        let total = 0;
-        let rolls = [];
-        for (let i = 0; i < count; i++) {
-            let r = Math.floor(Math.random() * size) + 1;
-            rolls.push(r);
-            total += r;
-        }
-        total += modifier;
-        const calc = `[${count}d${size}: (${rolls.join('+')}) + ${modifier}]`;
-        displayRollResult(name, total, calc);
+        FichaDados.tirar({ count, sides: size, mod: modifier }, name);
     }
 
+    // Resultado ya calculado (HD, salvación de muerte, daño extra de buffs…). Firma de Dane: (nombre, resultado, detalle).
     function displayRollResult(name, result, calc) {
-        const history = document.getElementById('rollHistory');
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `<span>${name} <span class="log-calc">${calc}</span></span> <b>${result}</b>`;
-        history.appendChild(entry);
-        history.scrollTop = history.scrollHeight;
-
-        // Panel flotante de dados (bugs.md 26 ago) — mismos ids que el resto de la flota
-        const totalEl = document.getElementById('dice-total');
-        const labelEl = document.getElementById('dice-label');
-        const detailsEl = document.getElementById('dice-details');
-        if (totalEl) totalEl.innerText = result;
-        if (labelEl) labelEl.innerText = name;
-        if (detailsEl) detailsEl.innerText = calc;
-
-        if (typeof codigoCampana !== 'undefined' && codigoCampana) {
-            db.ref(`campanas/${codigoCampana}/tiradas`).push({
-                personaje: "Dane",
-                tipo: name,
-                resultado: (typeof result === 'number') ? `sacó un 🎲 ${result}` : result,
-                fecha: firebase.database.ServerValue.TIMESTAMP
-            });
-        }
+        FichaDados.mostrar(result, name, calc);
     }
 
-    // === LANZADOR DE DADOS MANUAL (d4-d100 + Mod) — réplica del panel flotante del resto de la flota ===
-    function getMod() { return parseInt(document.getElementById('dice-mod')?.value) || 0; }
-    function getCantidad() { return Math.max(1, parseInt(document.getElementById('dice-qty')?.value) || 1); }
-    function getDropCount() { return Math.max(0, parseInt(document.getElementById('dice-drop-count')?.value) || 0); }
-    function getDropMode() { return document.getElementById('dice-drop-mode')?.value || 'low'; }
-    function toggleDropMode() {
-        const btn = document.getElementById('dice-drop-mode');
-        if (!btn) return;
-        const nuevo = btn.value === 'low' ? 'high' : 'low';
-        btn.value = nuevo;
-        btn.textContent = nuevo === 'low' ? '▼' : '▲';
-        btn.title = nuevo === 'low' ? 'Descartando los PEORES — click para cambiar a mejores' : 'Descartando los MEJORES — click para cambiar a peores';
-    }
-
-    // === TIRADA DEL PANEL FLOTANTE (Cantidad + Mod + Quitar N peores/mejores) ===
-    // No reemplaza a rollManualDice (sigue igual para lo que ya la usaba), solo se usa
-    // desde los botones del lanzador de dados manual.
-    function rollPanelDice(sides, label) {
-        const num = getCantidad();
-        const mod = getMod();
-        const rolls = [];
-        for (let i = 0; i < num; i++) rolls.push(Math.floor(Math.random() * sides) + 1);
-
-        const dropCount = Math.min(getDropCount(), Math.max(0, num - 1));
-        let kept = rolls;
-        let dropped = [];
-        if (dropCount > 0) {
-            const dropModo = getDropMode();
-            const orden = rolls.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
-            const aDescartar = new Set((dropModo === 'low' ? orden.slice(0, dropCount) : orden.slice(-dropCount)).map(x => x.i));
-            kept = rolls.filter((v, i) => !aDescartar.has(i));
-            dropped = rolls.filter((v, i) => aDescartar.has(i));
-        }
-        const total = kept.reduce((a, b) => a + b, 0) + mod;
-        let breakdown = `[${rolls.join(', ')}]`;
-        if (dropped.length) breakdown += ` — se descartan ${dropped.length} ${getDropMode() === 'low' ? 'peores' : 'mejores'} (${dropped.join(', ')})`;
-        breakdown += ` Mod: ${mod}`;
-        displayRollResult(num > 1 ? `${label} (${num}d${sides})` : label, total, breakdown);
-    }
-    function rollCustomDice() {
-        const sides = Math.max(2, parseInt(document.getElementById('dice-custom-sides')?.value) || 20);
-        rollPanelDice(sides, `d${sides}`);
-    }
     function rollManualDice(num, sides, mod, label) {
-        let rolls = []; let total = 0;
-        for (let i = 0; i < num; i++) {
-            let r = Math.floor(Math.random() * sides) + 1;
-            rolls.push(r); total += r;
-        }
-        displayRollResult(label, total + mod, `[${rolls.join(', ')}] Mod: ${mod}`);
-    }
-
-    // === MONEDA DEL DESTINO (D2) — sin Mod, muestra Cara/Cruz en vez de 1/2 ===
-    function rollCoin() {
-        const r = Math.floor(Math.random() * 2) + 1;
-        const cara = r === 1 ? 'Cara' : 'Cruz';
-        displayRollResult('Moneda del Destino', `🪙 ${cara}`, `[${r}]`);
-    }
-
-    function clearDiceHistory() {
-        document.getElementById('rollHistory').innerHTML = '';
+        FichaDados.tirar({ count: num, sides, mod }, `${label} (${num}d${sides})`);
     }
 
     // === CONDICIONES Y EFECTOS (bugs.md 29 ago: a Dane le faltaba, igual que el resto de la flota) ===
@@ -2052,13 +1862,16 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
         }
         return cb.id;
     }
+    // Un espacio que marca el puente del hechizo (marcarSlot) ya lo anota el motor ("Lanzó X con espacio de nivel N"): no se duplica.
+    let marcandoPorHechizo = false;
     document.addEventListener('change', e => {
         if (!e.target.matches('.resources-bar input[type="checkbox"], .spell-slots input[type="checkbox"]')) return;
+        if (/^(cond-|buff-|debuff-)/.test(e.target.id || '')) return; // estados y buffs manuales no son recursos
         if (!e.target.checked) return;
-        if (/^hd-\d+$/.test(e.target.id)) return; // el HD ya pushea vía displayRollResult al tirarlo
-        if (/^ds-[sf]\d+$/.test(e.target.id)) return; // las salvaciones de muerte pushean vía rollDeathSave()
-        const etiqueta = obtenerEtiquetaRecurso(e.target);
-        displayRollResult(`🔧 Recurso: ${etiqueta}`, 'usó', '');
+        if (marcandoPorHechizo) return;
+        if (/^hd-\d+$/.test(e.target.id)) return; // el HD ya se anota al tirarlo (tirarHitDie)
+        if (/^ds-[sf]\d+$/.test(e.target.id)) return; // las salvaciones de muerte se anotan vía rollDeathSave()
+        FichaDados.registrarUso(obtenerEtiquetaRecurso(e.target), 'recurso');
     });
 
     // === SALVACIÓN DE MUERTE (bugs.md 26 ago): tira 1d20, marca el checkbox correspondiente y pushea texto claro ===
@@ -2418,7 +2231,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     // flota). Dane lleva sus espacios como checkboxes: los checkboxes siguen siendo la fuente de verdad y
     // `slot-N-cur` es un espejo (disponibles = sin marcar). puenteUsarHechizo() envuelve FichaHechizos.usar:
     // si el motor baja el contador, se marca el checkbox de ese nivel (con su evento 'change': autoguardado +
-    // registro "usó"); si el jugador marca/desmarca a mano, hace un descanso largo o llega un sync de Firebase,
+    // autoguardado); si el jugador marca/desmarca a mano, hace un descanso largo o llega un sync de Firebase,
     // el contador se recalcula desde los checkboxes.
     // ==========================================
     const ORDINALES_SLOT = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th'];
@@ -2437,7 +2250,7 @@ input.ab-temp { width: 44px; text-align: center; background: var(--surface-soft)
     }
     function marcarSlot(n) {
         const cb = slotCheckboxes(n).find(c => !c.checked);
-        if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); } // autoguardado + registro "usó"
+        if (cb) { cb.checked = true; marcandoPorHechizo = true; try { cb.dispatchEvent(new Event('change', { bubbles: true })); } finally { marcandoPorHechizo = false; } } // autoguardado (el registro lo hace el motor)
     }
     // Envuelve FichaHechizos.usar: el motor descuenta del contador `slot-N-cur` (espejo) y acá se traslada ese
     // gasto al checkbox. El nivel gastado se calcula igual que en el motor (nivel del selector de upcast o slotCost).

@@ -32,6 +32,16 @@
           ".read": "auth != null",
           ".write": "auth != null"
         },
+        "party": {
+          // Resumen público de cada personaje para el visor del grupo (ficha-party.js): PG, CA, concentración,
+          // condiciones. Lo leen los miembros autenticados de la campaña; lo escribe solo el dueño registrado
+          // del personaje o el GM de la campaña. Es un nodo aparte y chico a propósito, para que mostrar el grupo
+          // no obligue a descargar las fichas completas.
+          ".read": "auth != null",
+          "$personajeId": {
+            ".write": "auth != null && ( root.child('campanas').child($campanaId).child('personajes').child($personajeId).child('owner').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )"
+          }
+        },
         "personajes": {
           // NOTA: la lectura sigue abierta a cualquier miembro autenticado de la campaña.
           // RTDB no permite filtrar por 'publico' dentro de una consulta amplia como la que usa

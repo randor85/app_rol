@@ -204,23 +204,51 @@
     const mod = Number(o.mod) || 0;
     const etiqueta = o.etiqueta || 'd20';
     let adv = o.ventaja || getVentaja();
-    const forzada = (typeof FICHA_CONFIG !== 'undefined' && FICHA_CONFIG.ventajaForzada) ? FICHA_CONFIG.ventajaForzada(etiqueta) : null;
+    const cat0 = ALIAS_CATEGORIA[o.categoria] || o.categoria;
+    // Ventaja/desventaja forzada por el personaje: el gancho propio de la ficha manda; si no hay, rigen los estados
+    // activos según ficha-reglas.js (condiciones y agotamiento del SRD).
+    let forzada = null, autoFalla = false;
+    if (typeof FICHA_CONFIG !== 'undefined' && FICHA_CONFIG.ventajaForzada) forzada = FICHA_CONFIG.ventajaForzada(etiqueta, cat0);
+    else if (window.FichaReglas && !o.sinReglas && cat0) {
+      let hab = o.habilidad;
+      if (!hab && cat0 === 'salvaciones') { const m = /\b(STR|DEX|CON|INT|WIS|CHA|FUE|DES|SAB|CAR)\b/i.exec(etiqueta); hab = m && m[1]; }
+      const v = FichaReglas.ventaja({ categoria: cat0, habilidad: hab });
+      forzada = v.estado; autoFalla = v.autoFalla;
+    }
     let nota = '';
     if (forzada && forzada !== 'normal') {
       if (adv === 'normal' || adv === forzada) { adv = forzada; nota = forzada === 'disadvantage' ? ' 🛑 (desventaja por condición)' : ' (ventaja por condición)'; }
       else { adv = 'normal'; nota = ' (ventaja y desventaja se cancelan)'; }
     }
+    if (autoFalla) nota += ' ⚠️ (la condición la hace fallar automáticamente)';
     const r1 = rnd(20), r2 = rnd(20);
     const elegido = adv === 'advantage' ? Math.max(r1, r2) : adv === 'disadvantage' ? Math.min(r1, r2) : r1;
     const base = adv === 'advantage' ? `d20: ${elegido} (ventaja: ${r1}, ${r2})` : adv === 'disadvantage' ? `d20: ${elegido} (desventaja: ${r1}, ${r2})` : `d20: ${elegido}`;
     const partes = [base];
     if (mod) partes.push(`mod ${fmtMod(mod)}`);
     let total = elegido + mod;
-    const cat = ALIAS_CATEGORIA[o.categoria] || o.categoria;
+    const cat = cat0;
     if (cat && typeof FichaBuffs !== 'undefined' && FichaBuffs.tirarDados) {
       const extra = FichaBuffs.tirarDados(cat);
       extra.partes.forEach(pt => { total += pt.valor; partes.push(pt.texto); });
     }
+    // Bless / Bane: casillas manuales `#buff-bless` y `#debuff-bane` de la ficha (solo ataques y salvaciones).
+    const extras = (o.extras || []).slice();
+    if (!o.sinBlessBane && (cat0 === 'ataque' || cat0 === 'salvaciones')) {
+      const on = (id) => { const c = document.getElementById(id); return !!(c && c.checked); };
+      if (on('buff-bless')) extras.push({ nombre: 'Bless', dado: { count: 1, sides: 4 }, signo: 1 });
+      if (on('debuff-bane')) extras.push({ nombre: 'Bane', dado: { count: 1, sides: 4 }, signo: -1 });
+    }
+    // Dados extra propios de la ficha (p. ej. Bless +1d4, Bane −1d4): extras = [{ nombre, dado:{count,sides}, signo:1|-1 }]
+    extras.forEach(x => {
+      const p = parsear(`${x.dado.count || 1}d${x.dado.sides}`);
+      if (p.error) return;
+      const r = evaluar(p), signo = x.signo === -1 ? -1 : 1;
+      total += signo * r.total;
+      partes.push(`${x.nombre}: ${signo < 0 ? '−' : '+'}${r.total} (${x.dado.count || 1}d${x.dado.sides})`);
+    });
+    if (cat0 === 'ataque') { if (elegido === 20) partes.push('¡CRÍTICO!'); else if (elegido === 1) partes.push('Pifia (1 natural)'); }
+    (o.notas || []).forEach(n => partes.push(n));
     mostrar(total, etiqueta + nota, partes.join(' | '));
     return { total, d20: elegido, adv, detalle: partes.join(' | ') };
   }
@@ -287,10 +315,14 @@
     fab.appendChild(badge);
     fab.addEventListener('click', () => (abierto() ? cerrar() : abrir()));
 
+    // Ficha de ventaja siempre a la vista: un toque pasa Normal → Ventaja → Desventaja (el <select> del panel es la fuente de verdad).
+    const chip = el('button', 'dados-adv'); chip.type = 'button'; chip.id = 'dados-adv-chip';
+    chip.setAttribute('aria-label', 'Tipo de la próxima tirada: toca para cambiar');
+
     const panel = el('section', 'dados-panel'); panel.id = 'dados-panel'; panel.hidden = true;
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Lanzador de dados e historial');
 
-    const cab = el('header', 'dados-cab');
+    const cab = el('div', 'dados-cab');
     cab.appendChild(el('h3', null, '🎲 Dados'));
     const x = el('button', 'dados-cerrar', '✖'); x.type = 'button'; x.setAttribute('aria-label', 'Cerrar lanzador de dados');
     x.addEventListener('click', cerrar); cab.appendChild(x);
@@ -346,8 +378,14 @@
 
     cuerpo.append(res, error, filaAdv, rapidos, filaMod, form, tabs, lista, pie);
     panel.append(cab, cuerpo);
-    raiz.append(fab, panel);
+    raiz.append(chip, fab, panel);
     document.body.appendChild(raiz);
+
+    const ROT = { normal: ['🎯 Normal', 'advantage'], advantage: ['🟢 Ventaja', 'disadvantage'], disadvantage: ['🔴 Desventaja', 'normal'] };
+    function pintarChip() { const v = adv.value in ROT ? adv.value : 'normal'; chip.textContent = ROT[v][0]; chip.dataset.valor = v; }
+    chip.addEventListener('click', () => { adv.value = ROT[adv.value in ROT ? adv.value : 'normal'][1]; adv.dispatchEvent(new Event('change', { bubbles: true })); });
+    adv.addEventListener('change', pintarChip);
+    pintarChip();
 
     Object.assign(u, { raiz, fab, badge, panel, total, etiqueta, detalle, error, adv, formula: inp, lista, tabs: tb });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && abierto()) { e.preventDefault(); cerrar(); } });
