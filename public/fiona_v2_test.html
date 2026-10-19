@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiona Faraway — prueba ficha-common.js</title>
+<style>
+ :root {
+   --bg-primary: #14100c; --bg-card: #1f1a14; --bg-card-header: #241e17;
+   --accent-gold: #d4af37; --text-light: #f1ece3; --text-muted: #a89f8e;
+   --border-color: #3a2f22; --surface-mid: #221c15; --surface-strong: #140f0b;
+ }
+ * { box-sizing: border-box; }
+ body { margin: 0; background: var(--bg-primary); color: var(--text-light); font-family: system-ui, sans-serif; padding: 20px; }
+ .sheet { max-width: 960px; margin: 0 auto; }
+ h1 { font-family: Georgia, serif; color: var(--accent-gold); margin: 0 0 4px; }
+ .test-banner { background: #2a4030; border: 1px solid #4a7a52; color: #bfe8c4; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 16px; }
+ .readonly-banner { background: #3182ce; color: #fff; text-align: center; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; display: none; }
+ .readonly-mode input, .readonly-mode textarea, .readonly-mode select { pointer-events: none !important; opacity: .65; }
+ .readonly-mode button { pointer-events: none !important; opacity: .5; }
+ .toprow { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+ .toprow a { color: var(--accent-gold); text-decoration: none; font-size: 0.9rem; }
+ .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+ .card h2 { font-family: Georgia, serif; color: var(--accent-gold); font-size: 1.05rem; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; }
+ .slot-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+ .slot-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 14px; text-align: center; min-width: 90px; }
+ .slot-card h4 { margin: 0 0 6px; font-size: 0.8rem; color: var(--text-muted); font-weight: normal; }
+ .slot-card .slot-val { font-size: 1.3rem; font-weight: bold; color: var(--accent-gold); }
+ table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+ th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+ th { background: rgba(0,0,0,0.3); color: var(--accent-gold); font-size: 0.8rem; }
+ tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ .tag { display: inline-block; background: var(--surface-strong); color: var(--accent-gold); border: 1px solid var(--border-color); border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; white-space: nowrap; }
+ .tag-atk { background: #2a2016; color: #e8a95c; border-color: #6b4a22; font-size: 0.68rem; }
+ .spell-form-row-dado select { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 5px 7px; font-size: 0.8rem; }
+ .inventory-armadura-campos { display: flex; gap: 6px; }
+ .inventory-armadura-campos select { background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 6px; padding: 7px 9px; font-size: 0.85rem; }
+ .btn-roll { background: linear-gradient(135deg,#2b4c38,#1c3325); border: 1px solid #4a7a52; color: #eee; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+ .btn-roll-sm { font-size: 0.7rem !important; padding: 3px 7px !important; }
+ .btn-clear { background: none; border: 1px solid #823a3a; color: #e08888; border-radius: 6px; padding: 3px 7px; cursor: pointer; font-size: 0.78rem; }
+ .spell-item-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+ .spell-add-btn, .inventory-add-btn { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+ .spell-form, .inventory-form { background: var(--surface-mid); border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+ .spell-form input, .spell-form textarea, .inventory-form input, .inventory-form textarea {
+   background: var(--surface-strong); border: 1px solid var(--border-color); color: var(--text-light);
+   border-radius: 6px; padding: 7px 9px; font-size: 0.85rem; font-family: inherit; width: 100%;
+ }
+ .spell-form-label { margin: 0; font-weight: bold; color: var(--accent-gold); font-size: 0.85rem; }
+ .spell-form-row-dado { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); flex-wrap: wrap; }
+ .spell-form-row-dado input { width: 70px; }
+ .spell-form-mini-label { white-space: nowrap; }
+ .spell-form-actions, .inventory-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+ .spell-form-actions button, .inventory-form-actions button {
+   padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+   border: 1px solid var(--border-color); background: none; color: var(--text-muted);
+ }
+ .spell-form-actions button.add, .inventory-form-actions button:last-child { background: var(--accent-gold); color: #000; border: none; }
+ .inventory-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .inventory-item:last-child { border-bottom: none; }
+ .inventory-item-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+ .inventory-item-name { font-weight: 600; }
+ .inventory-item-meta { color: var(--text-muted); font-size: 0.78rem; }
+ .inventory-item-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+ .inventory-item-actions { display: flex; gap: 4px; }
+ .inventory-item-actions button { background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+ .inventory-empty { color: var(--text-muted); font-size: 0.85rem; }
+ label { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+ .nota-test { font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="test-banner">
+    🧪 <strong>Página de prueba</strong> — valida <code>ficha-common.js</code> contra Firebase real, pero
+    usa un personaje aislado (<code>fiona_faraway_v2test</code>). No lee ni escribe la ficha real de Fiona.
+  </div>
+  <div id="readonly-banner" class="readonly-banner">👁️ Estás viendo esta ficha en modo lectura</div>
+
+  <div class="toprow">
+    <div>
+      <h1>Fiona Faraway (prueba)</h1>
+      <div style="color:var(--text-muted);font-size:0.9rem;">Editor unificado de hechizos + inventario, sobre ficha-common.js</div>
+    </div>
+    <a href="index.html">← Volver</a>
+  </div>
+
+  <div class="card">
+    <h2>Espacios de Conjuro</h2>
+    <div class="slot-row" id="slots-row">
+      <div class="slot-card"><h4>Nivel 1</h4><div class="slot-val" id="slot-1-cur">4</div></div>
+      <div class="slot-card"><h4>Nivel 2</h4><div class="slot-val" id="slot-2-cur">3</div></div>
+      <div class="slot-card"><h4>Nivel 3</h4><div class="slot-val" id="slot-3-cur">3</div></div>
+      <div class="slot-card"><h4>Nivel 4</h4><div class="slot-val" id="slot-4-cur">2</div></div>
+    </div>
+    <p class="nota-test">Usar un hechizo con costo de espacio descuenta acá, y se guarda en Firebase de verdad.</p>
+  </div>
+
+  <div class="card">
+    <h2>✨ Hechizos <button type="button" class="spell-add-btn" onclick="FichaHechizos.editor.mostrarFormulario()">➕ Agregar Hechizo</button></h2>
+    <table>
+      <thead>
+        <tr><th>Nivel</th><th>Conjuro</th><th>Tiempo / Rango</th><th>Resumen</th><th>Acción</th></tr>
+      </thead>
+      <tbody id="hechizos-lista"></tbody>
+    </table>
+    <div id="hechizos-form-container"></div>
+  </div>
+
+  <div class="card">
+    <h2>🎒 Inventario <button type="button" class="inventory-add-btn" onclick="FichaInventario.editor.mostrarFormulario()">➕ Agregar Ítem</button></h2>
+    <div id="inventario-lista"></div>
+    <div id="inventario-form-container"></div>
+  </div>
+</div>
+
+<!-- === CONFIG PROPIA DE ESTA FICHA (antes de cargar el motor compartido) === -->
+<script>
+  const FICHA_CONFIG = {
+    personajeId: 'fiona_faraway_v2test',
+    nombrePersonaje: 'Fiona Faraway (prueba)',
+    sistemaPropio: 'dnd',
+    slotsIds: ['slot-1-cur', 'slot-2-cur', 'slot-3-cur', 'slot-4-cur'],
+    hechizosIniciales: [
+      { nombre: 'Poison Spray', nivel: 0, tiempo: '1 Acción', alcance: '30 ft', area: '', resumen: 'Daño veneno si falla la salvación.', duracion: 'Instantáneo', formula: { count: 2, sides: 12, mod: 0 }, slotCost: null, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16 } },
+      { nombre: 'Guidance', nivel: 0, tiempo: '1 Acción', alcance: 'Toque', area: '', resumen: 'Objetivo suma 1d4 a un chequeo.', duracion: '1 min, Conc.', formula: { count: 1, sides: 4, mod: 0 }, slotCost: null, ataque: null },
+      { nombre: 'Cure Wounds', nivel: 1, tiempo: '1 Acción', alcance: 'Toque', area: '', resumen: 'Cura 2d8 + WIS.', duracion: 'Instantáneo', formula: { count: 2, sides: 8, mod: 5 }, slotCost: 1, ataque: null },
+      { nombre: 'Healing Word', nivel: 1, tiempo: '1 Acción Adicional', alcance: '60 ft', area: '', resumen: 'Cura 2d4 + WIS a distancia.', duracion: 'Instantáneo', formula: { count: 2, sides: 4, mod: 5 }, slotCost: 1, ataque: null },
+      { nombre: 'Faerie Fire', nivel: 1, tiempo: '1 Acción', alcance: '60 ft', area: 'Cubo de 20 ft', resumen: 'Ventaja en ataques contra afectados si falla la salvación.', duracion: '1 min, Conc.', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
+      { nombre: "Melf's Acid Arrow", nivel: 2, tiempo: '1 Acción', alcance: '90 ft', area: '', resumen: 'Dardo ácido a un objetivo.', duracion: 'Instantáneo', formula: { count: 4, sides: 4, mod: 0 }, slotCost: 2, ataque: { tipo: 'ataque', bonus: 7 } },
+      { nombre: 'Conjure Animals (upcast variable)', nivel: 3, tiempo: '1 Acción', alcance: '60 ft', area: '', resumen: 'Invoca criaturas espectrales; el daño y la cantidad escalan según el nivel de espacio usado al lanzarlo, elegido en el momento.', duracion: '10 min, Conc.', formula: null, slotCost: null, especial: true, ataque: null },
+    ],
+    inventarioInicial: [
+      { nombre: 'Bastón de Mando', cantidad: 1, descripcion: 'Foco de lanzamiento druídico.', equipado: true, categoria: 'general', consumible: false, modAC: null, dexCap: null },
+      { nombre: 'Armadura de Cuero Tachonado', cantidad: 1, descripcion: 'Armadura ligera.', equipado: true, categoria: 'armadura', consumible: false, modAC: 12, dexCap: null },
+      { nombre: 'Flechas', cantidad: 20, descripcion: 'Para el arco corto.', equipado: false, categoria: 'municion', consumible: false, modAC: null, dexCap: null },
+      { nombre: 'Gema de ámbar', cantidad: 1, descripcion: 'Vale unos 100 po.', equipado: false, categoria: 'bienes', consumible: false, modAC: null, dexCap: null },
+      { nombre: 'Poción de curación', cantidad: 2, descripcion: '2d4+2 HP al beberla.', equipado: false, categoria: 'general', consumible: true, modAC: null, dexCap: null },
+    ],
+  };
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="ficha-common.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+
+  const PERSONAJE_ID = FICHA_CONFIG.personajeId;
+  const SISTEMA_PERSONAJE_PROPIO = FICHA_CONFIG.sistemaPropio;
+  let charRef = null;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+
+  function bloquearPorSistemaIncorrecto(sistemaCampana) {
+    document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0f0f12;color:#e2e8f0;font-family:'Segoe UI',Tahoma,sans-serif;text-align:center;padding:30px;gap:14px;">
+      <div style="font-size:3rem;">⚠️</div>
+      <h1 style="font-size:1.3rem;color:#e0b84a;">Ficha fuera de sistema</h1>
+      <p style="max-width:420px;color:#94a3b8;">Esta ficha de prueba es de <strong>D&D</strong> y la campaña seleccionada es de otro sistema. No se puede abrir desde esa campaña.</p>
+      <a href="index.html?campana=${codigoCampana}" style="color:#e0b84a;text-decoration:underline;">← Volver al selector de personajes</a>
+    </div>`;
+  }
+
+  let ownerReparado = false;
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (!user) {
+      console.warn("Ficha de prueba sin sesión activa. Redirigiendo...");
+      window.location.href = "index.html";
+      return;
+    }
+
+    if (codigoCampana) {
+      const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
+      const sistemaCampana = sistemaSnap.val();
+      if (sistemaCampana && sistemaCampana !== SISTEMA_PERSONAJE_PROPIO) {
+        bloquearPorSistemaIncorrecto(sistemaCampana);
+        return;
+      }
+      charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+    } else {
+      charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+    }
+
+    FichaComun.setCharRef(charRef);
+    FichaComun.iniciarEditorHechizos();
+    FichaComun.iniciarEditorInventario();
+    FichaComun.sincronizarDatosDesdeNube();
+
+    const gmRefPromise = codigoCampana
+      ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+      : Promise.resolve(true);
+
+    gmRefPromise.then(soyElGM => {
+      charRef.on('value', snap => {
+        const p = snap.val();
+        if (!p) return;
+
+        if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+          ownerReparado = true;
+          charRef.child('owner').set(user.uid);
+          return;
+        }
+
+        const esMio = codigoCampana ? (p.owner === user.uid) : true;
+        const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+        FichaComun.aplicarModoLectura(soloLectura);
+      });
+    });
+  });
+</script>
+</body>
+</html>
