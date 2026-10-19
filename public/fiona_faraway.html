@@ -182,6 +182,21 @@
  .buff-chip button, .buff-dano-btn { background: none; border: none; color: #e08888; cursor: pointer; font-size: 0.8rem; }
  .buff-dano-btn { border: 1px solid #4a7a52; border-radius: 6px; color: #dff3e3; padding: 3px 8px; }
  .buffs-vacio { color: var(--text-muted); }
+ .reputacion-item { border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+ .reputacion-item:last-child { border-bottom: none; }
+ .reputacion-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+ .reputacion-faccion { font-weight: 600; }
+ .reputacion-controles { display: flex; align-items: center; gap: 6px; }
+ .reputacion-controles button { background: none; border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; cursor: pointer; font-size: 0.8rem; padding: 2px 6px; }
+ .reputacion-valor { font-weight: 800; color: var(--accent-gold); min-width: 24px; text-align: center; display: inline-block; }
+ .reputacion-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+ .reputacion-empty { color: var(--text-muted); font-size: 0.85rem; }
+ .reputacion-form { background: var(--surface-mid, rgba(0,0,0,0.2)); border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+ .reputacion-form input, .reputacion-form textarea { background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 7px 9px; font-size: 0.85rem; font-family: inherit; width: 100%; }
+ .reputacion-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+ .reputacion-form-actions button { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-muted); }
+ .reputacion-form-actions button:last-child { background: var(--accent-gold); color: #000; border: none; }
+ .reputacion-add-btn { background: var(--accent-gold); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
  .conc-casilla { background: #2a2540; border: 1px solid #5a4f8a; color: #d9d2f5; border-radius: 14px; padding: 3px 10px; cursor: pointer; font-size: 0.78rem; }
  .buff-efecto-row select, .buff-efecto-row input { background: var(--surface-strong, #0f0f12); border: 1px solid var(--border-color); color: var(--text-light, #fff); border-radius: 6px; padding: 4px 6px; font-size: 0.78rem; }
  .hechizos-adicionales-box { margin-top: 14px; background: var(--surface-mid); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; }
@@ -2167,6 +2182,14 @@
 <div id="inventario-form-container"></div>
 <div class="inventory-list" id="inventario-lista"></div>
 </div>
+</details><details class="v2-section" id="section-reputacion">
+<summary>🏅 Reputación / Honor</summary>
+<div class="section-content">
+<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Tracker personalizable: agregá facciones, ajustá su valor con ➖/➕, renombralas o quitalas.</p>
+<button type="button" class="reputacion-add-btn" onclick="FichaReputacion.editor.mostrarFormulario()">➕ Agregar Facción</button>
+<div id="reputacion-lista"></div>
+<div id="reputacion-form-container"></div>
+</div>
 </details><details class="v2-section" id="section-background">
 <summary>📖 8. Trasfondo y Características del Personaje</summary>
 <div class="section-content">
@@ -2458,6 +2481,7 @@
             FichaComun.setCharRef(charRef);
             FichaComun.iniciarEditorHechizos();
             FichaComun.iniciarEditorInventario();
+            FichaComun.iniciarEditorReputacion();
             FichaComun.sincronizarDatosDesdeNube();
 
             // Bitácora (ficha-common.js): ya maneja tanto el caso con campaña como sin ella.
@@ -3479,7 +3503,7 @@
         if (modoLectura) return;
         if (e.target.matches('input, textarea, select, [contenteditable="true"]')) {
             const fieldId = e.target.id;
-            if (fieldId && charRef) {
+            if (fieldId && charRef && !FichaComun.esCampoEfimero(fieldId)) {
                 const val = e.target.type === 'checkbox' ? e.target.checked : (e.target.isContentEditable ? e.target.innerText : e.target.value);
                 charRef.child('datos/' + fieldId).set(val);
             }
@@ -3490,7 +3514,7 @@
         if (modoLectura) return;
         if (e.target.matches('input[type="checkbox"], select')) {
             const fieldId = e.target.id;
-            if (fieldId && charRef) {
+            if (fieldId && charRef && !FichaComun.esCampoEfimero(fieldId)) {
                 const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
                 charRef.child('datos/' + fieldId).set(val);
             }
@@ -3503,6 +3527,7 @@
             const data = snapshot.val();
             if (!data) return;
             Object.keys(data).forEach(id => {
+                if (FichaComun.esCampoEfimero(id)) return; // formularios temporales: nunca se restauran desde datos/
                 const el = document.getElementById(id);
                 if (el) {
                     if (el.type === 'checkbox') {

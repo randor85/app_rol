@@ -93,6 +93,8 @@
           editoresDeLista[id].resincronizarDesdeValor(data[id]);
           return;
         }
+        // Valores viejos de formularios temporales que quedaron en datos/ no deben pisar lo que se está escribiendo.
+        if (esCampoEfimero(id)) return;
         const el = document.getElementById(id);
         if (!el) return;
         if (el.type === 'checkbox') {
@@ -1256,6 +1258,6 @@
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,
     iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
-    registrarFuenteBuffs, notificarBuffs, iniciarCA, iniciarConcentracion,
+    registrarFuenteBuffs, notificarBuffs, iniciarCA, iniciarConcentracion, esCampoEfimero,
   };
 })();
