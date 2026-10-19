@@ -88,28 +88,37 @@
     charRef.child('datos').on('value', (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
-      Object.keys(data).forEach(id => {
-        if (editoresDeLista[id]) {
-          editoresDeLista[id].resincronizarDesdeValor(data[id]);
-          return;
-        }
-        // Valores viejos de formularios temporales que quedaron en datos/ no deben pisar lo que se está escribiendo.
-        if (esCampoEfimero(id)) return;
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (el.type === 'checkbox') {
-          if (el.checked !== data[id]) el.checked = data[id];
-        } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
-          if (el.textContent !== String(data[id]) && document.activeElement !== el) el.textContent = data[id];
-        } else if (el.value !== String(data[id]) && document.activeElement !== el) {
-          el.value = data[id];
-        }
-      });
+      ultimosDatos = data;
+      aplicarDatosAlDOM(data);
       // Los valores se aplican por código (sin evento 'input'): avisar para que
       // las estadísticas derivadas (bono de competencia, saves, ataque...) recalculen.
       document.dispatchEvent(new CustomEvent('ficha:datos-sincronizados'));
     });
   }
+
+  let ultimosDatos = null;
+  function aplicarDatosAlDOM(data) {
+    Object.keys(data).forEach(id => {
+      if (editoresDeLista[id]) {
+        editoresDeLista[id].resincronizarDesdeValor(data[id]);
+        return;
+      }
+      // Valores viejos de formularios temporales que quedaron en datos/ no deben pisar lo que se está escribiendo.
+      if (esCampoEfimero(id)) return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') {
+        if (el.checked !== data[id]) el.checked = data[id];
+      } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+        if (el.textContent !== String(data[id]) && document.activeElement !== el) el.textContent = data[id];
+      } else if (el.value !== String(data[id]) && document.activeElement !== el) {
+        el.value = data[id];
+      }
+    });
+  }
+  // Para elementos que se dibujan DESPUÉS de la primera sincronización (casillas nuevas al subir de nivel):
+  // vuelve a volcar el último snapshot conocido, sin disparar eventos.
+  function reaplicarDatos() { if (ultimosDatos) aplicarDatosAlDOM(ultimosDatos); }
 
   // ============================================================
   // 4. MODO LECTURA — idéntico al del resto de la flota.
@@ -1317,7 +1326,7 @@
   }
 
   window.FichaComun = {
-    setCharRef, guardarCampo, sincronizarDatosDesdeNube, aplicarModoLectura,
+    setCharRef, guardarCampo, sincronizarDatosDesdeNube, reaplicarDatos, aplicarModoLectura,
     crearEditorDeLista, iniciarEditorHechizos, iniciarEditorInventario,
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,

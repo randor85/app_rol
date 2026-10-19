@@ -5,7 +5,8 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "**/*_draft.html"
+      "**/*_draft.html",
+      "**/personajes/_*"
     ]
   },
   "database": {

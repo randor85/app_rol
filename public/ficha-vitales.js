@@ -137,7 +137,7 @@
         const sp = document.createElement('span'); sp.className = 'pip dado'; sp.setAttribute('aria-hidden', 'true');
         lab.append(cb, sp); cont.appendChild(lab);
       });
-      document.dispatchEvent(new CustomEvent('ficha:datos-sincronizados'));
+      if (window.FichaComun) FichaComun.reaplicarDatos();
     }
     const libres = lista.filter((_, i) => { const e = $('hd-' + (i + 1)); return e && !e.checked; }).length;
     const et = $('hd-cuenta'); if (et) et.textContent = libres + ' de ' + lista.length + ' disponibles';
@@ -182,7 +182,7 @@
     const cuerpo = cont.querySelector('.recurso-valor'); if (!cuerpo) return;
     if (r.tipo === 'pips') {
       const n = maxDe(r);
-      if (cuerpo.children.length !== n) {
+      if (cuerpo.querySelectorAll('input[type="checkbox"]').length !== n) {
         cuerpo.textContent = '';
         const grupo = document.createElement('div'); grupo.className = 'pips'; grupo.setAttribute('role', 'group'); grupo.setAttribute('aria-label', r.nombre);
         for (let i = 1; i <= n; i++) {
@@ -193,7 +193,7 @@
           lab.append(cb, sp); grupo.appendChild(lab);
         }
         cuerpo.appendChild(grupo);
-        document.dispatchEvent(new CustomEvent('ficha:datos-sincronizados'));
+        if (window.FichaComun) FichaComun.reaplicarDatos();
       }
       const usados = Array.from(cuerpo.querySelectorAll('input:checked')).length;
       const e = cont.querySelector('.recurso-cuenta'); if (e) e.textContent = (n - usados) + ' / ' + n;

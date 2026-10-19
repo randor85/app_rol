@@ -1070,7 +1070,7 @@
   }
 
   window.FichaNivel = {
-    iniciar, abrir, cerrar, deshacer, nivelPorXP, nivelPendiente, actualizarAviso, descanso,
+    iniciar, abrir, cerrar, deshacer, nivelPorXP, tablaXP: () => ((cfg && cfg.tablaXP) || TABLA_XP_DEFECTO), nivelPendiente, actualizarAviso, descanso,
     nivelClase, nivelTotal, registro: leerRegistro, subclaseDe, espaciosPara, refrescar: refrescarTodo,
     get _est() { return est; }
   };

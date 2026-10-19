@@ -176,6 +176,14 @@
     return { total, detalle: trozos.join(' ') };
   }
 
+  /** Evalúa una fórmula SIN mostrarla ni anotarla (para sumar partes de una tirada propia). Devuelve { total, detalle } o { error }. */
+  function calcular(expr) {
+    let texto = expr;
+    if (expr && typeof expr === 'object') texto = `${expr.count || 1}d${expr.sides}${expr.mod ? (expr.mod > 0 ? '+' : '') + expr.mod : ''}`;
+    const p = parsear(texto);
+    return p.error ? { error: p.error } : evaluar(p);
+  }
+
   /** Tira una fórmula o { count, sides, mod }. Devuelve { total, detalle } o { error }. */
   function tirar(expr, etiqueta) {
     let texto = expr;
@@ -424,5 +432,5 @@
     if (d.texto) registrarUso(d.texto, d.tipo, d.detalle);
   });
 
-  window.FichaDados = { iniciar, tirar, d20, moneda, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar, _parsear: parsear };
+  window.FichaDados = { iniciar, tirar, calcular, d20, moneda, mostrar, registrarUso, historial, limpiar, getVentaja, abrir, cerrar, _parsear: parsear };
 })();

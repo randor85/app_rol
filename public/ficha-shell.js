@@ -1,0 +1,388 @@
+/*
+ * ficha-shell.js — carcasa única de la ficha: ficha.html?pj=<id>[&campana=<código>]
+ *
+ * Una sola página para todos los personajes. Lo que cambia entre personajes es un archivo de datos
+ * (personajes/<id>.js) con la forma de abajo; todo lo demás (dibujo, motores, dados, grupo, nivel) es común.
+ *
+ * Orden de arranque:
+ *   1) lee ?pj y carga personajes/<id>.js            → window.PERSONAJES[id]
+ *   2) arma FICHA_CONFIG para el motor y dibuja la ficha (ficha-plantilla.js)
+ *   3) carga fragmentos HTML de secciones propias    (personajes/<id>/<sección>.html)
+ *   4) carga el motor y los módulos (ficha-common, ficha-dados, ficha-vitales, ficha-party, ficha-nivel)
+ *   5) con la sesión iniciada: conecta Firebase y arranca cada motor sobre el DOM ya dibujado
+ *
+ * FORMA DE personajes/<id>.js
+ *   window.PERSONAJES = window.PERSONAJES || {};
+ *   PERSONAJES.<id> = {
+ *     id, nombre, sistema:'dnd', paleta:'bosque',
+ *     subtitulo, chips:[...], xp,
+ *     clases:[{ nombre:'Druid', dado:8, nivelInicial:8, caster:'full'|'half'|'third'|'pact', subclase }],   (CONFIG_NIVEL.clases)
+ *     hpBase,                       PG máximos sin subidas registradas
+ *     velocidad:30, habilidadAtaque:'STR', habilidadConjuro:'WIS', sinConjuros:false,
+ *     atributos:{ STR:13, … }, salvaciones:['INT','WIS'], habilidades:{ 'Insight':'comp'|'exp', … }, competencias:'html',
+ *     ca:{ fija:17 } | { sinArmadura:() => 10 + FichaAtributos.modDe('DEX') + …, texto:'10 + DEX + WIS' },
+ *     ataques:[{ nombre, habilidad:'STR', competente:true, bonoExtra:0, dano:{count,sides,mod:'STR'|n}, textoDano, notas, extras:[{nombre,dado}] }],
+ *     hechizos:[…], inventario:[…], reputacion:[…],                      (semillas; mismo formato que FICHA_CONFIG)
+ *     recursos:[ ver ficha-vitales.js ],
+ *     rasgos:[{ id:'txt-feat-…', tag, titulo, html }],
+ *     secciones:[{ id, icono, titulo, fragmento:'personajes/<id>/x.html' | html }],
+ *     monedas:[{ id:'gp-val', etiqueta:'Oro (po)' }], trasfondo:{ html },
+ *     ganchos:{ resolverSlotId, alGastarSlot, ventajaForzada },          (opcionales, ver ficha-common.js)
+ *     iniciar(ctx)                                                       (opcional: código propio de la clase o del personaje)
+ *   };
+ */
+(function () {
+  'use strict';
+
+  const params = new URLSearchParams(location.search);
+  const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
+  const codigoCampana = params.get('campana');
+  const raiz = () => document.getElementById('ficha-raiz');
+  const $ = (id) => document.getElementById(id);
+  const num = (v, d) => { const n = parseInt(v, 10); return isNaN(n) ? d : n; };
+
+  const FIREBASE = {
+    apiKey: 'AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU', authDomain: 'personajes-rol.firebaseapp.com',
+    databaseURL: 'https://personajes-rol-default-rtdb.firebaseio.com', projectId: 'personajes-rol',
+    storageBucket: 'personajes-rol.appspot.com', messagingSenderId: '81108671440', appId: '1:81108671440:web:effb710af86054f4c6f7d5',
+  };
+
+  function mensaje(html) {
+    const r = raiz();
+    if (r) r.innerHTML = `<div class="aviso aviso-mal" role="alert" style="margin:var(--sp-4)"><span>${html}</span></div>`;
+  }
+  function cargarScript(src) {
+    return new Promise((ok, mal) => {
+      const s = document.createElement('script');
+      s.src = src; s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar ' + src));
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ---------- toasts mínimos ---------- */
+  function toast(msg) {
+    const z = $('toast-zona'); if (!z) return;
+    const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+    z.appendChild(t); setTimeout(() => t.remove(), 2600);
+  }
+
+  let P = null;
+  let SKILLS_CFG = [];
+
+  /* ---------- FICHA_CONFIG para el motor ---------- */
+  function armarConfig() {
+    const g = P.ganchos || {};
+    const cfg = {
+      personajeId: P.id,
+      nombrePersonaje: P.nombre,
+      sistemaPropio: P.sistema || 'dnd',
+      wrapperSelector: '.ficha',
+      mostrarTirada: (total, etiqueta, detalle) => window.FichaDados.mostrar(total, etiqueta, detalle),
+      habilidadConjuro: P.habilidadConjuro || null,
+      slotsIds: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `slot-${n}-cur`),
+      hechizosIniciales: P.hechizos || [],
+      inventarioInicial: P.inventario || [],
+      reputacionInicial: P.reputacion || [],
+      resumenClase: null,
+    };
+    if (P.ca && P.ca.fija != null) cfg.caBase = P.ca.fija;
+    if (P.ca && P.ca.sinArmadura) { cfg.caSinArmadura = P.ca.sinArmadura; cfg.caSinArmaduraTexto = P.ca.texto || ''; }
+    ['resolverSlotId', 'alGastarSlot', 'ventajaForzada'].forEach(k => { if (g[k]) cfg[k] = g[k]; });
+    window.FICHA_CONFIG = cfg;
+    window.CONFIG_NIVEL = { clases: P.clases.map(c => Object.assign({}, c)) };
+  }
+
+  /* ---------- fragmentos de secciones propias ---------- */
+  async function cargarFragmentos() {
+    const nodos = Array.from(document.querySelectorAll('.seccion-propia[data-fragmento]')).filter(n => n.dataset.fragmento);
+    await Promise.all(nodos.map(async (n) => {
+      try {
+        const r = await fetch(n.dataset.fragmento, { cache: 'no-cache' });
+        if (!r.ok) throw new Error(r.status);
+        n.innerHTML = await r.text();
+      } catch (e) { n.innerHTML = '<p class="texto-suave">No se pudo cargar esta sección.</p>'; }
+    }));
+  }
+
+  /* ---------- espacios de conjuro (tabla por clase y nivel) ---------- */
+  function espaciosActuales() {
+    if (P.sinConjuros || !window.FichaNivel) return { slots: [], pacto: null };
+    const niv = {};
+    window.CONFIG_NIVEL.clases.forEach(c => { niv[c.nombre] = FichaVitales.nivelClase(c.nombre); });
+    return FichaNivel.espaciosPara(niv);
+  }
+  function renderEspacios() {
+    const cont = $('espacios-conjuro'); if (!cont) return;
+    const e = espaciosActuales();
+    const actuales = {};
+    cont.querySelectorAll('[data-slot-nivel]').forEach(c => { actuales[c.dataset.slotNivel] = c; });
+    e.slots.forEach((max, i) => {
+      const n = i + 1; let card = actuales[n];
+      if (max <= 0) { if (card) card.remove(); return; }
+      if (!card) {
+        card = document.createElement('div'); card.className = 'slot-card'; card.dataset.slotNivel = String(n);
+        card.innerHTML = `<h4>Nivel ${n}</h4><div class="contador" role="group" aria-label="Espacios de nivel ${n}"><button type="button" data-slot="${n}" data-delta="-1" aria-label="Gastar un espacio de nivel ${n}">−</button><div><span class="slot-val contador-valor" id="slot-${n}-cur">${max}</span><span class="contador-max"> / <span id="slot-${n}-max">${max}</span></span></div><button type="button" data-slot="${n}" data-delta="1" aria-label="Recuperar un espacio de nivel ${n}">+</button></div>`;
+        cont.appendChild(card);
+      } else { const m = $(`slot-${n}-max`); if (m) m.textContent = String(max); }
+    });
+    const info = $('pacto-info');
+    if (e.pacto) {
+      let card = cont.querySelector('[data-slot-pacto]');
+      if (!card) {
+        card = document.createElement('div'); card.className = 'slot-card'; card.dataset.slotPacto = '1';
+        card.innerHTML = `<h4>Magia de pacto (nivel <span id="slot-pact-nivel">${e.pacto.nivel}</span>)</h4><div class="contador" role="group" aria-label="Espacios de pacto"><button type="button" data-slot="pact" data-delta="-1" aria-label="Gastar un espacio de pacto">−</button><div><span class="slot-val contador-valor" id="slot-pact-cur">${e.pacto.count}</span><span class="contador-max"> / <span id="slot-pact-max">${e.pacto.count}</span></span></div><button type="button" data-slot="pact" data-delta="1" aria-label="Recuperar un espacio de pacto">+</button></div>`;
+        cont.appendChild(card);
+      } else { $('slot-pact-max').textContent = String(e.pacto.count); $('slot-pact-nivel').textContent = String(e.pacto.nivel); }
+      if (info) info.textContent = 'Los espacios de pacto se recuperan con un descanso corto o largo.';
+    }
+    if (!cont.children.length && info) info.textContent = 'Sin espacios de conjuro todavía.';
+  }
+  function maxEspacios() {
+    const e = espaciosActuales(); const o = {};
+    e.slots.forEach((m, i) => { if (m > 0) o[i + 1] = m; });
+    return o;
+  }
+
+  /* ---------- números derivados que se muestran en varios lugares ---------- */
+  function refrescarDerivados() {
+    if (!window.FichaAtributos) return;
+    const prof = FichaAtributos.profBonusActual();
+    const f = (n) => (n >= 0 ? '+' : '') + n;
+    const set = (id, t) => { const e = $(id); if (e) e.textContent = t; };
+    set('prof-badge', f(prof)); set('prof-badge-2', f(prof)); set('barra-prof', f(prof));
+    set('chip-nivel', 'Nivel ' + FichaVitales.nivelTotal());
+    set('prof-nivel', 'Nivel ' + FichaVitales.nivelTotal());
+    set('barra-ca', ($('ca-total') || {}).textContent || '—');
+    const hm = $('hp-max-total'); if (hm) hm.textContent = String(FichaVitales.hpMaxActual());
+    FichaVitales.pintarHP();
+    // ataques
+    (P.ataques || []).forEach((a, i) => {
+      const bono = FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0);
+      set('atq-bono-' + i, f(bono));
+    });
+    if (P.habilidadConjuro) set('atq-bono-conjuro', f(FichaAtributos.modDe(P.habilidadConjuro) + prof));
+    // estadísticas base
+    set('atk-base', f(FichaAtributos.modDe(P.habilidadAtaque || 'STR') + prof) + ` (${P.habilidadAtaque || 'STR'} + comp.)`);
+    if (P.habilidadConjuro) {
+      set('spell-atk-base', f(FichaAtributos.modDe(P.habilidadConjuro) + prof) + ` (${P.habilidadConjuro} + comp.)`);
+      set('spell-dc-base', (8 + FichaAtributos.modDe(P.habilidadConjuro) + prof) + ` (8 + ${P.habilidadConjuro} + comp.)`);
+    }
+    set('ini-base', 'DEX ' + f(FichaAtributos.modDe('DEX')));
+    set('vel-base', 'Base ' + (P.velocidad || 30) + ' ft');
+    set('hp-max-base', 'Base ' + (P.hpBase || 0) + ' + subidas');
+  }
+
+  function pintarXP() {
+    if (!window.FichaNivel) return;
+    const xp = num(($('xp-val') || {}).value, 0);
+    const tabla = FichaNivel.tablaXP();
+    const nivelXP = FichaNivel.nivelPorXP(xp);
+    const actual = tabla.find(t => t.nivel === nivelXP) || tabla[0];
+    const sig = tabla.find(t => t.nivel === nivelXP + 1);
+    const set = (id, t) => { const e = $(id); if (e) e.textContent = t; };
+    set('xp-siguiente', sig ? '/ ' + sig.xp.toLocaleString('es-AR') + ' para el nivel ' + sig.nivel : '(nivel máximo)');
+    set('xp-nivel-info', 'XP de nivel ' + nivelXP);
+    const barra = $('xp-barra');
+    if (barra) {
+      const pct = sig ? Math.max(0, Math.min(100, Math.round((xp - actual.xp) / (sig.xp - actual.xp) * 100))) : 100;
+      if (barra.firstElementChild) barra.firstElementChild.style.width = pct + '%';
+      barra.setAttribute('aria-valuenow', String(pct));
+    }
+  }
+
+  /* ---------- tiradas (delegado) ---------- */
+  function etiquetaHab(k) { return k; }
+  function bindClicks() {
+    document.addEventListener('click', (e) => {
+      const t = e.target.closest('[data-tirar],[data-ataque],[data-hp-delta],[data-hp-accion],[data-slot],[data-pool],[data-descanso],[data-recurso-formula],.tab');
+      if (!t) return;
+      if (t.dataset.tirar) {
+        const bono = num(t.dataset.bonus || (t.closest('.skill-item') || {}).dataset && t.closest('.skill-item').dataset.bonus, 0);
+        if (t.dataset.tirar === 'skill') return FichaDados.d20({ mod: bono, etiqueta: t.dataset.skill, categoria: 'pruebas' });
+        if (t.dataset.tirar === 'check') return FichaDados.d20({ mod: bono, etiqueta: etiquetaHab(t.dataset.hab) + ' Check', categoria: 'pruebas' });
+        if (t.dataset.tirar === 'save') return FichaDados.d20({ mod: bono, etiqueta: etiquetaHab(t.dataset.hab) + ' Save', categoria: 'salvaciones' });
+        if (t.dataset.tirar === 'iniciativa') {
+          const m = FichaAtributos.modDe('DEX') + num(($('iniciativa-buff') || {}).value, 0) + FichaBuffs.plano('iniciativa');
+          return FichaDados.d20({ mod: m, etiqueta: 'Iniciativa', categoria: 'pruebas' });
+        }
+      }
+      if (t.dataset.ataque !== undefined) return tirarAtaque(t);
+      if (t.dataset.hpDelta) return FichaVitales.cambiarHP(num(t.dataset.hpDelta, 0));
+      if (t.dataset.hpAccion) {
+        const a = t.dataset.hpAccion, cant = $('hp-cantidad');
+        if (a === 'hitdie') return FichaVitales.tirarHitDie();
+        if (a === 'muerte') return FichaVitales.salvacionDeMuerte();
+        const n = num(cant && cant.value, 0); if (cant) cant.value = '';
+        return a === 'dano' ? FichaVitales.recibirDano(n) : FichaVitales.curar(n);
+      }
+      if (t.dataset.slot) {
+        const id = t.dataset.slot === 'pact' ? 'slot-pact-cur' : 'slot-' + t.dataset.slot + '-cur';
+        const nombre = t.dataset.slot === 'pact' ? 'Espacio de pacto' : 'Espacio de nivel ' + t.dataset.slot;
+        const max = num(($(id.replace('-cur', '-max')) || {}).textContent, 99);
+        const cur = num(($(id) || {}).textContent, 0);
+        const d = num(t.dataset.delta, 0);
+        if (cur + d > max) return;
+        return FichaVitales.cambiarContador(id, d, nombre);
+      }
+      if (t.dataset.pool) {
+        const r = (P.recursos || []).find(x => x.campo === t.dataset.pool);
+        return FichaVitales.cambiarPool(t.dataset.pool, num(t.dataset.delta, 0), r && r.nombre);
+      }
+      if (t.dataset.descanso) {
+        const largo = t.dataset.descanso === 'largo';
+        if (!confirm(largo ? '¿Hacer un descanso largo?' : '¿Hacer un descanso corto?')) return;
+        return largo ? FichaVitales.descansoLargo() : FichaVitales.descansoCorto();
+      }
+      if (t.dataset.recursoFormula) {
+        const r = (P.recursos || []).find(x => x.id === t.dataset.recursoFormula);
+        if (r) FichaDados.tirar(typeof r.valor === 'function' ? r.valor(FichaVitales.ctx()) : r.valor, r.nombre);
+        return;
+      }
+      if (t.classList.contains('tab')) {
+        const grupo = t.parentElement;
+        grupo.querySelectorAll('.tab').forEach(b => { const on = b === t; b.setAttribute('aria-selected', String(on)); const p = $(b.getAttribute('aria-controls')); if (p) p.hidden = !on; });
+      }
+    });
+  }
+
+  function tirarAtaque(btn) {
+    const idx = btn.dataset.ataque, modo = btn.dataset.modo;
+    const prof = FichaAtributos.profBonusActual();
+    if (idx === 'conjuro') {
+      const m = FichaAtributos.modDe(P.habilidadConjuro) + prof + num(($('spell-atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque-conjuro');
+      return FichaDados.d20({ mod: m, etiqueta: 'Ataque de conjuro', categoria: 'ataque' });
+    }
+    const a = P.ataques[num(idx, 0)]; if (!a) return;
+    if (modo === 'atk') {
+      const m = FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0) + num(($('atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque');
+      return FichaDados.d20({ mod: m, etiqueta: 'Ataque ' + a.nombre, categoria: 'ataque' });
+    }
+    const dado = modo === 'extra' ? (a.extras[num(btn.dataset.extra, 0)] || {}).dado : a.dano;
+    if (!dado) return;
+    const modDano = modo === 'extra' ? (dado.mod || 0) : (typeof dado.mod === 'string' ? FichaAtributos.modDe(dado.mod) : (dado.mod || 0));
+    const nombre = modo === 'extra' ? a.extras[num(btn.dataset.extra, 0)].nombre : 'Daño ' + a.nombre;
+    const base = FichaDados.calcular({ count: dado.count, sides: dado.sides, mod: modDano });
+    if (base.error) return;
+    let total = base.total, detalle = base.detalle;
+    const ex = FichaBuffs.tirarDados('dano');
+    ex.partes.forEach(p => { total += p.valor; detalle += ' | ' + p.texto; });
+    FichaDados.mostrar(total, nombre, detalle);
+  }
+
+  /* ---------- permisos / hp-max para la pantalla del GM ---------- */
+  function sincronizarHpMaxParaElGM(db, charRef, uid) {
+    const gm = codigoCampana ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === uid) : Promise.resolve(true);
+    gm.then(soyGM => charRef.child('owner').once('value').then(s => {
+      const esMio = !codigoCampana || s.val() === uid;
+      if (!(esMio || soyGM)) return;
+      const escribir = () => { const m = FichaVitales.hpMaxActual(); charRef.child('datos/hp-max').once('value').then(v => { if (num(v.val(), -1) !== m) charRef.child('datos/hp-max').set(m); }); };
+      setTimeout(escribir, 1800);
+      document.addEventListener('ficha:hp', () => { clearTimeout(sincronizarHpMaxParaElGM._t); sincronizarHpMaxParaElGM._t = setTimeout(escribir, 1500); });
+    }));
+  }
+
+  /* ---------- arranque de motores ---------- */
+  async function arrancarMotores(user) {
+    const db = firebase.database();
+    let charRef;
+    if (codigoCampana) {
+      const sis = (await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value')).val();
+      if (sis && sis !== (P.sistema || 'dnd')) { FichaComun.bloquearPorSistemaIncorrecto(sis, codigoCampana); return; }
+      charRef = db.ref(`campanas/${codigoCampana}/personajes/${P.id}`);
+    } else {
+      charRef = db.ref(`usuarios/${user.uid}/personajes/${P.id}`);
+    }
+    FichaComun.setCharRef(charRef);
+
+    FichaDados.iniciar({ personaje: P.nombre, db, codigoCampana, publicarUsos: true });
+    FichaReglas.poblarDesplegable('conditions-dropdown', { idioma: 'es' });
+    // rótulos de las casillas de estado ya dibujadas
+    FichaComun.iniciarEditorHechizos();
+    FichaComun.iniciarEditorInventario();
+    FichaComun.iniciarEditorReputacion();
+
+    FichaVitales.iniciar({
+      hpBase: P.hpBase || 1, clases: window.CONFIG_NIVEL.clases, recursos: P.recursos || [],
+      espacios: maxEspacios, modCON: () => (window.FichaAtributos ? FichaAtributos.modDe('CON') : 0),
+      alDescanso: (tipo) => {
+        const e = espaciosActuales();
+        if (e.pacto) { const el = $('slot-pact-cur'); if (el) { el.textContent = String(e.pacto.count); FichaComun.guardarCampo('slot-pact-cur', e.pacto.count); } }
+        if (P.ganchos && P.ganchos.alDescanso) P.ganchos.alDescanso(tipo);
+      },
+    });
+    renderEspacios();
+    FichaComun.sincronizarDatosDesdeNube();
+
+    // Atributos, habilidades, competencia
+    const ABIL = FichaPlantilla.ABIL;
+    FichaComun.iniciarAtributos({
+      obtenerNivel: FichaVitales.nivelTotal, profBadgeId: 'prof-badge',
+      habilidades: ABIL.map(k => ({ clave: k, scoreId: `${k.toLowerCase()}-score`, tempId: `${k.toLowerCase()}-temp`, contenedorId: `ab-${k.toLowerCase()}`, saveCompetente: (P.salvaciones || []).indexOf(k) >= 0 })),
+      skills: SKILLS_CFG,
+      pasiva: [{ elId: 'percepcion-pasiva', skillClave: 'Perception' }],
+    });
+    // Base + buff = total
+    FichaComun.iniciarCA({ buffInputId: 'ca-buff', totalElId: 'ca-total', baseElId: 'ca-base' });
+    FichaComun.iniciarConcentracion('concentracion-panel');
+    const mod = (h) => FichaAtributos.modDe(h), prof = () => FichaAtributos.profBonusActual();
+    const f = FichaComun.formatearMod;
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'hp-max-buff', totalElId: 'hp-max-total', calcularBase: () => (P.hpBase || 1) + FichaVitales.registro().reduce((s, r) => s + (r.hpGanado || 0), 0), objetivoBuff: 'hp-max' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'iniciativa-buff', totalElId: 'iniciativa-total', calcularBase: () => mod('DEX'), formatear: (n) => '🎲 ' + f(n), objetivoBuff: 'iniciativa' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'velocidad-buff', totalElId: 'velocidad-total', calcularBase: () => Math.floor((P.velocidad || 30) * FichaReglas.efectos().velocidadFactor), formatear: (n) => n + ' ft', objetivoBuff: 'velocidad' });
+    FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'atk-buff', totalElId: 'atk-total', calcularBase: () => mod(P.habilidadAtaque || 'STR') + prof(), formatear: f, objetivoBuff: 'ataque' });
+    if (!P.sinConjuros && P.habilidadConjuro) {
+      FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-atk-buff', totalElId: 'spell-atk-total', calcularBase: () => mod(P.habilidadConjuro) + prof(), formatear: f, objetivoBuff: 'ataque-conjuro' });
+      FichaComun.iniciarEstadisticaConBuff({ buffInputId: 'spell-dc-buff', totalElId: 'spell-dc-total', calcularBase: () => 8 + mod(P.habilidadConjuro) + prof(), objetivoBuff: 'cd-conjuro' });
+    }
+    document.addEventListener('ficha:atributos', refrescarDerivados);
+    document.addEventListener('ficha:datos-sincronizados', () => { refrescarDerivados(); pintarXP(); });
+
+    FichaComun.iniciarBitacora({ db, codigoCampana });
+    FichaComun.iniciarPermisosYCompartir({ db, codigoCampana, uid: user.uid });
+    sincronizarHpMaxParaElGM(db, charRef, user.uid);
+
+    FichaNivel.iniciar({
+      clases: window.CONFIG_NIVEL.clases, skills: SKILLS_CFG, hpMax: FichaVitales.hpMaxActual,
+      refrescarEspacios: renderEspacios,
+      agregarHD: () => FichaVitales.pintarHD(), quitarHD: () => FichaVitales.pintarHD(),
+      recursos: [],
+    });
+    document.addEventListener('ficha:nivel', () => { renderEspacios(); FichaVitales.pintarHD(); FichaVitales.pintarRecursos(); refrescarDerivados(); pintarXP(); });
+    const undo = $('btn-deshacer-nivel'); if (undo) undo.addEventListener('click', () => FichaNivel.deshacer());
+    const xp = $('xp-val'); if (xp) xp.addEventListener('input', pintarXP);
+
+    FichaParty.iniciar({ db, codigoCampana, personajeId: P.id, nombre: P.nombre });
+    if (typeof P.iniciar === 'function') P.iniciar({ db, charRef, codigoCampana, uid: user.uid, P, toast });
+
+    refrescarDerivados(); pintarXP();
+    window.__fichaLista = true;
+    document.dispatchEvent(new CustomEvent('ficha:lista'));
+  }
+
+  async function arrancar() {
+    if (!pj) return mensaje('Falta el personaje en la dirección: usá <code>ficha.html?pj=&lt;id&gt;</code>.');
+    try { await cargarScript(`personajes/${pj}.js`); } catch (e) { return mensaje(`No existe el personaje “${pj}”.`); }
+    P = (window.PERSONAJES || {})[pj];
+    if (!P) return mensaje(`El archivo de “${pj}” no define el personaje.`);
+    document.title = P.nombre + ' — Ficha';
+
+    SKILLS_CFG = Object.keys(FichaPlantilla.SKILL_HAB).map(n => ({ clave: n, contenedorId: FichaPlantilla.skillId(n), habilidad: FichaPlantilla.SKILL_HAB[n], competente: !!(P.habilidades || {})[n], expertise: (P.habilidades || {})[n] === 'exp' }));
+    armarConfig();
+    raiz().innerHTML = FichaPlantilla.ficha(P, { codigoCampana });
+    document.title = P.nombre + ' — Ficha';
+    if (window.FichaPaleta) FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: P.paleta, clave: P.id });
+    await cargarFragmentos();
+
+    for (const s of ['ficha-common.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js']) await cargarScript(s);
+    bindClicks();
+
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) { location.href = 'index.html'; return; }
+      arrancarMotores(user).catch((e) => { console.error(e); mensaje('Ocurrió un error al iniciar la ficha: ' + (e && e.message ? e.message : e)); });
+    });
+  }
+
+  window.FichaShell = { arrancar, toast, renderEspacios, refrescarDerivados, get personaje() { return P; } };
+  arrancar();
+})();
