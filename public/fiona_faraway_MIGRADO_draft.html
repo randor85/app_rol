@@ -2217,9 +2217,10 @@
   // compendio vía el viejo mecanismo de nombres (datos/hechizos-agregados en Firebase:
   // ["Mass Cure Wounds","Insect Plague"]) — migrados también para no perderlos, ya que
   // el nuevo sistema usa una clave nueva (datos/hechizos-json) que todavía no existe
-  // para este personaje real. especial:true = mecánica de upcast/variante/invocación
-  // que no se puede reconstruir en el formulario genérico (quedó documentada en el
-  // propio texto de "resumen"); esas filas no tienen botón "✏️ Editar".
+  // para este personaje real. Los 7 hechizos con mecánica de upcast/invocación (Cure
+  // Wounds, Healing Word, Summon Beast, Conjure Animals, Summon Fey, Conjure Woodland
+  // Beings, Giant Insect) usan el campo "upcast" (selector de nivel + dado adicional o
+  // tabla de efecto por nivel) en vez de quedar fijos a un solo nivel.
   const FICHA_CONFIG = {
     personajeId: 'fiona_faraway',
     nombrePersonaje: 'Fiona Faraway',
@@ -2237,18 +2238,49 @@
       { nombre: 'Poison Spray', nivel: 0, tiempo: '1 Acc', alcance: '30 ft', area: '', resumen: 'CON save DC (Base 16); 2d12 poison damage (cantrip a nivel de personaje 8; escala a 3d12 en nivel 11 y 4d12 en nivel 17).', duracion: 'Instantáneo', formula: { count: 2, sides: 12, mod: 0 }, slotCost: null, ataque: { tipo: 'salvacion', habilidad: 'CON', dc: 16 } },
       { nombre: 'Shillelagh', nivel: 0, tiempo: '1 B.Acc', alcance: 'Touch', area: '', resumen: 'Arma usa WIS, 1d8 bludgeoning.', duracion: '1 min', formula: { count: 1, sides: 8, mod: 5 }, slotCost: null, ataque: null },
       { nombre: 'Guidance', nivel: 0, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Objetivo suma 1d4 a un ability check.', duracion: '1 min, Conc.', formula: { count: 1, sides: 4, mod: 0 }, slotCost: null, ataque: null },
-      { nombre: 'Cure Wounds (2024)', nivel: 1, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Cura 2d8 + 5 (WIS). Upcast: +2d8 por nivel. (+8 HP con Unicorn Totem) — mecánica de upcast/totem no reconstruible en el editor genérico, el botón usa el caso base.', duracion: 'Instantáneo', formula: { count: 2, sides: 8, mod: 5 }, slotCost: 1, especial: true, ataque: null },
-      { nombre: 'Healing Word (2024)', nivel: 1, tiempo: '1 B.Acc', alcance: '60 ft', area: '', resumen: 'Cura 2d4 + 5 (WIS). Upcast: +2d4 por nivel. (+8 HP con Unicorn Totem) — mecánica de upcast/totem no reconstruible en el editor genérico, el botón usa el caso base.', duracion: 'Instantáneo', formula: { count: 2, sides: 4, mod: 5 }, slotCost: 1, especial: true, ataque: null },
+      { nombre: 'Cure Wounds (2024)', nivel: 1, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Cura 2d8 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, sumalo a mano).', duracion: 'Instantáneo', formula: { count: 2, sides: 8, mod: 5 }, slotCost: 1, upcast: { tipo: 'dado', nivelBase: 1, dado: { count: 2, sides: 8 } }, ataque: null },
+      { nombre: 'Healing Word (2024)', nivel: 1, tiempo: '1 B.Acc', alcance: '60 ft', area: '', resumen: 'Cura 2d4 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, sumalo a mano).', duracion: 'Instantáneo', formula: { count: 2, sides: 4, mod: 5 }, slotCost: 1, upcast: { tipo: 'dado', nivelBase: 1, dado: { count: 2, sides: 4 } }, ataque: null },
       { nombre: 'Faerie Fire', nivel: 1, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'DEX save DC (Base 16). Ventaja en ataques contra afectados; impide invisibilidad.', duracion: '1 min, Conc.', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
       { nombre: 'Command', nivel: 1, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'WIS save DC (Base 16). Orden de 1 palabra: Approach, Drop, Flee, Grovel, Halt.', duracion: '1 Ronda', formula: null, slotCost: 1, ataque: { tipo: 'salvacion', habilidad: 'WIS', dc: 16 } },
       { nombre: 'Hold Person', nivel: 2, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Humanoide; WIS save DC (Base 16) o Paralyzed. Repite save al final de cada turno.', duracion: '1 min, Conc.', formula: null, slotCost: 2, ataque: { tipo: 'salvacion', habilidad: 'WIS', dc: 16 } },
       { nombre: 'Lesser Restoration', nivel: 2, tiempo: '1 Acc', alcance: 'Touch', area: '', resumen: 'Termina condición: Blinded, Deafened, Paralyzed o Poisoned.', duracion: 'Instantáneo', formula: null, slotCost: 2, ataque: null },
-      { nombre: 'Summon Beast', nivel: 2, tiempo: '1 Acc', alcance: '90 ft', area: '', resumen: 'Invoca espíritu bestial (Air, Land, Water). Ver bloque de estadísticas en Sección 7 — invocación no reconstruible en el editor genérico.', duracion: '1 hora, Conc.', formula: null, slotCost: 2, especial: true, ataque: null },
+      { nombre: 'Summon Beast', nivel: 2, tiempo: '1 Acc', alcance: '90 ft', area: '', resumen: 'Invoca espíritu bestial (Air, Land, Water). Ver bloque de estadísticas en Sección 7 para los valores exactos de cada nivel.', duracion: '1 hora, Conc.', formula: null, slotCost: 2, upcast: { tipo: 'tabla', nivelBase: 2, tabla: {
+        2: "Espíritu Bestia nivel base — ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 2.",
+        3: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 3 (HP/ataque/daño mayores).",
+        4: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 4.",
+        5: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 5.",
+        6: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 6.",
+        7: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 7.",
+        8: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 8.",
+        9: "Ver bloque de estadísticas 'Beast Spirit' para nivel de espacio 9.",
+      } }, ataque: null },
       { nombre: 'Misty Step', nivel: 2, tiempo: '1 B.Acc', alcance: 'Self', area: '', resumen: 'Teleport 30 ft a espacio visible desocupado.', duracion: 'Instantáneo', formula: null, slotCost: 2, ataque: null },
-      { nombre: 'Conjure Animals (2024)', nivel: 3, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Pack espectral Large. DEX save DC (Base 16) o daño al mover/entrar. Upcast: +1d10/nivel — mecánica de upcast no reconstruible en el editor genérico, el botón usa el caso base.', duracion: '10 min, Conc.', formula: { count: 3, sides: 10, mod: 0 }, slotCost: 3, especial: true, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
-      { nombre: 'Summon Fey', nivel: 3, tiempo: '1 Acc', alcance: '90 ft', area: '', resumen: 'Invoca espíritu fey (Fuming, Mirthful, Tricksy). Ver bloque de estadísticas en Sección 7 — invocación no reconstruible en el editor genérico.', duracion: '1 hora, Conc.', formula: null, slotCost: 3, especial: true, ataque: null },
-      { nombre: 'Conjure Woodland Beings', nivel: 4, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Invoca criaturas Fey de CR total según elección/DM (1 CR 2, 2 CR 1, 4 CR 1/2, 8 CR 1/4). Ver Sección 7 para Stat Blocks completos — invocación no reconstruible en el editor genérico.', duracion: '1 hora, Conc.', formula: null, slotCost: 4, especial: true, ataque: null },
-      { nombre: 'Giant Insect', nivel: 4, tiempo: '1 Acc', alcance: '30 ft', area: '', resumen: 'Transforma insectos en versiones gigantes (Centipede, Spider, Bee, Ant, Wasp). Ver bloque abajo — invocación no reconstruible en el editor genérico.', duracion: '10 min, Conc.', formula: null, slotCost: 4, especial: true, ataque: null },
+      { nombre: 'Conjure Animals (2024)', nivel: 3, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Pack espectral Large. DEX save DC (Base 16) o daño al mover/entrar.', duracion: '10 min, Conc.', formula: { count: 3, sides: 10, mod: 0 }, slotCost: 3, upcast: { tipo: 'dado', nivelBase: 3, dado: { count: 1, sides: 10 } }, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
+      { nombre: 'Summon Fey', nivel: 3, tiempo: '1 Acc', alcance: '90 ft', area: '', resumen: 'Invoca espíritu fey (Fuming, Mirthful, Tricksy). Ver bloque de estadísticas en Sección 7 para los valores exactos de cada nivel.', duracion: '1 hora, Conc.', formula: null, slotCost: 3, upcast: { tipo: 'tabla', nivelBase: 3, tabla: {
+        3: "Espíritu Feérico nivel base — ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 3.",
+        4: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 4 (HP/ataque/daño mayores).",
+        5: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 5.",
+        6: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 6.",
+        7: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 7.",
+        8: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 8.",
+        9: "Ver bloque de estadísticas 'Fey Spirit' para nivel de espacio 9.",
+      } }, ataque: null },
+      { nombre: 'Conjure Woodland Beings', nivel: 4, tiempo: '1 Acc', alcance: '60 ft', area: '', resumen: 'Invoca criaturas Fey de CR total según elección/DM (1 CR 2, 2 CR 1, 4 CR 1/2, 8 CR 1/4). Ver Sección 7 para Stat Blocks completos.', duracion: '1 hora, Conc.', formula: null, slotCost: 4, upcast: { tipo: 'tabla', nivelBase: 4, tabla: {
+        4: "CR total 4 en espíritus feéricos (o combinación de menor CR, proporcional).",
+        5: "El doble que a nivel 4.",
+        6: "El triple que a nivel 4.",
+        7: "Cuádruple que a nivel 4.",
+        8: "Quíntuple que a nivel 4.",
+        9: "Séxtuple que a nivel 4.",
+      } }, ataque: null },
+      { nombre: 'Giant Insect', nivel: 4, tiempo: '1 Acc', alcance: '30 ft', area: '', resumen: 'Transforma insectos en versiones gigantes (Centipede, Spider, Bee, Ant, Wasp).', duracion: '10 min, Conc.', formula: null, slotCost: 4, upcast: { tipo: 'tabla', nivelBase: 4, tabla: {
+        4: "Base: hasta 10 ciempiés / 3 arañas / 5 avispas / 1 escorpión gigante.",
+        5: "+1 criatura adicional transformada (respetando los límites por tipo).",
+        6: "+2 criaturas adicionales.",
+        7: "+3 criaturas adicionales.",
+        8: "+4 criaturas adicionales.",
+        9: "+5 criaturas adicionales.",
+      } }, ataque: null },
       { nombre: 'Grasping Vine', nivel: 4, tiempo: '1 B.Acc', alcance: '30 ft', area: '', resumen: 'Invoca vid. B.Acc para forzar DEX save DC (Base 16) a criatura a 30 ft; si falla la atrae 20 ft.', duracion: '1 min, Conc.', formula: null, slotCost: 4, ataque: { tipo: 'salvacion', habilidad: 'DEX', dc: 16 } },
       // Agregados reales del compendio (antes en datos/hechizos-agregados, migrados acá):
       { nombre: 'Mass Cure Wounds', nivel: 5, tiempo: '1 Acción', alcance: '60 ft', area: 'Radio de 30 ft, hasta 6 criaturas', resumen: 'Hasta 6 criaturas en un radio de 30 ft recuperan 3d8 + tu mod. de característica de lanzamiento HP.', duracion: 'Instantáneo', formula: { count: 3, sides: 8, mod: 5 }, slotCost: 5, ataque: null },
@@ -2645,9 +2677,10 @@
             area: '',
             resumen: s.desc,
             duracion: s.duracion,
-            formula: null,
+            formula: s.formula || null,
             slotCost: s.nivel > 0 ? s.nivel : null,
-            ataque: null,
+            ataque: s.ataque || null,
+            upcast: s.upcast || null,
         });
         toggleSpellPicker(false);
     }

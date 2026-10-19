@@ -227,20 +227,34 @@
       filaVacia: '<tr><td colspan="5" style="color:var(--text-muted);font-size:0.85rem;">Sin hechizos agregados todavía.</td></tr>',
       renderFila: (h, idx) => {
         const nombreEsc = h.nombre.replace(/'/g, "\\'");
-        const accionBtn = h.formula
-          ? `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">🎲 ${h.formula.count}d${h.formula.sides}${h.formula.mod ? (h.formula.mod > 0 ? '+' : '') + h.formula.mod : ''}</button>`
-          : `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">✅ Usar</button>`;
+        let accionBtn;
+        if (h.upcast) {
+          // Hechizo con upcast: un selector de nivel de espacio (desde el nivel
+          // base hasta 9) + un solo botón que usa el nivel elegido — mantiene la
+          // mecánica real de subir de nivel en vez de quedar fijo a un nivel.
+          const nivelMax = 9;
+          const opciones = [];
+          for (let n = h.upcast.nivelBase; n <= nivelMax; n++) opciones.push(n);
+          const selectHtml = `<select id="upcast-sel-${idx}" style="width:auto;display:inline-block;">${opciones.map(n => `<option value="${n}">Nvl ${n}</option>`).join('')}</select>`;
+          const etiquetaBtn = h.upcast.tipo === 'tabla' ? '📜 Usar' : '🎲 Tirar';
+          accionBtn = `${selectHtml} <button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">${etiquetaBtn}</button>`;
+        } else if (h.formula) {
+          accionBtn = `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">🎲 ${h.formula.count}d${h.formula.sides}${h.formula.mod ? (h.formula.mod > 0 ? '+' : '') + h.formula.mod : ''}</button>`;
+        } else {
+          accionBtn = `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">✅ Usar</button>`;
+        }
         const ataqueBadge = !h.ataque ? '' :
           h.ataque.tipo === 'ataque'
             ? `<span class="tag tag-atk">🎯 +${h.ataque.bonus} Ataque</span>`
             : `<span class="tag tag-atk">🛡️ ${h.ataque.habilidad} DC ${h.ataque.dc}</span>`;
         const areaTxt = h.area ? ` · 📐 ${h.area}` : '';
+        const upcastTxt = h.upcast ? ' · ⬆️ Escala con el nivel del espacio' : '';
         return `
           <tr>
             <td><span class="tag">${h.especial ? '⭐ ' : ''}${etiquetaNivelConjuro(h.nivel)}</span></td>
             <td><strong>${h.nombre}</strong>${ataqueBadge ? ' ' + ataqueBadge : ''}</td>
             <td>${h.tiempo} / ${h.alcance}${areaTxt}</td>
-            <td>${h.resumen} <em>(${h.duracion})</em></td>
+            <td>${h.resumen}${upcastTxt} <em>(${h.duracion})</em></td>
             <td class="spell-item-actions">
               ${accionBtn}
               ${!h.especial ? `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.editor.mostrarFormulario(${idx})">✏️ Editar</button>` : ''}
@@ -280,6 +294,30 @@
             </select>
             <input type="number" id="hf-ataque-dc" placeholder="DC" style="width:70px;display:${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'inline-block' : 'none'};" value="${h && h.ataque && h.ataque.tipo === 'salvacion' ? h.ataque.dc : ''}">
           </div>
+          <div class="spell-form-row-dado">
+            <span class="spell-form-mini-label">Upcast (opcional, si el efecto escala con el nivel del espacio):</span>
+            <select id="hf-upcast-tipo" onchange="FichaHechizos.alternarCamposUpcast()">
+              <option value="">Ninguno (nivel fijo)</option>
+              <option value="dado" ${h && h.upcast && h.upcast.tipo === 'dado' ? 'selected' : ''}>Dado adicional por nivel</option>
+              <option value="tabla" ${h && h.upcast && h.upcast.tipo === 'tabla' ? 'selected' : ''}>Tabla de efecto por nivel</option>
+            </select>
+          </div>
+          <div id="hf-upcast-campos" class="spell-form-row-dado" style="display:${h && h.upcast ? 'flex' : 'none'};flex-direction:column;align-items:stretch;">
+            <div class="spell-form-row-dado">
+              <span class="spell-form-mini-label">Nivel base del upcast:</span>
+              <input type="number" id="hf-upcast-nivelbase" min="1" max="9" style="width:60px;" value="${h && h.upcast ? h.upcast.nivelBase : (h ? Math.max(1, h.nivel) : 1)}">
+            </div>
+            <div id="hf-upcast-dado-campos" style="display:${h && h.upcast && h.upcast.tipo === 'dado' ? 'flex' : 'none'};gap:6px;align-items:center;">
+              <span class="spell-form-mini-label">+ por cada nivel sobre el base:</span>
+              <input type="number" id="hf-upcast-dado-cant" placeholder="cant." min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.count : ''}">
+              <span>d</span>
+              <input type="number" id="hf-upcast-dado-caras" placeholder="caras" min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.sides : ''}">
+            </div>
+            <div id="hf-upcast-tabla-campos" style="display:${h && h.upcast && h.upcast.tipo === 'tabla' ? 'block' : 'none'};">
+              <span class="spell-form-mini-label">Una línea por nivel, formato "nivel: efecto":</span>
+              <textarea id="hf-upcast-tabla" rows="4" placeholder="3: efecto a nivel 3&#10;4: efecto a nivel 4">${h && h.upcast && h.upcast.tipo === 'tabla' ? Object.entries(h.upcast.tabla).map(([n, t]) => `${n}: ${t}`).join('\n') : ''}</textarea>
+            </div>
+          </div>
           <div class="spell-form-actions">
             <button type="button" onclick="FichaHechizos.editor.cerrarFormulario()">Cancelar</button>
             <button type="button" class="add" onclick="FichaHechizos.guardarDesdeFormulario()">💾 Guardar</button>
@@ -293,6 +331,13 @@
       document.getElementById('hf-ataque-bonus').style.display = tipo === 'ataque' ? 'inline-block' : 'none';
       document.getElementById('hf-ataque-habilidad').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
       document.getElementById('hf-ataque-dc').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
+    }
+
+    function alternarCamposUpcast() {
+      const tipo = document.getElementById('hf-upcast-tipo').value;
+      document.getElementById('hf-upcast-campos').style.display = tipo ? 'flex' : 'none';
+      document.getElementById('hf-upcast-dado-campos').style.display = tipo === 'dado' ? 'flex' : 'none';
+      document.getElementById('hf-upcast-tabla-campos').style.display = tipo === 'tabla' ? 'block' : 'none';
     }
 
     function guardarDesdeFormulario() {
@@ -314,6 +359,29 @@
           dc: parseInt(document.getElementById('hf-ataque-dc').value, 10) || 0,
         };
       }
+      const tipoUpcast = document.getElementById('hf-upcast-tipo').value;
+      let upcast = null;
+      if (tipoUpcast === 'dado') {
+        upcast = {
+          tipo: 'dado',
+          nivelBase: parseInt(document.getElementById('hf-upcast-nivelbase').value, 10) || Math.max(1, nivel),
+          dado: {
+            count: parseInt(document.getElementById('hf-upcast-dado-cant').value, 10) || 1,
+            sides: parseInt(document.getElementById('hf-upcast-dado-caras').value, 10) || 1,
+          },
+        };
+      } else if (tipoUpcast === 'tabla') {
+        const tabla = {};
+        document.getElementById('hf-upcast-tabla').value.split('\n').forEach(linea => {
+          const m = linea.match(/^\s*(\d+)\s*:\s*(.+)$/);
+          if (m) tabla[parseInt(m[1], 10)] = m[2].trim();
+        });
+        upcast = {
+          tipo: 'tabla',
+          nivelBase: parseInt(document.getElementById('hf-upcast-nivelbase').value, 10) || Math.max(1, nivel),
+          tabla,
+        };
+      }
       editor.guardarDesdeFormulario({
         nombre, nivel,
         tiempo: document.getElementById('hf-tiempo').value.trim(),
@@ -323,38 +391,62 @@
         duracion: document.getElementById('hf-duracion').value.trim(),
         formula,
         ataque,
+        upcast,
         slotCost: nivel > 0 ? nivel : null,
       });
     }
 
+    // Gasta el espacio del nivel elegido (fijo en h.slotCost, o el nivel elegido en
+    // el selector de upcast de esa fila) y resuelve el efecto: tirada de dados
+    // (fija, o base+bono por nivel si es upcast tipo 'dado'), texto de una tabla
+    // por nivel (upcast tipo 'tabla'), o un simple "usado" si no hay nada de eso.
     function usar(idx) {
       const h = editor.items()[idx];
       if (!h || modoLectura) return;
-      if (h.slotCost) {
-        // Se construye el id directo ('slot-N-cur') en vez de indexar
-        // FICHA_CONFIG.slotsIds por posición: esa indexación se rompía
-        // (undefined) para cualquier nivel de espacio más allá de
-        // slotsIds.length, como pasó de verdad al probar contra los
-        // datos reales de Fiona (nivel 5 con un slotsIds de 4 entradas).
-        const slotId = `slot-${h.slotCost}-cur`;
+
+      let nivelGastado = h.slotCost;
+      if (h.upcast) {
+        const sel = document.getElementById(`upcast-sel-${idx}`);
+        nivelGastado = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase;
+      }
+
+      if (nivelGastado) {
+        // Id directo ('slot-N-cur'), no indexado por posición en FICHA_CONFIG.slotsIds
+        // — esa indexación se rompía (undefined) para cualquier nivel más allá de
+        // slotsIds.length, como pasó de verdad al probar contra los datos reales de Fiona.
+        const slotId = `slot-${nivelGastado}-cur`;
         const el = document.getElementById(slotId);
         if (el) {
           const actual = parseInt(el.textContent) || 0;
-          if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${h.slotCost} disponibles.`); return; }
+          if (actual <= 0) { alert(`⚠️ No te quedan espacios de nivel ${nivelGastado} disponibles.`); return; }
           el.textContent = actual - 1;
           guardarCampo(slotId, actual - 1);
         }
       }
-      if (h.formula) {
-        const tiradas = Array.from({ length: h.formula.count }, () => Math.floor(Math.random() * h.formula.sides) + 1);
-        const total = tiradas.reduce((a, b) => a + b, 0) + h.formula.mod;
-        alert(`🎲 ${h.nombre}: [${tiradas.join(', ')}]${h.formula.mod ? (h.formula.mod > 0 ? ' +' : ' ') + h.formula.mod : ''} = ${total}`);
+
+      if (h.upcast && h.upcast.tipo === 'tabla') {
+        const texto = h.upcast.tabla[nivelGastado] || h.upcast.tabla[h.upcast.nivelBase] || '(sin detalle para ese nivel)';
+        alert(`📜 ${h.nombre} (nivel ${nivelGastado}): ${texto}`);
+        return;
+      }
+
+      let count = h.formula ? h.formula.count : 0;
+      let sides = h.formula ? h.formula.sides : (h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.sides : 0);
+      const mod = h.formula ? h.formula.mod : 0;
+      if (h.upcast && h.upcast.tipo === 'dado') {
+        count += h.upcast.dado.count * Math.max(0, nivelGastado - h.upcast.nivelBase);
+      }
+      if (count > 0 && sides > 0) {
+        const tiradas = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
+        const total = tiradas.reduce((a, b) => a + b, 0) + mod;
+        const etiquetaNivel = h.upcast ? ` (nivel ${nivelGastado})` : '';
+        alert(`🎲 ${h.nombre}${etiquetaNivel}: [${tiradas.join(', ')}]${mod ? (mod > 0 ? ' +' : ' ') + mod : ''} = ${total}`);
       } else {
         alert(`✅ ${h.nombre}: usado (sin tirada automática).`);
       }
     }
 
-    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque };
+    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast };
   }
 
   // ============================================================
