@@ -128,8 +128,8 @@ const CLASSES = [
       name: "Light Domain", resumen: "Canaliza luz radiante para dañar enemigos y proteger aliados.",
       features: [
         {nivel:3, nombre:"Radiance of the Dawn", desc:"Opción de Channel Divinity: disipas oscuridad mágica cerca y causas 2d10 + tu nivel de daño radiante en 30 pies a criaturas hostiles."},
-        {nivel:3, nombre:"Warding Flare", desc:"Con reacción, impones desventaja a un ataque que te apunta."},
-        {nivel:6, nombre:"Improved Warding Flare", desc:"Warding Flare también protege a un aliado a distancia y otorga temp HP.", incierto:true},
+        {nivel:3, nombre:"Warding Flare", desc:"Reacción: cuando una criatura que ves a 30 pies ataca a ti o a un aliado, impones desventaja a esa tirada de ataque (los atacantes inmunes a ser cegados no se ven afectados). Usos: tu modificador de Sabiduría (mínimo 1) por descanso largo."},
+        {nivel:6, nombre:"Improved Warding Flare", desc:"Recuperas todos los usos de Warding Flare con un descanso corto o largo. Además, cuando lo usas, la criatura a la que proteges gana 2d6 + tu modificador de Sabiduría PG temporales."},
         {nivel:17, nombre:"Corona of Light", desc:"Como acción adicional, emanas luz brillante en 60 pies; los enemigos dentro tienen desventaja en salvaciones contra tus conjuros de fuego o radiantes."},
       ]
     },
