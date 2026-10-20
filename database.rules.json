@@ -27,12 +27,38 @@
         // (al aprobar una solicitud o quitar a alguien), nunca otras.
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
+        // Perfil propio (v100.0): nombre de usuario (por defecto el de Google; editable) y si aparece en el buscador de campañas.
+        "perfil": {
+          "nombre": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+          "visible": { ".validate": "newData.isBoolean()" },
+          "$otro": { ".validate": false }
+        },
         "campanas": {
           "$campanaId": {
             ".write": "auth != null && ( auth.uid == $uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
             ".validate": "newData.val() === true"
           }
         }
+      }
+    },
+    "directorio": {
+      // Buscador de campañas por jugador (v100.0). Lo ve cualquier cuenta con sesión; cada quien escribe solo su ficha de directorio y solo
+      // puede listar campañas donde de verdad es integrante (rol 'gm' solo si es titular o apoyo). El GM de una campaña puede borrar su
+      // entrada de la lista de alguien al sacarlo. Quien no quiera aparecer borra su entrada (casilla «Aparecer en el buscador»).
+      ".read": "auth != null",
+      ".indexOn": ["nombre_lc"],
+      "$uid": {
+        ".write": "auth != null && auth.uid == $uid",
+        ".validate": "newData.hasChildren(['nombre', 'nombre_lc'])",
+        "nombre": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+        "nombre_lc": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+        "campanas": {
+          "$campanaId": {
+            ".write": "auth != null && !newData.exists() && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
+            ".validate": "(newData.val() == 'gm' && (root.child('campanas').child($campanaId).child('gm').val() == $uid || root.child('campanas').child($campanaId).child('gm_apoyo').child($uid).val() === true)) || (newData.val() == 'jugador' && root.child('campanas').child($campanaId).child('miembros').child($uid).exists())"
+          }
+        },
+        "$otro": { ".validate": false }
       }
     },
     "acceso": {

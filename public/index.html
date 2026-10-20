@@ -201,6 +201,13 @@
         .campo-menu { display: grid; gap: 4px; margin-bottom: 12px; }
         .campo-menu > span { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
         .campo-menu input { padding: 10px 12px; background: var(--bg); color: var(--texto); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; width: 100%; min-height: 44px; }
+        .opcion-menu { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 4px; font-size: 0.85rem; color: var(--text-color); text-align: left; }
+        .opcion-menu input { width: 20px; height: 20px; margin-top: 2px; flex: none; }
+        .sep-menu { border: none; border-top: 1px solid var(--border-color); margin: 16px 0 12px; }
+        .res-jugador { padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .res-jugador > strong { display: block; margin-bottom: 4px; }
+        .res-camp { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0 4px 12px; font-size: 0.85rem; }
+        .rol-etiqueta { font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--accent-gold); color: var(--accent-gold-bright); margin-left: 6px; }
         .campo-menu input:focus { outline: none; border-color: var(--accent-gold); }
         .sistemas { border: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 0 0 8px; }
         .sistemas legend { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
@@ -250,6 +257,7 @@
             <p class="subtitle" id="user-welcome">Restaurando sesión…</p>
             <div id="selector-paleta"></div>
             <button id="btn-login" class="btn-open" style="display: none; margin-top: 15px; background: #db4437; color: var(--texto); border-color: #db4437; cursor: pointer;">🔐 Entrar con Google</button>
+            <button id="btn-perfil" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">✏️ Mi nombre</button>
             <button id="btn-logout" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">🚪 Cerrar Sesión</button>
             
             <!-- Formulario para ingreso con Correo dummy -->
@@ -354,6 +362,19 @@
                 <div class="modal-pie"><button type="button" class="btn-mini" data-cerrar="dlg-nueva">Cancelar</button><button type="button" class="btn-mini" id="nc-crear" style="background: var(--accent-gold); color: var(--sobre-acento);">Crear campaña</button></div>
             </div>
         </div>
+        <div class="modal-velo" id="dlg-perfil" role="dialog" aria-modal="true" aria-labelledby="dlg-perfil-t">
+            <div class="modal">
+                <div class="modal-cab"><h3 id="dlg-perfil-t">✏️ Mi nombre de usuario</h3><button type="button" class="btn-mini" data-cerrar="dlg-perfil" aria-label="Cerrar">✖</button></div>
+                <div class="modal-cuerpo">
+                    <label class="campo-menu"><span>Nombre con el que te ven en las campañas</span><input type="text" id="pf-nombre" maxlength="40" autocomplete="off"></label>
+                    <button type="button" class="btn-mini" id="pf-google">↩ Usar el de mi cuenta de Google</button>
+                    <label class="opcion-menu"><input type="checkbox" id="pf-visible"> <span>Aparecer en el buscador de campañas (otros jugadores podrán encontrar las campañas donde estás escribiendo tu nombre)</span></label>
+                    <p class="nota-menu">Se actualiza en todas tus campañas y en tus personajes.</p>
+                    <p id="pf-msg" class="msg-error" role="alert" hidden></p>
+                </div>
+                <div class="modal-pie"><button type="button" class="btn-mini" data-cerrar="dlg-perfil">Cancelar</button><button type="button" class="btn-mini" id="pf-guardar" style="background: var(--accent-gold); color: var(--sobre-acento);">Guardar</button></div>
+            </div>
+        </div>
         <div class="modal-velo" id="dlg-unirme" role="dialog" aria-modal="true" aria-labelledby="dlg-unirme-t">
             <div class="modal">
                 <div class="modal-cab"><h3 id="dlg-unirme-t">🔑 Unirme a una campaña</h3><button type="button" class="btn-mini" data-cerrar="dlg-unirme" aria-label="Cerrar">✖</button></div>
@@ -362,6 +383,9 @@
                     <p class="nota-menu">Con una <strong>invitación</strong> entras de inmediato. Solo con el <strong>ID</strong> se envía una solicitud que el GM debe aprobar.</p>
                     <p id="un-info" class="nota-menu" hidden></p>
                     <p id="un-msg" class="msg-error" role="alert" hidden></p>
+                    <hr class="sep-menu">
+                    <label class="campo-menu"><span>🔎 O busca por jugador (nombre de usuario)</span><input type="search" id="un-buscar" placeholder="Escribe al menos 2 letras del nombre" autocomplete="off"></label>
+                    <div id="un-resultados" aria-live="polite"></div>
                 </div>
                 <div class="modal-pie"><button type="button" class="btn-mini" data-cerrar="dlg-unirme">Cancelar</button><button type="button" class="btn-mini" id="un-continuar" style="background: var(--accent-gold); color: var(--sobre-acento);">Continuar</button></div>
             </div>
@@ -421,6 +445,7 @@
         // ELEMENTOS DOM
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
+        const btnPerfil = document.getElementById('btn-perfil');
         const welcomeText = document.getElementById('user-welcome');
         const campanaContainer = document.getElementById('campana-container');
         const selectCampana = document.getElementById('codigo-campana');
@@ -515,13 +540,15 @@
           if (user) {
             clearTimeout(temporizadorSinSesion); yaHuboSesionEnEstaPagina = true;
             miUidActual = user.uid;
-            miNombreActual = user.displayName || (user.email ? String(user.email).split('@')[0] : '') || '';
-            welcomeText.innerText = `¡Hola, ${user.displayName || user.email || 'jugador'}!`; // Muestra el correo si no hay nombre
+            miNombreActual = nombreDeGoogle(user);
+            welcomeText.innerText = `¡Hola, ${miNombreActual || 'jugador'}!`;
             btnLogin.style.display = 'none';
+            btnPerfil.style.display = 'inline-block';
             loginEmailForm.style.display = 'none'; // <-- OCULTAR FORMULARIO AL LOGUEARSE
             btnLogout.style.display = 'inline-block';
             campanaContainer.style.display = 'block';
-            cargarCampanas();
+            // el nombre de usuario guardado manda sobre el de Google; después se cargan las campañas
+            cargarPerfil(user).catch(() => {}).then(() => { if (miUidActual === user.uid) cargarCampanas(); });
           } else {
             // Un «sin sesión» al cargar puede ser pasajero: se espera unos segundos antes de mostrar el acceso (salvo cierre manual).
             if (!cierreManualDeSesion && !yaHuboSesionEnEstaPagina) {
@@ -539,6 +566,7 @@
             btnLogin.style.display = 'inline-block';
             loginEmailForm.style.display = 'flex'; // <-- MOSTRAR FORMULARIO AL DESLOGUEARSE
             btnLogout.style.display = 'none';
+            btnPerfil.style.display = 'none';
             ocultarModulos();
         }
 
@@ -590,6 +618,8 @@ btnLoginEmail.onclick = () => {
             campanasIdxListener = db.ref(`usuarios/${miUidActual}/campanas`);
             campanasIdxListener.on('value', async (snap) => {
                 const ids = Object.keys(snap.val() || {});
+                idsCampanasActuales = ids;
+                sincronizarDirectorio(ids);
                 const info = {};
                 await Promise.all(ids.map(async (id) => { try { info[id] = (await db.ref(`lista_campanas/${id}`).once('value')).val() || {}; } catch (e) { info[id] = {}; } }));
                 const previo = selectCampana.value;
@@ -617,6 +647,7 @@ btnLoginEmail.onclick = () => {
             solicitudesEnviadasListener = db.ref(`usuarios/${miUidActual}/solicitudes`);
             solicitudesEnviadasListener.on('value', (snap) => {
                 const sol = snap.val() || {}, cont = document.getElementById('solicitudes-enviadas');
+                misSolicitudesPendientes = sol;
                 cont.innerHTML = Object.keys(sol).map((id) => `<div class="fila-gm"><span>⏳ Solicitud enviada a <strong>${escHtml(sol[id].nombre || id)}</strong> <small>(espera al GM)</small></span><button type="button" class="btn-mini peligro" data-cancelar-solicitud="${escHtml(id)}">Cancelar</button></div>`).join('');
                 cont.querySelectorAll('[data-cancelar-solicitud]').forEach((b) => b.onclick = async () => {
                     const id = b.dataset.cancelarSolicitud;
@@ -682,7 +713,7 @@ btnLoginEmail.onclick = () => {
             await db.ref(`usuarios/${miUidActual}/solicitudes/${id}`).set({ nombre: info.nombre || id, ts: Date.now() });
             return { solicitud: true, nombre: info.nombre || id };
         }
-        document.getElementById('btn-unirme').onclick = () => { mostrar(document.getElementById('un-msg'), ''); mostrar(document.getElementById('un-info'), ''); document.getElementById('un-codigo').value = ''; abrirDlg('dlg-unirme'); };
+        document.getElementById('btn-unirme').onclick = () => { mostrar(document.getElementById('un-msg'), ''); mostrar(document.getElementById('un-info'), ''); document.getElementById('un-codigo').value = ''; document.getElementById('un-buscar').value = ''; document.getElementById('un-resultados').innerHTML = ''; abrirDlg('dlg-unirme'); };
         document.getElementById('un-continuar').onclick = async () => {
             const msg = document.getElementById('un-msg'), info = document.getElementById('un-info'), btn = document.getElementById('un-continuar');
             const c = interpretarCodigo(document.getElementById('un-codigo').value);
@@ -714,6 +745,111 @@ btnLoginEmail.onclick = () => {
             abrirDlg('dlg-unirme');
         }
 
+
+        // ---------- perfil: nombre de usuario (v100.0) ----------
+        // Por defecto el nombre de la cuenta de Google (si no hay, la parte del correo antes de la @); se puede cambiar. Vive en
+        // usuarios/<uid>/perfil y se copia al nombre de integrante de cada campaña y al directorio del buscador.
+        let miPerfil = { nombre: '', visible: true, deGoogle: '' };
+        let idsCampanasActuales = [], misSolicitudesPendientes = {};
+        const normalizarBusqueda = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim().slice(0, 40);
+        function nombreDeGoogle(user) { return String(user.displayName || (user.email ? String(user.email).split('@')[0] : '') || 'Jugador').trim().slice(0, 40); }
+        async function cargarPerfil(user) {
+            let p = null;
+            try { p = (await db.ref(`usuarios/${user.uid}/perfil`).once('value')).val(); } catch (e) { /* se usa el de Google */ }
+            const deGoogle = nombreDeGoogle(user);
+            const nombre = (p && typeof p.nombre === 'string' && p.nombre.trim()) ? p.nombre.trim().slice(0, 40) : deGoogle;
+            miPerfil = { nombre, visible: !(p && p.visible === false), deGoogle };
+            miNombreActual = nombre;
+            welcomeText.innerText = `¡Hola, ${nombre}!`;
+            if (!p || !p.nombre) db.ref(`usuarios/${user.uid}/perfil`).update({ nombre, visible: miPerfil.visible }).catch(() => {});
+        }
+        async function rolEnCampana(id) {
+            const gm = (await db.ref(`campanas/${id}/gm`).once('value')).val();
+            if (gm === miUidActual) return 'gm';
+            const apoyo = (await db.ref(`campanas/${id}/gm_apoyo/${miUidActual}`).once('value')).val() === true;
+            return apoyo ? 'gm' : 'jugador';
+        }
+        // Mantiene al día mi nombre como integrante de cada campaña y mi ficha del directorio (nombre y campañas con mi rol).
+        async function sincronizarDirectorio(ids) {
+            const uid = miUidActual; if (!uid) return;
+            for (const id of ids) {
+                try {
+                    const ref = db.ref(`campanas/${id}/miembros/${uid}/nombre`);
+                    if ((await ref.once('value')).val() !== miPerfil.nombre) await ref.set(miPerfil.nombre);
+                } catch (e) { /* ya no soy integrante o sin permiso */ }
+            }
+            const dir = db.ref(`directorio/${uid}`);
+            try {
+                if (!miPerfil.visible) { await dir.remove(); return; }
+                await dir.update({ nombre: miPerfil.nombre, nombre_lc: normalizarBusqueda(miPerfil.nombre) });
+                const actuales = (await dir.child('campanas').once('value')).val() || {};
+                for (const id of ids) {
+                    try { const rol = await rolEnCampana(id); if (actuales[id] !== rol) await dir.child('campanas/' + id).set(rol); } catch (e) { /* sin permiso: se reintenta la próxima vez */ }
+                }
+                for (const id of Object.keys(actuales)) if (!ids.includes(id)) await dir.child('campanas/' + id).remove().catch(() => {});
+            } catch (e) { console.warn('No se pudo actualizar el directorio:', e); }
+        }
+        btnPerfil.onclick = () => {
+            document.getElementById('pf-nombre').value = miPerfil.nombre; document.getElementById('pf-visible').checked = miPerfil.visible; mostrar(document.getElementById('pf-msg'), '');
+            abrirDlg('dlg-perfil');
+        };
+        document.getElementById('pf-google').onclick = () => { document.getElementById('pf-nombre').value = miPerfil.deGoogle; };
+        document.getElementById('pf-guardar').onclick = async () => {
+            const msg = document.getElementById('pf-msg'), btn = document.getElementById('pf-guardar');
+            const nombre = document.getElementById('pf-nombre').value.trim().replace(/\s+/g, ' '), visible = document.getElementById('pf-visible').checked;
+            if (!nombre) return mostrar(msg, 'Escribe un nombre.');
+            if (nombre.length > 40) return mostrar(msg, 'El nombre puede tener hasta 40 caracteres.');
+            btn.disabled = true; mostrar(msg, '');
+            try {
+                await db.ref(`usuarios/${miUidActual}/perfil`).set({ nombre, visible });
+                miPerfil.nombre = nombre; miPerfil.visible = visible; miNombreActual = nombre;
+                welcomeText.innerText = `¡Hola, ${nombre}!`;
+                cerrarDlg('dlg-perfil');
+                await sincronizarDirectorio(idsCampanasActuales);
+                // los personajes que reclamé en la campaña abierta se actualizan al volver a dibujar la lista
+                if (selectCampana.value) selectCampana.dispatchEvent(new Event('change'));
+            } catch (e) { console.error(e); mostrar(msg, 'No se pudo guardar: ' + e.message); }
+            btn.disabled = false;
+        };
+
+        // ---------- buscar campañas por jugador ----------
+        let busquedaSeq = 0, busquedaTimer = null; const infoCampanasCache = {};
+        async function infoCampana(id) { if (!infoCampanasCache[id]) { try { infoCampanasCache[id] = (await db.ref(`lista_campanas/${id}`).once('value')).val() || {}; } catch (e) { infoCampanasCache[id] = {}; } } return infoCampanasCache[id]; }
+        async function buscarJugadores() {
+            const cont = document.getElementById('un-resultados'), q = normalizarBusqueda(document.getElementById('un-buscar').value), seq = ++busquedaSeq;
+            if (q.length < 2) { cont.innerHTML = q.length ? '<p class="nota-menu">Escribe al menos 2 letras.</p>' : ''; return; }
+            cont.innerHTML = '<p class="nota-menu">Buscando…</p>';
+            let usuarios = [];
+            try {
+                const snap = await db.ref('directorio').orderByChild('nombre_lc').startAt(q).endAt(q + '').limitToFirst(15).once('value');
+                snap.forEach((ch) => { if (ch.key !== miUidActual) usuarios.push(Object.assign({ uid: ch.key }, ch.val())); });
+            } catch (e) { if (seq === busquedaSeq) cont.innerHTML = '<p class="msg-error">No se pudo buscar: ' + escHtml(e.message) + '</p>'; return; }
+            if (seq !== busquedaSeq) return;
+            if (!usuarios.length) { cont.innerHTML = '<p class="nota-menu">Nadie con ese nombre. Solo aparecen quienes lo permiten, y la búsqueda es por el comienzo del nombre.</p>'; return; }
+            const filas = [];
+            for (const u of usuarios) {
+                const ids = Object.keys(u.campanas || {});
+                const infos = await Promise.all(ids.map(infoCampana));
+                if (seq !== busquedaSeq) return;
+                const camp = ids.map((id, i) => {
+                    const rol = u.campanas[id] === 'gm' ? 'GM' : 'Jugador', info = infos[i];
+                    if (!info.sistema && !info.nombre) return '';   // campaña que ya no existe
+                    const estado = idsCampanasActuales.includes(id) ? '<small>✔ Ya estás</small>'
+                        : misSolicitudesPendientes[id] ? '<small>⏳ Solicitud enviada</small>'
+                        : `<button type="button" class="btn-mini" data-pedir="${escHtml(id)}">Pedir acceso</button>`;
+                    return `<div class="res-camp"><span>${escHtml(info.nombre || id)} <small>(${escHtml(NOMBRE_SISTEMA[info.sistema] || info.sistema || '')})</small><span class="rol-etiqueta">${rol}</span></span>${estado}</div>`;
+                }).join('');
+                filas.push(`<div class="res-jugador"><strong>${escHtml(u.nombre || 'Jugador')}</strong>${camp || '<div class="res-camp"><small>Sin campañas visibles.</small></div>'}</div>`);
+            }
+            cont.innerHTML = filas.join('');
+            cont.querySelectorAll('[data-pedir]').forEach((b) => b.onclick = async () => {
+                const id = b.dataset.pedir, msg = document.getElementById('un-msg'); b.disabled = true; mostrar(msg, '');
+                try { const r = await unirseACampana(id, ''); b.replaceWith(Object.assign(document.createElement('small'), { textContent: r.ya ? '✔ Ya estás' : '⏳ Solicitud enviada' })); }
+                catch (e) { b.disabled = false; mostrar(msg, e.message || String(e)); }
+            });
+        }
+        document.getElementById('un-buscar').addEventListener('input', () => { clearTimeout(busquedaTimer); busquedaTimer = setTimeout(buscarJugadores, 300); });
+
         // ---------- salir de una campaña ----------
         document.getElementById('btn-salir-campana').onclick = async () => {
             const id = selectCampana.value; if (!id) return;
@@ -722,6 +858,7 @@ btnLoginEmail.onclick = () => {
                 await db.ref(`campanas/${id}/gm_apoyo/${miUidActual}`).remove().catch(() => {});
                 await db.ref(`campanas/${id}/miembros/${miUidActual}`).remove();
                 await db.ref(`usuarios/${miUidActual}/campanas/${id}`).remove();
+                db.ref(`directorio/${miUidActual}/campanas/${id}`).remove().catch(() => {});
             } catch (e) { alert('No se pudo salir de la campaña: ' + e.message); }
         };
 
@@ -1015,6 +1152,7 @@ btnLoginEmail.onclick = () => {
         const soyElGM = soyElTitular || soyApoyo;
         soyElGMActual = soyElGM;
         soyTitularActual = soyElTitular;
+        if (miPerfil.visible) db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).once('value').then((sn) => { const rol = soyElGM ? 'gm' : 'jugador'; if (sn.val() !== rol && ultimosMiembros[miUidActual]) return db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).set(rol); }).catch(() => {});
         const tieneGM = !!campanaGmUid;
         console.log("TU UID ACTUAL:", miUidActual, "UID DEL GM EN DB:", campanaGmUid, soyApoyo ? "(GM de apoyo)" : "");
         document.getElementById('btn-salir-campana').style.display = soyElTitular ? 'none' : 'inline-block';
@@ -1260,6 +1398,7 @@ btnLoginEmail.onclick = () => {
                 await db.ref(`campanas/${campanaId}/gm_apoyo/${u}`).remove().catch(() => {});
                 await db.ref(`campanas/${campanaId}/miembros/${u}`).remove();
                 await db.ref(`usuarios/${u}/campanas/${campanaId}`).remove();
+                db.ref(`directorio/${u}/campanas/${campanaId}`).remove().catch(() => {});
             } catch (e) { aviso('No se pudo quitar: ' + e.message); }
         });
         panelGm.appendChild(cont);
