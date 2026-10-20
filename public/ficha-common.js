@@ -663,21 +663,22 @@
   }
   function renderEfectosForm(efectos) {
     return efectos.map((e, i) => {
-      const tipoSel = `<select id="hf-bf-tipo-${i}" onchange="FichaHechizos.buffCambiarTipo(${i})">
+      const L = (t, el) => `<label class="campo-rotulado"><span class="campo-etiqueta">${t}</span>${el}</label>`;
+      const tipoSel = `<label class="campo-rotulado"><span class="campo-etiqueta">Tipo de efecto</span><select id="hf-bf-tipo-${i}" onchange="FichaHechizos.buffCambiarTipo(${i})">
         <option value="plano" ${e.tipo === 'plano' ? 'selected' : ''}>Sumar número fijo</option>
         <option value="dado" ${e.tipo === 'dado' ? 'selected' : ''}>Sumar dado</option>
-        <option value="stat" ${e.tipo === 'stat' ? 'selected' : ''}>Sumar a un atributo</option></select>`;
+        <option value="stat" ${e.tipo === 'stat' ? 'selected' : ''}>Sumar a un atributo</option></select></label>`;
       let campos;
       if (e.tipo === 'dado') {
-        campos = `<select id="hf-bf-obj-${i}">${opcionesSelect(OBJETIVOS_DADO, e.objetivo)}</select>
-          <input type="number" id="hf-bf-cant-${i}" min="1" style="width:55px;" value="${e.dado.count}"><span>d</span>
-          <input type="number" id="hf-bf-caras-${i}" min="1" style="width:55px;" value="${e.dado.sides}">`;
+        campos = L('Se suma a', `<select id="hf-bf-obj-${i}">${opcionesSelect(OBJETIVOS_DADO, e.objetivo)}</select>`) +
+          L('Cantidad', `<input type="number" id="hf-bf-cant-${i}" min="1" style="width:55px;" value="${e.dado.count}">`) + '<span>d</span>' +
+          L('Caras', `<input type="number" id="hf-bf-caras-${i}" min="1" style="width:55px;" value="${e.dado.sides}">`);
       } else if (e.tipo === 'stat') {
-        campos = `<select id="hf-bf-stat-${i}">${STATS_ATRIBUTO.map(a => `<option value="${a}" ${a === e.stat ? 'selected' : ''}>${a}</option>`).join('')}</select>
-          <input type="number" id="hf-bf-val-${i}" style="width:65px;" value="${e.valor}">`;
+        campos = L('Atributo', `<select id="hf-bf-stat-${i}">${STATS_ATRIBUTO.map(a => `<option value="${a}" ${a === e.stat ? 'selected' : ''}>${a}</option>`).join('')}</select>`) +
+          L('Valor', `<input type="number" id="hf-bf-val-${i}" style="width:65px;" value="${e.valor}">`);
       } else {
-        campos = `<select id="hf-bf-obj-${i}">${opcionesSelect(OBJETIVOS_PLANO, e.objetivo)}</select>
-          <input type="number" id="hf-bf-val-${i}" style="width:65px;" value="${e.valor}">`;
+        campos = L('Se suma a', `<select id="hf-bf-obj-${i}">${opcionesSelect(OBJETIVOS_PLANO, e.objetivo)}</select>`) +
+          L('Valor', `<input type="number" id="hf-bf-val-${i}" style="width:65px;" value="${e.valor}">`);
       }
       return `<div class="spell-form-row-dado buff-efecto-row">${tipoSel} ${campos}
         <button type="button" class="btn-clear" onclick="FichaHechizos.buffQuitarEfecto(${i})" title="Quitar efecto">✖</button></div>`;
@@ -787,33 +788,33 @@
       renderFormulario: (h) => `
         <div class="spell-form">
           <p class="spell-form-label">${h ? 'Editar hechizo' : 'Agregar hechizo'}</p>
-          <input type="text" id="hf-nombre" placeholder="Nombre" value="${h ? h.nombre : ''}">
-          <input type="number" id="hf-nivel" placeholder="Nivel (0 = truco)" min="0" max="9" value="${h ? h.nivel : 0}">
-          <input type="text" id="hf-tiempo" placeholder="Tiempo de lanzamiento" value="${h ? h.tiempo : ''}">
-          <input type="text" id="hf-alcance" placeholder="Alcance" value="${h ? h.alcance : ''}">
-          <input type="text" id="hf-area" placeholder="Área (opcional, p.ej. Esfera 20 ft)" value="${h && h.area ? h.area : ''}">
-          <textarea id="hf-resumen" placeholder="Resumen y efecto mecánico" rows="2">${h ? h.resumen : ''}</textarea>
-          <input type="text" id="hf-duracion" placeholder="Duración" value="${h ? h.duracion : ''}" oninput="if (/conc/i.test(this.value)) document.getElementById('hf-concentracion').checked = true;">
+          <label class="campo-rotulado"><span class="campo-etiqueta">Nombre</span><input type="text" id="hf-nombre" placeholder="Nombre" value="${h ? h.nombre : ''}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Nivel (0 = truco)</span><input type="number" id="hf-nivel" placeholder="Nivel (0 = truco)" min="0" max="9" value="${h ? h.nivel : 0}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Tiempo de lanzamiento</span><input type="text" id="hf-tiempo" placeholder="Tiempo de lanzamiento" value="${h ? h.tiempo : ''}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Alcance</span><input type="text" id="hf-alcance" placeholder="Alcance" value="${h ? h.alcance : ''}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Área (opcional, p. ej. Esfera 20 ft)</span><input type="text" id="hf-area" placeholder="Área (opcional, p.ej. Esfera 20 ft)" value="${h && h.area ? h.area : ''}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Resumen y efecto mecánico</span><textarea id="hf-resumen" placeholder="Resumen y efecto mecánico" rows="2">${h ? h.resumen : ''}</textarea></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Duración</span><input type="text" id="hf-duracion" placeholder="Duración" value="${h ? h.duracion : ''}" oninput="if (/conc/i.test(this.value)) document.getElementById('hf-concentracion').checked = true;"></label>
           <div class="spell-form-row-dado">
             <span class="spell-form-mini-label">Tirada automática (opcional):</span>
-            <input type="number" id="hf-dado-cant" placeholder="cant." min="0" value="${h && h.formula ? h.formula.count : ''}">
+            <label class="campo-rotulado"><span class="campo-etiqueta">Cantidad</span><input type="number" id="hf-dado-cant" placeholder="cant." min="0" value="${h && h.formula ? h.formula.count : ''}"></label>
             <span>d</span>
-            <input type="number" id="hf-dado-caras" placeholder="caras" min="0" value="${h && h.formula ? h.formula.sides : ''}">
+            <label class="campo-rotulado"><span class="campo-etiqueta">Caras</span><input type="number" id="hf-dado-caras" placeholder="caras" min="0" value="${h && h.formula ? h.formula.sides : ''}"></label>
             <span>mod.</span>
-            <input type="number" id="hf-dado-mod" placeholder="±" value="${h && h.formula ? h.formula.mod : ''}">
+            <label class="campo-rotulado"><span class="campo-etiqueta">Modificador</span><input type="number" id="hf-dado-mod" placeholder="±" value="${h && h.formula ? h.formula.mod : ''}"></label>
           </div>
           <div class="spell-form-row-dado">
             <span class="spell-form-mini-label">Ataque / Salvación (opcional):</span>
-            <select id="hf-ataque-tipo" onchange="FichaHechizos.alternarCamposAtaque()">
+            <label class="campo-rotulado"><span class="campo-etiqueta">Tipo</span><select id="hf-ataque-tipo" onchange="FichaHechizos.alternarCamposAtaque()">
               <option value="">Ninguno</option>
               <option value="ataque" ${h && h.ataque && h.ataque.tipo === 'ataque' ? 'selected' : ''}>Tirada de ataque</option>
               <option value="salvacion" ${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'selected' : ''}>Salvación</option>
-            </select>
-            <input type="number" id="hf-ataque-bonus" placeholder="Bono (+N)" style="width:80px;display:${h && h.ataque && h.ataque.tipo === 'ataque' ? 'inline-block' : 'none'};" value="${h && h.ataque && h.ataque.tipo === 'ataque' ? h.ataque.bonus : ''}">
-            <select id="hf-ataque-habilidad" style="display:${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'inline-block' : 'none'};">
+            </select></label>
+            <label class="campo-rotulado" id="hf-ataque-bonus-w" style="display:${h && h.ataque && h.ataque.tipo === 'ataque' ? 'grid' : 'none'};"><span class="campo-etiqueta">Bono de ataque</span><input type="number" id="hf-ataque-bonus" placeholder="Bono (+N)" style="width:80px;" value="${h && h.ataque && h.ataque.tipo === 'ataque' ? h.ataque.bonus : ''}"></label>
+            <label class="campo-rotulado" id="hf-ataque-habilidad-w" style="display:${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'grid' : 'none'};"><span class="campo-etiqueta">Característica</span><select id="hf-ataque-habilidad">
               ${['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(a => `<option value="${a}" ${h && h.ataque && h.ataque.habilidad === a ? 'selected' : ''}>${a}</option>`).join('')}
-            </select>
-            <input type="number" id="hf-ataque-dc" placeholder="DC" style="width:70px;display:${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'inline-block' : 'none'};" value="${h && h.ataque && h.ataque.tipo === 'salvacion' ? h.ataque.dc : ''}">
+            </select></label>
+            <label class="campo-rotulado" id="hf-ataque-dc-w" style="display:${h && h.ataque && h.ataque.tipo === 'salvacion' ? 'grid' : 'none'};"><span class="campo-etiqueta">CD (DC)</span><input type="number" id="hf-ataque-dc" placeholder="DC" style="width:70px;" value="${h && h.ataque && h.ataque.tipo === 'salvacion' ? h.ataque.dc : ''}"></label>
             <label id="hf-ataque-auto-label" style="display:${h && h.ataque ? 'flex' : 'none'};"><input type="checkbox" id="hf-ataque-auto" ${h && h.ataque && (h.ataque.dcAuto || h.ataque.bonusAuto) ? 'checked' : ''}> Automático (según mi característica de conjuro)</label>
           </div>
           <div class="spell-form-row-dado">
@@ -827,15 +828,15 @@
           <div id="hf-upcast-campos" class="spell-form-row-dado" style="display:${h && h.upcast ? 'flex' : 'none'};flex-direction:column;align-items:stretch;">
             <div class="spell-form-row-dado">
               <span class="spell-form-mini-label">Nivel base del upcast:</span>
-              <input type="number" id="hf-upcast-nivelbase" min="1" max="9" style="width:60px;" value="${h && h.upcast ? h.upcast.nivelBase : (h ? Math.max(1, h.nivel) : 1)}">
+              <label class="campo-rotulado"><span class="campo-etiqueta">Nivel base</span><input type="number" id="hf-upcast-nivelbase" min="1" max="9" style="width:60px;" value="${h && h.upcast ? h.upcast.nivelBase : (h ? Math.max(1, h.nivel) : 1)}"></label>
             </div>
             <div id="hf-upcast-dado-campos" style="display:${h && h.upcast && h.upcast.tipo === 'dado' ? 'flex' : 'none'};gap:6px;align-items:center;">
               <span class="spell-form-mini-label">+ por cada nivel sobre el base:</span>
-              <input type="number" id="hf-upcast-dado-cant" placeholder="cant." min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.count : ''}">
+              <label class="campo-rotulado"><span class="campo-etiqueta">Cantidad</span><input type="number" id="hf-upcast-dado-cant" placeholder="cant." min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.count : ''}"></label>
               <span>d</span>
-              <input type="number" id="hf-upcast-dado-caras" placeholder="caras" min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.sides : ''}">
+              <label class="campo-rotulado"><span class="campo-etiqueta">Caras</span><input type="number" id="hf-upcast-dado-caras" placeholder="caras" min="1" style="width:60px;" value="${h && h.upcast && h.upcast.tipo === 'dado' ? h.upcast.dado.sides : ''}"></label>
               <span>+</span>
-              <input type="number" id="hf-upcast-dado-mod" placeholder="fijo" style="width:55px;" title="Bono fijo por nivel (opcional)" value="${h && h.upcast && h.upcast.tipo === 'dado' && h.upcast.dado.mod ? h.upcast.dado.mod : ''}">
+              <label class="campo-rotulado"><span class="campo-etiqueta">Bono fijo</span><input type="number" id="hf-upcast-dado-mod" placeholder="fijo" style="width:55px;" title="Bono fijo por nivel (opcional)" value="${h && h.upcast && h.upcast.tipo === 'dado' && h.upcast.dado.mod ? h.upcast.dado.mod : ''}"></label>
             </div>
             <div id="hf-upcast-tabla-campos" style="display:${h && h.upcast && h.upcast.tipo === 'tabla' ? 'block' : 'none'};">
               <span class="spell-form-mini-label">Una línea por nivel, formato "nivel: efecto":</span>
@@ -863,9 +864,9 @@
 
     function alternarCamposAtaque() {
       const tipo = document.getElementById('hf-ataque-tipo').value;
-      document.getElementById('hf-ataque-bonus').style.display = tipo === 'ataque' ? 'inline-block' : 'none';
-      document.getElementById('hf-ataque-habilidad').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
-      document.getElementById('hf-ataque-dc').style.display = tipo === 'salvacion' ? 'inline-block' : 'none';
+      document.getElementById('hf-ataque-bonus-w').style.display = tipo === 'ataque' ? 'grid' : 'none';
+      document.getElementById('hf-ataque-habilidad-w').style.display = tipo === 'salvacion' ? 'grid' : 'none';
+      document.getElementById('hf-ataque-dc-w').style.display = tipo === 'salvacion' ? 'grid' : 'none';
       document.getElementById('hf-ataque-auto-label').style.display = tipo ? 'flex' : 'none';
     }
 
@@ -1134,25 +1135,25 @@
       },
       renderFormulario: (item) => `
         <div class="inventory-form">
-          <input type="text" id="if-nombre" placeholder="Nombre" value="${item ? item.nombre : ''}">
-          <input type="number" id="if-cantidad" placeholder="Cantidad" min="1" value="${item ? item.cantidad : 1}">
-          <select id="if-categoria" onchange="FichaInventario.alternarCamposArmadura()">
+          <label class="campo-rotulado"><span class="campo-etiqueta">Nombre</span><input type="text" id="if-nombre" placeholder="Nombre" value="${item ? item.nombre : ''}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Cantidad</span><input type="number" id="if-cantidad" placeholder="Cantidad" min="1" value="${item ? item.cantidad : 1}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Categoría</span><select id="if-categoria" onchange="FichaInventario.alternarCamposArmadura()">
             <option value="general" ${!item || item.categoria === 'general' || !item.categoria ? 'selected' : ''}>General</option>
             <option value="armadura" ${item && item.categoria === 'armadura' ? 'selected' : ''}>Armadura</option>
             <option value="escudo" ${item && item.categoria === 'escudo' ? 'selected' : ''}>Escudo (suma a la CA)</option>
             <option value="arma" ${item && item.categoria === 'arma' ? 'selected' : ''}>Arma</option>
             <option value="municion" ${item && item.categoria === 'municion' ? 'selected' : ''}>Munición</option>
             <option value="bienes" ${item && item.categoria === 'bienes' ? 'selected' : ''}>Bienes comerciales</option>
-          </select>
+          </select></label>
           <div id="if-armadura-campos" class="inventory-armadura-campos" style="display:${item && (item.categoria === 'armadura' || item.categoria === 'escudo') ? 'flex' : 'none'};">
-            <input type="number" id="if-modac" placeholder="CA base (armadura) / bono (escudo)" value="${item && item.modAC != null ? item.modAC : ''}">
-            <select id="if-dexcap">
+            <label class="campo-rotulado"><span class="campo-etiqueta">CA base (armadura) / bono (escudo)</span><input type="number" id="if-modac" placeholder="CA base (armadura) / bono (escudo)" value="${item && item.modAC != null ? item.modAC : ''}"></label>
+            <label class="campo-rotulado"><span class="campo-etiqueta">Tope de DEX</span><select id="if-dexcap">
               <option value="sin-tope" ${item && item.dexCap === null ? 'selected' : ''}>+ DEX sin tope (ligera)</option>
               <option value="2" ${item && item.dexCap === 2 ? 'selected' : ''}>+ DEX máx +2 (media)</option>
               <option value="0" ${item && item.dexCap === 0 ? 'selected' : ''}>Sin DEX (pesada)</option>
-            </select>
+            </select></label>
           </div>
-          <textarea id="if-descripcion" placeholder="Descripción / notas">${item ? item.descripcion || '' : ''}</textarea>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Descripción / notas</span><textarea id="if-descripcion" placeholder="Descripción / notas">${item ? item.descripcion || '' : ''}</textarea></label>
           <label><input type="checkbox" id="if-equipado" ${item && item.equipado ? 'checked' : ''}> Equipado/portado</label>
           <label><input type="checkbox" id="if-consumible" ${item && item.consumible ? 'checked' : ''}> Consumible (botón "⚡ Usar" gasta 1 sin entrar a edición)</label>
           <div class="inventory-form-actions">
@@ -1547,9 +1548,9 @@
       },
       renderFormulario: (r) => `
         <div class="reputacion-form">
-          <input type="text" id="rf-faccion" placeholder="Nombre de la facción" value="${r ? r.faccion : ''}">
-          <input type="number" id="rf-valor" placeholder="Valor" value="${r ? r.valor : 0}">
-          <textarea id="rf-descripcion" placeholder="Notas (opcional)">${r ? r.descripcion || '' : ''}</textarea>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Nombre de la facción</span><input type="text" id="rf-faccion" placeholder="Nombre de la facción" value="${r ? r.faccion : ''}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Valor</span><input type="number" id="rf-valor" placeholder="Valor" value="${r ? r.valor : 0}"></label>
+          <label class="campo-rotulado"><span class="campo-etiqueta">Notas (opcional)</span><textarea id="rf-descripcion" placeholder="Notas (opcional)">${r ? r.descripcion || '' : ''}</textarea></label>
           <div class="reputacion-form-actions">
             <button type="button" onclick="FichaReputacion.editor.cerrarFormulario()">Cancelar</button>
             <button type="button" onclick="FichaReputacion.guardarDesdeFormulario()">💾 Guardar</button>

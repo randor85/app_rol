@@ -422,6 +422,11 @@ body {
 .spell-form-row-dado { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); color: var(--texto-suave); }
 .spell-form-row-dado input { width: 80px; }
 .spell-form-row-dado select { width: auto; }
+.ficha .campo-rotulado { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.ficha .spell-form-row-dado .campo-rotulado { flex: 0 0 auto; width: auto; }
+.ficha .spell-form-row-dado .campo-rotulado input { width: 5.5rem; }
+.ficha .spell-form-row-dado .campo-rotulado select { width: auto; }
+.ficha .campo-etiqueta { font-size: var(--fs-xs); font-weight: 700; color: var(--texto-suave); letter-spacing: 0.02em; }
 .spell-form-mini-label { color: var(--texto-suave); }
 .spell-form-actions, .inventory-form-actions, .reputacion-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-2); }
 .spell-form-actions button, .inventory-form-actions button, .reputacion-form-actions button {
