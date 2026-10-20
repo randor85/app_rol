@@ -39,6 +39,26 @@
         if (!u) { diag('token: sin usuario'); return; }
         u.getIdTokenResult().then((r) => diag('token renovado · vence ' + new Date(r.expirationTime).toISOString().slice(11, 19) + ' · ' + (r.signInProvider || '?'))).catch((e) => diag('token: error ' + (e && e.code)));
       }, (e) => diag('token: error ' + (e && e.code)));
+      // Cambios de sesión: si había usuario y deja de haberlo, queda anotado cuánto llevaba abierta y qué estaba pasando.
+      let desde = au.currentUser ? Date.now() : 0;
+      au.onAuthStateChanged((u) => {
+        if (u && !desde) desde = Date.now();
+        else if (!u && desde) {
+          diag(`⚠ SESIÓN PERDIDA tras ${Math.round((Date.now() - desde) / 60000)} min · ${nav.onLine ? 'con red' : 'SIN red'} · ${document.visibilityState}`);
+          desde = 0;
+        }
+      });
+      // Errores de autenticación que no atrapa nadie (renovar el token con la red caída, token revocado, etc.).
+      global.addEventListener('unhandledrejection', (ev) => { const c = ev && ev.reason && ev.reason.code; if (c && /^auth\//.test(c)) diag('error no atrapado: ' + c); });
+      // Desfase del reloj del equipo contra el servidor (un reloj corrido invalida los tokens).
+      fetch(location.origin + '/404.html', { method: 'HEAD', cache: 'no-store' }).then((r) => {
+        const d = r.headers.get('date'); if (d) diag('reloj del equipo vs servidor: ' + Math.round((Date.now() - new Date(d).getTime()) / 1000) + ' s');
+      }).catch(() => {});
+      // Sondeo cada 5 min con la pestaña visible: pide un token nuevo al servidor; si falla, anota el código exacto.
+      setInterval(() => {
+        const u = au.currentUser; if (!u || document.visibilityState !== 'visible') return;
+        u.getIdToken(true).then(() => diag('sondeo de token: ok'), (e) => diag('sondeo de token: ERROR ' + (e && e.code)));
+      }, 5 * 60 * 1000);
     } catch (e) { /* el diagnóstico nunca debe romper la página */ }
   }
 

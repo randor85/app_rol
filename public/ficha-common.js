@@ -422,16 +422,17 @@
   //     FICHA_CONFIG.caBase (valor fijo de la ficha) o 10 + DEX — así una
   //     ficha existente no cambia de CA hasta que el jugador equipe algo.
   // ============================================================
+  // [nombre, CA base, tope de DEX (null = sin tope, 0 = sin DEX), Fuerza mínima (0 = ninguna), desventaja en Sigilo]
   const ARMADURAS_SRD = [
-    ['half plate', 15, 2], ['breastplate', 14, 2], ['studded leather', 12, null], ['chain shirt', 13, 2],
-    ['chain mail', 16, 0], ['scale mail', 14, 2], ['ring mail', 14, 0], ['padded', 11, null],
-    ['leather', 11, null], ['splint', 17, 0], ['plate', 18, 0], ['hide', 12, 2],
+    ['half plate', 15, 2, 0, true], ['breastplate', 14, 2, 0, false], ['studded leather', 12, null, 0, false], ['chain shirt', 13, 2, 0, false],
+    ['chain mail', 16, 0, 13, true], ['scale mail', 14, 2, 0, true], ['ring mail', 14, 0, 0, true], ['padded', 11, null, 0, true],
+    ['leather', 11, null, 0, false], ['splint', 17, 0, 15, true], ['plate', 18, 0, 15, true], ['hide', 12, 2, 0, false],
   ];
   // Alias en español (mismo orden de prioridad: los nombres más específicos primero).
   const ARMADURAS_ES = [
-    ['semiplacas', 15, 2], ['coraza', 14, 2], ['cuero tachonado', 12, null], ['camisote de mallas', 13, 2],
-    ['cota de mallas', 16, 0], ['cota de escamas', 14, 2], ['cota de anillas', 14, 0], ['acolchada', 11, null],
-    ['cuero', 11, null], ['laminas', 17, 0], ['láminas', 17, 0], ['placas', 18, 0], ['pieles', 12, 2],
+    ['semiplacas', 15, 2, 0, true], ['coraza', 14, 2, 0, false], ['cuero tachonado', 12, null, 0, false], ['camisote de mallas', 13, 2, 0, false],
+    ['cota de mallas', 16, 0, 13, true], ['cota de escamas', 14, 2, 0, true], ['cota de anillas', 14, 0, 0, true], ['acolchada', 11, null, 0, true],
+    ['cuero', 11, null, 0, false], ['laminas', 17, 0, 15, true], ['láminas', 17, 0, 15, true], ['placas', 18, 0, 15, true], ['pieles', 12, 2, 0, false],
   ];
   // Devuelve la lista de piezas que aportan CA reconocidas en el nombre (una armadura y/o un escudo,
   // p.ej. "Plate Armor & Shield" aporta las dos).
@@ -440,29 +441,54 @@
     const piezas = [];
     if ((/\bshield\b/.test(n) && !/\bshield of\b|\bspell\b/.test(n)) || /\bescudo\b/.test(n)) piezas.push({ tipo: 'escudo', bono: 2 });
     const hit = ARMADURAS_SRD.find(a => new RegExp('\\b' + a[0] + '\\b').test(n));
-    if (hit) piezas.push({ tipo: 'armadura', base: hit[1], dexCap: hit[2] });
+    if (hit) piezas.push({ tipo: 'armadura', base: hit[1], dexCap: hit[2], fue: hit[3], sigilo: hit[4] });
     else {
       const es = ARMADURAS_ES.find(a => n.includes(a[0]));
-      if (es) piezas.push({ tipo: 'armadura', base: es[1], dexCap: es[2] });
+      if (es) piezas.push({ tipo: 'armadura', base: es[1], dexCap: es[2], fue: es[3], sigilo: es[4] });
     }
     return piezas;
   }
   function reconocerArmadura(item) { return reconocerArmaduras(item)[0] || null; }
+  function fuerzaActual() {
+    const e = document.getElementById('str-score'); const v = e ? parseInt(e.value, 10) : NaN;
+    return isNaN(v) ? null : v;
+  }
+  // Piezas de CA de un objeto del inventario (armadura y/o escudo). Un objeto puede traer ambas ("Plate Armor & Shield").
+  function infosDeItem(i) {
+    if (i.categoria === 'armadura') {
+      const srd = reconocerArmaduras(i).find(x => x.tipo === 'armadura') || {};   // Fuerza mínima y Sigilo salen de la tabla SRD si el nombre se reconoce
+      return (i.modAC != null) ? [{ tipo: 'armadura', base: i.modAC, dexCap: i.dexCap === undefined ? null : i.dexCap, fue: srd.fue || 0, sigilo: !!srd.sigilo }] : reconocerArmaduras(i);
+    }
+    if (i.categoria === 'escudo') return [{ tipo: 'escudo', bono: i.modAC != null ? i.modAC : 2 }];
+    if (!i.categoria || i.categoria === 'general') return reconocerArmaduras(i);
+    return [];
+  }
+  // Texto que describe una armadura o un escudo del inventario: CA, tope de DEX, Fuerza mínima, Sigilo y lo que aporta hoy.
+  function descripcionArmadura(item) {
+    const dex = window.FichaAtributos ? FichaAtributos.modDe('DEX') : 0;
+    return infosDeItem(item).map(info => {
+      if (info.tipo === 'escudo') return `🛡️ Escudo: +${info.bono} a la CA mientras lo llevas equipado.`;
+      const sinTope = info.dexCap === null || info.dexCap === undefined;
+      const topeTxt = info.dexCap === 0 ? 'sin DEX (armadura pesada)' : sinTope ? '+ DEX (sin tope)' : `+ DEX (máx. +${info.dexCap})`;
+      const aporte = info.dexCap === 0 ? 0 : sinTope ? dex : Math.min(dex, info.dexCap);
+      const partes = [`🛡️ CA ${info.base} ${topeTxt}`];
+      if (info.sigilo) partes.push('⚠️ desventaja en Sigilo');
+      if (info.fue) partes.push(`💪 requiere Fuerza ${info.fue} (si no, velocidad −10 pies)`);
+      if (info.dexCap !== 0) partes.push(`con tu DEX ${FichaComun.formatearMod(dex)} da CA ${info.base + aporte}${!sinTope && dex > info.dexCap ? ' (tu DEX se recorta al tope)' : ''}`);
+      return partes.join(' · ');
+    }).join('<br>');
+  }
   function calcularCA() {
     const dex = window.FichaAtributos ? FichaAtributos.modDe('DEX') : 0;
     const equipados = (window.FichaInventario ? FichaInventario.editor.items() : []).filter(i => i.equipado);
     let mejor = null;
     let escudo = 0;
     equipados.forEach(i => {
-      let infos = [];
-      if (i.categoria === 'armadura') infos = (i.modAC != null) ? [{ tipo: 'armadura', base: i.modAC, dexCap: i.dexCap === undefined ? null : i.dexCap }] : reconocerArmaduras(i);
-      else if (i.categoria === 'escudo') infos = [{ tipo: 'escudo', bono: i.modAC != null ? i.modAC : 2 }];
-      else if (!i.categoria || i.categoria === 'general') infos = reconocerArmaduras(i);
-      infos.forEach(info => {
+      infosDeItem(i).forEach(info => {
         if (info.tipo === 'escudo') { escudo += info.bono; return; }
         const aporteDex = info.dexCap === null ? dex : (info.dexCap === 0 ? 0 : Math.min(dex, info.dexCap));
         const total = info.base + aporteDex;
-        if (!mejor || total > mejor.total) mejor = { total, nombre: i.nombre, base: info.base, aporteDex };
+        if (!mejor || total > mejor.total) mejor = { total, nombre: i.nombre, base: info.base, aporteDex, dexCap: info.dexCap, fue: info.fue || 0, sigilo: !!info.sigilo };
       });
     });
     if (!mejor && !escudo) {
@@ -476,9 +502,22 @@
     }
     const sinArm = typeof FICHA_CONFIG.caSinArmadura === 'function' ? FICHA_CONFIG.caSinArmadura() : 10 + dex;
     const base = mejor ? mejor.total : sinArm;
-    const partes = [mejor ? `${mejor.nombre} ${mejor.base}${mejor.aporteDex ? ' + DEX ' + FichaComun.formatearMod(mejor.aporteDex) : ''}` : `sin armadura ${sinArm}`];
+    // Desglose: base de la armadura + DEX (con su tope) + escudo, y las penalizaciones que trae (Sigilo, Fuerza mínima).
+    const partes = [];
+    if (mejor) {
+      partes.push(`${mejor.nombre} ${mejor.base}`);
+      if (mejor.dexCap === 0) partes.push('DEX 0 (armadura pesada, no suma DEX)');
+      else if (mejor.dexCap === null || mejor.dexCap === undefined) partes.push(`DEX ${FichaComun.formatearMod(dex)} (sin tope)`);
+      else partes.push(`DEX ${FichaComun.formatearMod(mejor.aporteDex)} (tope +${mejor.dexCap}${dex > mejor.dexCap ? `; tu DEX ${FichaComun.formatearMod(dex)} se recorta` : ''})`);
+    } else partes.push(`sin armadura ${sinArm}`);
     if (escudo) partes.push(`escudo +${escudo}`);
-    return { total: base + escudo, texto: `${base + escudo} (${partes.join(', ')})` };
+    const avisos = [];
+    if (mejor && mejor.sigilo) avisos.push('⚠️ desventaja en Sigilo');
+    if (mejor && mejor.fue) {
+      const fue = fuerzaActual();
+      avisos.push(fue != null && fue < mejor.fue ? `⚠️ Fuerza ${mejor.fue} requerida (tienes ${fue}): velocidad −10 pies` : `Fuerza ${mejor.fue} requerida (la cumples)`);
+    }
+    return { total: base + escudo, texto: `${base + escudo} = ${partes.join(' + ')}${avisos.length ? ' · ' + avisos.join(' · ') : ''}`, desglose: partes, avisos };
   }
   // opts: { totalElId, baseElId?, buffInputId? } — CA = armadura calculada + buff manual + buffs activados.
   function iniciarCA(opts) {
@@ -1038,9 +1077,7 @@
       renderFila: (item, idx) => {
         const nombreEsc = item.nombre.replace(/'/g, "\\'");
         const catLabel = { armadura: '🛡️ Armadura', escudo: '🛡️ Escudo', municion: '🏹 Munición', bienes: '💰 Bienes' }[item.categoria] || '';
-        const acInfo = (item.categoria === 'armadura' && item.modAC != null)
-          ? ` · CA base ${item.modAC}${item.dexCap === null ? ' + DEX' : item.dexCap === 0 ? ' (sin DEX)' : ` + DEX (máx +${item.dexCap})`}`
-          : (item.categoria === 'escudo' ? ` · +${item.modAC != null ? item.modAC : 2} CA` : '');
+        const acInfo = '';   // la CA, el tope de DEX y las penalizaciones se describen en una línea propia (descripcionArmadura)
         const usarBtn = item.consumible
           ? `<button onclick="FichaInventario.usar(${idx})" title="Gasta 1 sin entrar a edición">⚡ Usar</button>`
           : '';
@@ -1055,6 +1092,7 @@
               </div>
             </div>
             <div class="inventory-item-desc">${item.descripcion || ''}</div>
+            ${(() => { const d = descripcionArmadura(item); return d ? `<div class="inventory-item-desc inventory-item-ca">${d}</div>` : ''; })()}
           </div>
         `;
       },
