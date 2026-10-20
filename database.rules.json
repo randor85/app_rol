@@ -36,12 +36,37 @@
     "campanas": {
       "$campanaId": {
         "gm": {
+          // GM de la campaña. Se puede reclamar solo si está vacante y es TU uid; si la campaña tiene clave (gm_hash), además tu
+          // gm_claim/<uid> tiene que ser igual a gm_hash (prueba de que conoces la clave). Quien es GM puede soltarlo o cederlo.
           ".read": "auth != null",
-          ".write": "auth != null && (!data.exists() || data.val() == auth.uid)"
+          ".write": "auth != null && ( (data.exists() && data.val() == auth.uid) || (!data.exists() && newData.val() == auth.uid && ( !root.child('campanas').child($campanaId).child('gm_hash').exists() || root.child('campanas').child($campanaId).child('gm_claim').child(auth.uid).val() == root.child('campanas').child($campanaId).child('gm_hash').val() )) )"
+        },
+        "gm_salt": {
+          // Sal pública de la clave de GM (el cliente la necesita para calcular el hash).
+          ".read": "auth != null",
+          ".write": "auth != null && (!data.exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)",
+          ".validate": "newData.isString() && newData.val().length <= 64"
+        },
+        "gm_hash": {
+          // Hash PBKDF2 de la clave de GM. NADIE puede leerlo desde el cliente (si se pudiera leer, bastaría copiarlo para reclamar);
+          // solo lo comparan las reglas del nodo 'gm'. Se define la primera vez; después solo lo cambia el GM.
+          ".read": false,
+          ".write": "auth != null && (!data.exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)",
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "gm_claim": {
+          // Cada usuario escribe aquí SU hash al reclamar el puesto; solo él puede leerlo o escribirlo.
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid",
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          }
         },
         "gm_password": {
-          ".read": "auth != null",
-".write": "auth != null && (!data.exists() || !root.child('campanas').child($campanaId).child('gm').exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"        },
+          // OBSOLETO (v95.0): clave en texto plano de versiones anteriores. Ya no se lee ni se usa; solo el GM puede borrarla.
+          ".read": false,
+          ".write": "auth != null && root.child('campanas').child($campanaId).child('gm').val() == auth.uid"
+        },
         "bitacora": {
           // Permite leer y escribir logs a los usuarios autenticados
           ".read": "auth != null",

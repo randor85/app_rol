@@ -1,0 +1,109 @@
+{
+  "rules": {
+    "lista_campanas": {
+      ".read": "auth != null",
+      "$campanaId": {
+        "sistema": {
+          // Sistema de juego de la campaña ('dnd' o 'coc'), usado por index.html y por cada
+          // ficha para impedir que se mezclen personajes de un sistema en una campaña del otro.
+          // Cualquier usuario autenticado puede fijarlo la PRIMERA vez que la campaña no lo
+          // tiene (flujo de "elegir sistema" en index.html); una vez asignado, solo el GM de
+          // esa campaña puede cambiarlo.
+          ".write": "auth != null && (!data.exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"
+        }
+      }
+    },
+    "biblioteca": {
+      // Biblioteca GLOBAL (compartida entre campañas): clases y subclases custom (creador-clases.html / clases-custom.js), para
+      // crearlas una vez y reutilizarlas en campañas futuras. Las lee cualquier usuario autenticado; cada subclase es un nodo
+      // por id (slug 'c_...'): se puede CREAR una nueva y solo su autor (campo 'autor') puede EDITARLA o BORRARLA.
+      "clases_custom": {
+        // Clases homebrew GLOBALES (compartidas entre campañas). Se puede CREAR una nueva y solo su autor (campo 'autor') puede EDITARLA o BORRARLA.
+        ".read": "auth != null",
+        "$claseId": {
+          ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid )",
+          ".validate": "newData.hasChildren(['id', 'name', 'hitDie', 'autor']) && newData.child('id').val() == $claseId && $claseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && (newData.child('hitDie').val() == 6 || newData.child('hitDie').val() == 8 || newData.child('hitDie').val() == 10 || newData.child('hitDie').val() == 12) && (!newData.child('casterType').exists() || newData.child('casterType').val() == 'full' || newData.child('casterType').val() == 'half' || newData.child('casterType').val() == 'pact') && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
+        }
+      },
+      "subclases_custom": {
+        ".read": "auth != null",
+        "$subclaseId": {
+          ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid )",
+          ".validate": "newData.hasChildren(['id', 'clase', 'name', 'autor']) && newData.child('id').val() == $subclaseId && $subclaseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('clase').isString() && newData.child('clase').val().matches(/^[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
+        }
+      }
+    },
+    "campanas": {
+      "$campanaId": {
+        "gm": {
+          ".read": "auth != null",
+          ".write": "auth != null && (!data.exists() || data.val() == auth.uid)"
+        },
+        "gm_password": {
+          ".read": "auth != null",
+".write": "auth != null && (!data.exists() || !root.child('campanas').child($campanaId).child('gm').exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"        },
+        "bitacora": {
+          // Permite leer y escribir logs a los usuarios autenticados
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "tiradas": {
+          // Permite registrar y ver los dados en tiempo real
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "clases_custom": {
+          // Clases homebrew de la campaña (creador-clases.html / clases-custom.js). Las lee cualquier miembro
+          // autenticado. Cada clase es un nodo por id (slug 'c_...'): se puede CREAR una clase nueva, y solo
+          // se puede EDITAR o BORRAR si sos su autor (campo 'autor') o el GM de la campaña.
+          ".read": "auth != null",
+          "$claseId": {
+            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )",
+            // Solo se evalúa al escribir un valor (no al borrar). 'autor' es el uid del creador: al crear tiene que
+            // ser el uid de quien escribe; al editar (autor o GM) tiene que seguir siendo el autor original, así el
+            // GM puede corregir lo de otro sin quedarse con la autoría ni romper la validación.
+            ".validate": "newData.hasChildren(['id', 'name', 'hitDie', 'autor']) && newData.child('id').val() == $claseId && $claseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && (newData.child('hitDie').val() == 6 || newData.child('hitDie').val() == 8 || newData.child('hitDie').val() == 10 || newData.child('hitDie').val() == 12) && (!newData.child('casterType').exists() || newData.child('casterType').val() == 'full' || newData.child('casterType').val() == 'half' || newData.child('casterType').val() == 'pact') && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
+          }
+        },
+        "subclases_custom": {
+          // Subclases homebrew de la campaña (para clases oficiales o custom). Mismos permisos que clases_custom.
+          ".read": "auth != null",
+          "$subclaseId": {
+            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )",
+            ".validate": "newData.hasChildren(['id', 'clase', 'name', 'autor']) && newData.child('id').val() == $subclaseId && $subclaseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('clase').isString() && newData.child('clase').val().matches(/^[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
+          }
+        },
+        "party": {
+          // Resumen público de cada personaje para el visor del grupo (ficha-party.js): PG, CA, concentración,
+          // condiciones. Lo leen los miembros autenticados de la campaña; lo escribe solo el dueño registrado
+          // del personaje o el GM de la campaña. Es un nodo aparte y chico a propósito, para que mostrar el grupo
+          // no obligue a descargar las fichas completas.
+          ".read": "auth != null",
+          "$personajeId": {
+            ".write": "auth != null && ( root.child('campanas').child($campanaId).child('personajes').child($personajeId).child('owner').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )"
+          }
+        },
+        "personajes": {
+          // NOTA: la lectura sigue abierta a cualquier miembro autenticado de la campaña.
+          // RTDB no permite filtrar por 'publico' dentro de una consulta amplia como la que usa
+          // index.html para listar todos los personajes de la campaña de una sola vez: si el nodo
+          // padre no concede lectura, la consulta entera es rechazada aunque algunos hijos serían
+          // legibles. Restringir esto de verdad requeriría separar los datos en una lista pública
+          // liviana y los datos completos por personaje, consultados uno por uno — fuera del
+          // alcance de este arreglo (que se enfoca en el bug de escritura reportado).
+          ".read": "auth != null",
+          "$personajeId": {
+            // Escritura permitida solo si:
+            //  a) ya sos el dueño registrado del personaje, o
+            //  b) sos el GM de la campaña, o
+            //  c) el personaje todavía no tiene dueño Y tu propia escritura lo asigna a vos mismo
+            //     (esto es lo único que permite el flujo de "reclamar personaje" en index.html;
+            //     ya NO alcanza con que el campo 'owner' esté vacío para poder editar datos ajenos,
+            //     como pasaba antes).
+            ".write": "auth != null && ( (data.child('owner').exists() && data.child('owner').val() == auth.uid) || root.child('campanas').child($campanaId).child('gm').val() == auth.uid || (!data.child('owner').exists() && newData.child('owner').val() == auth.uid) )"
+          }
+        }
+      }
+    }
+  }
+}

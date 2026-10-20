@@ -787,6 +787,14 @@ btnLoginEmail.onclick = () => {
     btnSistemaChicle.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('chicle')
         .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
 
+    // ---- Clave de GM: PBKDF2-SHA256 (200 000 vueltas) con sal aleatoria; el mismo cálculo se usa al definirla y al reclamar. ----
+    function saltAleatoria() { return Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join(''); }
+    async function hashClaveGM(clave, salt) {
+        const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(clave), 'PBKDF2', false, ['deriveBits']);
+        const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(salt), iterations: 200000 }, base, 256);
+        return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
     db.ref(`campanas/${campanaId}/gm`).on('value', gmSnap => {
         const campanaGmUid = gmSnap.val();
         const soyElGM = miUidActual === campanaGmUid;
@@ -800,34 +808,44 @@ btnLoginEmail.onclick = () => {
         if (!tieneGM) {
             btnReclamarGM.style.display = 'inline-block';
             btnReclamarGM.innerText = '👑 Reclamar Puesto GM';
-            db.ref(`campanas/${campanaId}/gm_password`).once('value', (passSnap) => {
-                const gmPasswordDb = passSnap.val();
+            // Clave de GM (v95.0): ya no se guarda en texto plano. Se guarda una sal pública (gm_salt) y el hash PBKDF2 de la clave (gm_hash,
+            // que nadie puede leer); para reclamar, cada quien escribe su propio hash en gm_claim/<uid> y las reglas lo comparan con gm_hash.
+            db.ref(`campanas/${campanaId}/gm_salt`).once('value', (saltSnap) => {
+                const salt = saltSnap.val();
+                const claim = db.ref(`campanas/${campanaId}/gm_claim/${miUidActual}`);
+                const limpiarClaim = () => claim.remove().catch(() => {});
 
-                if (!gmPasswordDb) {
+                if (!salt) {
                     btnReclamarGM.innerText = '👑 Definir Clave y ser GM';
-                    btnReclamarGM.onclick = () => {
+                    btnReclamarGM.onclick = async () => {
                         const nuevaClave = prompt("Crea una contraseña para proteger el puesto de GM:");
-                        if (nuevaClave) {
-                            db.ref(`campanas/${campanaId}/gm`).set(miUidActual)
-                                .then(() => {
-                                    return db.ref(`campanas/${campanaId}/gm_password`).set(nuevaClave);
-                                })
-                                .then(() => {
-                                    console.log("Puesto de GM y clave guardados con éxito.");
-                                })
-                                .catch(error => {
-                                    console.error("Error al reclamar puesto inicialmente:", error);
-                                });
+                        if (!nuevaClave) return;
+                        try {
+                            const nuevaSal = saltAleatoria();
+                            const hash = await hashClaveGM(nuevaClave, nuevaSal);
+                            await db.ref(`campanas/${campanaId}/gm_salt`).set(nuevaSal);
+                            await db.ref(`campanas/${campanaId}/gm_hash`).set(hash);
+                            await claim.set(hash);
+                            await db.ref(`campanas/${campanaId}/gm`).set(miUidActual);
+                            limpiarClaim();
+                            console.log("Puesto de GM y clave guardados con éxito.");
+                        } catch (error) {
+                            console.error("Error al reclamar puesto inicialmente:", error);
+                            alert("No se pudo reclamar el puesto de GM: " + error.message);
                         }
                     };
                 } else {
                     btnReclamarGM.innerText = '🔑 Reclamar GM (Vacante)';
-                    btnReclamarGM.onclick = () => {
+                    btnReclamarGM.onclick = async () => {
                         const pass = prompt("Introduce la contraseña de GM para reclamar el puesto:");
-                        if (pass === gmPasswordDb) {
-                            db.ref(`campanas/${campanaId}/gm`).set(miUidActual);
-                        } else if (pass !== null) {
+                        if (pass === null) return;
+                        try {
+                            await claim.set(await hashClaveGM(pass, salt));
+                            await db.ref(`campanas/${campanaId}/gm`).set(miUidActual);
+                        } catch (error) {
                             alert("Contraseña incorrecta.");
+                        } finally {
+                            limpiarClaim();
                         }
                     };
                 }
@@ -852,7 +870,9 @@ btnLoginEmail.onclick = () => {
             btnLiberarGM.style = "background:#c94a4a; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-top:15px; width:100%; font-weight:bold;";
             btnLiberarGM.onclick = () => {
                 if (confirm("¿Estás seguro de que quieres dejar de ser GM? Se borrará el puesto y la contraseña.")) {
-                    db.ref(`campanas/${campanaId}/gm_password`).set(null)
+                    db.ref(`campanas/${campanaId}/gm_hash`).set(null)
+                        .then(() => db.ref(`campanas/${campanaId}/gm_salt`).set(null))
+                        .then(() => db.ref(`campanas/${campanaId}/gm_password`).set(null).catch(() => {}))   // restos de la clave en texto plano (versiones antiguas)
                         .then(() => {
                             return db.ref(`campanas/${campanaId}/gm`).set(null);
                         })
