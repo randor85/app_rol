@@ -14,7 +14,7 @@ PERSONAJES.fiona_faraway = {
   paleta: 'bosque',
   subtitulo: 'Druid — Circle of the Shepherd | Orc (Neutral Buena)',
   xp: 49500,
-  clases: [{ nombre: 'Druid', dado: 8, nivelInicial: 8, caster: 'full', subclase: 'Shepherd' }],
+  clases: [{ nombre: 'Druid', dado: 8, nivelInicial: 8, caster: 'full', subclase: 'Circle of the Shepherd' }],
   hpBase: 59,                    // PG máximos a nivel 8; la subida a 9 suma su hpGanado desde subidas-nivel-registro
   velocidad: 30,
   habilidadAtaque: 'STR',
