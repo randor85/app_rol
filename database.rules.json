@@ -1,15 +1,86 @@
 {
   "rules": {
     "lista_campanas": {
-      ".read": "auth != null",
+      // v99.0: la lista de campañas YA NO se puede enumerar (no hay ".read" en la raíz); se lee una campaña por su id (para unirse por
+      // ID o por invitación) y cada quien ve en su menú solo las suyas (usuarios/<uid>/campanas). Cada campaña tiene creador, nombre y sistema.
       "$campanaId": {
+        ".read": "auth != null",
+        "creador": {
+          // La primera persona que escribe el id es la creadora (y la primera integrante); el id no se puede volver a tomar.
+          ".write": "auth != null && !data.exists() && newData.val() == auth.uid",
+          ".validate": "newData.isString() && $campanaId.matches(/^[a-z0-9_-]{3,40}$/)"
+        },
+        "nombre": {
+          ".write": "auth != null && ( (!data.exists() && root.child('lista_campanas').child($campanaId).child('creador').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 60"
+        },
         "sistema": {
-          // Sistema de juego de la campaña ('dnd' o 'coc'), usado por index.html y por cada
-          // ficha para impedir que se mezclen personajes de un sistema en una campaña del otro.
-          // Cualquier usuario autenticado puede fijarlo la PRIMERA vez que la campaña no lo
-          // tiene (flujo de "elegir sistema" en index.html); una vez asignado, solo el GM de
-          // esa campaña puede cambiarlo.
-          ".write": "auth != null && (!data.exists() || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true))"
+          // Sistema de juego ('dnd', 'coc' o 'chicle'): lo fija quien crea la campaña y después solo lo cambia el GM o el GM de apoyo.
+          ".write": "auth != null && ( (!data.exists() && root.child('lista_campanas').child($campanaId).child('creador').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+          ".validate": "newData.val() == 'dnd' || newData.val() == 'coc' || newData.val() == 'chicle'"
+        }
+      }
+    },
+    "usuarios": {
+      "$uid": {
+        // Datos propios (personajes sin campaña) e índice de mis campañas. El GM de una campaña también escribe la entrada de esa campaña
+        // (al aprobar una solicitud o quitar a alguien), nunca otras.
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        "campanas": {
+          "$campanaId": {
+            ".write": "auth != null && ( auth.uid == $uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+            ".validate": "newData.val() === true"
+          }
+        }
+      }
+    },
+    "acceso": {
+      // Secretos y trámites de acceso de cada campaña, FUERA de campanas/<id> a propósito: lo que cuelga de campanas/<id> lo leen todos los
+      // integrantes, y estos nodos no (la clave de GM, las invitaciones, las solicitudes).
+      "$campanaId": {
+        "gm_hash": {
+          // Hash PBKDF2 de la clave de GM. Nadie lo lee desde el cliente; solo lo comparan las reglas del nodo 'gm'.
+          ".read": false,
+          ".write": "auth != null && ( (!data.exists() && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists()) || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )",
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "gm_claim": {
+          // Cada integrante escribe aquí SU hash al reclamar un puesto de GM vacante; solo él lo lee o escribe.
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid",
+            ".validate": "newData.isString() && newData.val().length <= 128"
+          }
+        },
+        "notas_gm": {
+          // Notas secretas del GM (pantalla del director): solo el GM y su apoyo las leen y escriben.
+          ".read": "auth != null && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
+          ".write": "auth != null && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
+          ".validate": "newData.isString() && newData.val().length <= 20000"
+        },
+        "invitaciones": {
+          // Invitaciones (clave larga al azar): las crea y revoca el GM o el GM de apoyo; solo ellos las leen.
+          ".read": "auth != null && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
+          "$token": {
+            ".write": "auth != null && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
+            ".validate": "newData.hasChildren(['expira', 'por']) && newData.child('expira').isNumber() && newData.child('por').val() == auth.uid && $token.matches(/^[a-zA-Z0-9]{16,64}$/)"
+          }
+        },
+        "canjes": {
+          // Quien tiene una invitación escribe aquí la clave y, con ella, se agrega a miembros (las reglas comprueban que exista y no haya vencido).
+          "$uid": {
+            ".write": "auth != null && auth.uid == $uid",
+            ".validate": "newData.isString() && newData.val().length <= 64"
+          }
+        },
+        "solicitudes": {
+          // Solicitudes para entrar por el id de la campaña: las escribe quien quiere entrar; las lee y resuelve el GM o el GM de apoyo.
+          ".read": "auth != null && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
+          "$uid": {
+            ".write": "auth != null && ( auth.uid == $uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+            ".validate": "newData.hasChildren(['nombre', 'ts']) && newData.child('nombre').isString() && newData.child('nombre').val().length <= 80 && newData.child('ts').isNumber()"
+          }
         }
       }
     },
@@ -35,108 +106,62 @@
     },
     "campanas": {
       "$campanaId": {
+        // v99.0: SOLO las personas integrantes (campanas/<id>/miembros/<uid>) leen la campaña. Este ".read" cubre todo lo que cuelga de aquí, por eso
+        // los secretos viven en acceso/<id> y no en este árbol.
+        ".read": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists()",
+        "miembros": {
+          "$uid": {
+            ".write": "auth != null && ( (auth.uid == $uid && !data.exists() && newData.exists() && ( (!root.child('campanas').child($campanaId).child('miembros').exists() && root.child('lista_campanas').child($campanaId).child('creador').val() == auth.uid) || root.child('acceso').child($campanaId).child('invitaciones').child(root.child('acceso').child($campanaId).child('canjes').child(auth.uid).val()).child('expira').val() > now )) || (auth.uid == $uid && data.exists() && newData.exists()) || (auth.uid == $uid && data.exists() && !newData.exists() && root.child('campanas').child($campanaId).child('gm').val() != auth.uid) || ((root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) && $uid != root.child('campanas').child($campanaId).child('gm').val()) )",
+            ".validate": "newData.hasChildren(['nombre']) && newData.child('nombre').isString() && newData.child('nombre').val().length <= 80"
+          }
+        },
         "gm": {
-          // GM de la campaña. Se puede reclamar solo si está vacante y es TU uid; si la campaña tiene clave (gm_hash), además tu
-          // gm_claim/<uid> tiene que ser igual a gm_hash (prueba de que conoces la clave). Quien es GM puede soltarlo o cederlo.
-          ".read": "auth != null",
-          ".write": "auth != null && ( (data.exists() && data.val() == auth.uid) || (!data.exists() && newData.val() == auth.uid && ( !root.child('campanas').child($campanaId).child('gm_hash').exists() || root.child('campanas').child($campanaId).child('gm_claim').child(auth.uid).val() == root.child('campanas').child($campanaId).child('gm_hash').val() )) )"
+          // GM titular. Se reclama solo si está vacante, es tu uid, eres integrante y, si la campaña tiene clave (acceso/<id>/gm_hash), tu
+          // acceso/<id>/gm_claim/<uid> coincide con ese hash. Quien es GM puede soltarlo o cederlo.
+          ".write": "auth != null && ( (data.exists() && data.val() == auth.uid) || (!data.exists() && newData.val() == auth.uid && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists() && ( !root.child('acceso').child($campanaId).child('gm_hash').exists() || root.child('acceso').child($campanaId).child('gm_claim').child(auth.uid).val() == root.child('acceso').child($campanaId).child('gm_hash').val() )) )"
         },
         "gm_apoyo": {
-          // GM DE APOYO (v98.0): uids con casi todas las facultades del GM (editar fichas, party, sistema de la campaña, clases antiguas de la
-          // campaña) pero SIN poder compartir ni quitar el rol de GM, ni tocar la clave. Solo el GM titular (nodo 'gm') agrega o quita; cada
-          // apoyo puede quitarse a sí mismo.
-          ".read": "auth != null",
+          // GM DE APOYO: facultades de GM salvo compartir o quitar el rol. Solo el titular lo agrega o quita (a integrantes); cada apoyo puede quitarse.
           ".write": "auth != null && root.child('campanas').child($campanaId).child('gm').val() == auth.uid",
           "$uid": {
             ".write": "auth != null && ( root.child('campanas').child($campanaId).child('gm').val() == auth.uid || (auth.uid == $uid && !newData.exists()) )",
-            ".validate": "newData.val() === true"
+            ".validate": "newData.val() === true && root.child('campanas').child($campanaId).child('miembros').child($uid).exists()"
           }
         },
         "gm_salt": {
           // Sal pública de la clave de GM (el cliente la necesita para calcular el hash).
-          ".read": "auth != null",
           ".write": "auth != null && (!data.exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)",
           ".validate": "newData.isString() && newData.val().length <= 64"
         },
-        "gm_hash": {
-          // Hash PBKDF2 de la clave de GM. NADIE puede leerlo desde el cliente (si se pudiera leer, bastaría copiarlo para reclamar);
-          // solo lo comparan las reglas del nodo 'gm'. Se define la primera vez; después solo lo cambia el GM.
-          ".read": false,
-          ".write": "auth != null && (!data.exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)",
-          ".validate": "newData.isString() && newData.val().length <= 128"
-        },
-        "gm_claim": {
-          // Cada usuario escribe aquí SU hash al reclamar el puesto; solo él puede leerlo o escribirlo.
-          "$uid": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid",
-            ".validate": "newData.isString() && newData.val().length <= 128"
-          }
-        },
-        "gm_password": {
-          // OBSOLETO (v95.0): clave en texto plano de versiones anteriores. Ya no se lee ni se usa; solo el GM puede borrarla.
-          ".read": false,
-          ".write": "auth != null && root.child('campanas').child($campanaId).child('gm').val() == auth.uid"
-        },
         "bitacora": {
-          // Permite leer y escribir logs a los usuarios autenticados
-          ".read": "auth != null",
-          ".write": "auth != null"
+          ".write": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists()"
         },
         "tiradas": {
-          // Permite registrar y ver los dados en tiempo real
-          ".read": "auth != null",
-          ".write": "auth != null"
+          ".write": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists()"
         },
         "clases_custom": {
-          // Clases homebrew de la campaña (creador-clases.html / clases-custom.js). Las lee cualquier miembro
-          // autenticado. Cada clase es un nodo por id (slug 'c_...'): se puede CREAR una clase nueva, y solo
-          // se puede EDITAR o BORRAR si sos su autor (campo 'autor') o el GM de la campaña.
-          ".read": "auth != null",
+          // Clases homebrew antiguas de la campaña (hoy se crean en la biblioteca global).
           "$claseId": {
-            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
-            // Solo se evalúa al escribir un valor (no al borrar). 'autor' es el uid del creador: al crear tiene que
-            // ser el uid de quien escribe; al editar (autor o GM) tiene que seguir siendo el autor original, así el
-            // GM puede corregir lo de otro sin quedarse con la autoría ni romper la validación.
+            ".write": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists() && ( !data.exists() || data.child('autor').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
             ".validate": "newData.hasChildren(['id', 'name', 'hitDie', 'autor']) && newData.child('id').val() == $claseId && $claseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && (newData.child('hitDie').val() == 6 || newData.child('hitDie').val() == 8 || newData.child('hitDie').val() == 10 || newData.child('hitDie').val() == 12) && (!newData.child('casterType').exists() || newData.child('casterType').val() == 'full' || newData.child('casterType').val() == 'half' || newData.child('casterType').val() == 'pact') && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
           }
         },
         "subclases_custom": {
-          // Subclases homebrew de la campaña (para clases oficiales o custom). Mismos permisos que clases_custom.
-          ".read": "auth != null",
           "$subclaseId": {
-            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+            ".write": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists() && ( !data.exists() || data.child('autor').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
             ".validate": "newData.hasChildren(['id', 'clase', 'name', 'autor']) && newData.child('id').val() == $subclaseId && $subclaseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('clase').isString() && newData.child('clase').val().matches(/^[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
           }
         },
         "party": {
-          // Resumen público de cada personaje para el visor del grupo (ficha-party.js): PG, CA, concentración,
-          // condiciones. Lo leen los miembros autenticados de la campaña; lo escribe solo el dueño registrado
-          // del personaje o el GM de la campaña. Es un nodo aparte y chico a propósito, para que mostrar el grupo
-          // no obligue a descargar las fichas completas.
-          ".read": "auth != null",
+          // Resumen de cada personaje para el visor del grupo: lo escribe el dueño o el GM.
           "$personajeId": {
-            ".write": "auth != null && ( root.child('campanas').child($campanaId).child('personajes').child($personajeId).child('owner').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )"
+            ".write": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists() && ( root.child('campanas').child($campanaId).child('personajes').child($personajeId).child('owner').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )"
           }
         },
         "personajes": {
-          // NOTA: la lectura sigue abierta a cualquier miembro autenticado de la campaña.
-          // RTDB no permite filtrar por 'publico' dentro de una consulta amplia como la que usa
-          // index.html para listar todos los personajes de la campaña de una sola vez: si el nodo
-          // padre no concede lectura, la consulta entera es rechazada aunque algunos hijos serían
-          // legibles. Restringir esto de verdad requeriría separar los datos en una lista pública
-          // liviana y los datos completos por personaje, consultados uno por uno — fuera del
-          // alcance de este arreglo (que se enfoca en el bug de escritura reportado).
-          ".read": "auth != null",
           "$personajeId": {
-            // Escritura permitida solo si:
-            //  a) ya sos el dueño registrado del personaje, o
-            //  b) sos el GM de la campaña, o
-            //  c) el personaje todavía no tiene dueño Y tu propia escritura lo asigna a vos mismo
-            //     (esto es lo único que permite el flujo de "reclamar personaje" en index.html;
-            //     ya NO alcanza con que el campo 'owner' esté vacío para poder editar datos ajenos,
-            //     como pasaba antes).
-            ".write": "auth != null && ( (data.child('owner').exists() && data.child('owner').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) || (!data.child('owner').exists() && newData.child('owner').val() == auth.uid) )"
+            // Escribe: el dueño registrado, el GM (o su apoyo), o quien reclama un personaje sin dueño poniéndose como dueño. Siempre integrante.
+            ".write": "auth != null && root.child('campanas').child($campanaId).child('miembros').child(auth.uid).exists() && ( (data.child('owner').exists() && data.child('owner').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) || (!data.child('owner').exists() && newData.child('owner').val() == auth.uid) )"
           }
         }
       }

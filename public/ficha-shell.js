@@ -51,7 +51,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '98.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
+  const VERSION_APP = '99.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -589,6 +589,12 @@
   async function arrancarMotores(user) {
     const db = firebase.database();
     let charRef;
+    // Solo las personas integrantes ven una campaña (database.rules.json, v99.0): si no lo eres, se avisa en vez de mostrar errores de permisos.
+    if (codigoCampana) {
+      let esIntegrante = false;
+      try { esIntegrante = (await db.ref(`campanas/${codigoCampana}/miembros/${user.uid}`).once('value')).exists(); } catch (e) { esIntegrante = false; }
+      if (!esIntegrante) return mensaje(`No eres integrante de la campaña «${String(codigoCampana).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))}». Vuelve al menú y únete con una invitación o con su ID.`);
+    }
     // Clases y subclases custom de la campaña: se fusionan en CLASSES/PROGRESION_CLASES antes de que cualquier motor las consulte.
     if (window.ClasesCustom && codigoCampana) { try { await ClasesCustom.cargar(db, codigoCampana); } catch (e) { console.warn('Clases custom no disponibles:', e); } }
     if (codigoCampana) {
