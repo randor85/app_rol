@@ -14,7 +14,7 @@ PERSONAJES.eldur = {
   paleta: 'ascua',
   subtitulo: 'Eldur (Firelord Redmane) — Monk 5 / Cleric 2 (Light Domain) | Fire Genasi | Legal Bueno',
   xp: 49000,
-  clases: [{nombre: 'Monk', dado: 8, nivelInicial: 5, caster: null}, {nombre: 'Cleric', dado: 8, nivelInicial: 2, caster: 'full'}],
+  clases: [{nombre: 'Monk', dado: 8, nivelInicial: 5, caster: null, subclase: 'Way of the Sun Soul'}, {nombre: 'Cleric', dado: 8, nivelInicial: 2, caster: 'full'}],
   hpBase: 52,                    // PG máximos a Monk 5 / Cleric 2; cada subida registrada suma su hpGanado
   velocidad: 40,                 // 30 ft + Unarmored Movement (+10 ft)
   habilidadAtaque: 'DEX',        // Martial Arts
@@ -633,12 +633,6 @@ PERSONAJES.eldur = {
       "descripcion": "Eres inmune a enfermedades y venenos (incluida la condición Envenenado). ⚠️ En PHB2024 el rasgo puede haberse ampliado para curar Exhaustion también; revisar manual."
     },
     {
-      "nivel": 11,
-      "clase": "Monk",
-      "nombre": "Rasgo de Tradición Monástica (subclase)",
-      "descripcion": "Rasgo otorgado por la Tradición Monástica elegida (ej. Warrior of the Open Hand, Shadow, Elemental, etc.). No es determinable sin saber la subclase de Eldur — la ficha actual no la especifica. ⚠️ Revisar con el jugador/PHB2024 qué tradición eligió."
-    },
-    {
       "nivel": 12,
       "clase": "Monk",
       "nombre": "Mejora de Característica (ASI/Feat)",
@@ -667,12 +661,6 @@ PERSONAJES.eldur = {
       "clase": "Monk",
       "nombre": "Mejora de Característica (ASI/Feat)",
       "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
-    },
-    {
-      "nivel": 17,
-      "clase": "Monk",
-      "nombre": "Rasgo de Tradición Monástica (subclase)",
-      "descripcion": "Segundo rasgo otorgado por la Tradición Monástica elegida. No determinable sin saber la subclase de Eldur. ⚠️ Revisar con el jugador/PHB2024."
     },
     {
       "nivel": 18,
