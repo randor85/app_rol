@@ -156,12 +156,38 @@
       const cont = document.getElementById(opts.contenedorFormId);
       return !!(cont && cont.innerHTML.trim().length);
     }
+    // El formulario de edición se muestra justo debajo del elemento que se edita (no al final de la lista, donde habría que
+    // desplazarse hasta encontrarlo). Al agregar uno nuevo, o al cerrar, vuelve a su sitio original. En una tabla (<tbody>) se envuelve en una fila.
+    let marcaOrigen = null, envoltura = null;
+    function devolverFormulario() {
+      const cf = document.getElementById(opts.contenedorFormId);
+      if (cf && marcaOrigen && marcaOrigen.parentNode) marcaOrigen.parentNode.insertBefore(cf, marcaOrigen.nextSibling);
+      if (envoltura) { envoltura.remove(); envoltura = null; }
+    }
+    function colocarFormulario() {
+      const cf = document.getElementById(opts.contenedorFormId), lista = document.getElementById(opts.contenedorListaId);
+      if (!cf || !lista || editandoIdx === null) return;
+      const fila = Array.from(lista.children).filter(el => !el.classList.contains('fila-formulario'))[editandoIdx];
+      if (!fila) return;
+      if (!marcaOrigen || !marcaOrigen.parentNode) { marcaOrigen = document.createComment('formulario'); cf.parentNode.insertBefore(marcaOrigen, cf); }
+      if (lista.tagName === 'TBODY') {
+        envoltura = document.createElement('tr'); envoltura.className = 'fila-formulario';
+        const td = document.createElement('td'); td.colSpan = 99; envoltura.appendChild(td); td.appendChild(cf);
+        fila.after(envoltura);
+      } else fila.after(cf);
+    }
+    function mostrarVisible() {
+      const cf = document.getElementById(opts.contenedorFormId);
+      if (cf && cf.scrollIntoView) cf.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
     function renderizar() {
       const cont = document.getElementById(opts.contenedorListaId);
       if (!cont) return;
+      devolverFormulario();   // que el innerHTML de la lista no se lleve el formulario
       cont.innerHTML = items.length
         ? items.map((item, idx) => opts.renderFila(item, idx)).join('')
         : (opts.filaVacia || '<tr><td colspan="99">Sin elementos todavía.</td></tr>');
+      colocarFormulario();
     }
     function guardar() {
       guardarCampo(opts.storageKey, JSON.stringify(items));
@@ -171,12 +197,16 @@
     function mostrarFormulario(idx) {
       editandoIdx = (typeof idx === 'number') ? idx : null;
       const cont = document.getElementById(opts.contenedorFormId);
+      devolverFormulario();
       if (cont) cont.innerHTML = opts.renderFormulario(editandoIdx !== null ? items[editandoIdx] : null);
+      colocarFormulario();
+      mostrarVisible();
     }
     function cerrarFormulario() {
       editandoIdx = null;
       const cont = document.getElementById(opts.contenedorFormId);
       if (cont) cont.innerHTML = '';
+      devolverFormulario();
     }
     function guardarDesdeFormulario(nuevoItem) {
       if (editandoIdx !== null) items[editandoIdx] = nuevoItem;
