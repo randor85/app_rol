@@ -1366,10 +1366,13 @@
         aplicarModoLectura(soloLectura);
 
         const btnCompartir = document.getElementById('btn-compartir');
-        if (btnCompartir && esMio) {
-          btnCompartir.style.display = 'inline-block';
-          btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+        // El dueño comparte o deja de compartir su ficha; el GM de la campaña también puede hacerlo (p. ej. si el dueño ya no entra).
+        if (btnCompartir && (esMio || soyElGM)) {
+          btnCompartir.style.display = 'inline-flex';
+          btnCompartir.innerText = p.publico ? "🔒 Dejar de compartir" : "👁️ Compartir";
+          btnCompartir.title = p.publico ? "Esta ficha es visible para otros jugadores en modo lectura. Pulsa para hacerla privada." : "Compartir esta ficha para que otros jugadores la vean en modo lectura";
           btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+          btnCompartir.style.color = "#fff";
           btnCompartir.onclick = () => { charRef.child('publico').set(!p.publico); };
         } else if (btnCompartir) {
           btnCompartir.style.display = 'none';

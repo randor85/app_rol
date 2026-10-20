@@ -41,7 +41,6 @@
       </div>
       <div class="cabecera-acciones">
         <div id="selector-paleta"></div>
-        <button type="button" class="btn btn-fantasma" id="btn-compartir" style="display:none">👁️ Compartir ficha</button>
         <a class="btn btn-fantasma" href="${volver}">← Volver</a>
       </div>
     </div>
@@ -67,6 +66,7 @@
     <span class="barra-sep"></span>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="corto">☕ Corto</button>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="largo">🌙 Largo</button>
+    <button type="button" class="btn btn-fantasma btn-sm" id="btn-compartir" style="display:none" title="Compartir esta ficha para que otros jugadores la vean en modo lectura">👁️ Compartir</button>
     <nav class="barra-atajos" aria-label="Ir a una sección">${atajos}</nav>
   </div>`;
   }
