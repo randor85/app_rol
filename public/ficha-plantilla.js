@@ -57,7 +57,8 @@
   }
 
   /* ---------- barra fija ---------- */
-  function barraFija() {
+  function barraFija(secs) {
+    const atajos = (secs || []).map(x => `<a href="#seccion-${esc(x.id)}" class="atajo" data-atajo="${esc(x.id)}" title="${esc(x.titulo)}" aria-label="Ir a ${esc(x.titulo)}">${x.icono}</a>`).join('');
     return `<div class="barra-fija" role="region" aria-label="Resumen rápido">
     <div class="barra-dato"><small>HP</small><strong id="barra-hp">—</strong></div>
     <div class="barra-dato"><small>CA</small><strong id="barra-ca">—</strong></div>
@@ -66,6 +67,7 @@
     <span class="barra-sep"></span>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="corto">☕ Corto</button>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="largo">🌙 Largo</button>
+    <nav class="barra-atajos" aria-label="Ir a una sección">${atajos}</nav>
   </div>`;
   }
 
@@ -287,22 +289,36 @@
   function ficha(P, ctx) {
     const partes = [];
     partes.push(cabecera(P, ctx));
-    partes.push(barraFija());
-    partes.push(seccion('vitales', '❤️', 'Vitales y combate', vitales(P), { abierta: true }));
-    partes.push(seccion('atributos', '📊', 'Atributos, salvaciones y habilidades', atributos(P), { abierta: true }));
-    partes.push(seccion('ataques', '⚔️', 'Ataques', ataques(P), { abierta: true }));
-    if (!P.sinConjuros) partes.push(seccion('conjuros', '✨', 'Conjuros', conjuros(P), { abierta: true }));
-    if ((P.recursos || []).length) partes.push(seccion('recursos', '🔥', 'Recursos de clase', recursos(P), { abierta: true, nota: 'el máximo se calcula del nivel y se recargan con el descanso' }));
-    partes.push(seccion('buffs', '🔆', 'Buffs personalizados', buffsPersonales(P), { abierta: true, nota: 'interruptores propios: suman o restan solo cuando se cumple su condición' }));
-    partes.push(seccion('rasgos', '📜', 'Rasgos y características', rasgos(P)));
-    (P.secciones || []).forEach(s => partes.push(seccion(s.id, s.icono || '📄', esc(s.titulo), `<div class="seccion-propia" data-fragmento="${esc(s.fragmento || '')}">${s.html || '<p class="texto-suave">Cargando…</p>'}</div>`)));
-    partes.push(seccion('inventario', '🎒', 'Inventario y equipo', inventario(P)));
-    partes.push(seccion('reputacion', '🏅', 'Reputación y honor', reputacion()));
-    partes.push(seccion('trasfondo', '📖', 'Trasfondo, notas y bitácora', trasfondo(P)));
+    const secs = [];
+    const sec = (id, icono, titulo, cuerpo, opts) => { secs.push({ id, icono, titulo: String(titulo).replace(/<[^>]*>/g, ''), html: seccion(id, icono, titulo, cuerpo, opts) }); };
+    sec('vitales', '❤️', 'Vitales y combate', vitales(P), { abierta: true });
+    sec('atributos', '📊', 'Atributos, salvaciones y habilidades', atributos(P), { abierta: true });
+    sec('ataques', '⚔️', 'Ataques', ataques(P), { abierta: true });
+    if (!P.sinConjuros) sec('conjuros', '✨', 'Conjuros', conjuros(P), { abierta: true });
+    if ((P.recursos || []).length) sec('recursos', '🔥', 'Recursos de clase', recursos(P), { abierta: true, nota: 'el máximo se calcula del nivel y se recargan con el descanso' });
+    sec('buffs', '🔆', 'Buffs personalizados', buffsPersonales(P), { abierta: true, nota: 'interruptores propios: suman o restan solo cuando se cumple su condición' });
+    sec('rasgos', '📜', 'Rasgos y características', rasgos(P));
+    (P.secciones || []).forEach(s => sec(s.id, s.icono || '📄', esc(s.titulo), `<div class="seccion-propia" data-fragmento="${esc(s.fragmento || '')}">${s.html || '<p class="texto-suave">Cargando…</p>'}</div>`));
+    sec('inventario', '🎒', 'Inventario y equipo', inventario(P));
+    sec('reputacion', '🏅', 'Reputación y honor', reputacion());
+    sec('trasfondo', '📖', 'Trasfondo, notas y bitácora', trasfondo(P));
+    partes.push(barraFija(secs));
+    secs.forEach(x => partes.push(x.html));
     // Campos ocultos que algún módulo del personaje guarda en datos/ (p. ej. un mapa JSON de preferencias).
     const ocultos = (P.camposOcultos || []).map(id => `<input type="hidden" id="${esc(id)}" value="">`).join('');
     return `<div class="ficha sheet" data-personaje="${esc(P.id)}">${ocultos}${partes.join('\n  ')}</div><div class="toast-zona" id="toast-zona" aria-live="polite"></div>`;
   }
+
+  // Atajos de la barra fija: abren la sección y se desplazan hasta ella dejando libre la altura de la barra.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[data-atajo]'); if (!a) return;
+    const sec = document.getElementById('seccion-' + a.dataset.atajo); if (!sec) return;
+    e.preventDefault();
+    if (sec.tagName === 'DETAILS') sec.open = true;
+    const barra = document.querySelector('.barra-fija');
+    const y = sec.getBoundingClientRect().top + window.scrollY - (barra ? barra.offsetHeight : 0) - 8;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  });
 
   window.FichaPlantilla = { ficha, ABIL, SKILL_HAB, skillId, esc, fmt };
 })();

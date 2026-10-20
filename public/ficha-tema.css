@@ -192,6 +192,10 @@ body {
 .barra-dato small { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-suave); }
 .barra-dato strong { font-family: var(--fuente-titulo); font-size: var(--fs-lg); }
 .barra-sep { flex: 1 1 0; }
+.barra-atajos { flex: 1 1 100%; display: flex; gap: var(--sp-1); overflow-x: auto; scrollbar-width: none; padding-top: var(--sp-1); border-top: 1px solid var(--borde); }
+.barra-atajos::-webkit-scrollbar { display: none; }
+.barra-atajos .atajo { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 36px; font-size: 1.15rem; text-decoration: none; border: 1px solid var(--borde); border-radius: var(--radio-sm); background: transparent; }
+.barra-atajos .atajo:hover, .barra-atajos .atajo:focus-visible { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 14%, transparent); }
 .barra-fija .progreso { width: 90px; }
 
 /* ---------- secciones (details) ---------- */
