@@ -240,7 +240,7 @@
 
         <!-- 1.5 SISTEMA DE JUEGO DE LA CAMPAÑA (D&D / CoC) -->
         <div class="seccion-campana" id="sistema-campana-container" style="display: none;">
-            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">⚠️ Esta campaña todavía no tiene un sistema de juego asignado. Elegilo una vez (queda guardado para siempre):</p>
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">⚠️ Esta campaña todavía no tiene un sistema de juego asignado. Elígelo una vez (queda guardado para siempre):</p>
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button id="btn-sistema-dnd" class="btn-open" style="cursor:pointer;">⚔️ D&D</button>
                 <button id="btn-sistema-coc" class="btn-open" style="cursor:pointer;">🐙 Call of Cthulhu</button>
@@ -371,7 +371,7 @@
         let editandoKeyLog = null; // key de Firebase de la entrada de bitácora en edición (null = agregando una nueva)
         let personajesListener = null, notasGmListener = null, bitacoraListener = null, tiradasListener = null, sistemaCampanaListener = null;
         // Estado de sistema de juego (D&D / CoC) de la campaña abierta, y último snapshot de
-        // personajes recibido — se guardan acá para poder re-renderizar la grilla tanto cuando
+        // personajes recibido — se guardan aquí para poder re-renderizar la grilla tanto cuando
         // cambian los personajes como cuando cambia (o recién llega) el sistema de la campaña.
         let sistemaCampanaActual = null;
         // Los nombres/clases de personajes ahora los escriben los jugadores (creador de personajes): siempre escapados al pintar.
@@ -382,7 +382,7 @@
 
         // Sistema de juego al que pertenece cada personaje (independiente de en qué campaña
         // termine cargado). Se usa para que una campaña de D&D no pueda sumar personajes de
-        // Call of Cthulhu y viceversa. Actualizar acá al sumar un personaje nuevo.
+        // Call of Cthulhu y viceversa. Actualizar aquí al sumar un personaje nuevo.
         const SISTEMA_PERSONAJE = {
             fiona_faraway: 'dnd',
             nevada_jones: 'coc',
@@ -410,7 +410,7 @@
             ulreek: { nombre: "Ulreek", clase: "Hechicero", datos: { "hp-cur": 70, "hp-max": 70 } },
             hannoghar: { nombre: "Hannoghar", clase: "Paladín", datos: { "hp-cur": 66, "hp-max": 66 } },
             // Las 6 fichas de "El Último Chicle" no tienen nombre propio: el jugador lo elige
-            // recién al reclamar la ficha (ver chicle.html). "nombre" acá es solo el valor
+            // recién al reclamar la ficha (ver chicle.html). "nombre" aquí es solo el valor
             // provisorio que se ve en el selector y en la grilla hasta que lo cambien.
             chicle1: { nombre: "Superviviente 1 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
             chicle2: { nombre: "Superviviente 2 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
@@ -761,7 +761,7 @@ btnLoginEmail.onclick = () => {
 
     // Si esto falla (ej. porque las reglas de Firebase publicadas todavía no incluyen el
     // permiso de escritura para 'sistema'), se avisa explícitamente en vez de fallar en
-    // silencio — antes un error de permisos acá dejaba el selector reapareciendo para
+    // silencio — antes un error de permisos aquí dejaba el selector reapareciendo para
     // siempre sin ninguna pista de qué estaba pasando.
     btnSistemaDnd.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('dnd')
         .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));

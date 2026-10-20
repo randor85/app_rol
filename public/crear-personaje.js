@@ -161,37 +161,37 @@
   function validarPaso(n) {
     const e = [];
     if (n === 0) {
-      if (!E.id.nombre.trim()) e.push('Poné un nombre al personaje.');
+      if (!E.id.nombre.trim()) e.push('Pon un nombre al personaje.');
     }
     if (n === 1) {
       const filas = E.clases.filter((c) => c.id);
-      if (!filas.length) e.push('Elegí al menos una clase.');
-      E.clases.forEach((c, i) => { if (!c.id && E.clases.length > 1) e.push(`La clase ${i + 1} está vacía: elegí una o quitá la fila.`); });
+      if (!filas.length) e.push('Elige al menos una clase.');
+      E.clases.forEach((c, i) => { if (!c.id && E.clases.length > 1) e.push(`La clase ${i + 1} está vacía: elige una o quita la fila.`); });
       filas.forEach((c) => {
         const d = dc(c.id), niv = nivelDe(c), nom = nomClase(d);
         if (!(niv >= 1 && niv <= 20)) e.push(`El nivel de ${nom} tiene que estar entre 1 y 20.`);
-        if (pideSubclase(c) && !c.subclase) e.push(`${nom}: elegí ${d.subclassLabel || 'subclase'} (se obtiene en nivel ${subLvl(d)}).`);
-        if (necesitaLista(d) && !c.listaHechizos) e.push(`${nom}: elegí de qué lista toma sus hechizos.`);
+        if (pideSubclase(c) && !c.subclase) e.push(`${nom}: elige ${d.subclassLabel || 'subclase'} (se obtiene en nivel ${subLvl(d)}).`);
+        if (necesitaLista(d) && !c.listaHechizos) e.push(`${nom}: elige de qué lista toma sus hechizos.`);
       });
       const ids = filas.map((c) => c.id);
-      if (new Set(ids).size !== ids.length) e.push('No repitas la misma clase: sumá sus niveles en una sola fila.');
+      if (new Set(ids).size !== ids.length) e.push('No repitas la misma clase: suma sus niveles en una sola fila.');
       if (nivelTotal() > 20) e.push(`El nivel total no puede pasar de 20 (ahora suma ${nivelTotal()}).`);
     }
     if (n === 2) {
       if (E.metodo === 'array') {
         const falta = ATRS.filter((k) => E.array[k] == null);
-        if (falta.length) e.push(`Asigná un valor del array a todos los atributos (falta: ${falta.map((k) => ATR_ES[k]).join(', ')}).`);
+        if (falta.length) e.push(`Asigna un valor del array a todos los atributos (falta: ${falta.map((k) => ATR_ES[k]).join(', ')}).`);
       } else if (E.metodo === 'manual') {
         const falta = ATRS.filter((k) => baseDe(k) == null);
-        if (falta.length) e.push(`Completá el valor de: ${falta.map((k) => ATR_ES[k]).join(', ')} (tirá los dados o escribilo).`);
+        if (falta.length) e.push(`Completa el valor de: ${falta.map((k) => ATR_ES[k]).join(', ')} (tira los dados o escríbelo).`);
         ATRS.forEach((k) => { const b = baseDe(k); if (b != null && (b < 1 || b > 30)) e.push(`${ATR_ES[k]} tiene que estar entre 1 y 30.`); });
       }
     }
     if (n === 3) {
       const c0 = E.clases[0], hc = c0 && G.HABILIDADES_CLASE[c0.id];
       const marcadas = Object.keys(E.hab).length;
-      if (!c0 || !c0.id) e.push('Elegí primero la clase (paso 2).');
-      else if (hc && marcadas < hc.cantidad) e.push(`Marcá al menos ${hc.cantidad} habilidades con competencia: tu clase inicial (${nomClase(dc(c0.id))}) da ${hc.cantidad}. Te faltan ${hc.cantidad - marcadas}.`);
+      if (!c0 || !c0.id) e.push('Elige primero la clase (paso 2).');
+      else if (hc && marcadas < hc.cantidad) e.push(`Marca al menos ${hc.cantidad} habilidades con competencia: tu clase inicial (${nomClase(dc(c0.id))}) da ${hc.cantidad}. Te faltan ${hc.cantidad - marcadas}.`);
     }
     return e;
   }
@@ -272,7 +272,7 @@
   function htmlIdentidad() {
     const f = E.id;
     const pal = (window.FichaPaleta ? FichaPaleta.PALETAS : []);
-    return `<p class="intro">Contanos quién es tu personaje. Solo el nombre es obligatorio; el resto se puede ajustar después.</p>
+    return `<p class="intro">Cuéntanos quién es tu personaje. Solo el nombre es obligatorio; el resto se puede ajustar después.</p>
     <div class="form-grid">
       <label class="campo"><span>Nombre *</span><input type="text" data-bind="id.nombre" data-k="nombre" value="${esc(f.nombre)}" maxlength="60" autocomplete="off" aria-required="true"></label>
       <label class="campo"><span>Especie / raza</span><input type="text" data-bind="id.especie" data-k="especie" value="${esc(f.especie)}" list="lista-especies" maxlength="40" autocomplete="off" placeholder="Humano, Elfo, Enano…"></label>
@@ -291,10 +291,10 @@
   function opcionesClase(sel) {
     const of = listaClases().filter((c) => !c.custom), cu = listaClases().filter((c) => c.custom);
     const op = (c) => `<option value="${esc(c.id)}"${sel === c.id ? ' selected' : ''}>${esc(nomClase(c))}${nomClase(c) !== c.name ? ' (' + esc(c.name) + ')' : ''}</option>`;
-    return `<option value="">— Elegí una clase —</option><optgroup label="Oficiales">${of.map(op).join('')}</optgroup>${cu.length ? `<optgroup label="✨ Custom de la campaña">${cu.map(op).join('')}</optgroup>` : ''}`;
+    return `<option value="">— Elige una clase —</option><optgroup label="Oficiales">${of.map(op).join('')}</optgroup>${cu.length ? `<optgroup label="✨ Custom de la campaña">${cu.map(op).join('')}</optgroup>` : ''}`;
   }
   function htmlClase() {
-    return `<p class="intro">Elegí tu clase inicial. Si querés multiclase, sumá hasta ${MAX_FILAS_CLASE} clases (la primera es la inicial; el nivel total no puede pasar de 20).</p>
+    return `<p class="intro">Elige tu clase inicial. Si quieres multiclase, suma hasta ${MAX_FILAS_CLASE} clases (la primera es la inicial; el nivel total no puede pasar de 20).</p>
     <div class="pila" id="filas-clases">${E.clases.map((c, i) => `
       <div class="tarjeta" data-fila="${i}">
         <div class="tarjeta-cab"><h3>${i === 0 ? 'Clase inicial' : 'Clase ' + (i + 1)}</h3>${E.clases.length > 1 ? `<button type="button" class="btn btn-peligro btn-sm" data-act="clase-quitar" data-i="${i}" data-k="quitar-${i}" aria-label="Quitar la clase ${i + 1}">Quitar</button>` : ''}</div>
@@ -310,19 +310,19 @@
   }
   function detalleClase(i) {
     const c = E.clases[i], d = dc(c.id);
-    if (!d) return '<p class="texto-suave">Elegí una clase para ver su resumen y sus rasgos.</p>';
+    if (!d) return '<p class="texto-suave">Elige una clase para ver su resumen y sus rasgos.</p>';
     const niv = nivelDe(c);
     const partes = [];
     const campos = [];
     if ((d.subclasses || []).length) {
       if (niv >= subLvl(d)) {
-        campos.push(`<label class="campo"><span>${esc(d.subclassLabel || 'Subclase')} *</span><select data-act="subclase-sel" data-i="${i}" data-k="sub-${i}"><option value="">— Elegí una —</option>${d.subclasses.map((s) => `<option value="${esc(s.name)}"${c.subclase === s.name ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>`);
+        campos.push(`<label class="campo"><span>${esc(d.subclassLabel || 'Subclase')} *</span><select data-act="subclase-sel" data-i="${i}" data-k="sub-${i}"><option value="">— Elige una —</option>${d.subclasses.map((s) => `<option value="${esc(s.name)}"${c.subclase === s.name ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>`);
       } else {
         campos.push(`<div class="campo"><span>${esc(d.subclassLabel || 'Subclase')}</span><p class="texto-suave">Se elige a partir del nivel ${subLvl(d)}.</p></div>`);
       }
     }
     if (necesitaLista(d)) {
-      campos.push(`<label class="campo"><span>Lista de hechizos *</span><select data-act="lista-sel" data-i="${i}" data-k="lista-${i}"><option value="">— Elegí una lista —</option>${LISTAS.map((l) => `<option${c.listaHechizos === l ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`);
+      campos.push(`<label class="campo"><span>Lista de hechizos *</span><select data-act="lista-sel" data-i="${i}" data-k="lista-${i}"><option value="">— Elige una lista —</option>${LISTAS.map((l) => `<option${c.listaHechizos === l ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`);
     }
     if (campos.length) partes.push(`<div class="form-grid">${campos.join('')}</div>`);
     const chips = [`Dado de golpe d${d.hitDie}`, `Salvaciones: ${(d.savingThrows || []).join(' y ')}`, d.casterType ? 'Lanza hechizos' : 'No lanza hechizos'];
@@ -354,11 +354,11 @@
     const m = E.metodo;
     const radio = (v, t, d) => `<label class="op"><input type="radio" name="metodo" value="${v}" data-act="metodo" data-k="metodo-${v}"${m === v ? ' checked' : ''}> <span><strong>${t}</strong> <small>${d}</small></span></label>`;
     const rest = PUNTOS_TOTAL - gastados();
-    return `<p class="intro">Elegí cómo generar los valores base y sumá, si corresponde, los bonos de tu especie o trasfondo.</p>
+    return `<p class="intro">Elige cómo generar los valores base y suma, si corresponde, los bonos de tu especie o trasfondo.</p>
     <fieldset class="pila"><legend>Método</legend>
-      ${radio('array', 'Array estándar', '15, 14, 13, 12, 10, 8 — asignalos a cada atributo')}
+      ${radio('array', 'Array estándar', '15, 14, 13, 12, 10, 8 — asígnalos a cada atributo')}
       ${radio('puntos', 'Compra de puntos', '27 puntos, valores de 8 a 15')}
-      ${radio('manual', 'Manual', '4d6 descartando el menor, o escribilo a mano')}
+      ${radio('manual', 'Manual', '4d6 descartando el menor, o escríbelo a mano')}
     </fieldset>
     ${m === 'puntos' ? `<div class="aviso${rest === 0 ? ' aviso-bien' : ''}" role="status" id="puntos-restantes">Puntos restantes: <strong>${rest}</strong> de ${PUNTOS_TOTAL}</div>` : ''}
     ${m === 'manual' ? `<div class="fila"><button type="button" class="btn btn-fantasma btn-sm" data-act="tirar-todos" data-k="tirar-todos">🎲 Tirar los seis</button><span class="texto-suave">Cada tirada es 4d6 sin el dado más bajo.</span></div>` : ''}
@@ -400,7 +400,7 @@
   /* ============================================================ PASO 4: habilidades */
   function htmlHabilidades() {
     const c0 = E.clases[0], d0 = c0 && dc(c0.id);
-    if (!d0) return '<div class="aviso" role="status"><p>Elegí primero la clase (paso 2) para ver cuántas habilidades te da.</p></div>';
+    if (!d0) return '<div class="aviso" role="status"><p>Elige primero la clase (paso 2) para ver cuántas habilidades te da.</p></div>';
     const hc = G.HABILIDADES_CLASE[d0.id];
     const at = atributosFinales(true), pb = bonoComp();
     const opciones = hc ? (hc.opciones === 'cualquiera' ? Object.keys(G.HABILIDADES) : hc.opciones) : [];
@@ -409,11 +409,11 @@
     const sug = (hc ? hc.cantidad : 0) + 2;
     const salv = (d0.savingThrows || []).join(' y ') || '—';
     const pericias = E.clases.filter((c) => c.id).flatMap((c) => { const d = dc(c.id); return d ? (d.features || []).filter((f) => /Expertise|Pericia/i.test(f.nombre) && f.nivel <= nivelDe(c)).map((f) => `${nomClase(d)} (${f.nombre}, nv ${f.nivel})`) : []; });
-    return `<p class="intro">Marcá las habilidades en las que tenés competencia. Con competencia sumás tu bono (+${pb} a nivel ${Math.max(nivelTotal(), 1)}); con pericia, el doble.</p>
+    return `<p class="intro">Marca las habilidades en las que tienes competencia. Con competencia sumas tu bono (+${pb} a nivel ${Math.max(nivelTotal(), 1)}); con pericia, el doble.</p>
     <div class="tarjeta">
-      <p><strong>${esc(nomClase(d0))}</strong> (clase inicial) te da elegir <strong>${hc ? hc.cantidad : '—'}</strong> habilidades ${hc ? (hc.opciones === 'cualquiera' ? '<strong>cualquiera</strong>' : 'de: ' + opciones.map((o) => `<strong>${esc(HAB_ES[o] || o)}</strong>`).join(', ')) : '(clase custom: elegí las que correspondan)'}. El trasfondo suele dar 2 más.</p>
+      <p><strong>${esc(nomClase(d0))}</strong> (clase inicial) te da elegir <strong>${hc ? hc.cantidad : '—'}</strong> habilidades ${hc ? (hc.opciones === 'cualquiera' ? '<strong>cualquiera</strong>' : 'de: ' + opciones.map((o) => `<strong>${esc(HAB_ES[o] || o)}</strong>`).join(', ')) : '(clase custom: elige las que correspondan)'}. El trasfondo suele dar 2 más.</p>
       <p>Salvaciones con competencia: <strong>${esc(salv)}</strong>.</p>
-      ${pericias.length ? `<p class="texto-suave">Rasgos de pericia de tu(s) clase(s): ${esc(pericias.join('; '))}. Marcá «Pericia» en las habilidades que correspondan.</p>` : ''}
+      ${pericias.length ? `<p class="texto-suave">Rasgos de pericia de tu(s) clase(s): ${esc(pericias.join('; '))}. Marca «Pericia» en las habilidades que correspondan.</p>` : ''}
       <div class="chips" aria-live="polite" id="resumen-hab"><span class="tag">Marcadas: ${marcadas}</span><span class="tag">De la lista de clase: ${enOpciones}${hc ? ' / ' + hc.cantidad : ''}</span><span class="tag">Sugerido total: ${sug}</span></div>
       <div id="avisos-hab">${avisosHab(hc, opciones, marcadas, enOpciones, sug)}</div>
     </div>
@@ -429,7 +429,7 @@
   }
   function avisosHab(hc, opciones, marcadas, enOpciones, sug) {
     const av = [];
-    if (hc && marcadas > sug) av.push(`Marcaste ${marcadas} habilidades; lo habitual es ${hc.cantidad} de la clase + 2 del trasfondo (${sug}). Podés dejarlo así si tu GM lo permite.`);
+    if (hc && marcadas > sug) av.push(`Marcaste ${marcadas} habilidades; lo habitual es ${hc.cantidad} de la clase + 2 del trasfondo (${sug}). Puedes dejarlo así si tu GM lo permite.`);
     if (hc && marcadas >= hc.cantidad && enOpciones < hc.cantidad) av.push(`Solo ${enOpciones} de las habilidades marcadas están en la lista de tu clase (te corresponden ${hc.cantidad}). Está bien si el resto viene de otras fuentes.`);
     return av.length ? `<div class="aviso" role="status"><ul>${av.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : '';
   }
@@ -438,7 +438,7 @@
   function descArmadura(a) { return `${a[0]} — CA ${a[1]}${a[2] === null ? ' + DEX' : a[2] === 0 ? ' (sin DEX)' : ' + DEX (máx. ' + a[2] + ')'}`; }
   function htmlEquipo() {
     const grupos = ['ligera', 'media', 'pesada'];
-    return `<p class="intro">Armadura, armas y equipo con el que arrancás. La armadura y el escudo quedan equipados; las armas, en el inventario con su ataque listo.</p>
+    return `<p class="intro">Armadura, armas y equipo con el que arrancas. La armadura y el escudo quedan equipados; las armas, en el inventario con su ataque listo.</p>
     <div class="form-grid">
       <label class="campo"><span>Armadura</span><select data-bind="armadura" data-act="armadura" data-k="armadura"><option value="">Sin armadura</option>${grupos.map((g) => `<optgroup label="Armadura ${g}">${G.ARMADURAS.filter((a) => a[3] === g).map((a) => `<option value="${esc(a[0])}"${E.armadura === a[0] ? ' selected' : ''}>${esc(descArmadura(a))}</option>`).join('')}</optgroup>`).join('')}</select></label>
       <div class="campo"><span>Escudo</span><label class="op"><input type="checkbox" data-bind="escudo" data-act="escudo" data-k="escudo"${E.escudo ? ' checked' : ''}> Shield (+2 CA)</label></div>
@@ -478,9 +478,9 @@
   /* ============================================================ PASO 6: hechizos */
   function htmlHechizos() {
     const cl = clasesLanzadoras();
-    if (!cl.length) return '<div class="aviso aviso-bien" role="status"><p><strong>Tu clase no lanza hechizos.</strong> No hace falta elegir nada acá: seguí al paso siguiente.</p></div>';
+    if (!cl.length) return '<div class="aviso aviso-bien" role="status"><p><strong>Tu clase no lanza hechizos.</strong> No hace falta elegir nada aquí: sigue al paso siguiente.</p></div>';
     const ed = typeof edicionPreferida === 'function' ? edicionPreferida() : '2014';
-    return `<p class="intro">Elegí los hechizos de cada clase lanzadora. Los límites son una guía: si te pasás, te avisamos pero no te bloqueamos (por si tu GM lo permite).</p>
+    return `<p class="intro">Elige los hechizos de cada clase lanzadora. Los límites son una guía: si te pasas, te avisamos pero no te bloqueamos (por si tu GM lo permite).</p>
     <label class="campo" style="max-width:340px"><span>Edición del texto de los hechizos</span><select data-act="edicion" data-k="edicion"><option value="2014"${ed === '2014' ? ' selected' : ''}>2014 (D&amp;D 5e original)</option><option value="2024"${ed === '2024' ? ' selected' : ''}>2024 (reglas revisadas)</option></select></label>
     ${cl.map((c, idx) => htmlPanelHechizos(c, idx)).join('')}`;
   }
@@ -488,8 +488,8 @@
     const d = dc(c.id), lim = G.limitesHechizos(esClaseForm(c));
     const f = E.filtros[c.id] || (E.filtros[c.id] = { q: '', nivel: '', solo: false });
     const niveles = []; for (let n = 0; n <= lim.maxNivel; n++) niveles.push(n);
-    if (!lim.lista) return `<div class="tarjeta"><h3>${esc(nomClase(d))} ${nivelDe(c)}</h3><div class="aviso" role="status"><p>Esta clase no tiene una lista de hechizos asignada. Volvé al paso 2 y elegila.</p></div></div>`;
-    if (!lim.maxNivel && !lim.trucos) return `<div class="tarjeta"><h3>${esc(nomClase(d))} ${nivelDe(c)}</h3><p class="texto-suave">A nivel ${nivelDe(c)} todavía no tiene hechizos (la lista es la de ${esc(lim.lista)}). Los sumás cuando suba de nivel.</p></div>`;
+    if (!lim.lista) return `<div class="tarjeta"><h3>${esc(nomClase(d))} ${nivelDe(c)}</h3><div class="aviso" role="status"><p>Esta clase no tiene una lista de hechizos asignada. Vuelve al paso 2 y elígela.</p></div></div>`;
+    if (!lim.maxNivel && !lim.trucos) return `<div class="tarjeta"><h3>${esc(nomClase(d))} ${nivelDe(c)}</h3><p class="texto-suave">A nivel ${nivelDe(c)} todavía no tiene hechizos (la lista es la de ${esc(lim.lista)}). Los sumas cuando suba de nivel.</p></div>`;
     return `<div class="tarjeta" data-clase="${esc(c.id)}">
       <div class="tarjeta-cab"><h3>${esc(nomClase(d))} ${nivelDe(c)} <span class="texto-suave" style="font-size:var(--fs-sm)">· lista de ${esc(lim.lista)}</span></h3></div>
       <div class="lim-chips" id="lim-${esc(c.id)}" aria-live="polite">${chipsLimites(c, lim)}</div>
@@ -500,7 +500,7 @@
         <div class="campo"><span>Mostrar</span><label class="op"><input type="checkbox" data-act="hech-filtro" data-clase="${esc(c.id)}" data-f="solo" data-k="hs-${idx}"${f.solo ? ' checked' : ''}> Solo los elegidos</label></div>
       </div>
       <div class="hech-lista" id="lista-hech-${esc(c.id)}" role="group" aria-label="Hechizos de ${esc(nomClase(d))}"></div>
-      <div class="vista-hech" id="vista-hech-${esc(c.id)}" aria-live="polite"><span class="texto-suave">Tocá el nombre de un hechizo para leer su texto.</span></div>
+      <div class="vista-hech" id="vista-hech-${esc(c.id)}" aria-live="polite"><span class="texto-suave">Toca el nombre de un hechizo para leer su texto.</span></div>
     </div>`;
   }
   function chipsLimites(c, lim) {
@@ -531,13 +531,13 @@
       const m = [];
       if (k.trucos > lim.trucos) m.push(`Elegiste ${k.trucos} trucos y el límite es ${lim.trucos}.`);
       if (k.otros > lim.preparados) m.push(`Elegiste ${k.otros} hechizos y el límite es ${lim.preparados}.`);
-      av.innerHTML = m.length ? `<div class="aviso" role="status"><p>${esc(m.join(' '))} Podés seguir, pero revisalo con tu GM.</p></div>` : '';
+      av.innerHTML = m.length ? `<div class="aviso" role="status"><p>${esc(m.join(' '))} Puedes seguir, pero revísalo con tu GM.</p></div>` : '';
     }
   }
   function pintarVistaHechizo(c) {
     const el = $('vista-hech-' + c.id); if (!el) return;
     const n = E.vistas[c.id], s = n && SPELLS.find((x) => x.name === n);
-    if (!s) { el.innerHTML = '<span class="texto-suave">Tocá el nombre de un hechizo para leer su texto.</span>'; return; }
+    if (!s) { el.innerHTML = '<span class="texto-suave">Toca el nombre de un hechizo para leer su texto.</span>'; return; }
     const ed = typeof edicionPreferida === 'function' ? edicionPreferida() : '2014';
     const txt = typeof descDeHechizo === 'function' ? descDeHechizo(s, ed) : s.desc;
     el.innerHTML = `<h3>${esc(s.name)}</h3><div class="meta">${s.nivel === 0 ? 'Truco' : 'Nivel ' + s.nivel} · ${esc(s.escuela || '')} · ${esc(s.tiempo || '')} · alcance ${esc(s.alcance || '—')} · ${esc(s.componentes || '')} · ${esc(s.duracion || '')}${etiquetaEdicion(s) ? ' · ' + esc(etiquetaEdicion(s)) : ''}</div><div class="texto">${esc(txt)}</div><div class="meta">Texto según la edición ${ed}.</div>`;
@@ -564,7 +564,7 @@
     const comp = Object.keys(form.habilidades);
     const editar = (p, t) => `<button type="button" class="btn btn-fantasma btn-sm" data-act="ir" data-paso="${p}" data-k="editar-${p}">Editar ${t}</button>`;
     const hechCl = clasesLanzadoras().map((c) => { const d = dc(c.id), l = (E.hechizos[c.id] || []); return `<dt>${esc(nomClase(d))}</dt><dd>${l.length ? l.map(esc).join(', ') : '<span class="texto-suave">Ninguno elegido</span>'}</dd>`; }).join('');
-    return `${problemas.length ? `<div class="aviso aviso-mal" role="alert"><div><strong>Antes de crear, corregí esto:</strong><ul>${problemas.map((x) => `<li>${esc(x.m)} <button type="button" class="btn btn-fantasma btn-sm" data-act="ir" data-paso="${x.p}">Ir al paso ${x.p + 1}</button></li>`).join('')}</ul></div></div>` : '<div class="aviso aviso-bien" role="status"><p>Todo en orden. Revisá el resumen y creá tu personaje.</p></div>'}
+    return `${problemas.length ? `<div class="aviso aviso-mal" role="alert"><div><strong>Antes de crear, corrige esto:</strong><ul>${problemas.map((x) => `<li>${esc(x.m)} <button type="button" class="btn btn-fantasma btn-sm" data-act="ir" data-paso="${x.p}">Ir al paso ${x.p + 1}</button></li>`).join('')}</ul></div></div>` : '<div class="aviso aviso-bien" role="status"><p>Todo en orden. Revisa el resumen y crea tu personaje.</p></div>'}
     <div class="tarjeta"><div class="tarjeta-cab"><h3>${esc(form.nombre || '(sin nombre)')}</h3>${editar(0, 'identidad')}</div>
       <dl style="display:grid;grid-template-columns:auto 1fr;gap:2px var(--sp-3);margin:0;font-size:var(--fs-sm)">
         <dt class="texto-suave">Especie</dt><dd style="margin:0">${esc(form.especie || '—')}</dd>
@@ -646,16 +646,16 @@
         const res = await ref.transaction((cur) => (cur === null || cur === undefined ? nodo : undefined));
         if (res && res.committed) creado = { id: r.id, resumen: r.resumen };
       }
-      if (!creado) throw new Error('No se pudo reservar un identificador libre (' + ultimoId + '). Probá de nuevo.');
+      if (!creado) throw new Error('No se pudo reservar un identificador libre (' + ultimoId + '). Prueba de nuevo.');
       E.creado = creado; E.creando = false;
       mostrarExito();
     } catch (err) {
       E.creando = false; pintarPasos();
       const msg = String((err && (err.code || err.message)) || err);
       if (/permission|denied/i.test(msg)) {
-        estadoCreacion('<strong>No tenés permiso para crear personajes en esta campaña.</strong><br>Las reglas de la base de datos solo dejan crear un personaje a un jugador con sesión iniciada que lo registre a su nombre, o al GM de la campaña. Revisá que hayas entrado con tu cuenta, que el código de campaña sea el correcto y, si sigue fallando, pedile ayuda al GM.', 'aviso-mal');
+        estadoCreacion('<strong>No tienes permiso para crear personajes en esta campaña.</strong><br>Las reglas de la base de datos solo dejan crear un personaje a un jugador con sesión iniciada que lo registre a su nombre, o al GM de la campaña. Revisa que hayas entrado con tu cuenta, que el código de campaña sea el correcto y, si sigue fallando, pídele ayuda al GM.', 'aviso-mal');
       } else {
-        estadoCreacion('<strong>No se pudo crear el personaje.</strong><br>' + esc(msg) + '<br>Revisá tu conexión y probá de nuevo; no se guardó nada a medias.', 'aviso-mal');
+        estadoCreacion('<strong>No se pudo crear el personaje.</strong><br>' + esc(msg) + '<br>Revisa tu conexión y prueba de nuevo; no se guardó nada a medias.', 'aviso-mal');
       }
     }
   }
@@ -789,10 +789,10 @@
   }
 
   async function arrancar() {
-    if (!G || typeof CLASSES === 'undefined' || typeof SPELLS === 'undefined') return avisoGlobal('No se pudieron cargar los datos del asistente (clases, hechizos o generador). Recargá la página.');
-    if (!CAMPANA) return avisoGlobal('<strong>Abrí esta página desde una campaña.</strong> Falta el código en la dirección (<code>crear-personaje.html?campana=&lt;código&gt;</code>). Entrá desde el <a href="index.html">menú principal</a> y elegí tu campaña.', 'aviso');
-    if (/[.#$\[\]\/]/.test(CAMPANA)) return avisoGlobal('El código de campaña de la dirección no es válido. Entrá desde el <a href="index.html">menú principal</a>.');
-    if (!window.firebase) return avisoGlobal('No se pudo cargar Firebase. Revisá tu conexión y recargá la página.');
+    if (!G || typeof CLASSES === 'undefined' || typeof SPELLS === 'undefined') return avisoGlobal('No se pudieron cargar los datos del asistente (clases, hechizos o generador). Recarga la página.');
+    if (!CAMPANA) return avisoGlobal('<strong>Abre esta página desde una campaña.</strong> Falta el código en la dirección (<code>crear-personaje.html?campana=&lt;código&gt;</code>). Entra desde el <a href="index.html">menú principal</a> y elige tu campaña.', 'aviso');
+    if (/[.#$\[\]\/]/.test(CAMPANA)) return avisoGlobal('El código de campaña de la dirección no es válido. Entra desde el <a href="index.html">menú principal</a>.');
+    if (!window.firebase) return avisoGlobal('No se pudo cargar Firebase. Revisa tu conexión y recarga la página.');
     $('sub-campana').textContent = `Campaña ${CAMPANA} · asistente paso a paso para armar tu ficha de D&D.`;
     $('enlace-volver').href = 'index.html';
     try { usuario = await esperarUsuario(); } catch (e) { usuario = null; }
@@ -802,7 +802,7 @@
     // Sistema de la campaña: solo D&D (si todavía no tiene sistema, se deja crear).
     try {
       const sis = (await db.ref(`lista_campanas/${CAMPANA}/sistema`).once('value')).val();
-      if (sis && sis !== 'dnd') return avisoGlobal(`Esta campaña usa otro sistema de juego (<strong>${esc(sis === 'coc' ? 'Call of Cthulhu' : sis)}</strong>), así que este asistente de D&amp;D no puede crear personajes acá. <a href="index.html">Volver al menú</a>.`, 'aviso');
+      if (sis && sis !== 'dnd') return avisoGlobal(`Esta campaña usa otro sistema de juego (<strong>${esc(sis === 'coc' ? 'Call of Cthulhu' : sis)}</strong>), así que este asistente de D&amp;D no puede crear personajes aquí. <a href="index.html">Volver al menú</a>.`, 'aviso');
     } catch (e) { /* si no se puede leer, el intento de escritura dirá si hay permiso */ }
 
     // Clases y subclases custom de la campaña (opcional: si falla, quedan solo las oficiales).

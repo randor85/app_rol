@@ -231,23 +231,23 @@
   /* ---------- validación ---------- */
   function validar(form) {
     const e = [];
-    if (!String(form.nombre || '').trim()) e.push('Poné un nombre al personaje.');
-    if (!(form.clases || []).length) e.push('Elegí al menos una clase.');
+    if (!String(form.nombre || '').trim()) e.push('Pon un nombre al personaje.');
+    if (!(form.clases || []).length) e.push('Elige al menos una clase.');
     (form.clases || []).forEach((c, i) => {
       const d = datosClase(c.id);
       if (!d) { e.push(`La clase ${i + 1} no existe.`); return; }
       const niv = parseInt(c.nivel, 10);
       if (!(niv >= 1 && niv <= 20)) e.push(`El nivel de ${d.nombre_es || d.name} tiene que estar entre 1 y 20.`);
-      if (niv >= (d.subclassLevel || 3) && (d.subclasses || []).length && !c.subclase) e.push(`${d.nombre_es || d.name}: elegí ${d.subclassLabel || 'subclase'} (se obtiene en nivel ${d.subclassLevel}).`);
+      if (niv >= (d.subclassLevel || 3) && (d.subclasses || []).length && !c.subclase) e.push(`${d.nombre_es || d.name}: elige ${d.subclassLabel || 'subclase'} (se obtiene en nivel ${d.subclassLevel}).`);
     });
     if (nivelTotal(form) > 20) e.push('El nivel total no puede pasar de 20.');
     const ids = (form.clases || []).map((c) => c.id);
-    if (new Set(ids).size !== ids.length) e.push('No repitas la misma clase: sumá sus niveles en una sola fila.');
+    if (new Set(ids).size !== ids.length) e.push('No repitas la misma clase: suma sus niveles en una sola fila.');
     ATRIBUTOS.forEach((k) => { const v = parseInt((form.atributos || {})[k], 10); if (!(v >= 1 && v <= 30)) e.push(`${ATRIBUTO_ES[k]} tiene que estar entre 1 y 30.`); });
     const clase0 = (form.clases || [])[0], hc = clase0 && HABILIDADES_CLASE[clase0.id];
     if (hc && !form.importado) {
       const comp = Object.keys(form.habilidades || {}).length;
-      if (comp < hc.cantidad) e.push(`Elegí al menos ${hc.cantidad} habilidades con competencia (la clase da ${hc.cantidad}).`);
+      if (comp < hc.cantidad) e.push(`Elige al menos ${hc.cantidad} habilidades con competencia (la clase da ${hc.cantidad}).`);
     }
     // Los hechizos van en una lista plana: se valida contra el nivel máximo que alcanza CUALQUIERA de las clases lanzadoras.
     const lanzadoras = (form.clases || []).map((c) => ({ c, l: limitesHechizos(c) })).filter((x) => x.l.maxNivel || x.l.trucos);

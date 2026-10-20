@@ -39,7 +39,7 @@
     cont.innerHTML = l.map(s => {
       const tiene = yaTiene(s.name);
       return `<div class="opcion"><div><strong>${esc(s.name)}</strong><small>${s.nivel === 0 ? 'Truco' : s.nivel + '.º'}${etiquetaEdicion(s) ? ' · ' + etiquetaEdicion(s) : ''} · ${esc(s.escuela)} · ${esc((s.clases || []).join(', '))}${s.buff || /Conc/i.test(s.duracion || '') ? ' <span class="tag">🧠 Conc.</span>' : ''}</small></div>
-        <div class="fila"><button type="button" class="btn btn-fantasma btn-sm" data-comp-ver="${esc(s.name)}">👁️ Ver</button>${tiene ? '<span class="texto-suave">✅ Ya la tenés</span>' : `<button type="button" class="btn btn-primario btn-sm" data-comp-agregar="${esc(s.name)}">➕ Agregar</button>`}</div></div>`;
+        <div class="fila"><button type="button" class="btn btn-fantasma btn-sm" data-comp-ver="${esc(s.name)}">👁️ Ver</button>${tiene ? '<span class="texto-suave">✅ Ya la tienes</span>' : `<button type="button" class="btn btn-primario btn-sm" data-comp-agregar="${esc(s.name)}">➕ Agregar</button>`}</div></div>`;
     }).join('');
   }
 

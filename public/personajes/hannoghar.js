@@ -2,7 +2,7 @@
  * personajes/hannoghar.js — datos de Hannoghar para la carcasa única (ficha.html?pj=hannoghar).
  *
  * Extraído de hannoghar.html (la ficha viva sigue siendo la referencia dorada). Las claves de datos (hp-cur, hd-N, cd-use-N,
- * lay-hands-cur, slot-N-cur, aura-*-activa, …) son las MISMAS que ya guarda Firebase. Lo que no está acá es del motor común:
+ * lay-hands-cur, slot-N-cur, aura-*-activa, …) son las MISMAS que ya guarda Firebase. Lo que no está aquí es del motor común:
  * competencia, saves, skills, CD, espacios (Paladín = lanzador a medias) y dados de golpe se CALCULAN.
  * Hannoghar sigue en nivel 7 (su XP ya alcanza para el 8): la carcasa solo muestra el aviso de subida pendiente.
  * Forma documentada en ficha-shell.js.

@@ -165,12 +165,12 @@
   /** Interpreta "2d6+3", "d20-1", "4d6kh3", "1d8+1d4+2". Devuelve { partes, plano } o { error }. */
   function parsear(expr) {
     let s = String(expr || '').replace(/\s+/g, '').toLowerCase();
-    if (!s) return { error: 'Escribí una fórmula, por ejemplo 2d6+3.' };
+    if (!s) return { error: 'Escribe una fórmula, por ejemplo 2d6+3.' };
     const partes = []; let plano = 0; let n = 0;
     const re = /^([+-]?)(?:(\d*)d(\d+)(?:(kh|kl)(\d+))?|(\d+))/;
     while (s.length) {
       const m = re.exec(s);
-      if (!m) return { error: `No entiendo "${s.slice(0, 12)}". Probá con 2d6+3 o 4d6kh3.` };
+      if (!m) return { error: `No entiendo "${s.slice(0, 12)}". Prueba con 2d6+3 o 4d6kh3.` };
       if (++n > 10) return { error: 'Demasiados términos (máximo 10).' };
       const signo = m[1] === '-' ? -1 : 1;
       if (m[3] !== undefined) {

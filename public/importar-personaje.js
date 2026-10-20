@@ -38,7 +38,7 @@
       usarRasgo: r.form.rasgosExtra.map((x) => !x.ya), usarInv: (r.form.inventarioExtra || []).map(() => true), usarHechizo: r.form.hechizos.map(() => true), usarLibre: r.form.hechizosLibres.map(() => true), usarEquipo: r.form.equipoExtra.map(() => true),
       exp: Object.assign({}, r.form.habilidades),
     };
-    estadoArchivo('Listo' + (r.formato ? ' (' + r.formato + ')' : '') + ': revisá los datos de abajo.');
+    estadoArchivo('Listo' + (r.formato ? ' (' + r.formato + ')' : '') + ': revisa los datos de abajo.');
     pintarRevision();
   }
   function mostrarSoloAvisos(avisos) {
@@ -54,7 +54,7 @@
   function opcionesClase(sel) {
     const of = clases().filter((c) => !c.custom), cu = clases().filter((c) => c.custom);
     const op = (c) => `<option value="${esc(c.id)}"${c.id === sel ? ' selected' : ''}>${esc(nom(c))}</option>`;
-    return `<option value="">— Elegí una clase —</option>${of.map(op).join('')}${cu.length ? `<optgroup label="✨ Custom">${cu.map(op).join('')}</optgroup>` : ''}`;
+    return `<option value="">— Elige una clase —</option>${of.map(op).join('')}${cu.length ? `<optgroup label="✨ Custom">${cu.map(op).join('')}</optgroup>` : ''}`;
   }
   function filaClase(c, i) {
     const d = clases().find((x) => x.id === c.id);
@@ -62,7 +62,7 @@
     return `<div class="fila-clase">
       <label class="campo"><span>Clase</span><select data-k="clase" data-i="${i}">${opcionesClase(c.id)}</select></label>
       <label class="campo"><span>Nivel</span><input type="number" min="1" max="20" value="${esc(c.nivel)}" data-k="nivel" data-i="${i}"></label>
-      <label class="campo"><span>${esc(d && d.subclassLabel ? d.subclassLabel : 'Subclase')}</span><input type="text" list="sub-${i}" value="${esc(c.subclase)}" data-k="subclase" data-i="${i}" placeholder="${d && (d.subclasses || []).length ? 'Elegí o escribí' : 'Opcional'}"><datalist id="sub-${i}">${lista}</datalist></label>
+      <label class="campo"><span>${esc(d && d.subclassLabel ? d.subclassLabel : 'Subclase')}</span><input type="text" list="sub-${i}" value="${esc(c.subclase)}" data-k="subclase" data-i="${i}" placeholder="${d && (d.subclasses || []).length ? 'Elige o escribe' : 'Opcional'}"><datalist id="sub-${i}">${lista}</datalist></label>
       ${S.form.clases.length > 1 ? `<button type="button" class="btn btn-fantasma btn-sm" data-act="quitar-clase" data-i="${i}" aria-label="Quitar esta clase">✖</button>` : '<span></span>'}
     </div>${c.original && c.original !== (d ? nom(d) : '') ? `<p class="texto-suave" style="font-size:var(--fs-xs)">En el JSON: «${esc(c.original)}»</p>` : ''}`;
   }
@@ -89,7 +89,7 @@
       <section class="bloque"><h2>Atributos</h2>
         <div class="rejilla">${ATRS.map((k) => `<label class="campo"><span>${esc(G.ATRIBUTO_ES[k])} (${k})</span><input type="number" min="1" max="30" value="${esc(f.atributos[k])}" data-k="atr" data-a="${k}"></label>`).join('')}</div></section>
       <section class="bloque"><h2>Defensa, vida y movimiento</h2>
-        <p class="texto-suave">Dejá en blanco lo que quieras que calcule la app. Con la CA fija del JSON, equipar armadura en la ficha la recalcula.</p>
+        <p class="texto-suave">Deja en blanco lo que quieras que calcule la app. Con la CA fija del JSON, equipar armadura en la ficha la recalcula.</p>
         <div class="rejilla">
           <label class="campo"><span>CA fija</span><input type="number" min="1" max="40" value="${esc(f.caFija == null ? '' : f.caFija)}" data-k="caFija" placeholder="auto"></label>
           <label class="campo"><span>PG máximos</span><input type="number" min="1" value="${esc(f.hpMax == null ? '' : f.hpMax)}" data-k="hpMax" placeholder="auto"></label>
@@ -161,7 +161,7 @@
     errores([]); estadoCreacion('');
     const form = formFinal();
     const falt = [];
-    form.clases.forEach((c, i) => { if (!c.id) falt.push(`Elegí la clase de la fila ${i + 1}.`); });
+    form.clases.forEach((c, i) => { if (!c.id) falt.push(`Elige la clase de la fila ${i + 1}.`); });
     if (falt.length) { errores(falt); return; }
     creando = true; $('btn-crear').disabled = true; estadoCreacion('Creando el personaje…');
     try {
@@ -175,12 +175,12 @@
         const res = await db.ref(`campanas/${CAMPANA}/personajes/${r.id}`).transaction((cur) => (cur === null || cur === undefined ? nodo : undefined));
         if (res && res.committed) creado = { id: r.id, resumen: r.resumen, nombre: form.nombre };
       }
-      if (!creado) throw new Error('No se pudo reservar un identificador libre (' + ultimo + '). Probá de nuevo.');
+      if (!creado) throw new Error('No se pudo reservar un identificador libre (' + ultimo + '). Prueba de nuevo.');
       creando = false; mostrarExito(creado);
     } catch (err) {
       creando = false; $('btn-crear').disabled = false;
       const msg = String((err && (err.code || err.message)) || err);
-      estadoCreacion(/permission|denied/i.test(msg) ? '<strong>No tenés permiso para crear personajes en esta campaña.</strong> Las reglas de la base solo dejan crear uno a un jugador con sesión iniciada que lo registre a su nombre, o al GM.' : '<strong>No se pudo crear el personaje.</strong> ' + esc(msg) + ' No se guardó nada a medias.', 'aviso-mal');
+      estadoCreacion(/permission|denied/i.test(msg) ? '<strong>No tienes permiso para crear personajes en esta campaña.</strong> Las reglas de la base solo dejan crear uno a un jugador con sesión iniciada que lo registre a su nombre, o al GM.' : '<strong>No se pudo crear el personaje.</strong> ' + esc(msg) + ' No se guardó nada a medias.', 'aviso-mal');
     }
   }
   function mostrarExito(c) {
@@ -189,7 +189,7 @@
     const r = $('resultado'); r.hidden = false;
     r.innerHTML = `<section class="bloque"><h2 tabindex="-1" id="t-exito">¡Personaje importado!</h2>
       <p><strong>${esc(c.nombre)}</strong> — ${esc(c.resumen.clasesTxt)} · ${esc(c.resumen.pg)} PG</p>
-      <p class="texto-suave">Quedó guardado en la campaña <strong>${esc(CAMPANA)}</strong> a tu nombre. Abrí la ficha para revisar vida, espacios de conjuro y agregar lo que el JSON no traía.</p>
+      <p class="texto-suave">Quedó guardado en la campaña <strong>${esc(CAMPANA)}</strong> a tu nombre. Abre la ficha para revisar vida, espacios de conjuro y agregar lo que el JSON no traía.</p>
       <div class="fila-btn"><a class="btn btn-primario" id="abrir-ficha" href="${esc(url)}">📜 Abrir ficha</a><button type="button" class="btn btn-fantasma" id="btn-otro">📥 Importar otro</button><a class="btn btn-fantasma" href="index.html">Volver al menú</a></div></section>`;
     $('t-exito').focus();
     $('btn-otro').addEventListener('click', () => { r.hidden = true; $('texto-json').value = ''; $('archivo').value = ''; estadoArchivo(''); S = null; });
@@ -202,17 +202,17 @@
     return new Promise((ok) => { let hecho = false; const fin = (u) => { if (!hecho) { hecho = true; ok(u || null); } }; firebase.auth().onAuthStateChanged((u) => fin(u), () => fin(null)); setTimeout(() => fin(null), 15000); });
   }
   async function arrancar() {
-    if (!G || !I || typeof CLASSES === 'undefined') return avisoGlobal('No se pudieron cargar los datos del importador. Recargá la página.');
-    if (!CAMPANA) return avisoGlobal('<strong>Abrí esta página desde una campaña.</strong> Falta el código en la dirección (<code>importar-personaje.html?campana=&lt;código&gt;</code>). Entrá desde el <a href="index.html">menú principal</a>.');
-    if (/[.#$\[\]\/]/.test(CAMPANA)) return avisoGlobal('El código de campaña de la dirección no es válido. Entrá desde el <a href="index.html">menú principal</a>.');
-    if (!window.firebase) return avisoGlobal('No se pudo cargar Firebase. Revisá tu conexión y recargá la página.');
-    $('sub-campana').textContent = `Campaña ${CAMPANA} · cargá el archivo exportado de Alchemy RPG (JSON) o de Fantasy Grounds Unity (XML) y revisá antes de crear.`;
+    if (!G || !I || typeof CLASSES === 'undefined') return avisoGlobal('No se pudieron cargar los datos del importador. Recarga la página.');
+    if (!CAMPANA) return avisoGlobal('<strong>Abre esta página desde una campaña.</strong> Falta el código en la dirección (<code>importar-personaje.html?campana=&lt;código&gt;</code>). Entra desde el <a href="index.html">menú principal</a>.');
+    if (/[.#$\[\]\/]/.test(CAMPANA)) return avisoGlobal('El código de campaña de la dirección no es válido. Entra desde el <a href="index.html">menú principal</a>.');
+    if (!window.firebase) return avisoGlobal('No se pudo cargar Firebase. Revisa tu conexión y recarga la página.');
+    $('sub-campana').textContent = `Campaña ${CAMPANA} · carga el archivo exportado de Alchemy RPG (JSON) o de Fantasy Grounds Unity (XML) y revisa antes de crear.`;
     try { usuario = await esperarUsuario(); } catch (e) { usuario = null; }
     if (!usuario) { location.href = 'index.html'; return; }
     db = firebase.database();
     try {
       const sis = (await db.ref(`lista_campanas/${CAMPANA}/sistema`).once('value')).val();
-      if (sis && sis !== 'dnd') return avisoGlobal(`Esta campaña usa otro sistema de juego (<strong>${esc(sis === 'coc' ? 'Call of Cthulhu' : sis)}</strong>), así que no se pueden importar personajes de D&amp;D acá. <a href="index.html">Volver al menú</a>.`);
+      if (sis && sis !== 'dnd') return avisoGlobal(`Esta campaña usa otro sistema de juego (<strong>${esc(sis === 'coc' ? 'Call of Cthulhu' : sis)}</strong>), así que no se pueden importar personajes de D&amp;D aquí. <a href="index.html">Volver al menú</a>.`);
     } catch (e) { /* el intento de escritura dirá si hay permiso */ }
     try { await cargarScript('clases-custom.js'); if (window.ClasesCustom) await ClasesCustom.cargar(db, CAMPANA); } catch (e) { console.warn('Clases custom no disponibles:', e); }
 
@@ -222,7 +222,7 @@
       if (file.size > 2 * 1024 * 1024) { estadoArchivo('El archivo pesa demasiado para ser una ficha (más de 2 MB).'); return; }
       const txt = await file.text(); $('texto-json').value = txt; estadoArchivo(file.name); analizar(txt);
     });
-    $('btn-analizar').addEventListener('click', () => { const t = $('texto-json').value.trim(); if (!t) { estadoArchivo('Elegí un archivo o pegá el contenido.'); return; } analizar(t); });
+    $('btn-analizar').addEventListener('click', () => { const t = $('texto-json').value.trim(); if (!t) { estadoArchivo('Elige un archivo o pega el contenido.'); return; } analizar(t); });
     const rev = $('revision');
     rev.addEventListener('input', onInput); rev.addEventListener('change', onChange); rev.addEventListener('click', (e) => { onClick(e); if (e.target.closest('#btn-crear')) crear(); });
     document.title = 'Importar personaje — ' + CAMPANA;

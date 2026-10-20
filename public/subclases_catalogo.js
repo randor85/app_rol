@@ -1,7 +1,7 @@
 // Catálogo de subclases oficiales de D&D 5e: SOLO nombre, libro y edición, sin reglas ni texto de los libros.
 // Sirve de índice para saber qué existe (2014: PHB, XGE, TCE, SCAG, DMG, EGW, VRGR, FTD, Dragonlance; 2024: PHB).
 // El detalle jugable está en classes_data.js únicamente para las subclases del SRD (CC-BY-4.0) y las de la mesa;
-// para el resto, consultá el libro correspondiente. Los nombres de las subclases 2014 son los del libro original.
+// para el resto, consulta el libro correspondiente. Los nombres de las subclases 2014 son los del libro original.
 const SUBCLASES_CATALOGO = {
   barbarian: [
     {n:"Path of the Berserker", f:"PHB 2014", e:"2014"},

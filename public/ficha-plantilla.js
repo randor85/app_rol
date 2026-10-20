@@ -245,7 +245,7 @@
   }
 
   function reputacion() {
-    return `<div class="fila" style="justify-content:space-between"><span class="texto-suave">Agregá facciones, ajustá su valor, renombralas o quitalas.</span><button type="button" class="reputacion-add-btn" onclick="FichaReputacion.editor.mostrarFormulario()">➕ Agregar facción</button></div>
+    return `<div class="fila" style="justify-content:space-between"><span class="texto-suave">Agrega facciones, ajusta su valor, renómbralas o quítalas.</span><button type="button" class="reputacion-add-btn" onclick="FichaReputacion.editor.mostrarFormulario()">➕ Agregar facción</button></div>
       <div id="reputacion-lista"></div><div id="reputacion-form-container"></div>`;
   }
 

@@ -3,7 +3,7 @@
  *
  * Extraído de fiona_faraway.html (la ficha viva sigue siendo la referencia dorada). Las claves de datos (hp-cur, hd-N,
  * ws-use-N, slot-N-cur, …) son las MISMAS que ya guarda Firebase, así que los datos reales siguen valiendo.
- * Lo que no está acá es del motor común: bonos de competencia, saves, skills, CA, CD, espacios y dados de golpe se CALCULAN.
+ * Lo que no está aquí es del motor común: bonos de competencia, saves, skills, CA, CD, espacios y dados de golpe se CALCULAN.
  * Forma documentada en ficha-shell.js.
  */
 window.PERSONAJES = window.PERSONAJES || {};
@@ -118,7 +118,7 @@ PERSONAJES.fiona_faraway = {
       "tiempo": "1 Acc",
       "alcance": "Touch",
       "area": "",
-      "resumen": "Cura 2d8 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, sumalo a mano).",
+      "resumen": "Cura 2d8 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, súmalo a mano).",
       "duracion": "Instantáneo",
       "formula": {
         "count": 2,
@@ -142,7 +142,7 @@ PERSONAJES.fiona_faraway = {
       "tiempo": "1 B.Acc",
       "alcance": "60 ft",
       "area": "",
-      "resumen": "Cura 2d4 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, sumalo a mano).",
+      "resumen": "Cura 2d4 + 5 (WIS). Con Unicornio Totem activo: +8 HP fijo adicional (no modelado automáticamente, súmalo a mano).",
       "duracion": "Instantáneo",
       "formula": {
         "count": 2,
@@ -755,5 +755,5 @@ PERSONAJES.fiona_faraway = {
     { id: 'woodland', icono: '🌲', titulo: 'Conjure Woodland Beings — Stat Blocks y Criaturas Invocables', fragmento: 'personajes/fiona_faraway/woodland.html' },
   ],
 
-  trasfondo: { html: 'Esta sección estaba vacía en la ficha original — completala a mano cuando quieras, se guarda automáticamente.' },
+  trasfondo: { html: 'Esta sección estaba vacía en la ficha original — complétala a mano cuando quieras, se guarda automáticamente.' },
 };

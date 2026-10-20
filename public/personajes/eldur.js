@@ -3,7 +3,7 @@
  *
  * Extraído de eldur.html (la ficha viva sigue siendo la referencia dorada). Las claves de datos (hp-cur, hd-N, ki-cur,
  * cd-use-1, blinding-N, wf-N, racial-*, slot-N-cur, …) son las MISMAS que ya guarda Firebase.
- * Lo que no está acá es del motor común: competencia, saves, skills, CA, CD, espacios y dados de golpe se CALCULAN.
+ * Lo que no está aquí es del motor común: competencia, saves, skills, CA, CD, espacios y dados de golpe se CALCULAN.
  * Forma documentada en ficha-shell.js.
  */
 window.PERSONAJES = window.PERSONAJES || {};
@@ -276,7 +276,7 @@ PERSONAJES.eldur = {
       "tiempo": "1 Acc",
       "alcance": "Touch",
       "area": "",
-      "resumen": "Objetivo suma 1d4 a un ability check (Concentración). Activá el buff para sumarlo a tus propias pruebas.",
+      "resumen": "Objetivo suma 1d4 a un ability check (Concentración). Activa el buff para sumarlo a tus propias pruebas.",
       "duracion": "Conc., hasta 1 min",
       "formula": null,
       "slotCost": null,
@@ -421,7 +421,7 @@ PERSONAJES.eldur = {
       "tiempo": "1 Acc",
       "alcance": "30 ft",
       "area": "",
-      "resumen": "Hasta 3 objetivos suman +1d4 a tiradas de ataque y salvaciones (Concentración). Activá el buff para sumarlo a tus propias tiradas.",
+      "resumen": "Hasta 3 objetivos suman +1d4 a tiradas de ataque y salvaciones (Concentración). Activa el buff para sumarlo a tus propias tiradas.",
       "duracion": "Conc., hasta 1 min",
       "formula": null,
       "slotCost": 1,
@@ -561,25 +561,25 @@ PERSONAJES.eldur = {
       "id": "txt-feat-monje-extra-attack-deflect-missiles",
       "tag": "Monje",
       "titulo": "Extra Attack & Deflect Missiles",
-      "html": "<p>• Ataca dos veces al tomar la acción de Atacar.</p>\n <p>• Reduce daño de ataques de proyectil a distancia por 1d10 + DEX (<span class=\"js-calc\" data-calc=\"mod\" data-hab=\"DEX\">+4</span>) + Monk Lvl (<span class=\"js-calc\" data-calc=\"monkLvl\">5</span>). Si el daño se reduce a 0, podés <strong>atrapar el proyectil</strong> (si entra en una mano libre) y gastar <strong>1 Ki</strong> para hacer un ataque a distancia con él como parte de la misma reacción (competencia automática, alcance 20/60 ft).</p>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Extra Attack &amp; Deflect Missiles')\" style=\"margin-top:6px;\">✅ Usar</button>"
+      "html": "<p>• Ataca dos veces al tomar la acción de Atacar.</p>\n <p>• Reduce daño de ataques de proyectil a distancia por 1d10 + DEX (<span class=\"js-calc\" data-calc=\"mod\" data-hab=\"DEX\">+4</span>) + Monk Lvl (<span class=\"js-calc\" data-calc=\"monkLvl\">5</span>). Si el daño se reduce a 0, puedes <strong>atrapar el proyectil</strong> (si entra en una mano libre) y gastar <strong>1 Ki</strong> para hacer un ataque a distancia con él como parte de la misma reacción (competencia automática, alcance 20/60 ft).</p>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Extra Attack &amp; Deflect Missiles')\" style=\"margin-top:6px;\">✅ Usar</button>"
     },
     {
       "id": "txt-feat-monje-stunning-strike-nivel-5",
       "tag": "Monje",
       "titulo": "Stunning Strike (Nivel 5)",
-      "html": "<p>Al golpear con un ataque de arma cuerpo a cuerpo, podés gastar <strong>1 Ki</strong> para forzar una salvación de Constitución (<strong>DC <span class=\"js-calc\" data-calc=\"cd\">14</span></strong>). Si falla, el objetivo queda <strong>aturdido (stunned)</strong> hasta el final de tu próximo turno.</p>\n <button class=\"btn-roll\" onclick=\"rollCheckSave('d20', 0, 'Stunning Strike DC' + (8 + bonoAtaqueConjuro()) + ' CON (objetivo)', 'save')\" style=\"margin-top:6px;\">🎲 Recordatorio DC<span class=\"js-calc\" data-calc=\"cd\">14</span> CON</button>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Stunning Strike (Nivel 5)')\" style=\"margin-top:6px;\">✅ Usar</button>"
+      "html": "<p>Al golpear con un ataque de arma cuerpo a cuerpo, puedes gastar <strong>1 Ki</strong> para forzar una salvación de Constitución (<strong>DC <span class=\"js-calc\" data-calc=\"cd\">14</span></strong>). Si falla, el objetivo queda <strong>aturdido (stunned)</strong> hasta el final de tu próximo turno.</p>\n <button class=\"btn-roll\" onclick=\"rollCheckSave('d20', 0, 'Stunning Strike DC' + (8 + bonoAtaqueConjuro()) + ' CON (objetivo)', 'save')\" style=\"margin-top:6px;\">🎲 Recordatorio DC<span class=\"js-calc\" data-calc=\"cd\">14</span> CON</button>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Stunning Strike (Nivel 5)')\" style=\"margin-top:6px;\">✅ Usar</button>"
     },
     {
       "id": "txt-feat-monje-slow-fall-nivel-4",
       "tag": "Monje",
       "titulo": "Slow Fall (Nivel 4)",
-      "html": "<p>Reacción al caer: reducís el daño de caída en una cantidad igual a 5 × nivel de monje = <strong><span class=\"js-calc\" data-calc=\"slowFall\">25</span> puntos</strong>.</p>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Slow Fall (Nivel 4)')\" style=\"margin-top:6px;\">✅ Usar</button>"
+      "html": "<p>Reacción al caer: reduces el daño de caída en una cantidad igual a 5 × nivel de monje = <strong><span class=\"js-calc\" data-calc=\"slowFall\">25</span> puntos</strong>.</p>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Slow Fall (Nivel 4)')\" style=\"margin-top:6px;\">✅ Usar</button>"
     },
     {
       "id": "txt-feat-clerigo-light-domain-warding-flare",
       "tag": "Clérigo",
       "titulo": "Light Domain & Warding Flare",
-      "html": "<p>• <strong>Warding Flare (3/LR):</strong> Reacción cuando una criatura visible te ataca a <strong>30 ft o menos</strong>, para imponer desventaja en la tirada mediante un destello de luz divina. Un atacante que no pueda ser cegado es inmune a este rasgo.</p>\n <p>• <strong>Channel Divinity (1/Rest, elegí una):</strong></p>\n <p style=\"margin-left:10px;\">— <strong>Radiance of the Dawn:</strong> dispersa oscuridad mágica y hace 2d10+<span class=\"js-calc\" data-calc=\"clericLvl\">2</span> radiant a enemigos a 30ft (CON Save DC <span class=\"js-calc\" data-calc=\"cd\">14</span> mitad).</p>\n <p style=\"margin-left:10px;\">— <strong>Turn Undead:</strong> Acción: presentás tu símbolo sagrado; cada no-muerto a 30 ft que te pueda ver/oír hace salvación de Sabiduría (DC <span class=\"js-calc\" data-calc=\"cd\">14</span>) o queda espantado (turned) por 1 minuto o hasta recibir daño.</p>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Light Domain &amp; Warding Flare')\" style=\"margin-top:6px;\">✅ Usar</button>"
+      "html": "<p>• <strong>Warding Flare (3/LR):</strong> Reacción cuando una criatura visible te ataca a <strong>30 ft o menos</strong>, para imponer desventaja en la tirada mediante un destello de luz divina. Un atacante que no pueda ser cegado es inmune a este rasgo.</p>\n <p>• <strong>Channel Divinity (1/Rest, elige una):</strong></p>\n <p style=\"margin-left:10px;\">— <strong>Radiance of the Dawn:</strong> dispersa oscuridad mágica y hace 2d10+<span class=\"js-calc\" data-calc=\"clericLvl\">2</span> radiant a enemigos a 30ft (CON Save DC <span class=\"js-calc\" data-calc=\"cd\">14</span> mitad).</p>\n <p style=\"margin-left:10px;\">— <strong>Turn Undead:</strong> Acción: presentas tu símbolo sagrado; cada no-muerto a 30 ft que te pueda ver/oír hace salvación de Sabiduría (DC <span class=\"js-calc\" data-calc=\"cd\">14</span>) o queda espantado (turned) por 1 minuto o hasta recibir daño.</p>\n \n<button class=\"btn-roll btn-roll-sm\" onclick=\"registrarUsoRecursoGenerico('Light Domain &amp; Warding Flare')\" style=\"margin-top:6px;\">✅ Usar</button>"
     },
     {
       "id": "txt-feat-raza-fire-genasi-traits",
@@ -606,31 +606,31 @@ PERSONAJES.eldur = {
       "nivel": 7,
       "clase": "Monk",
       "nombre": "Evasion",
-      "descripcion": "Cuando debas hacer una salvación de DES para reducir daño a la mitad: si tenés éxito no recibís nada de daño, y si fallás recibís solo la mitad."
+      "descripcion": "Cuando debas hacer una salvación de DES para reducir daño a la mitad: si tienes éxito no recibes nada de daño, y si fallas recibes solo la mitad."
     },
     {
       "nivel": 7,
       "clase": "Monk",
       "nombre": "Stillness of Mind",
-      "descripcion": "Como acción, terminás un efecto sobre vos mismo que te esté causando la condición Encantado o Asustado."
+      "descripcion": "Como acción, terminas un efecto sobre ti mismo que te esté causando la condición Encantado o Asustado."
     },
     {
       "nivel": 8,
       "clase": "Monk",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos puntuaciones en +1 cada una (o tomás un Talento, según reglas de PHB2024), sin exceder 20."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos puntuaciones en +1 cada una (o tomas un Talento, según reglas de PHB2024), sin exceder 20."
     },
     {
       "nivel": 9,
       "clase": "Monk",
       "nombre": "Unarmored Movement (mejora) / Acrobatic Movement",
-      "descripcion": "Tu velocidad sin armadura aumenta más, y podés moverte por superficies verticales y sobre líquidos sin caer durante tu turno (debés terminar el turno en superficie sólida). ⚠️ En PHB2024 esto puede estar separado como el rasgo \"Acrobatic Movement\", verificar redacción exacta."
+      "descripcion": "Tu velocidad sin armadura aumenta más, y puedes moverte por superficies verticales y sobre líquidos sin caer durante tu turno (debes terminar el turno en superficie sólida). ⚠️ En PHB2024 esto puede estar separado como el rasgo \"Acrobatic Movement\", verificar redacción exacta."
     },
     {
       "nivel": 10,
       "clase": "Monk",
       "nombre": "Purity of Body (Self-Restoration en PHB2024)",
-      "descripcion": "Sos inmune a enfermedades y venenos (incluida la condición Envenenado). ⚠️ En PHB2024 el rasgo puede haberse ampliado para curar Exhaustion también; revisar manual."
+      "descripcion": "Eres inmune a enfermedades y venenos (incluida la condición Envenenado). ⚠️ En PHB2024 el rasgo puede haberse ampliado para curar Exhaustion también; revisar manual."
     },
     {
       "nivel": 11,
@@ -642,31 +642,31 @@ PERSONAJES.eldur = {
       "nivel": 12,
       "clase": "Monk",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
     },
     {
       "nivel": 13,
       "clase": "Monk",
       "nombre": "Tongue of the Sun and Moon",
-      "descripcion": "Entendés todos los idiomas hablados, y cualquier criatura que entienda al menos un idioma te entiende a vos al hablarle. ⚠️ Verificar si PHB2024 renombró este rasgo."
+      "descripcion": "Entiendes todos los idiomas hablados, y cualquier criatura que entienda al menos un idioma te entiende a ti al hablarle. ⚠️ Verificar si PHB2024 renombró este rasgo."
     },
     {
       "nivel": 14,
       "clase": "Monk",
       "nombre": "Diamond Soul (Disciplined Survivor en PHB2024)",
-      "descripcion": "Ganás competencia en todas las tiradas de salvación. Además, si fallás una salvación podés gastar 1 punto de Ki para repetirla con el nuevo resultado. ⚠️ Verificar mecánica exacta y nombre en PHB2024."
+      "descripcion": "Ganas competencia en todas las tiradas de salvación. Además, si fallas una salvación puedes gastar 1 punto de Ki para repetirla con el nuevo resultado. ⚠️ Verificar mecánica exacta y nombre en PHB2024."
     },
     {
       "nivel": 15,
       "clase": "Monk",
       "nombre": "Timeless Body",
-      "descripcion": "Ya no sufrís los efectos de la vejez y no necesitás comer ni beber (aunque seguís pudiendo consumir comida/bebida mágica para otros beneficios)."
+      "descripcion": "Ya no sufres los efectos de la vejez y no necesitas comer ni beber (aunque sigues pudiendo consumir comida/bebida mágica para otros beneficios)."
     },
     {
       "nivel": 16,
       "clase": "Monk",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
     },
     {
       "nivel": 17,
@@ -678,7 +678,7 @@ PERSONAJES.eldur = {
       "nivel": 18,
       "clase": "Monk",
       "nombre": "Empty Body (Superior Defense en PHB2024)",
-      "descripcion": "Gastás 4 Ki para volverte invisible por 1 minuto y ganar resistencia a todo el daño salvo el de fuerza; por 8 Ki podés lanzar Astral Projection sin componentes materiales. ⚠️ En PHB2024 este rasgo puede estar simplificado (sin gasto de Ki); revisar manual."
+      "descripcion": "Gastas 4 Ki para volverte invisible por 1 minuto y ganar resistencia a todo el daño salvo el de fuerza; por 8 Ki puedes lanzar Astral Projection sin componentes materiales. ⚠️ En PHB2024 este rasgo puede estar simplificado (sin gasto de Ki); revisar manual."
     },
     {
       "nivel": 19,
@@ -690,13 +690,13 @@ PERSONAJES.eldur = {
       "nivel": 20,
       "clase": "Monk",
       "nombre": "Perfect Self (Body and Mind en PHB2024)",
-      "descripcion": "Si tirás iniciativa y no tenés puntos de Ki, ganás 4 puntos de Ki automáticamente. ⚠️ En PHB2024 este rasgo puede además subir FUE y DES a 25; verificar redacción."
+      "descripcion": "Si tiras iniciativa y no tienes puntos de Ki, ganas 4 puntos de Ki automáticamente. ⚠️ En PHB2024 este rasgo puede además subir FUE y DES a 25; verificar redacción."
     },
     {
       "nivel": 4,
       "clase": "Cleric",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
     },
     {
       "nivel": 5,
@@ -708,37 +708,37 @@ PERSONAJES.eldur = {
       "nivel": 5,
       "clase": "Cleric",
       "nombre": "Sear Undead",
-      "descripcion": "Rasgo de PHB2024: cuando usás Turn Undead, los no-muertos que fallan la salvación sufren daño radiante igual a tu modificador de Sabiduría. ⚠️ Confirmar que este rasgo exista en PHB2024 y su nivel exacto — no estaba en la versión 2014."
+      "descripcion": "Rasgo de PHB2024: cuando usas Turn Undead, los no-muertos que fallan la salvación sufren daño radiante igual a tu modificador de Sabiduría. ⚠️ Confirmar que este rasgo exista en PHB2024 y su nivel exacto — no estaba en la versión 2014."
     },
     {
       "nivel": 6,
       "clase": "Cleric",
       "nombre": "Channel Divinity (uso adicional)",
-      "descripcion": "Podés usar Channel Divinity una vez más entre descansos (total de usos según nivel de clérigo). ⚠️ Verificar si en PHB2024 el salto de usos ocurre en este nivel exacto (en 2014 era nivel 6; PHB2024 pudo adelantarlo)."
+      "descripcion": "Puedes usar Channel Divinity una vez más entre descansos (total de usos según nivel de clérigo). ⚠️ Verificar si en PHB2024 el salto de usos ocurre en este nivel exacto (en 2014 era nivel 6; PHB2024 pudo adelantarlo)."
     },
     {
       "nivel": 6,
       "clase": "Cleric",
       "nombre": "Light Domain: Improved Warding Flare",
-      "descripcion": "Warding Flare ya no requiere que puedas ver al atacante, y ahora también podés usarlo para imponer desventaja en un ataque dirigido a un aliado a 30 pies. ⚠️ Confirmar nombre/nivel exacto en PHB2024 (Light Domain)."
+      "descripcion": "Warding Flare ya no requiere que puedas ver al atacante, y ahora también puedes usarlo para imponer desventaja en un ataque dirigido a un aliado a 30 pies. ⚠️ Confirmar nombre/nivel exacto en PHB2024 (Light Domain)."
     },
     {
       "nivel": 7,
       "clase": "Cleric",
-      "nombre": "Blessed Strikes (elegís Divine Strike o Potent Spellcasting)",
-      "descripcion": "Rasgo unificado de PHB2024: elegís entre (a) Divine Strike — 1/turno tu ataque con arma inflige +1d8 de daño radiante adicional (2d8 a nivel 14); o (b) Potent Spellcasting — sumás tu modificador de Sabiduría al daño de tus cantrips de clérigo. Para Light Domain suele convenir Potent Spellcasting. ⚠️ Verificar mecánica y nivel exactos — en 2014 Potent Spellcasting era exclusivo del dominio de Luz a nivel 8, sin esta elección."
+      "nombre": "Blessed Strikes (eliges Divine Strike o Potent Spellcasting)",
+      "descripcion": "Rasgo unificado de PHB2024: eliges entre (a) Divine Strike — 1/turno tu ataque con arma inflige +1d8 de daño radiante adicional (2d8 a nivel 14); o (b) Potent Spellcasting — sumas tu modificador de Sabiduría al daño de tus cantrips de clérigo. Para Light Domain suele convenir Potent Spellcasting. ⚠️ Verificar mecánica y nivel exactos — en 2014 Potent Spellcasting era exclusivo del dominio de Luz a nivel 8, sin esta elección."
     },
     {
       "nivel": 8,
       "clase": "Cleric",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
     },
     {
       "nivel": 10,
       "clase": "Cleric",
       "nombre": "Divine Intervention",
-      "descripcion": "Rezás pidiendo ayuda divina; el DM determina el efecto (equivalente a un conjuro de clérigo de tu nivel o menor). Tras usarla con éxito, no podés volver a usarla hasta completar un descanso largo. ⚠️ Verificar nivel exacto y mecánica en PHB2024 (en 2014 era nivel 10 con % de éxito = nivel de clérigo)."
+      "descripcion": "Rezas pidiendo ayuda divina; el DM determina el efecto (equivalente a un conjuro de clérigo de tu nivel o menor). Tras usarla con éxito, no puedes volver a usarla hasta completar un descanso largo. ⚠️ Verificar nivel exacto y mecánica en PHB2024 (en 2014 era nivel 10 con % de éxito = nivel de clérigo)."
     },
     {
       "nivel": 11,
@@ -750,7 +750,7 @@ PERSONAJES.eldur = {
       "nivel": 12,
       "clase": "Cleric",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20."
     },
     {
       "nivel": 14,
@@ -762,19 +762,19 @@ PERSONAJES.eldur = {
       "nivel": 16,
       "clase": "Cleric",
       "nombre": "Mejora de Característica (ASI/Feat)",
-      "descripcion": "Aumentás una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20. ⚠️ Confirmar que PHB2024 mantenga una mejora de característica en este nivel para Cleric."
+      "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20. ⚠️ Confirmar que PHB2024 mantenga una mejora de característica en este nivel para Cleric."
     },
     {
       "nivel": 17,
       "clase": "Cleric",
       "nombre": "Light Domain: Corona of Light",
-      "descripcion": "Como acción bonus, emanás luz brillante en 60 pies (y tenue 30 pies más) por 1 minuto; las criaturas hostiles dentro de la luz brillante tienen desventaja en salvaciones contra conjuros que hagan daño de fuego o radiante que vos lances."
+      "descripcion": "Como acción bonus, emanas luz brillante en 60 pies (y tenue 30 pies más) por 1 minuto; las criaturas hostiles dentro de la luz brillante tienen desventaja en salvaciones contra conjuros que hagan daño de fuego o radiante que tú lances."
     },
     {
       "nivel": 18,
       "clase": "Cleric",
       "nombre": "Channel Divinity (uso adicional, 3 usos)",
-      "descripcion": "Podés usar Channel Divinity una tercera vez entre descansos. ⚠️ Confirmar el número final de usos y el nivel exacto en PHB2024."
+      "descripcion": "Puedes usar Channel Divinity una tercera vez entre descansos. ⚠️ Confirmar el número final de usos y el nivel exacto en PHB2024."
     },
     {
       "nivel": 19,

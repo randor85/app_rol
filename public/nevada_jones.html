@@ -1572,15 +1572,15 @@ function rollSkill(name, idx) {
 // ============================================
 const HABILIDADES_ACTIVABLES = {
   1: { nombre: 'Combustión', pmFijo: 2, pmDado: '', sanFijo: 0, sanDado: '', hpFijo: 0, dadoEfecto: '1d6', pmPorObjetivo: 0, sanPorObjetivo: 0,
-       nota: 'Concentrada: 2 PM, 1d6 fuego a 1 objetivo. Múltiple: 2 PM por objetivo, 1d4+1 fuego c/u — ajustá el costo, el dado de efecto y "objetivos adicionales" según la variante.' },
+       nota: 'Concentrada: 2 PM, 1d6 fuego a 1 objetivo. Múltiple: 2 PM por objetivo, 1d4+1 fuego c/u — ajusta el costo, el dado de efecto y "objetivos adicionales" según la variante.' },
   2: { nombre: 'Fuego Alquímico', pmFijo: 0, sanFijo: 0, hpFijo: 1, dadoEfecto: '',
        nota: 'Preparación: corte voluntario, 1 HP. La sangre queda utilizable hasta fin de sesión, un día de juego, o que la herida sane.' },
   4: { nombre: 'Rune of the Accusing Eye', pmFijo: 0, pmDado: '1d4', sanFijo: 3, sanDado: '', hpFijo: 0, dadoEfecto: '',
-       nota: 'Reacción ante un ataque sobrenatural. El atacante tira POW aparte (no se registra acá).' },
+       nota: 'Reacción ante un ataque sobrenatural. El atacante tira POW aparte (no se registra aquí).' },
   6: { nombre: 'Eye of the Still Portal', pmFijo: 4, sanFijo: 0, hpFijo: 0, dadoEfecto: '',
        nota: 'Activación consciente (usos ilimitados). La reacción espontánea no tiene coste, no hace falta este formulario para esa.' },
   7: { nombre: 'Puertas de Yog-Sothoth', pmFijo: 2, sanFijo: 0, hpFijo: 0, dadoEfecto: '',
-       nota: '2 PM cada 5 minutos de mantenimiento — usá este botón una vez por cada tramo de 5 min que la Puerta siga abierta.' },
+       nota: '2 PM cada 5 minutos de mantenimiento — usa este botón una vez por cada tramo de 5 min que la Puerta siga abierta.' },
   8: { nombre: 'El Ojo', pmFijo: 6, sanDado: '1d6', hpFijo: 0, dadoEfecto: '',
        nota: '~1 minuto de uso. 10% de probabilidad narrativa de ver algo no deseado (a criterio del Guardián).' },
   9: { nombre: 'Atisbo del Vacío', pmFijo: 3, sanDado: '1d4', hpFijo: 0, dadoEfecto: '',
@@ -1588,7 +1588,7 @@ const HABILIDADES_ACTIVABLES = {
   10: { nombre: 'Ojo del Vacío Ascendente', pmDado: '1d10', sanFijo: 2, hpFijo: 0, dadoEfecto: '',
         nota: 'Este es solo el costo propio de Nevada. La pérdida de SAN del objetivo (Contienda POW vs SAN) se resuelve aparte, en la ficha del objetivo.' },
   11: { nombre: 'Ojo del Todo y la Nada', pmDado: '1d12', sanDado: '1d12', hpFijo: 0, pmPorObjetivo: 5, sanPorObjetivo: 5, dadoEfecto: '',
-        nota: 'Uso Masivo: +5 PM y +5 SAN por cada objetivo adicional — cargalo en "Objetivos adicionales".' },
+        nota: 'Uso Masivo: +5 PM y +5 SAN por cada objetivo adicional — cárgalo en "Objetivos adicionales".' },
 };
 
 let usarHabilidadAbierta = null;

@@ -99,7 +99,7 @@
   <div id="cc-confirma" role="alertdialog" aria-label="Confirmación"></div>
 
   <div id="cc-app" hidden>
-    <div class="cc-tabs" role="tablist" aria-label="Qué querés hacer">
+    <div class="cc-tabs" role="tablist" aria-label="Qué quieres hacer">
       <button type="button" class="cc-tab" role="tab" id="tab-clase" aria-controls="panel-clase" aria-selected="true" data-tab="clase">Clase nueva</button>
       <button type="button" class="cc-tab" role="tab" id="tab-subclase" aria-controls="panel-subclase" aria-selected="false" tabindex="-1" data-tab="subclase">Subclase nueva</button>
       <button type="button" class="cc-tab" role="tab" id="tab-lista" aria-controls="panel-lista" aria-selected="false" tabindex="-1" data-tab="lista">📚 Lo creado (<span id="cc-cuenta">0</span>)</button>
@@ -299,7 +299,7 @@
         <label class="cc-campo"><span class="cc-etq">Dado de golpe</span><select data-r="c" data-b="hitDie">${[6, 8, 10, 12].map((d) => `<option value="${d}"${String(d) === m.hitDie ? ' selected' : ''}>d${d}</option>`).join('')}</select></label>
         <label class="cc-campo"><span class="cc-etq">Característica principal *</span><input type="text" maxlength="60" data-r="c" data-b="primaryAbility" value="${esc(m.primaryAbility)}" placeholder="Ej.: Destreza y Sabiduría"></label>
       </div>
-      <fieldset class="cc-grupo"><legend>Salvaciones con competencia (elegí 2)</legend><div class="cc-checks">${salv}</div></fieldset>
+      <fieldset class="cc-grupo"><legend>Salvaciones con competencia (elige 2)</legend><div class="cc-checks">${salv}</div></fieldset>
       <fieldset class="cc-grupo"><legend>Prerrequisitos para multiclasear (≥ 13)</legend><div class="cc-checks">${prer}</div></fieldset>
       <label class="cc-campo"><span class="cc-etq">Resumen</span><textarea data-r="c" data-b="resumen" maxlength="2000" placeholder="De qué va la clase, en un par de líneas">${esc(m.resumen)}</textarea></label>
       <div class="form-grid">
@@ -376,7 +376,7 @@
           <div><button type="button" class="btn btn-peligro btn-sm" data-act="del" data-r="c" data-path="subclasses" data-i="${i}" aria-label="Quitar la subclase ${esc(s.name || (i + 1))}">✖ Quitar esta subclase</button></div>
         </div>
       </details>`).join('');
-    const subclases = `<p class="cc-nota">Subclases que vienen con la clase. También podés sumar más después, desde la pestaña «Subclase nueva».</p>${subs}
+    const subclases = `<p class="cc-nota">Subclases que vienen con la clase. También puedes sumar más después, desde la pestaña «Subclase nueva».</p>${subs}
       <button type="button" class="btn btn-fantasma btn-sm" data-act="add" data-r="c" data-path="subclasses" data-tpl="subclase">+ Agregar subclase</button>`;
 
     return `
@@ -401,7 +401,7 @@
       <div class="cc-acciones"><button type="button" class="btn btn-fantasma btn-sm" data-act="limpiar-sub">Empezar de cero</button></div>
       <div class="form-grid">
         <label class="cc-campo"><span class="cc-etq">Clase base *</span>
-          <select id="sub-clase" data-r="s" data-b="clase" data-rerender="1"><option value="">— elegí una clase —</option>
+          <select id="sub-clase" data-r="s" data-b="clase" data-rerender="1"><option value="">— elige una clase —</option>
             <optgroup label="Oficiales">${of.map(opt).join('')}</optgroup>
             ${cu.length ? `<optgroup label="Custom de la campaña">${cu.map(opt).join('')}</optgroup>` : ''}
           </select></label>
@@ -468,7 +468,7 @@
   // ------------------------------------------------------------------ permisos y lista
   function puedeEditar(item) { return esGM || (item.autor && item.autor === uid); }
   const plural = (n, uno, varios) => n + ' ' + (n === 1 ? uno : varios);
-  function fecha(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString('es-AR'); } catch (e) { return ''; } }
+  function fecha(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString('es-419'); } catch (e) { return ''; } }
   function renderLista() {
     $('cc-cuenta').textContent = String(datos.clases.length + datos.subclases.length);
     const nomClase = (id) => { const c = (typeof CLASSES !== 'undefined' ? CLASSES : []).find((x) => x.id === id); return c ? (c.nombre_es || c.name) : id; };
@@ -578,7 +578,7 @@
       let n = 0;
       CC.RASGOS_TIPICOS(num(E.subclassLevel), E.subclassLabel).forEach((f) => { if (!ya(f.nombre, f.nivel)) { E.features.push(rasgoAEditor(f)); n++; } });
       abiertas.rasgos = true; renderClase();
-      aviso('bien', n ? `Se agregaron ${n} rasgos típicos. Editá la descripción si querés.` : 'Los rasgos típicos ya estaban cargados.');
+      aviso('bien', n ? `Se agregaron ${n} rasgos típicos. Edita la descripción si quieres.` : 'Los rasgos típicos ya estaban cargados.');
       return;
     }
     if (a === 'copiar-oficial') {
@@ -592,7 +592,7 @@
         copia.prog = clonar(pg); delete copia.prog.custom; delete copia.prog.incierto;
         E = editorDeClase(copia); abrirPorDefecto(E); E._sucio = true;
         renderClase('name');
-        aviso('bien', `Copiaste «${esc(c.nombre_es || c.name)}». Cambiale el nombre y modificá lo que quieras: se guarda como una clase nueva.`);
+        aviso('bien', `Copiaste «${esc(c.nombre_es || c.name)}». Cámbiale el nombre y modifica lo que quieras: se guarda como una clase nueva.`);
       };
       if (E._sucio) confirmar('Esto reemplaza lo que cargaste en el editor de clase. ¿Seguimos?', 'Sí, reemplazar', hacer); else hacer();
       return;
@@ -612,7 +612,7 @@
     if (a === 'editar-clase') {
       const c = datos.clases.find((x) => x.id === b.dataset.id); if (!c || !puedeEditar(c)) return;
       const hacer = () => { E = editorDeClase(c); abrirPorDefecto(E); irATab('clase'); renderClase('name'); aviso('', ''); };
-      if (E._sucio) confirmar('Tenés cambios sin guardar en el editor de clase. ¿Los descartamos para editar «' + esc(c.name) + '»?', 'Sí, descartar', hacer); else hacer();
+      if (E._sucio) confirmar('Tienes cambios sin guardar en el editor de clase. ¿Los descartamos para editar «' + esc(c.name) + '»?', 'Sí, descartar', hacer); else hacer();
       return;
     }
     if (a === 'editar-sub') {
@@ -635,12 +635,12 @@
 
   function mensajeError(e) {
     const m = e && e.message ? e.message : String(e);
-    if (/permission_denied|permission denied/i.test(m)) return 'no tenés permiso para hacer esto (solo el autor o el GM de la campaña pueden modificarlo, o las reglas de la base todavía no se publicaron).';
+    if (/permission_denied|permission denied/i.test(m)) return 'no tienes permiso para hacer esto (solo el autor o el GM de la campaña pueden modificarlo, o las reglas de la base todavía no se publicaron).';
     return m;
   }
   function mostrarErrores(id, errores) {
     const el = $(id);
-    el.innerHTML = errores.length ? `<div class="aviso-mal" role="alert" tabindex="-1" id="${id}-caja" style="display:block"><strong>No se pudo guardar. Revisá esto:</strong><ul class="cc-errores">${errores.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : '';
+    el.innerHTML = errores.length ? `<div class="aviso-mal" role="alert" tabindex="-1" id="${id}-caja" style="display:block"><strong>No se pudo guardar. Revisa esto:</strong><ul class="cc-errores">${errores.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : '';
     if (errores.length) { const c = $(id + '-caja'); c.focus(); c.scrollIntoView({ block: 'center' }); }
   }
 
@@ -728,7 +728,7 @@
     autorNombre = user.displayName || (user.email ? String(user.email).split('@')[0] : '') || 'Jugador';
     db = firebase.database();
     $('cc-volver').href = 'classes.html?campana=' + encodeURIComponent(CAMP);
-    $('cc-sub').innerHTML = `Campaña <strong>${esc(CAMP)}</strong> · Sesión de <strong>${esc(autorNombre)}</strong>. Lo que guardes acá aparece junto a las clases oficiales en el compendio y en el asistente de subida de nivel.`;
+    $('cc-sub').innerHTML = `Campaña <strong>${esc(CAMP)}</strong> · Sesión de <strong>${esc(autorNombre)}</strong>. Lo que guardes aquí aparece junto a las clases oficiales en el compendio y en el asistente de subida de nivel.`;
     E = claseVacia(); abrirPorDefecto(E); S = subVacia();
     conectarEventos();
     $('cc-app').hidden = false;
@@ -747,11 +747,11 @@
     if (window.FichaPaleta) FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: 'amatista', clave: 'creador-clases' });
     if (!CAMP) {
       $('cc-sub').textContent = '';
-      aviso('mal', 'Falta la campaña. Abrí esta página desde el compendio de clases con una campaña elegida (<code>creador-clases.html?campana=&lt;código&gt;</code>) o volvé al <a href="index.html">menú principal</a> y elegí una.');
+      aviso('mal', 'Falta la campaña. Abre esta página desde el compendio de clases con una campaña elegida (<code>creador-clases.html?campana=&lt;código&gt;</code>) o vuelve al <a href="index.html">menú principal</a> y elige una.');
       return;
     }
     if (/[.$#\[\]\/]/.test(CAMP)) { $('cc-sub').textContent = ''; aviso('mal', 'El código de campaña no es válido.'); return; }
-    if (!(window.firebase && firebase.auth)) { $('cc-sub').textContent = ''; aviso('mal', 'No se pudo cargar Firebase. Revisá tu conexión y recargá la página.'); return; }
+    if (!(window.firebase && firebase.auth)) { $('cc-sub').textContent = ''; aviso('mal', 'No se pudo cargar Firebase. Revisa tu conexión y recarga la página.'); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) { location.href = 'index.html'; return; }

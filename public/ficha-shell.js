@@ -343,7 +343,7 @@
     const actual = tabla.find(t => t.nivel === nivelXP) || tabla[0];
     const sig = tabla.find(t => t.nivel === nivelXP + 1);
     const set = (id, t) => { const e = $(id); if (e) e.textContent = t; };
-    set('xp-siguiente', sig ? '/ ' + sig.xp.toLocaleString('es-AR') + ' para el nivel ' + sig.nivel : '(nivel máximo)');
+    set('xp-siguiente', sig ? '/ ' + sig.xp.toLocaleString('es-419') + ' para el nivel ' + sig.nivel : '(nivel máximo)');
     set('xp-nivel-info', 'XP de nivel ' + nivelXP);
     const barra = $('xp-barra');
     if (barra) {
@@ -637,7 +637,7 @@
   }
 
   async function arrancar() {
-    if (!pj) return mensaje('Falta el personaje en la dirección: usá <code>ficha.html?pj=&lt;id&gt;</code>.');
+    if (!pj) return mensaje('Falta el personaje en la dirección: usa <code>ficha.html?pj=&lt;id&gt;</code>.');
     if (/^pc_/.test(pj)) {
       try { P = await cargarDefinicionDinamica(); } catch (e) { return mensaje('No se pudo leer el personaje: ' + (e && e.message ? e.message : e)); }
       if (!P) return mensaje(`No existe el personaje “${pj}” en esta campaña.`);

@@ -392,30 +392,30 @@
   function validarElecciones(info) {
     const err = [];
     if (info.necesitaSub) {
-      if (!est.subclase) err.push(`Elegí ${info.d.subclassLabel || 'la subclase'}.`);
-      else if (est.subclase === '__otra' && !(est.subclaseLibre || '').trim()) err.push('Escribí el nombre de la subclase.');
+      if (!est.subclase) err.push(`Elige ${info.d.subclassLabel || 'la subclase'}.`);
+      else if (est.subclase === '__otra' && !(est.subclaseLibre || '').trim()) err.push('Escribe el nombre de la subclase.');
     }
     if (info.asi) {
       const sc = leerScores();
-      if (!est.asi.modo) err.push('Elegí mejora de característica o talento.');
+      if (!est.asi.modo) err.push('Elige mejora de característica o talento.');
       else if (est.asi.modo === 'asi') {
         if (est.asi.tipo === 'dos') {
-          if (!est.asi.a || !est.asi.b || est.asi.a === est.asi.b) err.push('Elegí dos características distintas (+1 cada una).');
+          if (!est.asi.a || !est.asi.b || est.asi.a === est.asi.b) err.push('Elige dos características distintas (+1 cada una).');
           else [est.asi.a, est.asi.b].forEach((k) => { if (sc[k] + 1 > 20) err.push(`${ABIL_ES[k]} no puede pasar de 20.`); });
         } else {
-          if (!est.asi.a) err.push('Elegí la característica (+2).');
+          if (!est.asi.a) err.push('Elige la característica (+2).');
           else if (sc[est.asi.a] + 2 > 20) err.push(`${ABIL_ES[est.asi.a]} no puede pasar de 20 (tiene ${sc[est.asi.a]}).`);
         }
       } else if (est.asi.modo === 'dote') {
         const nombre = est.dote.nombre === '__otro' ? (est.dote.libre || '').trim() : est.dote.nombre;
-        if (!nombre) err.push('Elegí un talento (o escribí el nombre).');
+        if (!nombre) err.push('Elige un talento (o escribe el nombre).');
         if (est.dote.aumento && sc[est.dote.aumento] + 1 > 20) err.push(`${ABIL_ES[est.dote.aumento]} no puede pasar de 20.`);
       }
     }
     info.elecciones.forEach((e, i) => {
       const sel = (est.sel[e.tipo + i] || []);
       const libre = (est.libre[e.tipo + i] || '').trim() ? 1 : 0;
-      if (sel.length + libre !== e.cantidad) err.push(`Elegí exactamente ${e.cantidad} (${etiquetaEleccion(e)}).`);
+      if (sel.length + libre !== e.cantidad) err.push(`Elige exactamente ${e.cantidad} (${etiquetaEleccion(e)}).`);
     });
     return err;
   }
@@ -504,8 +504,8 @@
     const pend = nivelPendiente();
     let h = '';
     if (lvl >= 20) return '<p class="fn-bloqueo">⛔ Ya estás en nivel 20: no se puede subir más.</p>' + htmlUndo();
-    h += `<p class="fn-nota">Nivel total actual: <strong>${lvl}</strong>${pend.xp ? ` · XP ${pend.xp.toLocaleString('es-AR')} → nivel ${pend.nivelXP} por XP` : ''}.</p>`;
-    h += '<h4 class="fn-h">Subir una clase que ya tenés</h4><div class="fn-lista">';
+    h += `<p class="fn-nota">Nivel total actual: <strong>${lvl}</strong>${pend.xp ? ` · XP ${pend.xp.toLocaleString('es-419')} → nivel ${pend.nivelXP} por XP` : ''}.</p>`;
+    h += '<h4 class="fn-h">Subir una clase que ya tienes</h4><div class="fn-lista">';
     clasesPropias().forEach((c) => {
       const sel = est.clase === c.nombre && !est.esNueva;
       h += `<button type="button" class="fn-opcion ${sel ? 'sel' : ''}" data-fn="clase" data-valor="${esc(c.nombre)}">${esc(c.nombre)} <small>nivel ${nivelClase(c.nombre)} → ${nivelClase(c.nombre) + 1}</small></button>`;
@@ -519,12 +519,12 @@
       const req = prog(c).prerrequisitos || [];
       const sel = est.clase === c.name && est.esNueva;
       if (falt.length) {
-        h += `<div class="fn-opcion bloqueada" data-clase-bloqueada="${esc(c.name)}">⛔ ${esc(c.name)} <small>requiere ${(prog(c).prerrequisitosAlternativos || []).length ? [req[0], ...prog(c).prerrequisitosAlternativos].map((k) => k + ' 13').join(' o ') : req.map((k) => k + ' 13').join(' y ')}${falt.some((f) => !req.includes(f.k)) ? ' (y las de tus clases actuales)' : ''} — te falta: ${falt.map((f) => `${f.k} (tenés ${f.valor})`).join(', ')}</small></div>`;
+        h += `<div class="fn-opcion bloqueada" data-clase-bloqueada="${esc(c.name)}">⛔ ${esc(c.name)} <small>requiere ${(prog(c).prerrequisitosAlternativos || []).length ? [req[0], ...prog(c).prerrequisitosAlternativos].map((k) => k + ' 13').join(' o ') : req.map((k) => k + ' 13').join(' y ')}${falt.some((f) => !req.includes(f.k)) ? ' (y las de tus clases actuales)' : ''} — te falta: ${falt.map((f) => `${f.k} (tienes ${f.valor})`).join(', ')}</small></div>`;
       } else {
-        h += `<button type="button" class="fn-opcion ${sel ? 'sel' : ''}" data-fn="clase-nueva" data-valor="${esc(c.name)}">➕ ${esc(c.name)} <small>d${c.hitDie} · cumplís los prerrequisitos</small></button>`;
+        h += `<button type="button" class="fn-opcion ${sel ? 'sel' : ''}" data-fn="clase-nueva" data-valor="${esc(c.name)}">➕ ${esc(c.name)} <small>d${c.hitDie} · cumples los prerrequisitos</small></button>`;
       }
     });
-    h += '</div><p class="fn-nota">Multiclase: se necesita 13 en las características principales de la clase nueva y de las que ya tenés. Las competencias que se ganan al multiclasear son reducidas: revisalas en el libro.</p>';
+    h += '</div><p class="fn-nota">Multiclase: se necesita 13 en las características principales de la clase nueva y de las que ya tienes. Las competencias que se ganan al multiclasear son reducidas: revísalas en el libro.</p>';
     return h + htmlUndo();
   }
   function htmlUndo() {
@@ -547,8 +547,8 @@
     if (est.hp.tirada != null) {
       const g = hpGanadoCalculado(info);
       h += `<div class="fn-resultado">🎲 ${est.hp.tirada} ${fmt(conMod())} (CON)${g !== Math.max(1, est.hp.tirada + conMod()) ? ' + extras' : ''} = <strong>+${g} PG</strong>${hpMax() != null ? ` · nuevo máximo ${hpMax() + g}` : ''}</div>`;
-    } else h += '<p class="fn-nota">Tirá el dado o usá el promedio para continuar.</p>';
-    h += '<p class="fn-nota">El modificador de Constitución usado es el actual (no se recalcula retroactivamente si subís CON en este nivel).</p>';
+    } else h += '<p class="fn-nota">Tira el dado o usa el promedio para continuar.</p>';
+    h += '<p class="fn-nota">El modificador de Constitución usado es el actual (no se recalcula retroactivamente si subes CON en este nivel).</p>';
     return h;
   }
 
@@ -560,7 +560,7 @@
     info.rasgos.forEach((f) => {
       h += `<div class="fn-rasgo"><strong>${esc(f.nombre)}</strong> <small>${esc(f.origen)}</small>${f.incierto ? ' <span title="Detalle sin confirmar">⚠️</span>' : ''}<br><span>${esc(f.desc)}</span></div>`;
     });
-    if (info.necesitaSub) h += `<p class="fn-nota">En este nivel elegís ${esc(info.d.subclassLabel || 'tu subclase')} (próximo paso): los rasgos que aparecen acá dependen de esa elección.</p>`;
+    if (info.necesitaSub) h += `<p class="fn-nota">En este nivel eliges ${esc(info.d.subclassLabel || 'tu subclase')} (próximo paso): los rasgos que aparecen aquí dependen de esa elección.</p>`;
     if (info.d && info.d.resourceName && info.d.resourceProgression) {
       const v0 = escalonado(info.d.resourceProgression, info.antes), v1 = escalonado(info.d.resourceProgression, info.n);
       if (v0 !== v1) h += `<p class="fn-nota">${esc(info.d.resourceName)}: ${v0 == null ? '—' : v0} → <strong>${v1}</strong>.</p>`;
@@ -602,7 +602,7 @@
       } else if (est.asi.modo === 'dote') {
         const lista = (typeof TALENTOS !== 'undefined') ? TALENTOS : [];
         const epicos = info.epico && typeof DONES_EPICOS !== 'undefined' ? DONES_EPICOS : [];
-        h += `<select class="fn-input" data-fn-in="dote"><option value="">— Elegí —</option>${lista.map((t) => `<option value="${esc(t.nombre)}" ${est.dote.nombre === t.nombre ? 'selected' : ''}>${esc(t.nombre)}</option>`).join('')}${epicos.map((t) => `<option value="${esc(t)}" ${est.dote.nombre === t ? 'selected' : ''}>${esc(t)} (Don Épico)</option>`).join('')}<option value="__otro" ${est.dote.nombre === '__otro' ? 'selected' : ''}>Otro (escribirlo)</option></select>`;
+        h += `<select class="fn-input" data-fn-in="dote"><option value="">— Elige —</option>${lista.map((t) => `<option value="${esc(t.nombre)}" ${est.dote.nombre === t.nombre ? 'selected' : ''}>${esc(t.nombre)}</option>`).join('')}${epicos.map((t) => `<option value="${esc(t)}" ${est.dote.nombre === t ? 'selected' : ''}>${esc(t)} (Don Épico)</option>`).join('')}<option value="__otro" ${est.dote.nombre === '__otro' ? 'selected' : ''}>Otro (escribirlo)</option></select>`;
         if (est.dote.nombre === '__otro') h += `<input type="text" class="fn-input" data-fn-in="dote-libre" placeholder="Nombre del talento" value="${esc(est.dote.libre)}">`;
         const t = lista.find((x) => x.nombre === est.dote.nombre);
         if (t) h += `<p class="fn-nota">${esc(t.desc)}</p>`;
@@ -612,14 +612,14 @@
     }
     info.elecciones.forEach((e, i) => {
       const clave = e.tipo + i;
-      h += `<h4 class="fn-h">${esc(etiquetaEleccion(e))} — elegí ${e.cantidad}${e.etiqueta ? ' (' + esc(e.etiqueta) + ')' : ''}</h4>`;
+      h += `<h4 class="fn-h">${esc(etiquetaEleccion(e))} — elige ${e.cantidad}${e.etiqueta ? ' (' + esc(e.etiqueta) + ')' : ''}</h4>`;
       let lista = [];
       let dis = [];
       if (e.tipo === 'expertise') {
         const sk = skillsConfig();
         lista = e.restringido ? e.restringido : SKILLS;
         if (sk.length) dis = lista.filter((n) => { const s = sk.find((x) => x.clave === n); return !s || !s.competente || s.expertise; });
-        h += '<p class="fn-nota">Elegí habilidades en las que ya tengas competencia: duplican el bono de competencia.' + (sk.length ? ' Las que no tienen competencia o ya tienen expertise aparecen deshabilitadas.' : '') + '</p>';
+        h += '<p class="fn-nota">Elige habilidades en las que ya tengas competencia: duplican el bono de competencia.' + (sk.length ? ' Las que no tienen competencia o ya tienen expertise aparecen deshabilitadas.' : '') + '</p>';
       } else if (e.tipo === 'estilo') {
         lista = (typeof ESTILOS_COMBATE !== 'undefined' ? ESTILOS_COMBATE : []).filter((x) => !x.clases || x.clases.includes(info.d.id));
       } else if (e.tipo === 'metamagia') {
@@ -630,7 +630,7 @@
         lista = typeof OPCIONES_INVOCACIONES !== 'undefined' ? OPCIONES_INVOCACIONES : [];
         const ya = new Set(); leerRegistro().forEach((r) => ((r.elecciones && r.elecciones.invocaciones) || []).forEach((n) => ya.add(n)));
         dis = Array.from(ya);
-        if (info.prog.incierto) h += '<p class="fn-nota">⚠️ La cantidad de invocaciones por nivel no está confirmada contra el libro: ajustala si hace falta.</p>';
+        if (info.prog.incierto) h += '<p class="fn-nota">⚠️ La cantidad de invocaciones por nivel no está confirmada contra el libro: ajústala si hace falta.</p>';
       }
       h += opcionesCheck(lista, clave, e.cantidad, est.sel[clave] || [], dis);
       if (e.tipo !== 'expertise') h += `<input type="text" class="fn-input" data-fn-in="libre" data-clave="${esc(clave)}" placeholder="Otra opción (escribirla)" value="${esc(est.libre[clave] || '')}">`;
@@ -653,13 +653,13 @@
     const d = info.d;
     let h = `<h4 class="fn-h">Hechizos de ${esc(info.nombre)}</h4>`;
     const c0 = escalonado(p.cantrips, info.antes), c1 = escalonado(p.cantrips, info.n);
-    if (p.cantrips) h += `<p class="fn-nota">Trucos: ${c0 == null ? 0 : c0} → <strong>${c1 == null ? 0 : c1}</strong>${c1 > (c0 || 0) ? ' (aprendés ' + (c1 - (c0 || 0)) + ' más)' : ''}.</p>`;
+    if (p.cantrips) h += `<p class="fn-nota">Trucos: ${c0 == null ? 0 : c0} → <strong>${c1 == null ? 0 : c1}</strong>${c1 > (c0 || 0) ? ' (aprendes ' + (c1 - (c0 || 0)) + ' más)' : ''}.</p>`;
     if (p.preparados) {
       const prepN = p.preparados[info.n - 1];
       const tiene = (window.FichaHechizos ? FichaHechizos.editor.items().filter((x) => x.nivel > 0).length : 0);
-      h += `<p class="fn-nota">Hechizos preparados según la tabla: <strong>${prepN}</strong> (en tu ficha hay ${tiene} de nivel 1+).${p.incierto ? ' ⚠️ Tabla sin confirmar: tomala como orientación.' : ''}</p>`;
+      h += `<p class="fn-nota">Hechizos preparados según la tabla: <strong>${prepN}</strong> (en tu ficha hay ${tiene} de nivel 1+).${p.incierto ? ' ⚠️ Tabla sin confirmar: tómala como orientación.' : ''}</p>`;
     }
-    if (p.libro) h += `<p class="fn-nota">Libro de conjuros: aprendés ${p.libro.porNivel} hechizos más al subir de nivel.</p>`;
+    if (p.libro) h += `<p class="fn-nota">Libro de conjuros: aprendes ${p.libro.porNivel} hechizos más al subir de nivel.</p>`;
     const maxNivel = nivelMaxHechizo(info);
     const tiene = new Set(window.FichaHechizos ? FichaHechizos.editor.items().map((x) => x.nombre) : []);
     const nombresClase = [d.nombre_es, d.name].map((x) => String(x).toLowerCase());
@@ -670,7 +670,7 @@
     h += '<div class="fn-checks fn-scroll">' + lista.map((s) => `<label class="fn-check"><input type="checkbox" data-fn-in="hechizo" data-valor="${esc(s.name)}" ${est.hechizos.has(s.name) ? 'checked' : ''}> <span><strong>${esc(s.name)}</strong> <small>${s.nivel === 0 ? 'Truco' : 'Nvl ' + s.nivel}</small></span></label>`).join('') + '</div>';
     if (!lista.length) h += '<p class="fn-nota">No hay más hechizos de la clase para ese filtro.</p>';
     if (cfg.abrirCompendio) h += '<div class="fn-fila"><button type="button" class="fn-btn" data-fn="compendio">📖 Abrir el compendio completo de la ficha</button></div>';
-    h += '<p class="fn-nota">Es opcional: podés saltear este paso y agregar hechizos más tarde desde la tarjeta de hechizos. Para reemplazar un hechizo anterior usá ✏️/🗑️ en esa tarjeta.</p>';
+    h += '<p class="fn-nota">Es opcional: puedes saltear este paso y agregar hechizos más tarde desde la tarjeta de hechizos. Para reemplazar un hechizo anterior usa ✏️/🗑️ en esa tarjeta.</p>';
     return h;
   }
 
@@ -678,7 +678,7 @@
     const filas = vistaPrevia(info);
     let h = `<h4 class="fn-h">Vista previa — ${esc(info.nombre)} ${info.n}</h4><table class="fn-tabla">`;
     filas.forEach((f) => { h += `<tr><th>${esc(f[0])}</th><td>${esc(f[1])}</td></tr>`; });
-    h += '</table><p class="fn-nota">Nada cambia hasta que confirmes. Podés deshacer esta subida después.</p>';
+    h += '</table><p class="fn-nota">Nada cambia hasta que confirmes. Puedes deshacer esta subida después.</p>';
     return h;
   }
 
@@ -1047,7 +1047,7 @@
     if (p.pendiente) {
       av.hidden = false;
       av.textContent = `⬆️ Subida de nivel pendiente: nivel ${p.nivelActual} → ${p.nivelXP}`;
-      av.title = `XP ${p.xp.toLocaleString('es-AR')} corresponde a nivel ${p.nivelXP}. No se aplica sola: tocá para abrir el asistente.`;
+      av.title = `XP ${p.xp.toLocaleString('es-419')} corresponde a nivel ${p.nivelXP}. No se aplica sola: toca para abrir el asistente.`;
     } else av.hidden = true;
   }
 

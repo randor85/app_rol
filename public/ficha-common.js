@@ -5,12 +5,12 @@
  * de listas (hechizos, inventario, y cualquier lista futura) vivan en UN SOLO
  * archivo, cargado por cada ficha con <script src="ficha-common.js">, igual
  * que ya se hace con spells_data.js/classes_data.js — ese mecanismo ya existe
- * en el proyecto, acá se extiende de "datos compartidos" a "funciones
+ * en el proyecto, aquí se extiende de "datos compartidos" a "funciones
  * compartidas". Sin build, sin framework: sigue siendo un sitio estático.
  *
  * Cada ficha define un FICHA_CONFIG chico ANTES de este script (su id,
  * los ids de sus tarjetas de espacio de conjuro si las tiene, y los datos
- * semilla de sus listas) y llama a las funciones de acá para todo lo
+ * semilla de sus listas) y llama a las funciones de aquí para todo lo
  * genérico — lo único que escribe cada ficha es su HTML/CSS propio y su
  * config, no lógica.
  *
@@ -200,7 +200,7 @@
     // Llamado por sincronizarDatosDesdeNube() en cada snapshot. Si hay un
     // formulario de edición abierto, no lo pisa (mismo guard que el
     // inventario real de toda la flota). Si el valor remoto está vacío/roto,
-    // no toca nada acá — la siembra inicial la resuelve sembrarSiVacioEnFirebase.
+    // no toca nada aquí — la siembra inicial la resuelve sembrarSiVacioEnFirebase.
     function resincronizarDesdeValor(raw) {
       if (formularioAbierto()) return;
       let parsed = null;
@@ -471,7 +471,7 @@
         const v = FICHA_CONFIG.caSinArmadura();
         return { total: v, texto: `${v} (sin armadura: ${FICHA_CONFIG.caSinArmaduraTexto || 'fórmula de clase'})` };
       }
-      if (typeof FICHA_CONFIG.caBase === 'number') return { total: FICHA_CONFIG.caBase, texto: `${FICHA_CONFIG.caBase} (fija — equipá una armadura para calcularla)` };
+      if (typeof FICHA_CONFIG.caBase === 'number') return { total: FICHA_CONFIG.caBase, texto: `${FICHA_CONFIG.caBase} (fija — equipa una armadura para calcularla)` };
       return { total: 10 + dex, texto: `${10 + dex} (sin armadura: 10 + DEX ${FichaComun.formatearMod(dex)})` };
     }
     const sinArm = typeof FICHA_CONFIG.caSinArmadura === 'function' ? FICHA_CONFIG.caSinArmadura() : 10 + dex;
@@ -539,7 +539,7 @@
     const cont = document.getElementById(contenedorId);
     if (!cont) return;
     cont.innerHTML = `<input type="hidden" id="concentracion-actual" value="">
-      <label class="conc-casilla" title="Se marca al lanzar un hechizo con concentración; desmarcala cuando la pierdas"><input type="checkbox" class="conc-check"> 🧠 Concentración: <strong id="concentracion-nombre">ninguna</strong></label>`;
+      <label class="conc-casilla" title="Se marca al lanzar un hechizo con concentración; desmárcala cuando la pierdas"><input type="checkbox" class="conc-check"> 🧠 Concentración: <strong id="concentracion-nombre">ninguna</strong></label>`;
     // Sin id a propósito: ningún autoguardado genérico debe tratarla como un dato; el estado es 'concentracion-actual'.
     cont.querySelector('.conc-check').addEventListener('change', (e) => {
       if (e.target.checked) fijarConcentracion(concentracionActual() || 'Concentración (manual)');
@@ -905,7 +905,7 @@
       let sufijoBuff = '';
       if (esConcentracion(h) && window.FichaConcentracion) {
         const previa = FichaConcentracion.fijar(h.nombre);
-        sufijoBuff += `\n🧠 Concentrando en "${h.nombre}"${previa && previa !== h.nombre ? ` (dejás de concentrarte en "${previa}")` : ''}.`;
+        sufijoBuff += `\n🧠 Concentrando en "${h.nombre}"${previa && previa !== h.nombre ? ` (dejas de concentrarte en "${previa}")` : ''}.`;
       }
       // Lanzar un hechizo con buff lo activa (apagarlo es a mano o con la ✖ del panel).
       if (h.buff && !h.buff.activo) {
@@ -1594,7 +1594,7 @@
       leerFilasDelDOM();
       const nombre = (document.getElementById('bp-nombre').value || '').trim();
       if (!nombre) { alert('El buff necesita un nombre.'); return; }
-      if (!filasForm.length) { alert('Agregá al menos un efecto.'); return; }
+      if (!filasForm.length) { alert('Agrega al menos un efecto.'); return; }
       const idx = editor.editandoIdx();
       const previo = idx !== null ? editor.items()[idx] : null;
       const grupoOn = document.getElementById('bp-grupo').checked;

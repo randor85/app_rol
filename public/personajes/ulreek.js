@@ -518,7 +518,7 @@ window.PERSONAJES = window.PERSONAJES || {};
         "id": "txt-feat-sorcerer-spellcasting-sorcerous-origin",
         "tag": "Sorcerer",
         "titulo": "Spellcasting & Sorcerous Origin",
-        "html": "<p>• <strong>Spellcasting:</strong> Carisma es tu característica de lanzamiento (Spell Save DC <span class=\"js-calc\" data-calc=\"cd\">16</span>, Spell Atk <span class=\"js-calc\" data-calc=\"spellAtk\">+8</span>). Conocés 9 hechizos de Sorcerer y 5 trucos a nivel 7.</p>\n<p>• <strong>Sorcerous Origin: Wild Magic.</strong></p>",
+        "html": "<p>• <strong>Spellcasting:</strong> Carisma es tu característica de lanzamiento (Spell Save DC <span class=\"js-calc\" data-calc=\"cd\">16</span>, Spell Atk <span class=\"js-calc\" data-calc=\"spellAtk\">+8</span>). Conoces 9 hechizos de Sorcerer y 5 trucos a nivel 7.</p>\n<p>• <strong>Sorcerous Origin: Wild Magic.</strong></p>",
         "acciones": [
           {
             "texto": "✅ Usar",
@@ -530,7 +530,7 @@ window.PERSONAJES = window.PERSONAJES || {};
         "id": "txt-feat-wild-magic-wild-magic-surge-tides-of-chaos-nivel-1",
         "tag": "Wild Magic",
         "titulo": "Wild Magic Surge & Tides of Chaos (Nivel 1)",
-        "html": "<p>• <strong>Wild Magic Surge:</strong> El DM puede pedirte que tirés en la Tabla de Sobrecarga de Magia Salvaje después de lanzar un hechizo de Sorcerer de nivel 1+ (1 en d20).</p>\n<p>• <strong>Tides of Chaos:</strong> Podés gastar tu Tides of Chaos una vez antes de un descanso largo para obtener ventaja en una tirada de ataque, prueba de característica o salvación. Después de usarlo, el DM puede pedirte una tirada en la Tabla de Sobrecarga. Se recupera al gastar un punto de Sorcery para crear un espacio de conjuro, o con un descanso largo.</p>",
+        "html": "<p>• <strong>Wild Magic Surge:</strong> El DM puede pedirte que tires en la Tabla de Sobrecarga de Magia Salvaje después de lanzar un hechizo de Sorcerer de nivel 1+ (1 en d20).</p>\n<p>• <strong>Tides of Chaos:</strong> Puedes gastar tu Tides of Chaos una vez antes de un descanso largo para obtener ventaja en una tirada de ataque, prueba de característica o salvación. Después de usarlo, el DM puede pedirte una tirada en la Tabla de Sobrecarga. Se recupera al gastar un punto de Sorcery para crear un espacio de conjuro, o con un descanso largo.</p>",
         "acciones": [
           {
             "texto": "✅ Usar",
@@ -542,7 +542,7 @@ window.PERSONAJES = window.PERSONAJES || {};
         "id": "txt-feat-sorcerer-font-of-magic-nivel-2",
         "tag": "Sorcerer",
         "titulo": "Font of Magic (Nivel 2)",
-        "html": "<p>Puntos de Hechicería = nivel de Sorcerer = <strong>7</strong>. Podés gastarlos como acción adicional para crear espacios de conjuro (1º=2pts, 2º=3pts, 3º=5pts, 4º=6pts, 5º=7pts, máx nivel 5), o convertir un espacio gastado en puntos (= nivel del espacio).</p>",
+        "html": "<p>Puntos de Hechicería = nivel de Sorcerer = <strong>7</strong>. Puedes gastarlos como acción adicional para crear espacios de conjuro (1º=2pts, 2º=3pts, 3º=5pts, 4º=6pts, 5º=7pts, máx nivel 5), o convertir un espacio gastado en puntos (= nivel del espacio).</p>",
         "acciones": [
           {
             "texto": "✅ Usar",
@@ -554,7 +554,7 @@ window.PERSONAJES = window.PERSONAJES || {};
         "id": "txt-feat-sorcerer-metamagic-nivel-3-2-opciones",
         "tag": "Sorcerer",
         "titulo": "Metamagic (Nivel 3 — 2 opciones)",
-        "html": "<p>⚠️ <strong>A definir: elegí 2</strong> entre Careful Spell, Distant Spell, Empowered Spell, Extended Spell, Heightened Spell, Quickened Spell, Seeking Spell, Subtle Spell, Transmuted Spell o Twinned Spell. (Se agregarán las 2 opciones elegidas con su texto mecánico cuando lo confirmes; la 3ª opción llega en nivel 10 de Sorcerer.)</p>",
+        "html": "<p>⚠️ <strong>A definir: elige 2</strong> entre Careful Spell, Distant Spell, Empowered Spell, Extended Spell, Heightened Spell, Quickened Spell, Seeking Spell, Subtle Spell, Transmuted Spell o Twinned Spell. (Se agregarán las 2 opciones elegidas con su texto mecánico cuando lo confirmes; la 3ª opción llega en nivel 10 de Sorcerer.)</p>",
         "acciones": [
           {
             "texto": "✅ Usar",

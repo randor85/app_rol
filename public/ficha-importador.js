@@ -87,7 +87,7 @@
     const G = global.FichaGenerador;
 
     const form = { importado: true, nombre: texto(campo(raiz, ['name', 'nombre', 'characterName'])), clases: [], atributos: {}, habilidades: {}, armas: [], equipoExtra: [], rasgosExtra: [], hechizos: [], hechizosLibres: [] };
-    if (!form.nombre) aviso('aviso', 'El JSON no trae nombre: escribilo antes de crear.');
+    if (!form.nombre) aviso('aviso', 'El JSON no trae nombre: escríbelo antes de crear.');
     form.alineamiento = texto(campo(raiz, ['alignment', 'alineamiento']));
     form.especie = texto(campo(raiz, ['race', 'species', 'raza', 'especie']));
     form.trasfondoNombre = texto(campo(raiz, ['background', 'trasfondo']));
@@ -104,15 +104,15 @@
       const subCampo = typeof f === 'object' ? texto(campo(f, ['subclass', 'subclase', 'archetype'])) : '';
       const d = buscarClase(nombre);
       const subTxt = subCampo || sub;
-      if (!d) { aviso('error', `No reconocí la clase «${nombre || crudoClase}». Elegí una de la lista (o creala en «Clases y subclases custom»).`); form.clases.push({ id: '', nivel: nivel || 1, subclase: subTxt, original: texto(crudoClase) }); return; }
+      if (!d) { aviso('error', `No reconocí la clase «${nombre || crudoClase}». Elige una de la lista (o créala en «Clases y subclases custom»).`); form.clases.push({ id: '', nivel: nivel || 1, subclase: subTxt, original: texto(crudoClase) }); return; }
       const s = buscarSubclase(d, subTxt);
       const niv = nivel || 1;
-      if (subTxt && !s) aviso('info', `La subclase «${subTxt}» no tiene detalle cargado en la app: se guarda con ese nombre, sin sus rasgos (podés agregarlos como rasgos o crear la subclase custom).`);
+      if (subTxt && !s) aviso('info', `La subclase «${subTxt}» no tiene detalle cargado en la app: se guarda con ese nombre, sin sus rasgos (puedes agregarlos como rasgos o crear la subclase custom).`);
       form.clases.push({ id: d.id, nivel: niv, subclase: s ? s.name : subTxt, original: texto(crudoClase) });
     });
     if (!form.clases.length) { aviso('error', 'No encontré la clase del personaje.'); form.clases.push({ id: '', nivel: entero(campo(raiz, ['level', 'nivel'])) || 1, subclase: '' }); }
     const total = form.clases.reduce((s, c) => s + (parseInt(c.nivel, 10) || 0), 0);
-    if (total > 20) aviso('aviso', `El nivel total es ${total} (máximo 20): revisalo.`);
+    if (total > 20) aviso('aviso', `El nivel total es ${total} (máximo 20): revísalo.`);
 
     // ---- atributos
     const ab = campo(raiz, ['abilityScores', 'abilities', 'attributes', 'atributos', 'stats']);
@@ -147,13 +147,13 @@
     const idiomasTxt = campo(raiz, ['languages', 'idiomas']);
     if (idiomasTxt && !form.idiomas) form.idiomas = lista(idiomasTxt).length ? lista(idiomasTxt).map(texto).join(', ') : texto(idiomasTxt);
     if (comps.length) form.competenciasExtra = comps.join(' ');
-    if (!Object.keys(form.habilidades).length) aviso('aviso', 'No encontré habilidades con competencia: marcalas en la revisión.');
+    if (!Object.keys(form.habilidades).length) aviso('aviso', 'No encontré habilidades con competencia: márcalas en la revisión.');
 
     // ---- defensa, vida, velocidad, experiencia
     const ca = entero(campo(raiz, ['armorClass', 'ac', 'ca', 'claseDeArmadura']));
     if (ca != null) form.caFija = ca; else aviso('info', 'No trae la CA: se calculará 10 + DES (o la fórmula de la clase) hasta que equipes armadura.');
     const hpMax = entero(campo(raiz, ['maxHitPoints', 'hitPointsMax', 'maxHp', 'hpMax', 'pgMax', 'hitPoints', 'hp', 'pg']));
-    if (hpMax != null) form.hpMax = hpMax; else aviso('info', 'No trae los puntos de golpe: se calculan con el dado de golpe de la clase (nivel 1 máximo, después el promedio) y tu Constitución. Si tirás tus dados, corregilo en la ficha.');
+    if (hpMax != null) form.hpMax = hpMax; else aviso('info', 'No trae los puntos de golpe: se calculan con el dado de golpe de la clase (nivel 1 máximo, después el promedio) y tu Constitución. Si tiras tus dados, corrígelo en la ficha.');
     const hpAct = entero(campo(raiz, ['currentHitPoints', 'currentHp', 'hpActual', 'pgActual']));
     if (hpAct != null) form.hpActual = hpAct;
     const vel = entero(campo(raiz, ['speed', 'velocidad', 'walkSpeed']));
@@ -164,7 +164,7 @@
     const dm = dados.match(/(\d+)\s*d\s*(\d+)/i);
     if (dm && form.clases.length === 1) {
       const d = datosClases().find((c) => c.id === form.clases[0].id);
-      if (d && parseInt(dm[2], 10) !== d.hitDie) aviso('aviso', `El JSON trae dados de golpe d${dm[2]} y la clase usa d${d.hitDie}: revisá la clase.`);
+      if (d && parseInt(dm[2], 10) !== d.hitDie) aviso('aviso', `El JSON trae dados de golpe d${dm[2]} y la clase usa d${d.hitDie}: revisa la clase.`);
       if (parseInt(dm[1], 10) !== parseInt(form.clases[0].nivel, 10)) aviso('aviso', `El JSON trae ${dm[1]} dados de golpe pero el nivel es ${form.clases[0].nivel}.`);
     }
 
@@ -211,8 +211,8 @@
 
     if (form.competenciasExtra) form.rasgosExtra.unshift({ tag: 'Competencias', titulo: 'Competencias importadas', texto: form.competenciasExtra });
     const hechizoAviso = form.hechizosLibres.length;
-    if (hechizoAviso) aviso('info', `${hechizoAviso} hechizo(s) no están en el compendio y se agregaron como hechizos libres (nivel ${form.hechizosLibres.map((h) => h.nivel).join(', ')}): revisá su texto.`);
-    if (form.hechizos.length || form.hechizosLibres.length) { /* ok */ } else if (form.clases.some((c) => { const d = datosClases().find((x) => x.id === c.id); return d && d.casterType; })) aviso('info', 'El JSON no trae hechizos: agregalos desde la ficha con «Agregar del compendio».');
+    if (hechizoAviso) aviso('info', `${hechizoAviso} hechizo(s) no están en el compendio y se agregaron como hechizos libres (nivel ${form.hechizosLibres.map((h) => h.nivel).join(', ')}): revisa su texto.`);
+    if (form.hechizos.length || form.hechizosLibres.length) { /* ok */ } else if (form.clases.some((c) => { const d = datosClases().find((x) => x.id === c.id); return d && d.casterType; })) aviso('info', 'El JSON no trae hechizos: agrégalos desde la ficha con «Agregar del compendio».');
     if (!form.rasgosExtra.length && !detalle.acciones.length) aviso('info', 'El JSON no trae acciones ni rasgos propios; los rasgos de la clase se agregan solos hasta el nivel.');
     marcarRasgosDeClase(form);
     return { form, avisos, detalle, crudo };
@@ -273,7 +273,7 @@
     const reconocer = (txt) => (typeof global.nombreHechizoEs === 'function' ? global.nombreHechizoEs(txt) : null);
     const form = { importado: true, origen: 'fantasy-grounds', nombre: val(ch, 'name'), clases: [], atributos: {}, habilidades: {}, armas: [], equipoExtra: [], inventarioExtra: [], rasgosExtra: [], hechizos: [], hechizosLibres: [] };
     const detalle = { acciones: [], hechizosReconocidos: [], hechizosLibres: [], equipo: [], competencias: {} };
-    if (!form.nombre) aviso('aviso', 'El XML no trae nombre: escribilo antes de crear.');
+    if (!form.nombre) aviso('aviso', 'El XML no trae nombre: escríbelo antes de crear.');
     form.especie = val(ch, 'racename') || val(ch, 'race');
     form.trasfondoNombre = val(ch, 'background');
     form.alineamiento = val(ch, 'alignment');
@@ -282,13 +282,13 @@
     hijos(hijo(ch, 'classes')).forEach((c) => {
       const nombre = val(c, 'name'), nivel = valN(c, 'level') || 1, sub = val(c, 'specialization');
       const d = buscarClase(nombre);
-      if (!d) { aviso('error', `No reconocí la clase «${nombre}». Elegí una de la lista (o creala en «Clases y subclases custom»).`); form.clases.push({ id: '', nivel, subclase: sub, original: nombre }); return; }
+      if (!d) { aviso('error', `No reconocí la clase «${nombre}». Elige una de la lista (o créala en «Clases y subclases custom»).`); form.clases.push({ id: '', nivel, subclase: sub, original: nombre }); return; }
       const s = buscarSubclase(d, sub);
-      if (sub && !s) aviso('info', `La subclase «${sub}» no tiene detalle cargado en la app: se guarda con ese nombre. Sus rasgos vienen del XML como tarjetas (revisalos abajo).`);
+      if (sub && !s) aviso('info', `La subclase «${sub}» no tiene detalle cargado en la app: se guarda con ese nombre. Sus rasgos vienen del XML como tarjetas (revísalos abajo).`);
       form.clases.push({ id: d.id, nivel, subclase: s ? s.name : sub, original: nombre });
     });
     if (!form.clases.length) { aviso('error', 'No encontré la clase del personaje.'); form.clases.push({ id: '', nivel: valN(ch, 'level') || 1, subclase: '' }); }
-    if (form.clases.reduce((a, c) => a + (parseInt(c.nivel, 10) || 0), 0) > 20) aviso('aviso', 'El nivel total pasa de 20: revisalo.');
+    if (form.clases.reduce((a, c) => a + (parseInt(c.nivel, 10) || 0), 0) > 20) aviso('aviso', 'El nivel total pasa de 20: revísalo.');
 
     // ---- atributos y salvaciones
     const salv = [];
@@ -385,11 +385,11 @@
       form.hechizosLibres.push({ nombre: n, nivel: nv, tiempo: val(p, 'castingtime'), alcance: val(p, 'range'), duracion: val(p, 'duration'), resumen: texto.replace(/\s+/g, ' ').slice(0, 700) || 'Importado de Fantasy Grounds.' });
       detalle.hechizosLibres.push({ nombre: n, nivel: nv });
     });
-    if (form.hechizosLibres.length) aviso('info', `${form.hechizosLibres.length} hechizo(s) no están en el compendio y se agregaron como hechizos libres: revisá su texto.`);
+    if (form.hechizosLibres.length) aviso('info', `${form.hechizosLibres.length} hechizo(s) no están en el compendio y se agregaron como hechizos libres: revisa su texto.`);
 
     marcarRasgosDeClase(form);
     const ya = form.rasgosExtra.filter((r) => r.ya).length;
-    if (ya) aviso('info', `${ya} rasgo(s) del XML ya los agrega la clase de la app solos: quedan desmarcados para no duplicarlos (marcalos si querés conservar el texto de Fantasy Grounds).`);
+    if (ya) aviso('info', `${ya} rasgo(s) del XML ya los agrega la clase de la app solos: quedan desmarcados para no duplicarlos (márcalos si quieres conservar el texto de Fantasy Grounds).`);
     return { form, avisos, detalle, formato: 'Fantasy Grounds Unity (XML)' };
   }
 

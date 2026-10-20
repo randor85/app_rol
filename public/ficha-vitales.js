@@ -3,7 +3,7 @@
  *
  * Es la parte "de combate" de la ficha que hasta ahora estaba copiada (con pequeñas variantes) en cada HTML:
  * changeInputVal / updateHPDisplay / tirarHitDie / rollDeathSave / restShort / restLong / contadores de recurso.
- * Acá es una sola implementación guiada por datos y por los ids de siempre, así que los datos guardados de cada
+ * Aquí es una sola implementación guiada por datos y por los ids de siempre, así que los datos guardados de cada
  * personaje en Firebase (hp-cur, hd-N, ds-s1…, cond-*, slot-N-cur, <recurso>-use-N…) siguen valiendo tal cual.
  *
  * Lo monta ficha-shell.js (ficha.html), pero no depende de él: necesita ficha-common.js (guardarCampo, buffs) y,

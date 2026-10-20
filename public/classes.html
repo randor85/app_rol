@@ -393,7 +393,7 @@ function catalogoSubclases(c) {
       Object.keys(porLibro).map(libro => `<p style="margin:2px 0;font-size:0.85rem"><strong>${libro}:</strong> ${porLibro[libro].map(x => x.n + (ed === '2024' && detalladas.has(norm(x.n)) ? ' ✔' : '')).join(', ')}</p>`).join('');
   };
   return `<details style="margin-top:14px"><summary style="cursor:pointer;font-weight:600">📚 Subclases oficiales (índice: solo nombres y libros)</summary>
-    <p style="font-size:0.8rem;color:var(--text-muted);margin:6px 0">No incluye texto de los libros. ✔ = ya tiene el detalle cargado en esta página. Para las demás, consultá el libro.</p>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin:6px 0">No incluye texto de los libros. ✔ = ya tiene el detalle cargado en esta página. Para las demás, consulta el libro.</p>
     ${grupo('2024')}${grupo('2014')}</details>`;
 }
 function elegirSubclase(claseId, nombreSubclase) {
@@ -431,7 +431,7 @@ async function cargarCustomDeLaCampana() {
     firebase.auth().onAuthStateChanged((u) => fin(u || null), () => fin(null));
     setTimeout(() => fin(null), 8000);
   });
-  if (!user) { avisoCampana('Iniciá sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver las clases y subclases custom de la campaña.'); return; }
+  if (!user) { avisoCampana('Inicia sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver las clases y subclases custom de la campaña.'); return; }
   await ClasesCustom.cargar(firebase.database(), CAMPANA);
 }
 

@@ -3,7 +3,7 @@
  *
  * Extraído de myrklogi_mangarisonn.html (la ficha viva sigue siendo la referencia dorada). Las claves de datos (hp-cur, hd-N,
  * shift-N, stasis-N, arcane-recovery-used, slot-N-cur, ac-val, …) son las MISMAS que ya guarda Firebase.
- * Lo que no está acá es del motor común: competencia, saves, skills, CA con armadura, CD, espacios y dados de golpe se CALCULAN.
+ * Lo que no está aquí es del motor común: competencia, saves, skills, CA con armadura, CD, espacios y dados de golpe se CALCULAN.
  * Forma documentada en ficha-shell.js.
  */
 window.PERSONAJES = window.PERSONAJES || {};
@@ -321,31 +321,31 @@ PERSONAJES.myrklogi_mangarisonn = {
       "id": "txt-feat-mago-spellcasting-spellbook-ritual-casting",
       "tag": "Mago",
       "titulo": "Spellcasting, Spellbook & Ritual Casting",
-      "html": "<p>• <strong>Spellcasting:</strong> Inteligencia es tu característica de lanzamiento (Spell Save DC <span class=\"js-calc\" data-calc=\"cd\">16</span>, Spell Atk <span class=\"js-calc\" data-calc=\"atqConjuro\">+8</span>). Preparás una cantidad de conjuros igual a tu modificador de INT + tu nivel de Mago (a nivel 9 con INT +4: <strong>13 conjuros preparados</strong>, sin contar cantrips).</p>\n <p>• <strong>Spellbook:</strong> Tus conjuros preparados se eligen de tu libro de conjuros; podés copiar conjuros nuevos que encuentres (tiempo y costo en oro según el nivel del conjuro).</p>\n <p>• <strong>Ritual Casting:</strong> Podés lanzar cualquier conjuro de tu libro con la etiqueta \"ritual\" sin gastar espacio de conjuro ni tenerlo preparado.</p>"
+      "html": "<p>• <strong>Spellcasting:</strong> Inteligencia es tu característica de lanzamiento (Spell Save DC <span class=\"js-calc\" data-calc=\"cd\">16</span>, Spell Atk <span class=\"js-calc\" data-calc=\"atqConjuro\">+8</span>). Preparas una cantidad de conjuros igual a tu modificador de INT + tu nivel de Mago (a nivel 9 con INT +4: <strong>13 conjuros preparados</strong>, sin contar cantrips).</p>\n <p>• <strong>Spellbook:</strong> Tus conjuros preparados se eligen de tu libro de conjuros; puedes copiar conjuros nuevos que encuentres (tiempo y costo en oro según el nivel del conjuro).</p>\n <p>• <strong>Ritual Casting:</strong> Puedes lanzar cualquier conjuro de tu libro con la etiqueta \"ritual\" sin gastar espacio de conjuro ni tenerlo preparado.</p>"
     },
     {
       "id": "txt-feat-mago-arcane-recovery-1-dia",
       "tag": "Mago",
       "titulo": "Arcane Recovery (1/día)",
-      "html": "<p>Una vez por día, al terminar un descanso corto, podés recuperar espacios de conjuro gastados cuyo nivel combinado sea igual o menor a la mitad de tu nivel de Mago redondeado hacia arriba (9/2 → <strong>5 niveles de espacios</strong>, en cualquier combinación), y ninguno puede ser de nivel 6 o superior.</p>"
+      "html": "<p>Una vez por día, al terminar un descanso corto, puedes recuperar espacios de conjuro gastados cuyo nivel combinado sea igual o menor a la mitad de tu nivel de Mago redondeado hacia arriba (9/2 → <strong>5 niveles de espacios</strong>, en cualquier combinación), y ninguno puede ser de nivel 6 o superior.</p>"
     },
     {
       "id": "txt-feat-chronurgy-chronal-shift-nivel-2",
       "tag": "Chronurgy",
       "titulo": "Chronal Shift (Nivel 2)",
-      "html": "<p>Cuando una criatura que podés ver a 30 ft hace una tirada de característica, ataque o salvación, podés usar tu reacción para forzarla a repetir la tirada. Podés elegir esto después de ver el resultado, pero antes de que se determine el efecto; luego decidís cuál tirada se usa.</p>\n <p><strong>2 usos por descanso largo</strong> (checkbox abajo en Recursos).</p>"
+      "html": "<p>Cuando una criatura que puedes ver a 30 ft hace una tirada de característica, ataque o salvación, puedes usar tu reacción para forzarla a repetir la tirada. Puedes elegir esto después de ver el resultado, pero antes de que se determine el efecto; luego decides cuál tirada se usa.</p>\n <p><strong>2 usos por descanso largo</strong> (checkbox abajo en Recursos).</p>"
     },
     {
       "id": "txt-feat-chronurgy-temporal-awareness-nivel-2",
       "tag": "Chronurgy",
       "titulo": "Temporal Awareness (Nivel 2)",
-      "html": "<p>Sumás tu modificador de Inteligencia a tus tiradas de iniciativa. Pasivo, ya reflejado en el bono de Iniciativa (<span class=\"js-calc\" data-calc=\"ini\">+6</span> = DEX <span class=\"js-calc\" data-calc=\"mod\" data-hab=\"DEX\">+2</span> + INT <span class=\"js-calc\" data-calc=\"mod\" data-hab=\"INT\">+4</span>).</p>"
+      "html": "<p>Sumas tu modificador de Inteligencia a tus tiradas de iniciativa. Pasivo, ya reflejado en el bono de Iniciativa (<span class=\"js-calc\" data-calc=\"ini\">+6</span> = DEX <span class=\"js-calc\" data-calc=\"mod\" data-hab=\"DEX\">+2</span> + INT <span class=\"js-calc\" data-calc=\"mod\" data-hab=\"INT\">+4</span>).</p>"
     },
     {
       "id": "txt-feat-chronurgy-momentary-stasis-nivel-6",
       "tag": "Chronurgy",
       "titulo": "Momentary Stasis (Nivel 6)",
-      "html": "<p>Como acción, forzás a una criatura Grande o menor que puedas ver a hacer una salvación de Constitución contra tu Spell Save DC (<span class=\"js-calc\" data-calc=\"cd\">16</span>). Si falla, queda incapacitada y su velocidad se reduce a 0, atrapada en un campo mágico, hasta el final de tu próximo turno o hasta recibir daño.</p>\n <p><strong>Usos = modificador de INT (mínimo 1) = 4</strong> por descanso largo (checkbox abajo en Recursos). ⚠️ Alcance y duración exactos a confirmar contra el manual (Explorer's Guide to Wildemount / Tasha's) — las fuentes públicas consultadas no coinciden 100% en el alcance (30 vs 60 ft).</p>"
+      "html": "<p>Como acción, fuerzas a una criatura Grande o menor que puedas ver a hacer una salvación de Constitución contra tu Spell Save DC (<span class=\"js-calc\" data-calc=\"cd\">16</span>). Si falla, queda incapacitada y su velocidad se reduce a 0, atrapada en un campo mágico, hasta el final de tu próximo turno o hasta recibir daño.</p>\n <p><strong>Usos = modificador de INT (mínimo 1) = 4</strong> por descanso largo (checkbox abajo en Recursos). ⚠️ Alcance y duración exactos a confirmar contra el manual (Explorer's Guide to Wildemount / Tasha's) — las fuentes públicas consultadas no coinciden 100% en el alcance (30 vs 60 ft).</p>"
     },
     {
       "id": "txt-feat-mago-ability-score-improvement-niveles-4-y-8",
@@ -357,5 +357,5 @@ PERSONAJES.myrklogi_mangarisonn = {
 
   secciones: [],
 
-  trasfondo: { html: 'Esta sección estaba vacía en la ficha original — completala a mano cuando quieras, se guarda automáticamente.' },
+  trasfondo: { html: 'Esta sección estaba vacía en la ficha original — complétala a mano cuando quieras, se guarda automáticamente.' },
 };

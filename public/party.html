@@ -67,14 +67,14 @@
   document.getElementById('party-atribucion').textContent = REGLAS_SRD2014.atribucion;
 
   if (!codigoCampana) {
-    decir('Falta la campaña en la dirección. Abrí esta página desde el menú, o agregá ?campana=<código> al final.');
+    decir('Falta la campaña en la dirección. Abre esta página desde el menú, o agrega ?campana=<código> al final.');
   } else {
     document.getElementById('party-campana').textContent = 'Campaña: ' + codigoCampana;
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) { location.href = 'index.html'; return; }
       db.ref(`campanas/${codigoCampana}/party`).once('value').then(() => {
         FichaParty.iniciarVisor({ db, codigoCampana, contenedor: document.getElementById('party-contenedor') });
-      }).catch(() => decir('No tenés permiso para ver esta campaña, o todavía no existe.'));
+      }).catch(() => decir('No tienes permiso para ver esta campaña, o todavía no existe.'));
     });
   }
 </script>

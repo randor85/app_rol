@@ -225,7 +225,7 @@
 
   /**
    * Avisos del grupo: cuando otro personaje enciende un buff con "avisar al grupo" (ficha-common.js), llega como una
-   * entrada "🔔 …" en campanas/<c>/tiradas y acá se muestra como notificación. Es solo un aviso: no cambia esta ficha.
+   * entrada "🔔 …" en campanas/<c>/tiradas y aquí se muestra como notificación. Es solo un aviso: no cambia esta ficha.
    */
   function escucharAvisos(o) {
     if (!o.db || !o.codigoCampana || !window.FichaDados || !FichaDados.notificar) return;

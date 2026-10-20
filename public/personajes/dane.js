@@ -315,7 +315,7 @@ PERSONAJES.dane = {
           "id": "txt-feat-favored-foe",
           "tag": "Ranger",
           "titulo": "Favored Foe (4/descanso largo)",
-          "html": "Cuando impactás a una criatura con un ataque, podés marcarla como enemigo predilecto durante 1 minuto (sin gastar acción, como concentración). La primera vez en cada uno de tus turnos que le pegás a ese enemigo, le hacés +1d4 de daño extra."
+          "html": "Cuando impactas a una criatura con un ataque, puedes marcarla como enemigo predilecto durante 1 minuto (sin gastar acción, como concentración). La primera vez en cada uno de tus turnos que le pegas a ese enemigo, le haces +1d4 de daño extra."
       },
       {
           "id": "txt-feat-primeval-awareness",
@@ -333,7 +333,7 @@ PERSONAJES.dane = {
           "id": "txt-feat-fly-speed-30ft",
           "tag": "Racial",
           "titulo": "Fly Speed 30ft",
-          "html": "Alas tipo murciélago; volás a 30 ft mientras no lleves armadura pesada. Reemplaza el rasgo racial Infernal Legacy (Dane no tiene Thaumaturgy/Hellish Rebuke/Darkness raciales)."
+          "html": "Alas tipo murciélago; vuelas a 30 ft mientras no lleves armadura pesada. Reemplaza el rasgo racial Infernal Legacy (Dane no tiene Thaumaturgy/Hellish Rebuke/Darkness raciales)."
       }
   ],
 
@@ -342,7 +342,7 @@ PERSONAJES.dane = {
     { id: 'recordatorios', icono: '⚠️', titulo: 'Tactical Reminders', fragmento: 'personajes/dane/recordatorios.html' },
   ],
 
-  trasfondo: { html: 'Esta sección estaba vacía en la ficha original — completala a mano cuando quieras, se guarda automáticamente.' },
+  trasfondo: { html: 'Esta sección estaba vacía en la ficha original — complétala a mano cuando quieras, se guarda automáticamente.' },
 
   // Código propio de Dane: los números de la Ballesta Hiperbórea en el desglose de daño (se recalculan con el nivel y los atributos).
   iniciar() {

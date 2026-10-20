@@ -218,14 +218,14 @@
   }
 
   // Rasgos «típicos» que comparten las clases oficiales: mejora de característica y el rasgo genérico de subclase.
-  const TXT_ASI = 'Aumentás una característica en 2, o dos en 1 cada una, o tomás un Talento.';
+  const TXT_ASI = 'Aumentas una característica en 2, o dos en 1 cada una, o tomas un Talento.';
   function RASGOS_TIPICOS(subclassLevel, subclassLabel) {
     const l = [4, 8, 12, 16].map((n) => ({ nivel: n, nombre: 'Mejora de Puntuación de Característica', desc: TXT_ASI }));
     l.push({ nivel: 19, nombre: 'Mejora de Puntuación de Característica / Don Épico', desc: 'Última mejora de característica, o un Don Épico.' });
     const sl = entero(subclassLevel);
     if (sl >= 1 && sl <= 20) {
       const et = str(subclassLabel) || 'Subclase';
-      l.unshift({ nivel: sl, nombre: (et.toLowerCase() === 'subclase' ? 'Elección de subclase' : et) + ' (Subclase)', desc: 'Elegís tu ' + et.toLowerCase() + '.' });
+      l.unshift({ nivel: sl, nombre: (et.toLowerCase() === 'subclase' ? 'Elección de subclase' : et) + ' (Subclase)', desc: 'Eliges tu ' + et.toLowerCase() + '.' });
     }
     return l.sort((a, b) => a.nivel - b.nivel);
   }
@@ -265,7 +265,7 @@
     const e = [];
     if (!esObj(obj)) return ['La clase no tiene un formato válido.'];
     const name = str(obj.name);
-    if (!name) e.push('Poné un nombre para la clase.');
+    if (!name) e.push('Pon un nombre para la clase.');
     else if (name.length > 60) e.push('El nombre es demasiado largo (máx. 60 caracteres).');
     if (str(obj.nombre_es).length > 60) e.push('El nombre en español es demasiado largo (máx. 60 caracteres).');
 
@@ -275,13 +275,13 @@
       else if (idsOficiales().indexOf(id) >= 0) e.push('El identificador «' + id + '» ya lo usa una clase oficial.');
       else if (opts.idsExistentes && opts.esNueva && opts.idsExistentes.indexOf(id) >= 0) e.push('Ya existe una clase tuya o de la campaña con el identificador «' + id + '».');
     } else if (name && !RE_ID.test(slug(name))) {
-      e.push('Con ese nombre no se puede armar un identificador: usá letras o números.');
+      e.push('Con ese nombre no se puede armar un identificador: usa letras o números.');
     }
 
     if (DADOS.indexOf(Number(obj.hitDie)) < 0) e.push('El dado de golpe tiene que ser d6, d8, d10 o d12.');
-    if (!str(obj.primaryAbility)) e.push('Indicá la característica principal (por ejemplo «Fuerza» o «Destreza y Sabiduría»).');
+    if (!str(obj.primaryAbility)) e.push('Indica la característica principal (por ejemplo «Fuerza» o «Destreza y Sabiduría»).');
     const salv = aLista(obj.savingThrows).map(str);
-    if (salv.length !== 2) e.push('Elegí exactamente 2 salvaciones con competencia.');
+    if (salv.length !== 2) e.push('Elige exactamente 2 salvaciones con competencia.');
     else {
       if (salv[0] === salv[1]) e.push('Las dos salvaciones tienen que ser distintas.');
       salv.forEach((s) => { if (SALVACIONES.indexOf(s) < 0) e.push('«' + s + '» no es una salvación válida.'); });
@@ -289,7 +289,7 @@
     if (obj.casterType != null && obj.casterType !== '' && CASTER.indexOf(obj.casterType) < 0) e.push('El tipo de lanzador tiene que ser completo, medio, pacto o ninguno.');
     const sl = entero(obj.subclassLevel);
     if (!(sl >= 1 && sl <= 20)) e.push('El nivel en que se elige la subclase tiene que estar entre 1 y 20.');
-    if (!str(obj.subclassLabel)) e.push('Poné la etiqueta de la subclase (por ejemplo «Colegio» o «Juramento»).');
+    if (!str(obj.subclassLabel)) e.push('Pon la etiqueta de la subclase (por ejemplo «Colegio» o «Juramento»).');
     if (str(obj.resumen).length > 2000) e.push('El resumen es demasiado largo (máx. 2000 caracteres).');
 
     // recurso principal
@@ -316,7 +316,7 @@
 
     // progresión del asistente
     const p = esObj(obj.prog) ? obj.prog : {};
-    aLista(p.prerrequisitos).forEach((a) => { if (ABIL.indexOf(a) < 0) e.push('Prerrequisito de multiclase «' + a + '» inválido (usá STR, DEX, CON, INT, WIS o CHA).'); });
+    aLista(p.prerrequisitos).forEach((a) => { if (ABIL.indexOf(a) < 0) e.push('Prerrequisito de multiclase «' + a + '» inválido (usa STR, DEX, CON, INT, WIS o CHA).'); });
     aLista(p.prerrequisitosAlternativos).forEach((a) => { if (ABIL.indexOf(a) < 0) e.push('Prerrequisito alternativo «' + a + '» inválido.'); });
     validarTabla(p.cantrips, 'Trucos conocidos', e, { numerico: true });
     ['preparados', 'invocaciones'].forEach((k) => {
@@ -345,7 +345,7 @@
       if (m.tabla != null) {
         if (!Object.keys(aTabla(m.tabla)).length) e.push(q + ' («' + str(r.nombre) + '»): la tabla de usos está vacía.');
         validarTabla(m.tabla, q + ', usos por nivel', e, { numerico: true });
-      } else if (!(Number(m.por) > 0)) e.push(q + ' («' + str(r.nombre) + '»): indicá cuántos usos por nivel (mayor que 0) o una tabla.');
+      } else if (!(Number(m.por) > 0)) e.push(q + ' («' + str(r.nombre) + '»): indica cuántos usos por nivel (mayor que 0) o una tabla.');
       if (RECARGAS.indexOf(r.recarga) < 0) e.push(q + ': la recarga tiene que ser descanso corto o largo.');
     });
     return e;
@@ -356,12 +356,12 @@
     const e = [];
     if (!esObj(obj)) return ['La subclase no tiene un formato válido.'];
     const name = str(obj.name);
-    if (!name) e.push('Poné un nombre para la subclase.');
+    if (!name) e.push('Pon un nombre para la subclase.');
     else if (name.length > 80) e.push('El nombre es demasiado largo (máx. 80 caracteres).');
     const clase = str(obj.clase);
     const lista = opts.clases || clasesGlobal() || [];
     const base = lista.find((c) => c.id === clase);
-    if (!clase) e.push('Elegí la clase a la que pertenece la subclase.');
+    if (!clase) e.push('Elige la clase a la que pertenece la subclase.');
     else if (!base && !(opts.ignorarClaseInexistente)) e.push('La clase base «' + clase + '» no existe.');
     if (base && name) {
       const dup = (base.subclasses || []).some((s) => str(s.name).toLowerCase() === name.toLowerCase() && !(opts.id && s.id === opts.id) && !(obj.id && s.id === obj.id));
@@ -473,7 +473,7 @@
     const guardar = () => ref.set(paraGuardarClase(n)).then(() => n);
     if (edicion) return guardar();
     return ref.once('value').then((s) => {
-      if (s && s.exists && s.exists()) { const er = new Error('Ya existe una clase con el identificador «' + n.id + '». Cambiá el nombre.'); er.errores = [er.message]; throw er; }
+      if (s && s.exists && s.exists()) { const er = new Error('Ya existe una clase con el identificador «' + n.id + '». Cambia el nombre.'); er.errores = [er.message]; throw er; }
       return guardar();
     });
   }
@@ -491,7 +491,7 @@
     const guardar = () => ref.set(paraGuardarSubclase(n)).then(() => n);
     if (edicion) return guardar();
     return ref.once('value').then((snap) => {
-      if (snap && snap.exists && snap.exists()) { const er = new Error('Ya existe una subclase con el identificador «' + n.id + '». Cambiá el nombre.'); er.errores = [er.message]; throw er; }
+      if (snap && snap.exists && snap.exists()) { const er = new Error('Ya existe una subclase con el identificador «' + n.id + '». Cambia el nombre.'); er.errores = [er.message]; throw er; }
       return guardar();
     });
   }
