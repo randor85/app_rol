@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grupo de aventureros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ficha-tema.css">
+<link rel="stylesheet" href="ficha-party.css">
+<script src="ficha-paleta.js"></script>
+<script>FichaPaleta.aplicarGuardada({ porDefecto: 'obsidiana', clave: 'party' });</script>
+<style>
+  /* Solo estructura de la página; los colores salen de los tokens. */
+  body { margin: 0; background: var(--bg); color: var(--texto); font-family: var(--fuente-texto); }
+  .party-pagina { max-width: var(--ancho-max); margin: 0 auto; padding: var(--sp-4) max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); display: grid; gap: var(--sp-4); }
+  .party-pagina header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--sp-3); }
+  .party-pagina h1 { margin: 0; font-family: var(--fuente-titulo); font-size: var(--fs-xl); color: var(--acento); }
+  .party-pagina .sub { color: var(--texto-suave); font-size: var(--fs-sm); margin: 0; }
+  .party-acciones { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+  .party-mensaje { padding: var(--sp-3); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); background: var(--surface); }
+  .party-mensaje[hidden] { display: none; }
+  .party-pie { color: var(--texto-suave); font-size: var(--fs-xs); }
+</style>
+</head>
+<body>
+<main class="party-pagina">
+  <header>
+    <div>
+      <h1>👥 Grupo de aventureros</h1>
+      <p class="sub" id="party-campana">Campaña: —</p>
+    </div>
+    <div class="party-acciones">
+      <div id="selector-paleta"></div>
+      <a class="btn btn-fantasma" href="index.html">← Menú</a>
+    </div>
+  </header>
+  <p class="party-mensaje" id="party-mensaje" role="status" hidden></p>
+  <div id="party-contenedor"></div>
+  <p class="party-pie" id="party-atribucion"></p>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="reglas_srd2014_data.js"></script>
+<script src="ficha-reglas.js"></script>
+<script src="ficha-party.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const params = new URLSearchParams(location.search);
+  const codigoCampana = params.get('campana') || params.get('c');
+  const mensaje = document.getElementById('party-mensaje');
+  const decir = (t) => { mensaje.textContent = t; mensaje.hidden = !t; };
+
+  FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: 'obsidiana', clave: 'party' });
+  document.getElementById('party-atribucion').textContent = REGLAS_SRD2014.atribucion;
+
+  if (!codigoCampana) {
+    decir('Falta la campaña en la dirección. Abre esta página desde el menú, o agrega ?campana=<código> al final.');
+  } else {
+    document.getElementById('party-campana').textContent = 'Campaña: ' + codigoCampana;
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) { location.href = 'index.html'; return; }
+      db.ref(`campanas/${codigoCampana}/party`).once('value').then(() => {
+        FichaParty.iniciarVisor({ db, codigoCampana, contenedor: document.getElementById('party-contenedor') });
+      }).catch(() => decir('No tienes permiso para ver esta campaña, o todavía no existe.'));
+    });
+  }
+</script>
+</body>
+</html>
