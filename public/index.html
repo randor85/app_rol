@@ -211,12 +211,12 @@
         <!-- ENCABEZADO Y CONTROL DE ACCESO -->
         <header>
             <h1>Fichas de Personaje</h1>
-            <p class="subtitle" id="user-welcome">Cargando estado...</p>
-            <button id="btn-login" class="btn-open" style="margin-top: 15px; background: #db4437; color: white; border-color: #db4437; cursor: pointer;">🔐 Entrar con Google</button>
+            <p class="subtitle" id="user-welcome">Restaurando sesión…</p>
+            <button id="btn-login" class="btn-open" style="display: none; margin-top: 15px; background: #db4437; color: white; border-color: #db4437; cursor: pointer;">🔐 Entrar con Google</button>
             <button id="btn-logout" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">🚪 Cerrar Sesión</button>
             
             <!-- Formulario para ingreso con Correo dummy -->
-<div id="login-email-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px; max-width: 250px; margin: 15px auto 0 auto;">
+<div id="login-email-form" style="margin-top: 15px; display: none; flex-direction: column; gap: 8px; max-width: 250px; margin: 15px auto 0 auto;">
     <input type="email" id="login-email" placeholder="Correo electrónico" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: #0f0f12; color: white; font-size: 0.9rem;">
     <input type="password" id="login-password" placeholder="Contraseña" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: #0f0f12; color: white; font-size: 0.9rem;">
     <button id="btn-login-email" class="btn-open" style="cursor: pointer; background: var(--accent-gold); color: #000; font-size: 0.8rem;">✉️ Entrar con Correo</button>
@@ -314,6 +314,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // ==========================================
+        // SESIÓN PERSISTENTE EN EL DISPOSITIVO
+        // ==========================================
+        // La sesión se guarda en el dispositivo (LOCAL) y sobrevive al cerrar la pestaña o el navegador. Si el navegador no
+        // permite guardar de forma duradera, se cae a SESSION y, como último recurso, a NONE (siempre sin romper el login).
+        // También se pide al navegador que no borre el almacenamiento del sitio (navigator.storage.persist) y se anota un
+        // registro mínimo de los cambios de sesión (localStorage 'rol-auth-diag') para poder ver cuándo se pierde: index.html?diag=1.
+        (function () {
+            try {
+                const P = firebase.auth.Auth.Persistence, au = firebase.auth();
+                au.setPersistence(P.LOCAL).catch(() => au.setPersistence(P.SESSION)).catch(() => au.setPersistence(P.NONE)).catch(() => {});
+            } catch (e) { console.warn('No se pudo fijar la persistencia de la sesión:', e); }
+            try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* sin soporte */ }
+        })();
+        function registrarAuthDiag(texto) {
+            try {
+                const l = JSON.parse(localStorage.getItem('rol-auth-diag') || '[]');
+                l.push(new Date().toISOString().slice(0, 19) + ' ' + location.pathname.split('/').pop() + ' ' + texto);
+                localStorage.setItem('rol-auth-diag', JSON.stringify(l.slice(-25)));
+            } catch (e) { /* sin almacenamiento */ }
+        }
+
         // ELEMENTOS DOM
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
@@ -402,6 +424,7 @@
         // CONTROL DE SESIÓN (AUTH STATE CHANGED) [1]
         // ==========================================
         firebase.auth().onAuthStateChanged((user) => {
+          registrarAuthDiag(user ? 'sesión activa (' + user.uid.slice(0, 6) + ')' : 'sin sesión');
           if (user) {
             miUidActual = user.uid;
             welcomeText.innerText = `¡Hola, ${user.displayName || user.email}!`; // Muestra el correo si no hay nombre
@@ -420,6 +443,13 @@
           }
         });
 
+
+        if (new URLSearchParams(location.search).get('diag') === '1') {
+            const pre = document.createElement('pre');
+            pre.style.cssText = 'font-size:0.7rem; white-space:pre-wrap; background:#0f0f12; color:#ccc; padding:8px; border-radius:6px; margin:10px';
+            try { pre.textContent = 'Diagnóstico de sesión (más reciente al final):\n' + JSON.parse(localStorage.getItem('rol-auth-diag') || '[]').join('\n'); } catch (e) { pre.textContent = 'Sin registro.'; }
+            document.body.appendChild(pre);
+        }
 
         btnLogin.onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
 

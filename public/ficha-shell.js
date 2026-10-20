@@ -661,6 +661,7 @@
 
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
     firebase.auth().onAuthStateChanged((user) => {
+      try { const l = JSON.parse(localStorage.getItem('rol-auth-diag') || '[]'); l.push(new Date().toISOString().slice(0, 19) + ' ficha.html ' + (user ? 'sesión activa (' + user.uid.slice(0, 6) + ')' : 'sin sesión → vuelve al menú')); localStorage.setItem('rol-auth-diag', JSON.stringify(l.slice(-25))); } catch (e) { /* sin almacenamiento */ }
       if (!user) { location.href = 'index.html'; return; }
       arrancarMotores(user).catch((e) => { console.error(e); mensaje('Ocurrió un error al iniciar la ficha: ' + (e && e.message ? e.message : e)); });
     });
