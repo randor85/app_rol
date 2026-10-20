@@ -19,6 +19,8 @@
  *   armadura: 'Chain Mail' | null, escudo: bool, armas: ['Longsword', …],
  *   equipoExtra: [{ nombre, cantidad, descripcion }], oro,
  *   hechizos: ['Fire Bolt', …],                                       (nombres del compendio)
+ *   Solo importaciones (ficha-importador.js): importado:true (no exige la cantidad de habilidades de la clase), salvaciones:['WIS',…],
+ *   caFija:14, hpMax, hpActual, xp, rasgosExtra:[{tag,titulo,texto}], hechizosLibres:[{nombre,nivel,resumen}]
  * }
  *
  * Los textos que escribe el usuario se guardan como TEXTO PLANO: la carcasa los escapa al leer la definición (normalizarDefinicion).
@@ -162,6 +164,10 @@
     return out;
   }
 
+  function rasgosExtraDe(form, desde) {
+    return (form.rasgosExtra || []).filter((r) => r && String(r.titulo || '').trim()).map((r, i) => ({ id: 'txt-feat-' + (desde + i + 1), tag: String(r.tag || 'Importado'), titulo: String(r.titulo).trim(), texto: String(r.texto || '') }));
+  }
+
   /* ---------- recursos ---------- */
   function recursosDe(form) {
     const out = [];
@@ -229,7 +235,7 @@
     if (new Set(ids).size !== ids.length) e.push('No repitas la misma clase: sumá sus niveles en una sola fila.');
     ATRIBUTOS.forEach((k) => { const v = parseInt((form.atributos || {})[k], 10); if (!(v >= 1 && v <= 30)) e.push(`${ATRIBUTO_ES[k]} tiene que estar entre 1 y 30.`); });
     const clase0 = (form.clases || [])[0], hc = clase0 && HABILIDADES_CLASE[clase0.id];
-    if (hc) {
+    if (hc && !form.importado) {
       const comp = Object.keys(form.habilidades || {}).length;
       if (comp < hc.cantidad) e.push(`Elegí al menos ${hc.cantidad} habilidades con competencia (la clase da ${hc.cantidad}).`);
     }
@@ -254,7 +260,7 @@
     const lanzadora = form.clases.map((c) => ({ c, d: datosClase(c.id) })).find((x) => x.d && x.d.casterType);
     const nTotal = nivelTotal(form);
 
-    const salvaciones = (d0.savingThrows || []).map((s) => ES_A_ABREV[String(s).toLowerCase()]).filter(Boolean);
+    const salvaciones = Array.isArray(form.salvaciones) ? form.salvaciones.filter((k) => ATRIBUTOS.includes(k)) : (d0.savingThrows || []).map((s) => ES_A_ABREV[String(s).toLowerCase()]).filter(Boolean);
     const habilidades = {};
     Object.keys(form.habilidades || {}).forEach((k) => { if (HABILIDADES[k]) habilidades[k] = form.habilidades[k] === 'exp' ? 'exp' : 'comp'; });
 
@@ -263,10 +269,11 @@
     const competencias = [COMPETENCIAS_CLASE[clase0.id] || '', form.idiomas ? 'Idiomas: ' + form.idiomas : ''].filter(Boolean).join(' ');
 
     const hechizos = (form.hechizos || []).map(hechizoDeCompendio).filter(Boolean);
+    (form.hechizosLibres || []).forEach((h) => { if (h && String(h.nombre || '').trim()) { const nv = Math.max(0, Math.min(9, parseInt(h.nivel, 10) || 0)); hechizos.push({ nombre: String(h.nombre).trim(), nivel: nv, tiempo: h.tiempo || '', alcance: h.alcance || '', area: '', resumen: String(h.resumen || ''), duracion: h.duracion || '', formula: null, slotCost: nv > 0 ? nv : null, concentracion: false }); } });
     const definicion = {
       id, nombre, sistema: 'dnd', paleta: form.paleta || 'bosque', subtitulo,
       chips: [form.especie, form.trasfondoNombre].filter(Boolean),
-      xp: XP_POR_NIVEL[Math.min(nTotal, 20)] || 0,
+      xp: form.xp != null && form.xp !== '' ? (parseInt(form.xp, 10) || 0) : (XP_POR_NIVEL[Math.min(nTotal, 20)] || 0),
       clases: form.clases.map((c) => {
         const d = datosClase(c.id);
         const x = { nombre: d.name, dado: d.hitDie, nivelInicial: parseInt(c.nivel, 10) };
@@ -274,18 +281,18 @@
         if (c.subclase) x.subclase = c.subclase;
         return x;
       }),
-      hpBase: pgBase(form),
+      hpBase: form.hpMax ? Math.max(1, parseInt(form.hpMax, 10) || pgBase(form)) : pgBase(form),
       velocidad: parseInt(form.velocidad, 10) || 30,
       habilidadAtaque: ataquesDe(form)[0] ? ataquesDe(form)[0].habilidad : (mod((form.atributos || {}).DEX) > mod((form.atributos || {}).STR) ? 'DEX' : 'STR'),
       habilidadConjuro: lanzadora ? (lanzadora.d.habilidadConjuro || HABILIDAD_CONJURO[lanzadora.c.id] || 'INT') : null,
       sinConjuros: !lanzadora,
       atributos: Object.assign({}, form.atributos),
       salvaciones, habilidades, competencias,
-      ca: { formula: CA_SIN_ARMADURA[clase0.id] || ['DEX'] },
+      ca: form.caFija ? { fija: parseInt(form.caFija, 10) } : { formula: CA_SIN_ARMADURA[clase0.id] || ['DEX'] },
       ataques: ataquesDe(form),
       hechizos, inventario: inventarioDe(form),
       recursos: recursosDe(form),
-      rasgos: rasgosDe(form),
+      rasgos: rasgosDe(form).concat(rasgosExtraDe(form, rasgosDe(form).length)),
       monedas: [{ id: 'gp-val', etiqueta: 'Oro (po)' }],
     };
     if (form.historia && String(form.historia).trim()) definicion.trasfondo = { texto: String(form.historia).trim() };
@@ -293,7 +300,7 @@
     const limpio = JSON.parse(JSON.stringify(definicion));
     const nodo = {
       nombre, clase: clasesTxt, definicion: limpio,
-      datos: { 'hp-cur': definicion.hpBase, 'hp-max': definicion.hpBase, 'gp-val': parseInt(form.oro, 10) || 0 },
+      datos: { 'hp-cur': form.hpActual != null && form.hpActual !== '' ? Math.max(0, Math.min(definicion.hpBase, parseInt(form.hpActual, 10) || 0)) : definicion.hpBase, 'hp-max': definicion.hpBase, 'gp-val': parseInt(form.oro, 10) || 0 },
     };
     return { id, nodo, definicion: limpio, resumen: { clasesTxt, nivel: nTotal, pg: definicion.hpBase } };
   }

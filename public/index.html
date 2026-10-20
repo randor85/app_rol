@@ -254,6 +254,7 @@
     <select id="select-template-personaje" class="campana-input"></select>
     <div id="creadores-campana" style="display:none; margin-top:12px; display:none; gap:8px; flex-wrap:wrap; justify-content:center;">
         <a id="link-crear-personaje" class="btn-open" style="text-decoration:none;" href="#">✨ Crear personaje nuevo</a>
+        <a id="link-importar-personaje" class="btn-open" style="text-decoration:none;" href="#">📥 Importar personaje (JSON de Alchemy)</a>
         <a id="link-crear-clases" class="btn-open" style="text-decoration:none;" href="#">🛠️ Clases y subclases custom</a>
     </div>
 </div>
@@ -367,9 +368,7 @@
             dane: 'dnd',
             eldur: 'dnd',
             ulreek: 'dnd',
-            muldar: 'dnd',
             hannoghar: 'dnd',
-            sporium: 'dnd',
             chicle1: 'chicle',
             chicle2: 'chicle',
             chicle3: 'chicle',
@@ -387,9 +386,7 @@
             dane: { nombre: "Dane", clase: "Ranger / Rogue", datos: { "hp-cur": 70, "hp-max": 70 } },
             eldur: { nombre: "Eldur Redmane", clase: "Monje / Clérigo", datos: { "hp-cur": 52, "hp-max": 70 } },
             ulreek: { nombre: "Ulreek", clase: "Hechicero", datos: { "hp-cur": 70, "hp-max": 70 } },
-            muldar: { nombre: "Muldar", clase: "Bárbaro", datos: { "hp-cur": 70, "hp-max": 70 } },
             hannoghar: { nombre: "Hannoghar", clase: "Paladín", datos: { "hp-cur": 66, "hp-max": 66 } },
-            sporium: { nombre: "Sporium", clase: "druida callampero 8", datos: { "hp-cur": 70, "hp-max": 70 } },
             // Las 6 fichas de "El Último Chicle" no tienen nombre propio: el jugador lo elige
             // recién al reclamar la ficha (ver chicle.html). "nombre" acá es solo el valor
             // provisorio que se ve en el selector y en la grilla hasta que lo cambien.
@@ -700,6 +697,7 @@ btnLoginEmail.onclick = () => {
     if (cc) {
         cc.style.display = 'flex';
         document.getElementById('link-crear-personaje').href = `crear-personaje.html?campana=${encodeURIComponent(campanaId)}`;
+        document.getElementById('link-importar-personaje').href = `importar-personaje.html?campana=${encodeURIComponent(campanaId)}`;
         document.getElementById('link-crear-clases').href = `creador-clases.html?campana=${encodeURIComponent(campanaId)}`;
     }
     bitacoraContainer.style.display = 'block';
