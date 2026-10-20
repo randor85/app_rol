@@ -53,7 +53,7 @@
   }
   // Campos de formularios temporales y selectores de acción (no son datos del
   // personaje): no deben ir a datos/ ni sincronizarse de vuelta.
-  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla', 'dice-', 'dados-', 'bp-'];
+  const PREFIJOS_EFIMEROS = ['hf-', 'if-', 'rf-', 'af-', 'upcast-sel-', 'bitacora-ficha-', 'concentracion-casilla', 'dice-', 'dados-', 'bp-'];
   function esCampoEfimero(id) {
     return PREFIJOS_EFIMEROS.some(p => id.startsWith(p));
   }

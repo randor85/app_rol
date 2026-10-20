@@ -29,7 +29,7 @@ PERSONAJES.fiona_faraway = {
 
   ataques: [
     { nombre: 'Quarterstaff', habilidad: 'STR', dano: { count: 1, sides: 6, mod: 'STR' }, textoDano: '1d6 + STR contundente', notas: 'Melee, Versátil (1d8)' },
-    { nombre: 'Shillelagh (Bastón Mágico)', habilidad: 'WIS', dano: { count: 1, sides: 8, mod: 'WIS' }, textoDano: '1d8 + WIS contundente (+1d6 Fire/Cold)', notas: 'Acción adicional; usa WIS. +1d6 elemental por Elemental Fury 1/turno' },
+    { nombre: 'Shillelagh (Bastón Mágico)', habilidad: 'WIS', escala: 'shillelagh', dano: { count: 1, sides: 8, mod: 'WIS' }, textoDano: '1d8 + WIS contundente (+1d6 Fire/Cold)', notas: 'Acción adicional; usa WIS. +1d6 elemental por Elemental Fury 1/turno' },
     { nombre: 'Light Crossbow', habilidad: 'DEX', dano: { count: 1, sides: 8, mod: 'DEX' }, textoDano: '1d8 + DEX perforante', notas: 'Rango 80/320 ft, Cargando, 2H' },
     { nombre: 'Heavy Crossbow', habilidad: 'DEX', dano: { count: 1, sides: 10, mod: 'DEX' }, textoDano: '1d10 + DEX perforante', notas: 'Rango 100/400 ft, Cargando, Pesada, 2H' },
     { nombre: 'Splinter Arrows', habilidad: 'DEX', dano: { count: 1, sides: 6, mod: { hab: 'DEX', prof: true } }, textoDano: '1d6 + Competencia + DEX perforante', notas: 'Cono 60 ft, elige hasta 4 criaturas y realiza ataques a distancia. Poco común.' },

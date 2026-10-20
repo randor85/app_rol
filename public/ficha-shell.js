@@ -51,7 +51,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '92.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
+  const VERSION_APP = '94.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -196,7 +196,7 @@
       (P.ataques || []).forEach(a => {
         if (a.soloDano && !a.dano) return;
         a.extras = a.extras || [];
-        if (!a.extras.some(e => e.nombre === x.nombre)) a.extras.push({ nombre: x.nombre, icono: x.icono, dado: x.dado });
+        if (!a.extras.some(e => e.nombre === x.nombre)) a.extras.push({ nombre: x.nombre, icono: x.icono, dado: x.dado, auto: true });
       });
     });
   }
@@ -356,10 +356,7 @@
     const hm = $('hp-max-total'); if (hm) hm.textContent = String(FichaVitales.hpMaxActual());
     FichaVitales.pintarHP();
     // ataques
-    (P.ataques || []).forEach((a, i) => {
-      const bono = FichaAtributos.modDe(a.habilidad || 'STR') + (a.competente === false ? 0 : prof) + (a.bonoExtra || 0);   // (a.conjuro: mismo valor sin buffs)
-      set('atq-bono-' + i, f(bono));
-    });
+    if (window.FichaAtaques) FichaAtaques.repintar();   // bonos y daño de la tabla de ataques (fijos + editables, con escalado por nivel)
     if (P.habilidadConjuro) set('atq-bono-conjuro', f(FichaAtributos.modDe(P.habilidadConjuro) + prof));
     // estadísticas base
     const extraAtk = (P.badgeAtaque && P.badgeAtaque.extra) || 0;
@@ -370,7 +367,6 @@
     }
     set('ini-base', P.iniciativa && P.iniciativa.texto ? P.iniciativa.texto : 'DEX ' + f(FichaAtributos.modDe('DEX')));
     set('vel-base', 'Base ' + (P.velocidad || 30) + ' ft' + (P.velocidadNota ? ' ' + P.velocidadNota : ''));
-    (P.ataques || []).forEach((a, i) => { if (typeof a.textoDano === 'function') set('atq-dano-' + i, a.textoDano(FichaVitales.ctx())); });
     set('hp-max-base', 'Base ' + (P.hpBase || 0) + ' + subidas');
   }
 
@@ -467,7 +463,7 @@
       const m = FichaAtributos.modDe(P.habilidadConjuro) + prof + num(($('spell-atk-buff') || {}).value, 0) + FichaBuffs.plano('ataque-conjuro');
       return FichaDados.d20({ mod: m, etiqueta: 'Ataque de conjuro', categoria: 'ataque' });
     }
-    const a = P.ataques[num(idx, 0)]; if (!a) return;
+    const a = (window.FichaAtaques ? FichaAtaques.lista() : (P.ataques || []))[num(idx, 0)]; if (!a) return;
     if (modo === 'atk' || modo === 'atqextra') {
       // a.conjuro: ataque de conjuro con otra característica (p. ej. el racial de Eldur con CON): suma el buff y los efectos de ataque de conjuro.
       const m = a.conjuro
@@ -580,6 +576,7 @@
     FichaComun.iniciarEditorHechizos();
     FichaComun.iniciarEditorInventario();
     FichaComun.iniciarEditorReputacion();
+    if (window.FichaAtaques) FichaAtaques.iniciar(P);   // tabla de ataques editable (semilla: P.ataques)
     FichaComun.iniciarBuffsPersonales();
 
     FichaVitales.iniciar({
@@ -650,6 +647,7 @@
     }
     instalarCompat(); protegerSelectoresUpcast();
     document.addEventListener('ficha:atributos', () => { refrescarDerivados(); aplicarJsCalc(); });
+    document.addEventListener('ficha:ataques', () => { aplicarJsCalc(); });   // filas de ataques dibujadas o cambiadas
     document.addEventListener('ficha:datos-sincronizados', () => { refrescarDerivados(); pintarXP(); });
 
     FichaComun.iniciarBitacora({ db, codigoCampana });
@@ -697,7 +695,7 @@
     danoExtraEnSecciones();
 
     try { await cargarScript('clases-custom.js'); } catch (e) { /* módulo opcional */ }
-    for (const s of ['ficha-common.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
+    for (const s of ['ficha-common.js', 'ficha-ataques.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
     bindClicks();
 
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);

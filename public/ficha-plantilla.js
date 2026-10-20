@@ -175,15 +175,11 @@
 
   /* ---------- ataques ---------- */
   function ataques(P) {
-    const filas = (P.ataques || []).map((a, i) => `<tr>
-        <td data-etiqueta="Arma"><strong>${esc(a.nombre)}</strong></td>
-        <td class="num" data-etiqueta="Bono"${a.bonoTexto ? '>' + a.bonoTexto : a.soloDano ? '>—' : ` id="atq-bono-${i}">+0`}</td>
-        <td data-etiqueta="Daño" id="atq-dano-${i}">${a.html ? (a.textoDano || '') : esc(a.textoDano || '')}</td>
-        <td data-etiqueta="Notas">${a.html ? (a.notas || '') : esc(a.notas || '')}</td>
-        <td data-etiqueta="Tirar"><div class="spell-item-actions">${(a.soloDano || a.sinAtq) ? '' : `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="atk">🎯 Atq</button>`}${a.dano ? `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="dano">💥 Daño</button>` : ''}${(a.extras || []).map((x, j) => `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="extra" data-extra="${j}">${esc(x.icono || '➕')} ${esc(x.nombre)}</button>`).join('')}${(a.atqExtra || []).map((n, j) => `<button type="button" class="btn-roll btn-roll-sm" data-ataque="${i}" data-modo="atqextra" data-extra="${j}">🎯 ${esc(n)}</button>`).join('')}${a.uso ? `<button type="button" class="btn-roll btn-roll-sm" data-uso="${esc(a.uso)}">✅ Usar</button>` : ''}</div></td>
-      </tr>`).join('');
+    // Las filas las dibuja ficha-ataques.js (fijas del código + lista editable guardada en datos/ataques-json).
     const conj = P.sinConjuros ? '' : `<tr><td data-etiqueta="Arma"><strong>Ataque de conjuro</strong></td><td class="num" data-etiqueta="Bono" id="atq-bono-conjuro">+0</td><td data-etiqueta="Daño">Según el conjuro</td><td data-etiqueta="Notas">${P.habilidadConjuro || ''} + competencia</td><td data-etiqueta="Tirar"><button type="button" class="btn-roll btn-roll-sm" data-ataque="conjuro" data-modo="atk">🎯 Atq conjuro</button></td></tr>`;
-    return `<div class="tabla-scroll"><table class="tabla tabla-resp"><thead><tr><th>Arma</th><th>Bono</th><th>Daño</th><th>Notas</th><th>Tirar</th></tr></thead><tbody>${filas}${conj}</tbody></table></div>`;
+    return `<div class="fila" style="justify-content:flex-end"><button type="button" class="spell-add-btn" onclick="FichaAtaques.editor.mostrarFormulario()">➕ Agregar ataque</button></div>
+      <div class="tabla-scroll"><table class="tabla tabla-resp"><thead><tr><th>Arma</th><th>Bono</th><th>Daño</th><th>Notas</th><th>Tirar</th></tr></thead><tbody id="ataques-lista"></tbody><tbody>${conj}</tbody></table></div>
+      <div id="ataques-form-container"></div>`;
   }
 
   /* ---------- conjuros ---------- */
