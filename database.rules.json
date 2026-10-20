@@ -13,6 +13,18 @@
         }
       }
     },
+    "biblioteca": {
+      // Biblioteca GLOBAL (compartida entre campañas). Hoy: subclases custom (creador-clases.html / clases-custom.js), para
+      // crearlas una vez y reutilizarlas en campañas futuras. Las lee cualquier usuario autenticado; cada subclase es un nodo
+      // por id (slug 'c_...'): se puede CREAR una nueva y solo su autor (campo 'autor') puede EDITARLA o BORRARLA.
+      "subclases_custom": {
+        ".read": "auth != null",
+        "$subclaseId": {
+          ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid )",
+          ".validate": "newData.hasChildren(['id', 'clase', 'name', 'autor']) && newData.child('id').val() == $subclaseId && $subclaseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('clase').isString() && newData.child('clase').val().matches(/^[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
+        }
+      }
+    },
     "campanas": {
       "$campanaId": {
         "gm": {

@@ -468,7 +468,8 @@
   }
 
   // ------------------------------------------------------------------ permisos y lista
-  function puedeEditar(item) { return esGM || (item.autor && item.autor === uid); }
+  // Las subclases globales las edita solo su autor (no hay GM global); lo demás, el autor o el GM de la campaña.
+  function puedeEditar(item) { return item.global ? (item.autor && item.autor === uid) : (esGM || (item.autor && item.autor === uid)); }
   const plural = (n, uno, varios) => n + ' ' + (n === 1 ? uno : varios);
   function fecha(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString('es-419'); } catch (e) { return ''; } }
   function renderLista() {
@@ -691,7 +692,7 @@
     CC.guardarSubclase(db, CAMP, uid, autorNombre, s).then((g) => {
       S = subAEditor(g);
       renderSub();
-      aviso('bien', `✅ Subclase «${esc(g.name)}» guardada. Ya aparece entre las subclases de esa clase en el <a href="classes.html?campana=${encodeURIComponent(CAMP)}&clase=${encodeURIComponent(g.clase)}">compendio</a>.`, true);
+      aviso('bien', `✅ Subclase «${esc(g.name)}» guardada en tu biblioteca global (sirve en todas las campañas). Ya aparece entre las subclases de esa clase en el <a href="classes.html?campana=${encodeURIComponent(CAMP)}&clase=${encodeURIComponent(g.clase)}">compendio</a>.`, true);
     }).catch((e) => {
       if (btn) btn.disabled = false;
       mostrarErrores('errores-sub', e && e.errores ? e.errores : [mensajeError(e)]);
@@ -730,12 +731,14 @@
     autorNombre = user.displayName || (user.email ? String(user.email).split('@')[0] : '') || 'Jugador';
     db = firebase.database();
     $('cc-volver').href = 'classes.html?campana=' + encodeURIComponent(CAMP);
-    $('cc-sub').innerHTML = `Campaña <strong>${esc(CAMP)}</strong> · Sesión de <strong>${esc(autorNombre)}</strong>. Lo que guardes aquí aparece junto a las clases oficiales en el compendio y en el asistente de subida de nivel.`;
+    $('cc-sub').innerHTML = `Campaña <strong>${esc(CAMP)}</strong> · Sesión de <strong>${esc(autorNombre)}</strong>. Las clases quedan en esta campaña; las subclases quedan en tu biblioteca global y sirven en todas las campañas. Todo aparece junto a lo oficial en el compendio y en el asistente de subida de nivel.`;
     E = claseVacia(); abrirPorDefecto(E); S = subVacia();
     conectarEventos();
     $('cc-app').hidden = false;
     renderClase(); renderSub(); renderCopiar(); renderLista();
     db.ref('campanas/' + CAMP + '/gm').once('value').then((s) => { esGM = !!(s && s.val && s.val() === uid); renderLista(); }).catch(() => {});
+    // Las subclases que creaste antes dentro de una campaña pasan solas a la biblioteca global (sirve para campañas futuras).
+    if (CC.migrarSubclasesALaBiblioteca) CC.migrarSubclasesALaBiblioteca(db, CAMP, uid);
     CC.escuchar(db, CAMP, (d) => {
       if (d.error) { aviso('mal', 'No se pudieron leer las clases de la campaña: ' + esc(mensajeError(d.error))); return; }
       datos = { clases: d.clases, subclases: d.subclases };
