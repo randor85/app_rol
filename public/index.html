@@ -356,6 +356,7 @@
                         <label class="sistema-op"><input type="radio" name="nc-sistema" value="coc"> 🐙 Call of Cthulhu</label>
                         <label class="sistema-op"><input type="radio" name="nc-sistema" value="chicle"> 🍬 El Último Chicle</label>
                     </fieldset>
+                    <label class="opcion-menu"><input type="checkbox" id="nc-privada"> <span>🔒 Campaña privada: solo se entra con invitación y no aparece en el buscador</span></label>
                     <p class="nota-menu">Serás el GM titular. Después podrás invitar gente con un enlace o aprobar solicitudes, y nombrar GM de apoyo.</p>
                     <p id="nc-msg" class="msg-error" role="alert" hidden></p>
                 </div>
@@ -623,7 +624,7 @@ btnLoginEmail.onclick = () => {
                 const info = {};
                 await Promise.all(ids.map(async (id) => { try { info[id] = (await db.ref(`lista_campanas/${id}`).once('value')).val() || {}; } catch (e) { info[id] = {}; } }));
                 const previo = selectCampana.value;
-                selectCampana.innerHTML = '<option value="">-- Selecciona campaña --</option>' + ids.map((id) => `<option value="${escHtml(id)}">${escHtml(info[id].nombre || id)}</option>`).join('');
+                selectCampana.innerHTML = '<option value="">-- Selecciona campaña --</option>' + ids.map((id) => `<option value="${escHtml(id)}">${info[id].privada === true ? '🔒 ' : ''}${escHtml(info[id].nombre || id)}</option>`).join('');
                 document.getElementById('sin-campanas').style.display = ids.length ? 'none' : 'block';
                 // qué campaña dejar abierta: la que se acaba de crear o aceptar, la que ya estaba, o la de la URL (una sola vez)
                 const urlCampana = new URLSearchParams(window.location.search).get('campana');
@@ -659,7 +660,7 @@ btnLoginEmail.onclick = () => {
         }
 
         // ---------- crear campaña ----------
-        document.getElementById('btn-nueva-campana').onclick = () => { mostrar(document.getElementById('nc-msg'), ''); document.getElementById('nc-nombre').value = ''; document.getElementById('nc-id').value = ''; abrirDlg('dlg-nueva'); };
+        document.getElementById('btn-nueva-campana').onclick = () => { mostrar(document.getElementById('nc-msg'), ''); document.getElementById('nc-nombre').value = ''; document.getElementById('nc-id').value = ''; document.getElementById('nc-privada').checked = false; abrirDlg('dlg-nueva'); };
         let idEditadoAMano = false;
         document.getElementById('nc-nombre').addEventListener('input', (e) => { if (!idEditadoAMano) document.getElementById('nc-id').value = slugCampana(e.target.value); });
         document.getElementById('nc-id').addEventListener('input', (e) => { idEditadoAMano = true; e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''); });
@@ -676,6 +677,7 @@ btnLoginEmail.onclick = () => {
                 await db.ref(`lista_campanas/${id}/creador`).set(miUidActual);
                 await db.ref(`lista_campanas/${id}/sistema`).set(sistema);
                 await db.ref(`lista_campanas/${id}/nombre`).set(nombre);
+                if (document.getElementById('nc-privada').checked) await db.ref(`lista_campanas/${id}/privada`).set(true);
                 await db.ref(`campanas/${id}/miembros/${miUidActual}`).set({ nombre: miNombreActual || 'GM', desde: Date.now() });
                 await db.ref(`campanas/${id}/gm`).set(miUidActual);
                 await db.ref(`usuarios/${miUidActual}/campanas/${id}`).set(true);
@@ -699,6 +701,7 @@ btnLoginEmail.onclick = () => {
             if (!info) throw new Error('No existe ninguna campaña con ese ID.');
             const yaIdx = (await db.ref(`usuarios/${miUidActual}/campanas/${id}`).once('value')).val();
             if (yaIdx) return { ya: true, nombre: info.nombre || id };
+            if (!token && info.privada === true) throw new Error('Esta campaña es privada: solo se entra con una invitación del GM.');
             if (token) {
                 try {
                     await db.ref(`acceso/${id}/canjes/${miUidActual}`).set(token);
@@ -751,6 +754,7 @@ btnLoginEmail.onclick = () => {
         // usuarios/<uid>/perfil y se copia al nombre de integrante de cada campaña y al directorio del buscador.
         let miPerfil = { nombre: '', visible: true, deGoogle: '' };
         let idsCampanasActuales = [], misSolicitudesPendientes = {};
+        let campanaPrivadaActual = false, privadaListener = null;
         const normalizarBusqueda = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim().slice(0, 40);
         function nombreDeGoogle(user) { return String(user.displayName || (user.email ? String(user.email).split('@')[0] : '') || 'Jugador').trim().slice(0, 40); }
         async function cargarPerfil(user) {
@@ -783,10 +787,16 @@ btnLoginEmail.onclick = () => {
                 if (!miPerfil.visible) { await dir.remove(); return; }
                 await dir.update({ nombre: miPerfil.nombre, nombre_lc: normalizarBusqueda(miPerfil.nombre) });
                 const actuales = (await dir.child('campanas').once('value')).val() || {};
+                const publicas = [];
                 for (const id of ids) {
-                    try { const rol = await rolEnCampana(id); if (actuales[id] !== rol) await dir.child('campanas/' + id).set(rol); } catch (e) { /* sin permiso: se reintenta la próxima vez */ }
+                    try {
+                        // una campaña privada no aparece en el buscador
+                        if ((await db.ref(`lista_campanas/${id}/privada`).once('value')).val() === true) continue;
+                        publicas.push(id);
+                        const rol = await rolEnCampana(id); if (actuales[id] !== rol) await dir.child('campanas/' + id).set(rol);
+                    } catch (e) { /* sin permiso: se reintenta la próxima vez */ }
                 }
-                for (const id of Object.keys(actuales)) if (!ids.includes(id)) await dir.child('campanas/' + id).remove().catch(() => {});
+                for (const id of Object.keys(actuales)) if (!publicas.includes(id)) await dir.child('campanas/' + id).remove().catch(() => {});
             } catch (e) { console.warn('No se pudo actualizar el directorio:', e); }
         }
         btnPerfil.onclick = () => {
@@ -833,7 +843,7 @@ btnLoginEmail.onclick = () => {
                 if (seq !== busquedaSeq) return;
                 const camp = ids.map((id, i) => {
                     const rol = u.campanas[id] === 'gm' ? 'GM' : 'Jugador', info = infos[i];
-                    if (!info.sistema && !info.nombre) return '';   // campaña que ya no existe
+                    if ((!info.sistema && !info.nombre) || info.privada === true) return '';   // ya no existe o es privada
                     const estado = idsCampanasActuales.includes(id) ? '<small>✔ Ya estás</small>'
                         : misSolicitudesPendientes[id] ? '<small>⏳ Solicitud enviada</small>'
                         : `<button type="button" class="btn-mini" data-pedir="${escHtml(id)}">Pedir acceso</button>`;
@@ -871,6 +881,8 @@ btnLoginEmail.onclick = () => {
             if (bitacoraListener) bitacoraListener.off();
             if (tiradasListener) tiradasListener.off();
             if (sistemaCampanaListener) sistemaCampanaListener.off();
+            if (privadaListener) { privadaListener.off(); privadaListener = null; }
+            campanaPrivadaActual = false;
             if (partyListener) { partyListener.off(); partyListener = null; }
             partyActual = {};
             [miembrosListener, invListener, solListener].forEach((l) => { if (l) l.off(); });
@@ -1106,6 +1118,14 @@ btnLoginEmail.onclick = () => {
     // (después, según las reglas de Firebase, solo el GM puede cambiarlo). Cada vez que este
     // valor cambia (o llega por primera vez) se vuelve a pintar la grilla de personajes, para
     // que el filtro por sistema se aplique apenas se conoce el dato.
+    if (privadaListener) privadaListener.off();
+    campanaPrivadaActual = false;
+    privadaListener = db.ref(`lista_campanas/${campanaId}/privada`);
+    privadaListener.on('value', (pv) => {
+        campanaPrivadaActual = pv.val() === true;
+        if (sistemaCampanaActual) badgeSistemaCampana.innerText = `Sistema: ${NOMBRE_SISTEMA[sistemaCampanaActual] || sistemaCampanaActual}${campanaPrivadaActual ? ' · 🔒 Privada' : ''}`;
+        if (soyElGMActual && typeof renderAccesoPanel === 'function') renderAccesoPanel(campanaId);
+    });
     sistemaCampanaListener = db.ref(`lista_campanas/${campanaId}/sistema`);
     sistemaCampanaListener.on('value', sysSnap => {
         sistemaCampanaActual = sysSnap.val() || null;
@@ -1114,7 +1134,7 @@ btnLoginEmail.onclick = () => {
 
         if (sistemaCampanaActual) {
             sistemaCampanaContainer.style.display = 'none';
-            badgeSistemaCampana.innerText = `Sistema: ${NOMBRE_SISTEMA[sistemaCampanaActual] || sistemaCampanaActual}`;
+            badgeSistemaCampana.innerText = `Sistema: ${NOMBRE_SISTEMA[sistemaCampanaActual] || sistemaCampanaActual}${campanaPrivadaActual ? ' · 🔒 Privada' : ''}`;
         } else {
             sistemaCampanaContainer.style.display = 'block';
             badgeSistemaCampana.innerText = '';
@@ -1152,7 +1172,7 @@ btnLoginEmail.onclick = () => {
         const soyElGM = soyElTitular || soyApoyo;
         soyElGMActual = soyElGM;
         soyTitularActual = soyElTitular;
-        if (miPerfil.visible) db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).once('value').then((sn) => { const rol = soyElGM ? 'gm' : 'jugador'; if (sn.val() !== rol && ultimosMiembros[miUidActual]) return db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).set(rol); }).catch(() => {});
+        if (miPerfil.visible && !campanaPrivadaActual) db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).once('value').then((sn) => { const rol = soyElGM ? 'gm' : 'jugador'; if (sn.val() !== rol && ultimosMiembros[miUidActual]) return db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).set(rol); }).catch(() => {});
         const tieneGM = !!campanaGmUid;
         console.log("TU UID ACTUAL:", miUidActual, "UID DEL GM EN DB:", campanaGmUid, soyApoyo ? "(GM de apoyo)" : "");
         document.getElementById('btn-salir-campana').style.display = soyElTitular ? 'none' : 'inline-block';
@@ -1364,7 +1384,8 @@ btnLoginEmail.onclick = () => {
                 ${(titular || yo) ? '' : `<button type="button" class="btn-mini peligro" data-quitar-miembro="${escHtml(u)}">Quitar de la campaña</button>`}</div>`;
         }).join('');
         cont.innerHTML = `<p class="titulo">📨 Invitar y administrar el acceso</p>
-            <p class="nota-menu" style="margin-top:0">Comparte un enlace o un código de invitación para que alguien entre de inmediato (vence a los 7 días y puedes revocarlo). También pueden pedir entrar con el ID <strong>${escHtml(campanaId)}</strong>: verás la solicitud aquí.</p>
+            <label class="opcion-menu" style="margin-top:0"><input type="checkbox" id="chk-privada" ${campanaPrivadaActual ? 'checked' : ''}> <span>🔒 Campaña privada: solo se entra con invitación y no aparece en el buscador</span></label>
+            <p class="nota-menu" style="margin-top:0">Comparte un enlace o un código de invitación para que alguien entre de inmediato (vence a los 7 días y puedes revocarlo). ${campanaPrivadaActual ? 'Al ser privada, nadie puede pedir entrar solo con el ID.' : `También pueden pedir entrar con el ID <strong>${escHtml(campanaId)}</strong> o encontrarte en el buscador: verás la solicitud aquí.`}</p>
             <div class="fila-acciones" style="justify-content:flex-start; margin:8px 0;"><button type="button" class="btn-mini" id="btn-crear-invitacion">➕ Crear invitación</button></div>
             ${filasInv || '<p class="nota-menu">No hay invitaciones activas.</p>'}
             <p class="titulo" style="margin-top:16px">🙋 Solicitudes pendientes (${sols.length})</p>
@@ -1374,6 +1395,18 @@ btnLoginEmail.onclick = () => {
             <p id="acceso-msg" class="nota-menu" role="status"></p>`;
         const aviso = (t, ok) => { const e = cont.querySelector('#acceso-msg'); if (e) { e.className = ok ? 'msg-ok' : 'msg-error'; e.textContent = t; } };
         const copiar = async (txt) => { try { await navigator.clipboard.writeText(txt); aviso('Copiado al portapapeles.', true); } catch (e) { aviso('No se pudo copiar; selecciona el texto a mano: ' + txt); } };
+        cont.querySelector('#chk-privada').onchange = async (ev) => {
+            const privada = ev.target.checked;
+            try {
+                await db.ref(`lista_campanas/${campanaId}/privada`).set(privada);
+                if (privada) {
+                    // sale del buscador de inmediato: se borra la campaña del directorio de cada integrante (lo permiten las reglas al GM)
+                    await Promise.all(Object.keys(ultimosMiembros).map((u) => db.ref(`directorio/${u}/campanas/${campanaId}`).remove().catch(() => {})));
+                } else {
+                    sincronizarDirectorio(idsCampanasActuales);   // el resto reaparece cuando cada integrante abre su menú
+                }
+            } catch (e) { ev.target.checked = !privada; aviso('No se pudo cambiar: ' + e.message); }
+        };
         cont.querySelector('#btn-crear-invitacion').onclick = () => {
             const t = tokenAleatorio();
             db.ref(`acceso/${campanaId}/invitaciones/${t}`).set({ expira: Date.now() + 7 * 86400000, por: miUidActual }).catch((e) => aviso('No se pudo crear la invitación: ' + e.message));

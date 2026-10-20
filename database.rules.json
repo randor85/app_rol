@@ -18,6 +18,12 @@
           // Sistema de juego ('dnd', 'coc' o 'chicle'): lo fija quien crea la campaña y después solo lo cambia el GM o el GM de apoyo.
           ".write": "auth != null && ( (!data.exists() && root.child('lista_campanas').child($campanaId).child('creador').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
           ".validate": "newData.val() == 'dnd' || newData.val() == 'coc' || newData.val() == 'chicle'"
+        },
+        "privada": {
+          // v101.0: campaña privada = solo se entra con invitación (no se aceptan solicitudes por id) y no aparece en el buscador. Sin este
+          // campo la campaña es pública. La fija quien crea la campaña y después la cambian el GM o el GM de apoyo.
+          ".write": "auth != null && ( (!data.exists() && root.child('lista_campanas').child($campanaId).child('creador').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+          ".validate": "newData.isBoolean()"
         }
       }
     },
@@ -55,7 +61,7 @@
         "campanas": {
           "$campanaId": {
             ".write": "auth != null && !newData.exists() && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
-            ".validate": "(newData.val() == 'gm' && (root.child('campanas').child($campanaId).child('gm').val() == $uid || root.child('campanas').child($campanaId).child('gm_apoyo').child($uid).val() === true)) || (newData.val() == 'jugador' && root.child('campanas').child($campanaId).child('miembros').child($uid).exists())"
+            ".validate": "root.child('lista_campanas').child($campanaId).child('privada').val() != true && ((newData.val() == 'gm' && (root.child('campanas').child($campanaId).child('gm').val() == $uid || root.child('campanas').child($campanaId).child('gm_apoyo').child($uid).val() === true)) || (newData.val() == 'jugador' && root.child('campanas').child($campanaId).child('miembros').child($uid).exists()))"
           }
         },
         "$otro": { ".validate": false }
@@ -104,7 +110,7 @@
           // Solicitudes para entrar por el id de la campaña: las escribe quien quiere entrar; las lee y resuelve el GM o el GM de apoyo.
           ".read": "auth != null && (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true)",
           "$uid": {
-            ".write": "auth != null && ( auth.uid == $uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
+            ".write": "auth != null && ( (auth.uid == $uid && (!newData.exists() || root.child('lista_campanas').child($campanaId).child('privada').val() != true)) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
             ".validate": "newData.hasChildren(['nombre', 'ts']) && newData.child('nombre').isString() && newData.child('nombre').val().length <= 80 && newData.child('ts').isNumber()"
           }
         }
