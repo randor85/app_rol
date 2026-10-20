@@ -779,6 +779,7 @@
             <td>${h.resumen}${upcastTxt}${buffTxt} <em>(${h.duracion})</em></td>
             <td class="spell-item-actions">
               ${accionBtn}
+              <button class="btn-roll btn-roll-sm" onclick="window.FichaCompendio && FichaCompendio.verHechizoDeFicha(${idx})" title="Ver la descripción completa" aria-label="Ver descripción del hechizo">📖</button>
               ${!h.especial ? `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.editor.mostrarFormulario(${idx})">✏️ Editar</button>` : ''}
               <button class="btn-clear" onclick="FichaHechizos.editor.eliminar(${idx}, '¿Quitar \\'${nombreEsc}\\' de la ficha?')">🗑️</button>
             </td>

@@ -503,6 +503,10 @@ body {
 .modal-velo { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: var(--gutter); background: var(--velo); }
 .modal-velo.abierto { display: flex; }
 .modal { background: var(--surface); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio); width: 100%; max-width: 580px; max-height: min(90vh, 720px); display: flex; flex-direction: column; box-shadow: var(--sombra); }
+#modal-hechizo { z-index: 110; }
+.comp-texto { line-height: 1.5; }
+.comp-otra-edicion { margin-top: var(--sp-3); color: var(--texto-suave); }
+.comp-otra-edicion summary { cursor: pointer; font-weight: 700; }
 .modal-cab { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--borde); }
 .modal-cab h3 { font-size: var(--fs-lg); color: var(--acento); }
 .modal-cuerpo { padding: var(--sp-4); overflow-y: auto; display: grid; gap: var(--sp-4); }
