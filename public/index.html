@@ -384,6 +384,8 @@
         let ultimoPersonajesSnap = null;
         let partyActual = {}, partyListener = null;
         let soyElGMActual = false;
+        let soyTitularActual = false;
+        let miNombreActual = '';   // nombre visible de esta cuenta (se guarda como ownerNombre en los personajes que reclama)
 
         // Sistema de juego al que pertenece cada personaje (independiente de en qué campaña
         // termine cargado). Se usa para que una campaña de D&D no pueda sumar personajes de
@@ -434,6 +436,7 @@
           if (user) {
             clearTimeout(temporizadorSinSesion); yaHuboSesionEnEstaPagina = true;
             miUidActual = user.uid;
+            miNombreActual = user.displayName || (user.email ? String(user.email).split('@')[0] : '') || '';
             welcomeText.innerText = `¡Hola, ${user.displayName || user.email || 'jugador'}!`; // Muestra el correo si no hay nombre
             btnLogin.style.display = 'none';
             loginEmailForm.style.display = 'none'; // <-- OCULTAR FORMULARIO AL LOGUEARSE
@@ -591,6 +594,8 @@ btnLoginEmail.onclick = () => {
     }
 
     const esMio = p.owner === miUidActual;
+    // El nombre del dueño permite al GM titular elegir a quién darle el rol de apoyo.
+    if (esMio && miNombreActual && p.ownerNombre !== miNombreActual) db.ref(`campanas/${campanaId}/personajes/${id}/ownerNombre`).set(miNombreActual).catch(() => {});
     const tieneDueño = !!p.owner;
     const esPublico = p.publico === true;
 
@@ -795,12 +800,18 @@ btnLoginEmail.onclick = () => {
         return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    db.ref(`campanas/${campanaId}/gm`).on('value', gmSnap => {
-        const campanaGmUid = gmSnap.val();
-        const soyElGM = miUidActual === campanaGmUid;
+    // Dos jerarquías (v98.0): GM titular (nodo gm; puede compartir/quitar el rol) y GM de apoyo (gm_apoyo/<uid>: mismas facultades,
+    // salvo compartir o quitar el rol; puede dejarlo cuando quiera).
+    let ultimoGmUid = null, ultimoApoyo = {};
+    const aplicarRolGM = () => {
+        const campanaGmUid = ultimoGmUid;
+        const soyElTitular = miUidActual === campanaGmUid;
+        const soyApoyo = !soyElTitular && ultimoApoyo[miUidActual] === true;
+        const soyElGM = soyElTitular || soyApoyo;
         soyElGMActual = soyElGM;
+        soyTitularActual = soyElTitular;
         const tieneGM = !!campanaGmUid;
-        console.log("TU UID ACTUAL:", miUidActual, "UID DEL GM EN DB:", campanaGmUid);
+        console.log("TU UID ACTUAL:", miUidActual, "UID DEL GM EN DB:", campanaGmUid, soyApoyo ? "(GM de apoyo)" : "");
 
         const prevBtn = document.getElementById('btn-liberar-gm');
         if (prevBtn) prevBtn.remove();
@@ -851,7 +862,7 @@ btnLoginEmail.onclick = () => {
                 }
             });
 
-        } else if (soyElGM) {
+        } else if (soyElTitular) {
             btnReclamarGM.style.display = 'inline-block';
             btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '👑 Modo GM';
             
@@ -870,7 +881,8 @@ btnLoginEmail.onclick = () => {
             btnLiberarGM.style = "background:#c94a4a; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-top:15px; width:100%; font-weight:bold;";
             btnLiberarGM.onclick = () => {
                 if (confirm("¿Estás seguro de que quieres dejar de ser GM? Se borrará el puesto y la contraseña.")) {
-                    db.ref(`campanas/${campanaId}/gm_hash`).set(null)
+                    db.ref(`campanas/${campanaId}/gm_apoyo`).set(null)   // al soltar el puesto también se acaban los GM de apoyo
+                        .then(() => db.ref(`campanas/${campanaId}/gm_hash`).set(null))
                         .then(() => db.ref(`campanas/${campanaId}/gm_salt`).set(null))
                         .then(() => db.ref(`campanas/${campanaId}/gm_password`).set(null).catch(() => {}))   // restos de la clave en texto plano (versiones antiguas)
                         .then(() => {
@@ -887,7 +899,20 @@ btnLoginEmail.onclick = () => {
                 }
             };
             panelGm.appendChild(btnLiberarGM);
+            renderGmApoyo(campanaId);
 
+        } else if (soyApoyo) {
+            // GM de apoyo: mismo panel, sin compartir ni quitar el rol; solo puede dejar el suyo.
+            btnReclamarGM.style.display = 'inline-block';
+            btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '🤝 Modo GM (apoyo)';
+            btnReclamarGM.onclick = () => {
+                esDirector = !esDirector;
+                panelGm.style.display = esDirector ? 'block' : 'none';
+                btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '🤝 Modo GM (apoyo)';
+            };
+            const prevBtnGm2 = document.getElementById('btn-liberar-gm');
+            if (prevBtnGm2) prevBtnGm2.remove();
+            renderGmApoyo(campanaId);
         } else {
             btnReclamarGM.style.display = 'none';
             panelGm.style.display = 'none';
@@ -900,6 +925,7 @@ btnLoginEmail.onclick = () => {
         personajesListener.on('value', snap => {
             ultimoPersonajesSnap = snap.val();
             renderizarGrid(campanaId);
+            if (soyElGMActual && typeof renderGmApoyo === 'function') renderGmApoyo(campanaId);
         });
 
         // El resumen que publica cada ficha (PG reales, CA, iniciativa…) llega por su propio nodo: repinta la grilla al cambiar.
@@ -909,7 +935,55 @@ btnLoginEmail.onclick = () => {
             partyActual = snap.val() || {};
             if (ultimoPersonajesSnap) renderizarGrid(campanaId);
         }, () => { partyActual = {}; });
-    });
+    };
+    db.ref(`campanas/${campanaId}/gm`).on('value', (s) => { ultimoGmUid = s.val(); aplicarRolGM(); });
+    db.ref(`campanas/${campanaId}/gm_apoyo`).on('value', (s) => { ultimoApoyo = s.val() || {}; aplicarRolGM(); }, () => { ultimoApoyo = {}; });
+
+    // ---- Panel «GM de apoyo» (dentro de la pantalla del director) ----
+    function renderGmApoyo(campanaId) {
+        const previo = document.getElementById('gm-apoyo-panel'); if (previo) previo.remove();
+        const cont = document.createElement('div');
+        cont.id = 'gm-apoyo-panel';
+        cont.style = 'margin-top: 25px; padding: 12px; border: 1px dashed var(--accent-gold); border-radius: 8px;';
+        const refApoyo = (uid) => db.ref(`campanas/${campanaId}/gm_apoyo/${uid}`);
+        if (soyTitularActual) {
+            // candidatos: dueños de personajes activos de la campaña (con el nombre que dejaron al reclamarlos)
+            const miembros = {};
+            Object.keys(ultimoPersonajesSnap || {}).forEach((id) => {
+                const p = ultimoPersonajesSnap[id];
+                if (!p || !p.activo || !p.owner || p.owner === miUidActual) return;
+                const m = miembros[p.owner] = miembros[p.owner] || { nombre: p.ownerNombre || ('Jugador ' + String(p.owner).slice(0, 6)), personajes: [] };
+                if (p.ownerNombre) m.nombre = p.ownerNombre;
+                m.personajes.push(p.nombre || id);
+            });
+            Object.keys(ultimoApoyo).forEach((uid) => { if (!miembros[uid] && ultimoApoyo[uid] === true) miembros[uid] = { nombre: 'Jugador ' + uid.slice(0, 6), personajes: [] }; });
+            const filas = Object.keys(miembros).map((uid) => {
+                const m = miembros[uid], es = ultimoApoyo[uid] === true;
+                return `<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--border-color);">
+                    <span><strong>${escHtml(m.nombre)}</strong>${m.personajes.length ? ` <small style="color:var(--text-muted)">· ${escHtml(m.personajes.join(', '))}</small>` : ''}${es ? ' <span style="color:var(--accent-gold)">🤝 GM de apoyo</span>' : ''}</span>
+                    <button type="button" class="btn-open" style="margin:0;" data-apoyo="${escHtml(uid)}" data-es="${es ? '1' : ''}">${es ? 'Quitar apoyo' : 'Dar GM de apoyo'}</button></div>`;
+            }).join('');
+            cont.innerHTML = `<p style="color: var(--accent-gold); margin-bottom:6px;">🤝 GM de apoyo</p>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">Un GM de apoyo tiene las facultades de GM (fichas, grupo, sistema) pero no puede compartir ni quitar el rol de GM, ni cambiar la clave. Puede dejar de ser GM cuando quiera.</p>
+                ${filas || '<p style="font-size:0.85rem; color:var(--text-muted);">Aún no hay otros jugadores con personaje en esta campaña.</p>'}`;
+            cont.querySelectorAll('[data-apoyo]').forEach((b) => {
+                b.onclick = () => {
+                    const uid = b.dataset.apoyo;
+                    (b.dataset.es ? refApoyo(uid).remove() : refApoyo(uid).set(true)).catch((e) => alert('No se pudo cambiar el GM de apoyo: ' + e.message));
+                };
+            });
+        } else {
+            cont.innerHTML = `<p style="color: var(--accent-gold); margin-bottom:6px;">🤝 Eres GM de apoyo</p>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">Tienes las facultades de GM, salvo compartir o quitar el rol. Puedes dejarlo cuando quieras; el GM titular puede volver a dártelo.</p>
+                <button type="button" id="btn-dejar-apoyo" style="background:#c94a4a; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; font-weight:bold;">⚠️ Dejar de ser GM de apoyo</button>`;
+            cont.querySelector('#btn-dejar-apoyo').onclick = () => {
+                if (confirm('¿Dejar de ser GM de apoyo? El GM titular tendrá que volver a darte el rol.')) {
+                    refApoyo(miUidActual).remove().then(() => { panelGm.style.display = 'none'; esDirector = false; }).catch((e) => alert('No se pudo dejar el rol: ' + e.message));
+                }
+            };
+        }
+        panelGm.appendChild(cont);
+    }
 
     bitacoraListener = db.ref(`campanas/${campanaId}/bitacora`);
     bitacoraListener.on('value', snap => {
@@ -991,6 +1065,7 @@ btnLoginEmail.onclick = () => {
         return {
             ...plantillasPersonajes[plantillaId],
             owner: miUidActual,
+            ownerNombre: miNombreActual || null,
             activo: true,
             publico: false // Privado por defecto al asignarse
         };

@@ -1346,7 +1346,7 @@
     let ownerReparado = false;
 
     const gmRefPromise = codigoCampana
-      ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === uid)
+      ? Promise.all([db.ref(`campanas/${codigoCampana}/gm`).once('value'), db.ref(`campanas/${codigoCampana}/gm_apoyo/${uid}`).once('value').catch(() => null)]).then(([g, a]) => g.val() === uid || !!(a && a.val() === true))   // GM titular o GM de apoyo
       : Promise.resolve(true);
 
     gmRefPromise.then(soyElGM => {

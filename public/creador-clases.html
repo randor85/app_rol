@@ -740,7 +740,7 @@
     conectarEventos();
     $('cc-app').hidden = false;
     renderClase(); renderSub(); renderCopiar(); renderLista();
-    if (CAMP) db.ref('campanas/' + CAMP + '/gm').once('value').then((s) => { esGM = !!(s && s.val && s.val() === uid); renderLista(); }).catch(() => {});
+    if (CAMP) Promise.all([db.ref('campanas/' + CAMP + '/gm').once('value'), db.ref('campanas/' + CAMP + '/gm_apoyo/' + uid).once('value').catch(() => null)]).then((r) => { esGM = !!((r[0] && r[0].val && r[0].val() === uid) || (r[1] && r[1].val && r[1].val() === true)); renderLista(); }).catch(() => {});
     // Lo que creaste antes dentro de una campaña pasa solo a la biblioteca global (sirve para campañas futuras).
     if (CC.migrarALaBiblioteca && CAMP) CC.migrarALaBiblioteca(db, CAMP, uid);
     CC.escuchar(db, CAMP, (d) => {

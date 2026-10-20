@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script>if (location.hostname === "personajes-rol.firebaseapp.com") { location.replace("https://personajes-rol.web.app" + location.pathname + location.search + location.hash); }</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111821" />
+  <meta name="description" content="Dados y contador de chicles para All Outta Bubblegum, sincronizado con la campaña." />
+  <title>El último chicle</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0d131b; --panel:#19232e; --panel2:#202d39; --border:#354250; --text:#f4f6f1; --muted:#aab8c4; --green:#a6f079; --teal:#47c99c; --red:#ff836f; --yellow:#ffd07a; --shadow:0 24px 85px #03080e80; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(ellipse at 80% -10%,#31492f70,transparent 40%),radial-gradient(ellipse at 10% 70%,#24344670,transparent 45%),var(--bg)}
+    button,input{font:inherit}
+    button{cursor:pointer;touch-action:manipulation}
+    button:disabled{cursor:not-allowed;opacity:.47}
+    button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+    .shell{width:min(100% - 30px,1024px);margin:0 auto;padding:44px 0 35px}
+    .eyebrow{font-size:12px;letter-spacing:.18em;font-weight:800;color:var(--green);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:100%;background:var(--green);box-shadow:0 0 18px #a6f079a6}
+    h1{font-size:clamp(34px,5.5vw,62px);font-weight:950;letter-spacing:-.055em;line-height:1.02;margin:13px 0 12px}
+    h1 em{font-style:normal;color:var(--green)}
+    .intro{color:var(--muted);max-width:640px;margin:0 0 30px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.8fr);gap:20px;align-items:start}
+    .card{background:linear-gradient(155deg,#1b2732,#17212b);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow)}
+    .app{padding:26px}
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+    .toprow{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .fieldlabel{font-size:12px;text-transform:uppercase;letter-spacing:.11em;font-weight:800;color:var(--muted);display:block;margin-bottom:7px}
+    .name{width: min(100%,270px);color:var(--text);background:#0e1721;border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:15px}
+    .pill{display:inline-flex;align-items:center;gap:6px;font-weight:750;font-size:12px;border:1px solid #44624a;background:#263d30;color:var(--green);border-radius:999px;padding:7px 11px;white-space:nowrap}
+    .sep{height:1px;background:var(--border);margin:25px 0}
+    .gumhead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:15px}
+    .gumhead h2{font-size:19px;margin:0;letter-spacing:-.025em}
+    .number{font-weight:900;letter-spacing:-.06em;color:var(--green);font-size:34px;line-height:1}
+    .number span{font-size:16px;color:var(--muted);letter-spacing:0}
+    .bars{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin-bottom:15px}
+    .bar{height:23px;border-radius:6px;background:#32404d;border:1px solid #445262;transition:background .16s}
+    .bar.active{background:linear-gradient(180deg,#b6f88f,#53c89b);border-color:#96e59a;box-shadow:0 2px 9px #50cc8b2b}
+    .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .mini{background:#2b3946;color:var(--text);border:1px solid #52606c;border-radius:12px;min-width:44px;height:42px;font-weight:800;font-size:20px}
+    .mini:hover:not(:disabled){background:#394956}
+    .ghost{border:1px solid var(--border);border-radius:12px;padding:9px 13px;background:transparent;color:var(--muted);font-weight:650}
+    .ghost:hover:not(:disabled){border-color:var(--green);color:var(--text)}
+    .push{margin-left:auto}
+    .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;border:1px solid var(--border);border-radius:14px;padding:5px;background:#101a23;margin:12px 0}
+    .seg button{padding:14px 7px;border:0;border-radius:10px;color:var(--muted);background:transparent;font-size:14px;font-weight:850}
+    .seg button[aria-pressed="true"]{background:#3c5650;color:#eaffdf;box-shadow:0 4px 12px #0003}
+    .hint{min-height:43px;color:var(--muted);font-size:13px;line-height:1.5;margin:10px 0 13px}
+    .primary{width:100%;border:0;border-radius:14px;padding:17px 20px;font-weight:950;background:linear-gradient(135deg,#adf38c,#62d1a7);color:#08251e;font-size:17px;box-shadow:0 12px 25px #8de9a124;transition:transform .12s}
+    .primary:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.04)}
+    .result{min-height:162px;margin-top:16px;border-radius:16px;border:1px solid #3c4b59;background:#111d28;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;gap:4px}
+    .result .die{display:flex;align-items:center;justify-content:center;width:70px;height:66px;background:#2c3d4d;border-radius:14px;font-size:43px;font-weight:950;line-height:1;letter-spacing:-.06em;box-shadow:inset 0 -4px #0d121858}
+    .result .headline{font-weight:900;font-size:21px;margin:3px 0 0}
+    .result .detail{color:var(--muted);font-size:13px;max-width:340px}
+    .result.success{border-color:#3f765c;background:#172e29}
+    .result.success .headline{color:var(--green)}
+    .result.fail{border-color:#824d51;background:#311e27}
+    .result.fail .headline{color:var(--red)}
+    .result.warning{border-color:#877044;background:#302b20}
+    .result.warning .headline{color:var(--yellow)}
+    .result.idle .headline{color:var(--text)}
+    .quickbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .quickbar button{min-height:47px;border:1px solid #455463;background:#283744;border-radius:12px;color:#e5e9ec;font-size:13px;font-weight:750;padding:9px 11px}
+    .quickbar button:hover:not(:disabled){background:#354754}
+    .loghead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:24px}
+    .loghead h3{margin:0;font-size:14px}
+    .log{list-style:none;padding:0;margin:10px 0 0;max-height:175px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+    .log li{background:#13202b;border-radius:10px;padding:9px 12px;font-size:13px;color:#cbd5de}
+    .log li.empty{color:var(--muted);font-style:italic}
+    .side{padding:25px 23px}
+    .side h2{font-size:20px;margin:0 0 14px;letter-spacing:-.025em}
+    .rule{border-top:1px solid var(--border);padding:14px 0}
+    .rule strong{display:block;margin:0 0 3px;font-size:14px}
+    .rule p{font-size:13px;color:var(--muted);margin:0}
+    .rule code{color:var(--green);background:#0d1c25;padding:2px 5px;border-radius:5px}
+    .side .callout{border:1px solid #5f5a3f;background:#3b3426;border-radius:13px;padding:13px;margin-top:8px;font-size:13px;color:#f5e2be}
+    .side .callout strong{display:block;margin-bottom:3px;color:#ffd07a}
+    footer{margin-top:24px;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;color:var(--muted);font-size:12px}
+    a{color:#b4f19a;text-underline-offset:3px}
+    .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#daeeca;color:#183023;border-radius:12px;padding:12px 18px;box-shadow:0 14px 35px #0006;font-size:14px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
+    .toast.show{opacity:1}
+    @media(max-width:750px){.shell{padding:26px 0}.layout{grid-template-columns:1fr}.app,.side{padding:20px}.intro{margin-bottom:20px}.seg button{font-size:13px}.result{min-height:150px}footer{margin-top:18px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+    /* --- Integración con la plataforma (campaña/GM/bitácora) --- */
+    .btn-volver{display:inline-block;padding:8px 16px;background:var(--panel2);color:var(--green);text-decoration:none;border:1px solid var(--green);border-radius:10px;font-weight:800;font-size:.85rem;transition:all .2s}
+    .btn-volver:hover{background:var(--green);color:#08251e}
+    #btn-compartir{padding:8px 16px;border:1px solid var(--green);border-radius:10px;font-weight:800;font-size:.85rem;cursor:pointer;color:#fff}
+    .readonly-banner{background:#2563a8;color:#fff;text-align:center;padding:10px;border-radius:12px;margin-bottom:15px;font-weight:700;font-size:.85rem;display:none}
+    .readonly-mode input,.readonly-mode textarea,.readonly-mode select{pointer-events:none!important;opacity:.6}
+    .readonly-mode button:not(#btn-compartir):not(.btn-volver){pointer-events:none!important;opacity:.5}
+
+    .bitacora-section{background:var(--panel2);border:1px solid var(--border);border-radius:16px;margin-bottom:16px}
+    .bitacora-section>summary{cursor:pointer;padding:12px 16px;font-weight:800;color:var(--green);list-style:none;font-size:.95rem}
+    .bitacora-section>summary::-webkit-details-marker{display:none}
+    .bitacora-section>summary::before{content:'▶';display:inline-block;margin-right:8px;font-size:.7em;transition:transform .2s}
+    .bitacora-section[open]>summary::before{transform:rotate(90deg)}
+    .bitacora-section-content{padding:0 16px 16px}
+    .bitacora-section-content input[type="text"],.bitacora-section-content textarea{width:100%;box-sizing:border-box;background:#0e1721;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:.85rem;margin-bottom:8px;font-family:inherit}
+    .bitacora-section-content>button{border:1px solid var(--border);border-radius:10px;padding:8px 12px;background:#2b3946;color:var(--text);font-weight:700;font-size:.85rem;cursor:pointer;margin-right:6px}
+    .bitacora-section-content>button:hover:not(:disabled){background:#394956}
+    .bitacora-section-content .bf-entrada{border-bottom:1px solid var(--border);padding:6px 0;font-size:.8rem}
+    .bitacora-section-content .bf-entrada:last-child{border-bottom:none}
+    .bitacora-section-content .bf-fecha{color:var(--green);font-size:.72rem}
+    .bf-entrada-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .bf-entrada-actions{display:flex;gap:4px;flex-shrink:0}
+    .bf-entrada-actions button{background:none;border:none;cursor:pointer;font-size:.8rem;padding:0 2px;opacity:.75;margin:0}
+    .bf-entrada-actions button:hover:not(:disabled){opacity:1}
+    .bitacora-section-label{margin:0 0 8px;font-weight:800;color:var(--green);font-size:.85rem}
+    #bitacora-ficha-lista{max-height:260px;overflow-y:auto}
+  </style>
+</head>
+<body>
+  <main class="shell sheet">
+    <div id="readonly-banner" class="readonly-banner">👁️ Estás viendo esta ficha en modo lectura — solo el dueño puede editarla</div>
+
+    <div style="width:100%;margin:0 auto 15px auto;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <a href="index.html" class="btn-volver">⬅ Volver al Menú</a>
+      <button id="btn-compartir" style="display:none;"></button>
+    </div>
+
+    <details class="card bitacora-section" id="bitacora-section">
+      <summary>📜 Bitácora de la Campaña</summary>
+      <div class="bitacora-section-content">
+        <p class="bitacora-section-label">Nueva entrada</p>
+        <input type="text" id="bitacora-ficha-titulo" placeholder="Título (opcional)">
+        <textarea id="bitacora-ficha-texto" rows="3" placeholder="Qué pasó..."></textarea>
+        <button type="button" id="btn-guardar-bitacora-ficha" onclick="guardarEntradaBitacoraFicha()">Guardar Entrada</button>
+        <button type="button" id="btn-cancelar-bitacora-ficha" onclick="cancelarEdicionBitacoraFicha()" style="display:none;">Cancelar</button>
+        <p class="bitacora-section-label" style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">Últimas entradas</p>
+        <div id="bitacora-ficha-lista"></div>
+      </div>
+    </details>
+
+    <header>
+      <div class="eyebrow"><span class="dot"></span> ROL DE ZOMBIS · PARTIDA RÁPIDA</div>
+      <h1>EL ÚLTIMO <em>CHICLE.</em></h1>
+      <p class="intro">Un dado, ocho chicles y la absoluta certeza de que alguien hará algo estúpido. Lanzador para <strong>All Outta Bubblegum</strong>, sincronizado con el resto de la mesa.</p>
+    </header>
+    <div class="layout">
+      <section class="card app" aria-label="Simulador de tiradas">
+        <div class="toprow">
+          <div><label class="fieldlabel" for="player">Nombre del superviviente</label><input id="player" class="name" maxlength="32" autocomplete="off" placeholder="Superviviente anónimo" /></div>
+          <span class="pill"><span class="dot" style="width:6px;height:6px"></span> ☁️ SINCRONIZADO</span>
+        </div>
+        <input type="hidden" id="gum-cur" value="8">
+        <input type="hidden" id="chicle-mode" value="normal">
+        <div class="sep"></div>
+        <div class="gumhead"><h2>Chicles restantes</h2><div class="number" id="gumCount" aria-live="polite">8 <span>/ 8</span></div></div>
+        <div class="bars" id="bars" aria-label="Ocho chicles restantes"></div>
+        <div class="controls">
+          <button id="minus" class="mini" type="button" title="Perder un chicle" aria-label="Perder un chicle">−</button>
+          <button id="plus" class="mini" type="button" title="Recuperar un chicle" aria-label="Recuperar un chicle">+</button>
+          <button id="reset" class="ghost push" type="button">↻ Reiniciar</button>
+        </div>
+        <div class="sep"></div>
+        <span class="fieldlabel">¿Qué intentas hacer?</span>
+        <div class="seg" role="group" aria-label="Tipo de acción">
+          <button id="normal" type="button" aria-pressed="true">Acción normal</button>
+          <button id="kick" type="button" aria-pressed="false">Patear traseros</button>
+        </div>
+        <p class="hint" id="hint">Para triunfar, el 1d10 debe ser <strong>igual o menor</strong> que tus chicles.</p>
+        <button id="roll" class="primary" type="button">🎲 Tirar 1d10</button>
+        <div id="result" class="result idle" role="status" aria-live="polite" aria-atomic="true">
+          <div class="die" id="die">?</div>
+          <div class="headline" id="headline">Listo para sobrevivir</div>
+          <div class="detail" id="detail">Elige una acción y lanza el dado.</div>
+        </div>
+        <div class="quickbar">
+          <button type="button" id="spend">✓ Gastar 1: éxito normal</button>
+          <button type="button" id="copy">⧉ Copiar resultado</button>
+        </div>
+        <div class="loghead"><h3>Últimas acciones (en este dispositivo)</h3><button id="clearLog" class="ghost small" type="button">Limpiar historial</button></div>
+        <ul class="log" id="log"><li class="empty">Todavía no ocurre ninguna desgracia.</li></ul>
+      </section>
+      <aside class="card side" aria-label="Reglas rápidas">
+        <h2>Reglas en 30 segundos</h2>
+        <div class="rule"><strong>🟢 Acción normal</strong><p>Abres una puerta, conduces, convences a alguien… Éxito con <code>1d10 ≤ chicles</code>. Si fallas, pierdes un chicle automáticamente.</p></div>
+        <div class="rule"><strong>💥 Patear traseros</strong><p>Golpeas zombis, explotas cosas, rompes puertas… Éxito con <code>1d10 &gt; chicles</code>. Fallar no te quita chicles por sí solo.</p></div>
+        <div class="rule"><strong>🍬 Gastar un chicle</strong><p>Antes de tirar una acción normal, puedes gastar un chicle para tener éxito automático.</p></div>
+        <div class="rule"><strong>🩸 Recibir un golpe</strong><p>Si alguien consigue atacarte, pierdes un chicle. Usa el botón <strong>−</strong> para descontarlo.</p></div>
+        <div class="callout"><strong>⚠️ Cuando llegas a cero</strong>No puedes hacer acciones normales. Patear traseros funciona automáticamente. Si alguien vuelve a acertarte, tira 1d10: con un 10 quedas fuera de combate.</div>
+        <div class="rule"><strong>📱 Multijugador de la campaña</strong><p>Tus chicles y tus tiradas se sincronizan en vivo con el resto de la mesa, y el GM las ve en su panel de tiradas.</p></div>
+      </aside>
+    </div>
+    <footer>
+      <span>Herramienta no oficial inspirada en <em>All Outta Bubblegum</em> · Michael “Epoch” Sullivan y Jeffrey Grant.</span>
+      <span><a href="https://rtwolf.github.io/All-Outta-Bubblegum/" target="_blank" rel="noopener noreferrer">Reglas originales (CC BY 4.0) ↗</a></span>
+    </footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite">Resultado copiado</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+  // Configuración de tu proyecto en Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+    authDomain: "personajes-rol.firebaseapp.com",
+    databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+    projectId: "personajes-rol",
+    storageBucket: "personajes-rol.appspot.com",
+    messagingSenderId: "81108671440",
+    appId: "1:81108671440:web:effb710af86054f4c6f7d5"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigoCampana = urlParams.get('campana');
+  const JUGADOR_NUM = (() => {
+    const n = parseInt(urlParams.get('jugador'), 10);
+    return (n >= 1 && n <= 6) ? n : 1;
+  })();
+  const PERSONAJE_ID = 'chicle' + JUGADOR_NUM;
+  const SISTEMA_PERSONAJE_PROPIO = 'chicle'; // Sistema de juego de esta ficha (ver index.html)
+  let charRef = null;
+  let bitacoraCampanaListener = null;
+  let nombreJugadorActual = ''; // nombre elegido por el jugador al reclamar la ficha (no es fijo como en el resto de la flota)
+
+  document.title = `El último chicle · Jugador ${JUGADOR_NUM}`;
+
+  // Botón "Volver" con memoria de campaña
+  const btnVolver = document.querySelector('a[href="index.html"]');
+  if (btnVolver && codigoCampana) {
+    btnVolver.href = `index.html?campana=${codigoCampana}`;
+  }
+
+  let modoLectura = false; // Guardia en cliente (defensa en profundidad, además de las reglas de Firebase)
+  let ownerReparado = false; // Evita repetir el auto-reclamo de owner en cada snapshot
+
+  function aplicarModoLectura(soloLectura) {
+    const sheet = document.querySelector('.sheet');
+    const banner = document.getElementById('readonly-banner');
+    if (!sheet) return;
+    modoLectura = soloLectura;
+    sheet.classList.toggle('readonly-mode', soloLectura);
+    if (banner) banner.style.display = soloLectura ? 'block' : 'none';
+    sheet.querySelectorAll('input, select, textarea').forEach(el => {
+      el.disabled = soloLectura;
+    });
+    if (typeof render === 'function') render();
+  }
+
+  function bloquearPorSistemaIncorrecto(sistemaCampana) {
+    const nombre = s => s === 'coc' ? 'Call of Cthulhu' : (s === 'chicle' ? 'El Último Chicle' : 'D&D');
+    document.body.innerHTML = `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d131b;color:#f4f6f1;font-family:system-ui,sans-serif;text-align:center;padding:30px;gap:14px;">
+      <div style="font-size:3rem;">⚠️</div>
+      <h1 style="font-size:1.3rem;color:#ffd07a;">Ficha fuera de sistema</h1>
+      <p style="max-width:420px;color:#aab8c4;">Esta ficha es de <strong>${nombre(SISTEMA_PERSONAJE_PROPIO)}</strong> y la campaña seleccionada es de <strong>${nombre(sistemaCampana)}</strong>. No se puede abrir esta ficha desde esa campaña.</p>
+      <a href="index.html?campana=${codigoCampana}" style="color:#ffd07a;text-decoration:underline;display:inline-block;padding:12px 8px;min-height:44px;">← Volver al selector de personajes</a>
+    </div>`;
+  }
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      console.log("Sesión activa detectada en la ficha de chicle:", user.uid);
+
+      if (codigoCampana) {
+        const sistemaSnap = await db.ref(`lista_campanas/${codigoCampana}/sistema`).once('value');
+        const sistemaCampana = sistemaSnap.val();
+        if (sistemaCampana && sistemaCampana !== SISTEMA_PERSONAJE_PROPIO) {
+          bloquearPorSistemaIncorrecto(sistemaCampana);
+          return;
+        }
+      }
+
+      if (codigoCampana) {
+        charRef = db.ref(`campanas/${codigoCampana}/personajes/${PERSONAJE_ID}`);
+      } else {
+        charRef = db.ref(`usuarios/${user.uid}/personajes/${PERSONAJE_ID}`);
+      }
+
+      sincronizarDatosDesdeNube();
+
+      if (codigoCampana) {
+        bitacoraCampanaListener = db.ref(`campanas/${codigoCampana}/bitacora`);
+        bitacoraCampanaListener.on('value', snap => renderizarBitacoraFicha(snap.val() || {}));
+      } else {
+        const bitacoraWrap = document.getElementById('bitacora-section');
+        if (bitacoraWrap) bitacoraWrap.style.display = 'none';
+      }
+
+      const gmRefPromise = codigoCampana
+        ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+        : Promise.resolve(true);
+
+      // Control del botón de compartir y del modo de solo lectura
+      gmRefPromise.then(soyElGM => {
+        charRef.on('value', snap => {
+          const p = snap.val();
+          if (!p) return;
+
+          // Auto-reparación: personaje activo sin owner (dato legacy) -> quien lo abre lo reclama.
+          if (codigoCampana && p.activo === true && !p.owner && !ownerReparado && !soyElGM) {
+            ownerReparado = true;
+            charRef.child('owner').set(user.uid);
+            return;
+          }
+
+          nombreJugadorActual = p.nombre || '';
+
+          const esMio = codigoCampana ? (p.owner === user.uid) : true;
+          const soloLectura = codigoCampana ? (!esMio && !soyElGM) : false;
+          aplicarModoLectura(soloLectura);
+
+          const btnCompartir = document.getElementById('btn-compartir');
+
+          if (btnCompartir && esMio) {
+            btnCompartir.style.display = 'inline-block';
+            btnCompartir.innerText = p.publico ? "🔒 Hacer Privada" : "👁️ Compartir Ficha";
+            btnCompartir.style.backgroundColor = p.publico ? "#c94a4a" : "#3a7d44";
+
+            btnCompartir.onclick = () => {
+              charRef.child('publico').set(!p.publico);
+            };
+          } else if (btnCompartir) {
+            btnCompartir.style.display = 'none';
+          }
+        });
+      });
+    } else {
+      console.warn("Ficha sin sesión activa. Redirigiendo...");
+      window.location.href = "index.html";
+    }
+  });
+
+  // 1. ESCUCHAR CAMBIOS Y GUARDAR EN LA NUBE AL EDITAR
+  document.addEventListener('input', (e) => {
+    if (modoLectura) return;
+    if (e.target.matches('input, select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId && charRef) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        charRef.child('datos/' + fieldId).set(val);
+        // El nombre lo elige el jugador al reclamar la ficha: se espeja arriba de todo
+        // para que el selector de personajes y el panel del GM lo muestren sin depender de datos/.
+        if (fieldId === 'player') {
+          charRef.child('nombre').set(String(val).trim() || `Superviviente ${JUGADOR_NUM}`);
+        }
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (modoLectura) return;
+    if (e.target.matches('input[type="checkbox"], select, textarea')) {
+      const fieldId = e.target.id;
+      if (fieldId && charRef) {
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        charRef.child('datos/' + fieldId).set(val);
+      }
+    }
+  });
+
+  // 2. SINCRONIZAR EN TIEMPO REAL DESDE LA NUBE A LA PANTALLA
+  function sincronizarDatosDesdeNube() {
+    if (!charRef) return;
+    charRef.child('datos').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') {
+            if (el.checked !== data[id]) el.checked = data[id];
+          } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+            if (el.innerText !== String(data[id])) el.innerText = data[id];
+          } else {
+            if (el.value !== String(data[id]) && document.activeElement !== el) {
+              el.value = data[id];
+            }
+          }
+        }
+      });
+      if (typeof render === 'function') render();
+    });
+  }
+
+  // --- BITÁCORA DE CAMPAÑA (mismo mecanismo que el resto de la flota) ---
+  let bitacoraFichaCache = {}; // key de Firebase -> {titulo, texto}, para poblar el form al editar sin re-escapar comillas en el onclick
+  let editandoKeyBitacoraFicha = null;
+
+  function renderizarBitacoraFicha(logs) {
+    const cont = document.getElementById('bitacora-ficha-lista');
+    if (!cont) return;
+    bitacoraFichaCache = {};
+    const entradas = Object.entries(logs || {}).map(([key, log]) => ({ key, ...log })).sort((a, b) => (b.fecha || 0) - (a.fecha || 0)).slice(0, 8);
+    if (!entradas.length) {
+      cont.innerHTML = '<p style="font-size:0.75rem;color:var(--muted);">Sin entradas todavía.</p>';
+      return;
+    }
+    cont.innerHTML = entradas.map(log => {
+      bitacoraFichaCache[log.key] = { titulo: log.titulo || '', texto: log.texto || '' };
+      const esMia = !!nombreJugadorActual && log.personaje === nombreJugadorActual;
+      return `
+      <div class="bf-entrada">
+        <div class="bf-entrada-head">
+          <div class="bf-fecha">${log.fecha ? new Date(log.fecha).toLocaleString() : ''}${log.personaje ? ' · ' + log.personaje : ''}</div>
+          ${esMia ? `<div class="bf-entrada-actions">
+            <button type="button" onclick="editarEntradaBitacoraFicha('${log.key}')" title="Editar">✏️</button>
+            <button type="button" onclick="eliminarEntradaBitacoraFicha('${log.key}')" title="Eliminar">🗑️</button>
+          </div>` : ''}
+        </div>
+        ${log.titulo ? `<strong>${log.titulo}</strong>` : ''}
+        <p style="white-space:pre-wrap;margin:2px 0 0;">${log.texto || ''}</p>
+      </div>
+    `;
+    }).join('');
+  }
+
+  function editarEntradaBitacoraFicha(key) {
+    const entry = bitacoraFichaCache[key];
+    if (!entry) return;
+    editandoKeyBitacoraFicha = key;
+    document.getElementById('bitacora-ficha-titulo').value = entry.titulo;
+    document.getElementById('bitacora-ficha-texto').value = entry.texto;
+    const btn = document.getElementById('btn-guardar-bitacora-ficha');
+    if (btn) btn.innerText = '💾 Guardar Cambios';
+    const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
+    if (btnCancelar) btnCancelar.style.display = 'inline-block';
+    document.getElementById('bitacora-ficha-texto')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function cancelarEdicionBitacoraFicha() {
+    editandoKeyBitacoraFicha = null;
+    document.getElementById('bitacora-ficha-titulo').value = '';
+    document.getElementById('bitacora-ficha-texto').value = '';
+    const btn = document.getElementById('btn-guardar-bitacora-ficha');
+    if (btn) btn.innerText = 'Guardar Entrada';
+    const btnCancelar = document.getElementById('btn-cancelar-bitacora-ficha');
+    if (btnCancelar) btnCancelar.style.display = 'none';
+  }
+
+  function eliminarEntradaBitacoraFicha(key) {
+    if (!codigoCampana) return;
+    if (!confirm('¿Eliminar esta entrada de la bitácora?')) return;
+    db.ref(`campanas/${codigoCampana}/bitacora/${key}`).remove()
+      .catch(err => alert('No se pudo eliminar la entrada: ' + err.message));
+  }
+
+  function guardarEntradaBitacoraFicha() {
+    if (!codigoCampana) { alert('Esta ficha no está asociada a ninguna campaña.'); return; }
+    const tituloEl = document.getElementById('bitacora-ficha-titulo');
+    const textoEl = document.getElementById('bitacora-ficha-texto');
+    const texto = (textoEl.value || '').trim();
+    if (!texto) return;
+    const nombreAutor = nombreJugadorActual || `Superviviente ${JUGADOR_NUM}`;
+    if (editandoKeyBitacoraFicha) {
+      db.ref(`campanas/${codigoCampana}/bitacora/${editandoKeyBitacoraFicha}`).update({
+        titulo: (tituloEl.value || '').trim(),
+        texto: texto
+      }).then(() => {
+        cancelarEdicionBitacoraFicha();
+      }).catch(err => alert('No se pudo guardar la edición en la bitácora: ' + err.message));
+      return;
+    }
+    db.ref(`campanas/${codigoCampana}/bitacora`).push({
+      titulo: (tituloEl.value || '').trim(),
+      texto: texto,
+      fecha: firebase.database.ServerValue.TIMESTAMP,
+      personaje: nombreAutor
+    }).then(() => {
+      tituloEl.value = '';
+      textoEl.value = '';
+    }).catch(err => alert('No se pudo guardar la entrada en la bitácora: ' + err.message));
+  }
+
+  // --- LÓGICA DEL JUEGO (adaptada de la herramienta original de un solo archivo) ---
+  // Antes vivía en localStorage; ahora el estado real son los inputs ocultos
+  // #gum-cur / #chicle-mode (sincronizados por Firebase como cualquier otro campo)
+  // y #player, que además se espeja en el nodo `nombre` más arriba.
+  const $ = id => document.getElementById(id);
+  let entriesLocal = []; // historial de acciones: queda local al dispositivo, como en el resto de fichas
+  let lastLine = '';
+  let toastTimer;
+
+  const rollD10 = () => {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const arr = new Uint32Array(1);
+      const bound = Math.floor(0x100000000 / 10) * 10;
+      do { window.crypto.getRandomValues(arr) } while (arr[0] >= bound);
+      return (arr[0] % 10) + 1;
+    }
+    return Math.floor(Math.random() * 10) + 1;
+  };
+
+  function getGum() {
+    const n = parseInt($('gum-cur') && $('gum-cur').value, 10);
+    return Number.isInteger(n) ? Math.max(0, Math.min(8, n)) : 8;
+  }
+  function getMode() {
+    const el = $('chicle-mode');
+    return (el && el.value === 'kick') ? 'kick' : 'normal';
+  }
+  function who() {
+    const n = ($('player') && $('player').value || '').trim();
+    return n || `Superviviente ${JUGADOR_NUM}`;
+  }
+
+  // Dispara un 'input' real para que el autoguardado genérico (y el espejo de nombre) hagan su trabajo
+  function setFieldAndSync(id, value) {
+    const el = $(id);
+    if (!el) return;
+    el.value = value;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function registrarTirada(tipo, resultado) {
+    if (!codigoCampana) return;
+    db.ref(`campanas/${codigoCampana}/tiradas`).push({
+      personaje: who(),
+      tipo: tipo,
+      resultado: resultado,
+      fecha: firebase.database.ServerValue.TIMESTAMP
+    });
+  }
+
+  function addLog(line) {
+    entriesLocal.unshift(line);
+    entriesLocal = entriesLocal.slice(0, 6);
+    lastLine = line;
+  }
+
+  function showResult(number, title, desc, status) {
+    $('die').textContent = String(number);
+    $('headline').textContent = title;
+    $('detail').textContent = desc;
+    $('result').className = 'result ' + status;
+  }
+
+  function render() {
+    const gum = getGum();
+    const mode = getMode();
+    $('gumCount').innerHTML = String(gum) + ' <span>/ 8</span>';
+    $('bars').setAttribute('aria-label', gum + ' de 8 chicles restantes');
+    Array.from($('bars').children).forEach((el, i) => el.className = i < gum ? 'bar active' : 'bar');
+    $('minus').disabled = modoLectura || gum === 0;
+    $('plus').disabled = modoLectura || gum === 8;
+    $('normal').setAttribute('aria-pressed', String(mode === 'normal'));
+    $('kick').setAttribute('aria-pressed', String(mode === 'kick'));
+    $('spend').disabled = modoLectura || gum === 0 || mode !== 'normal';
+    $('roll').disabled = modoLectura || (gum === 0 && mode === 'normal');
+    $('roll').textContent = gum === 0 && mode === 'kick' ? '💥 Éxito automático' : gum === 0 ? 'Sin chicles: no puedes hacerlo' : '🎲 Tirar 1d10';
+    $('hint').innerHTML = mode === 'normal'
+      ? (gum === 0 ? 'Sin chicles no puedes realizar acciones normales. Cambia a <strong>Patear traseros</strong>.' : 'Para triunfar, el 1d10 debe ser <strong>igual o menor</strong> que tus ' + gum + ' chicles.')
+      : (gum === 0 ? 'Sin chicles, <strong>toda acción violenta es un éxito automático</strong>.' : 'Para triunfar, el 1d10 debe ser <strong>mayor</strong> que tus ' + gum + ' chicles.');
+    const list = $('log'); list.replaceChildren();
+    if (entriesLocal.length === 0) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Todavía no ocurre ninguna desgracia.'; list.append(li) }
+    else entriesLocal.forEach(entry => { const li = document.createElement('li'); li.textContent = entry; list.append(li) });
+  }
+
+  function setMode(mode) {
+    if (modoLectura) return;
+    setFieldAndSync('chicle-mode', mode);
+    showResult('?', 'Listo para sobrevivir', 'Elige una acción y lanza el dado.', 'idle');
+    render();
+  }
+
+  function adjust(delta) {
+    if (modoLectura) return;
+    const before = getGum();
+    const after = Math.max(0, Math.min(8, before + delta));
+    if (before === after) return;
+    setFieldAndSync('gum-cur', after);
+    addLog(who() + (delta < 0 ? ' pierde un chicle.' : ' recupera un chicle.'));
+    showResult('—', delta < 0 ? 'Chicle perdido' : 'Chicle recuperado', 'Te quedan ' + after + ' de 8 chicles.', 'warning');
+    render();
+    registrarTirada(delta < 0 ? 'Pierde un chicle' : 'Recupera un chicle', 'Usado');
+  }
+
+  function doRoll() {
+    if (modoLectura) return;
+    const g = getGum();
+    const mode = getMode();
+    if (g === 0 && mode === 'normal') return;
+    if (g === 0) {
+      const message = who() + ' — Patear traseros: ÉXITO AUTOMÁTICO (0 chicles).';
+      addLog(message); showResult('✓', '¡Éxito automático!', 'Sin chicles, eres una máquina de caos.', 'success'); render();
+      registrarTirada('Patear traseros', 'Éxito automático (0 chicles)');
+      return;
+    }
+    const d = rollD10();
+    const normal = mode === 'normal';
+    const success = normal ? d <= g : d > g;
+    let gumFinal = g;
+    if (normal && !success) { gumFinal = g - 1; setFieldAndSync('gum-cur', gumFinal); }
+    const action = normal ? 'Acción normal' : 'Patear traseros';
+    const message = who() + ' — ' + action + ': d10=' + d + ', ' + g + ' chicles → ' + (success ? 'ÉXITO' : 'FALLO') + (normal && !success ? ' (−1 chicle, quedan ' + gumFinal + ')' : '') + '.';
+    addLog(message);
+    let info = normal ? (success ? 'Superaste la acción sin perder chicles.' : 'Fallaste: perdiste 1 chicle automáticamente.') : success ? '¡La violencia ha solucionado el problema!' : 'No logras patear suficientes traseros. No pierdes chicles por este fallo.';
+    if (normal && !success && gumFinal === 0) info += ' ¡Te has quedado sin chicles!';
+    showResult(d, success ? '¡Éxito!' : '¡Fallaste!', info, success ? 'success' : 'fail');
+    render();
+    // Se etiqueta éxito/fallo en el tipo (mismo criterio que usa Nevada Jones con sus
+    // tiradas de habilidad) para que el panel del GM no muestre un número pelado sin
+    // poder saber si la acción salió bien o mal.
+    const etiquetaResultado = success ? 'ÉXITO' : ('FALLO' + (normal ? ' · −1 chicle' : ''));
+    registrarTirada(`${action} [${etiquetaResultado}]`, d);
+  }
+
+  function spend() {
+    if (modoLectura) return;
+    const g = getGum();
+    const mode = getMode();
+    if (mode !== 'normal' || g === 0) return;
+    const gumFinal = g - 1;
+    setFieldAndSync('gum-cur', gumFinal);
+    addLog(who() + ' — Acción normal: ÉXITO AUTOMÁTICO gastando 1 chicle (quedan ' + gumFinal + ').');
+    showResult('✓', '¡Éxito asegurado!', 'Gastaste 1 chicle antes de tirar.', 'success'); render();
+    registrarTirada('Acción normal (gasta 1 chicle)', 'Éxito automático');
+  }
+
+  async function copy() {
+    const s = lastLine || who() + ' — ' + getGum() + ' de 8 chicles restantes.';
+    let ok = false;
+    try { await navigator.clipboard.writeText(s); ok = true } catch (e) {
+      const ta = document.createElement('textarea'); ta.value = s; ta.style.cssText = 'position:fixed;left:-9999px'; document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy') } catch (err) { } ta.remove();
+    }
+    $('toast').textContent = ok ? 'Copiado para enviar por Discord' : 'No se pudo copiar. Usa el historial.';
+    $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2000);
+  }
+
+  $('bars').replaceChildren(...Array.from({ length: 8 }, () => { let el = document.createElement('div'); el.className = 'bar'; return el }));
+  $('normal').addEventListener('click', () => setMode('normal'));
+  $('kick').addEventListener('click', () => setMode('kick'));
+  $('minus').addEventListener('click', () => adjust(-1));
+  $('plus').addEventListener('click', () => adjust(1));
+  $('roll').addEventListener('click', doRoll);
+  $('spend').addEventListener('click', spend);
+  $('copy').addEventListener('click', copy);
+  $('clearLog').addEventListener('click', () => { if (modoLectura) return; entriesLocal = []; lastLine = ''; render() });
+  $('reset').addEventListener('click', () => {
+    if (modoLectura) return;
+    if (window.confirm('¿Reiniciar a 8 chicles y limpiar el historial?')) {
+      setFieldAndSync('gum-cur', 8);
+      setFieldAndSync('chicle-mode', 'normal');
+      entriesLocal = []; lastLine = '';
+      showResult('?', 'Listo para sobrevivir', 'Elige una acción y lanza el dado.', 'idle'); render();
+      registrarTirada('Reinicio', '8/8 chicles');
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>

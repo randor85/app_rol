@@ -291,7 +291,7 @@
       }
 
       const gmRefPromise = codigoCampana
-        ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === user.uid)
+        ? Promise.all([db.ref(`campanas/${codigoCampana}/gm`).once('value'), db.ref(`campanas/${codigoCampana}/gm_apoyo/${user.uid}`).once('value').catch(() => null)]).then(([g, a]) => g.val() === user.uid || !!(a && a.val() === true))
         : Promise.resolve(true);
 
       // Control del botón de compartir y del modo de solo lectura

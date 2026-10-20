@@ -51,7 +51,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '97.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
+  const VERSION_APP = '98.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -575,7 +575,7 @@
 
   /* ---------- permisos / hp-max para la pantalla del GM ---------- */
   function sincronizarHpMaxParaElGM(db, charRef, uid) {
-    const gm = codigoCampana ? db.ref(`campanas/${codigoCampana}/gm`).once('value').then(s => s.val() === uid) : Promise.resolve(true);
+    const gm = codigoCampana ? Promise.all([db.ref(`campanas/${codigoCampana}/gm`).once('value'), db.ref(`campanas/${codigoCampana}/gm_apoyo/${uid}`).once('value').catch(() => null)]).then(([g, a]) => g.val() === uid || !!(a && a.val() === true)) : Promise.resolve(true);   // GM titular o de apoyo
     gm.then(soyGM => charRef.child('owner').once('value').then(s => {
       const esMio = !codigoCampana || s.val() === uid;
       if (!(esMio || soyGM)) return;

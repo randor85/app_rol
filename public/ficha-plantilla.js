@@ -220,15 +220,19 @@
   /* ---------- tablas aleatorias (P.tablas; las filas las dibuja ficha-tablas.js) ---------- */
   function tablaAleatoria(t) {
     const id = esc(t.id), dado = t.dado || 100;
+    // Las etiquetas con el dado y el número de activación las pone ficha-tablas.js según la configuración guardada (se puede cambiar con ⚙️).
     return `${t.nota ? `<p class="texto-suave">${esc(t.nota)}</p>` : ''}
+      <input type="hidden" id="tabla-${id}-config" value="">
       <div class="fila">
-        <button type="button" class="btn btn-primario" data-tabla-tirar="${id}">🎲 Tirar en la tabla (d${dado})</button>
-        ${t.previo ? `<button type="button" class="btn btn-fantasma" data-tabla-previo="${id}" title="${esc(t.previo.texto || '')}">🎯 d${t.previo.dado || 20}: ${esc(t.previo.etiqueta || '¿se tira la tabla?')}</button>` : ''}
+        <button type="button" class="btn btn-primario" id="tabla-${id}-btn-tirar" data-tabla-tirar="${id}">🎲 Tirar en la tabla (d${dado})</button>
+        <button type="button" class="btn btn-fantasma" id="tabla-${id}-btn-previo" data-tabla-previo="${id}" title="${esc((t.previo && t.previo.texto) || '')}"${t.previo ? '' : ' hidden'}>🎯 d${(t.previo && t.previo.dado) || 20}</button>
         <button type="button" class="btn btn-fantasma" onclick="FichaTablas.agregar('${id}')">➕ Agregar entrada</button>
+        <button type="button" class="btn btn-fantasma" onclick="FichaTablas.configurar('${id}')" title="Cambiar las caras del dado y el número que activa el efecto">⚙️ Dados</button>
       </div>
+      <div id="tabla-${id}-config-form"></div>
       <div class="aviso tabla-resultado" id="tabla-${id}-resultado" role="status" aria-live="polite" hidden></div>
       <details class="tabla-detalle"><summary>Ver la tabla completa (<span id="tabla-${id}-cuenta">0</span> entradas)</summary>
-        <div class="tabla-scroll"><table class="tabla tabla-resp"><thead><tr><th>d${dado}</th><th>Efecto</th><th>Editar</th></tr></thead><tbody id="tabla-${id}-lista"></tbody></table></div>
+        <div class="tabla-scroll"><table class="tabla tabla-resp"><thead><tr><th id="tabla-${id}-th">d${dado}</th><th>Efecto</th><th>Editar</th></tr></thead><tbody id="tabla-${id}-lista"></tbody></table></div>
         <div id="tabla-${id}-form"></div>
       </details>`;
   }

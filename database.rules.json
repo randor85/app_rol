@@ -9,7 +9,7 @@
           // Cualquier usuario autenticado puede fijarlo la PRIMERA vez que la campaña no lo
           // tiene (flujo de "elegir sistema" en index.html); una vez asignado, solo el GM de
           // esa campaña puede cambiarlo.
-          ".write": "auth != null && (!data.exists() || root.child('campanas').child($campanaId).child('gm').val() == auth.uid)"
+          ".write": "auth != null && (!data.exists() || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true))"
         }
       }
     },
@@ -40,6 +40,17 @@
           // gm_claim/<uid> tiene que ser igual a gm_hash (prueba de que conoces la clave). Quien es GM puede soltarlo o cederlo.
           ".read": "auth != null",
           ".write": "auth != null && ( (data.exists() && data.val() == auth.uid) || (!data.exists() && newData.val() == auth.uid && ( !root.child('campanas').child($campanaId).child('gm_hash').exists() || root.child('campanas').child($campanaId).child('gm_claim').child(auth.uid).val() == root.child('campanas').child($campanaId).child('gm_hash').val() )) )"
+        },
+        "gm_apoyo": {
+          // GM DE APOYO (v98.0): uids con casi todas las facultades del GM (editar fichas, party, sistema de la campaña, clases antiguas de la
+          // campaña) pero SIN poder compartir ni quitar el rol de GM, ni tocar la clave. Solo el GM titular (nodo 'gm') agrega o quita; cada
+          // apoyo puede quitarse a sí mismo.
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('campanas').child($campanaId).child('gm').val() == auth.uid",
+          "$uid": {
+            ".write": "auth != null && ( root.child('campanas').child($campanaId).child('gm').val() == auth.uid || (auth.uid == $uid && !newData.exists()) )",
+            ".validate": "newData.val() === true"
+          }
         },
         "gm_salt": {
           // Sal pública de la clave de GM (el cliente la necesita para calcular el hash).
@@ -83,7 +94,7 @@
           // se puede EDITAR o BORRAR si sos su autor (campo 'autor') o el GM de la campaña.
           ".read": "auth != null",
           "$claseId": {
-            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )",
+            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
             // Solo se evalúa al escribir un valor (no al borrar). 'autor' es el uid del creador: al crear tiene que
             // ser el uid de quien escribe; al editar (autor o GM) tiene que seguir siendo el autor original, así el
             // GM puede corregir lo de otro sin quedarse con la autoría ni romper la validación.
@@ -94,7 +105,7 @@
           // Subclases homebrew de la campaña (para clases oficiales o custom). Mismos permisos que clases_custom.
           ".read": "auth != null",
           "$subclaseId": {
-            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )",
+            ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )",
             ".validate": "newData.hasChildren(['id', 'clase', 'name', 'autor']) && newData.child('id').val() == $subclaseId && $subclaseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('clase').isString() && newData.child('clase').val().matches(/^[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
           }
         },
@@ -105,7 +116,7 @@
           // no obligue a descargar las fichas completas.
           ".read": "auth != null",
           "$personajeId": {
-            ".write": "auth != null && ( root.child('campanas').child($campanaId).child('personajes').child($personajeId).child('owner').val() == auth.uid || root.child('campanas').child($campanaId).child('gm').val() == auth.uid )"
+            ".write": "auth != null && ( root.child('campanas').child($campanaId).child('personajes').child($personajeId).child('owner').val() == auth.uid || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) )"
           }
         },
         "personajes": {
@@ -125,7 +136,7 @@
             //     (esto es lo único que permite el flujo de "reclamar personaje" en index.html;
             //     ya NO alcanza con que el campo 'owner' esté vacío para poder editar datos ajenos,
             //     como pasaba antes).
-            ".write": "auth != null && ( (data.child('owner').exists() && data.child('owner').val() == auth.uid) || root.child('campanas').child($campanaId).child('gm').val() == auth.uid || (!data.child('owner').exists() && newData.child('owner').val() == auth.uid) )"
+            ".write": "auth != null && ( (data.child('owner').exists() && data.child('owner').val() == auth.uid) || (root.child('campanas').child($campanaId).child('gm').val() == auth.uid || root.child('campanas').child($campanaId).child('gm_apoyo').child(auth.uid).val() === true) || (!data.child('owner').exists() && newData.child('owner').val() == auth.uid) )"
           }
         }
       }
