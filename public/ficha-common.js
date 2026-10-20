@@ -1076,16 +1076,22 @@
       filaVacia: '<p class="inventory-empty">Inventario vacío.</p>',
       renderFila: (item, idx) => {
         const nombreEsc = item.nombre.replace(/'/g, "\\'");
-        const catLabel = { armadura: '🛡️ Armadura', escudo: '🛡️ Escudo', municion: '🏹 Munición', bienes: '💰 Bienes' }[item.categoria] || '';
+        const catLabel = { armadura: '🛡️ Armadura', escudo: '🛡️ Escudo', arma: '⚔️ Arma', municion: '🏹 Munición', bienes: '💰 Bienes' }[item.categoria] || '';
         const acInfo = '';   // la CA, el tope de DEX y las penalizaciones se describen en una línea propia (descripcionArmadura)
+        // Casilla de equipado sin entrar a edición: armas, armaduras y escudos (y cualquier objeto general que ya sea una armadura o esté equipado).
+        const equipable = item.categoria === 'arma' || item.categoria === 'armadura' || item.categoria === 'escudo' || item.equipado || (!item.categoria || item.categoria === 'general') && reconocerArmaduras(item).length > 0;
+        const equipadoChk = equipable
+          ? `<label class="inventory-equip" title="Equipado/portado: las armaduras y escudos equipados cuentan para la CA"><input type="checkbox" ${item.equipado ? 'checked' : ''} ${modoLectura ? 'disabled' : ''} onchange="FichaInventario.alternarEquipado(${idx}, this.checked)"> Equipado</label>`
+          : '';
         const usarBtn = item.consumible
           ? `<button onclick="FichaInventario.usar(${idx})" title="Gasta 1 sin entrar a edición">⚡ Usar</button>`
           : '';
         return `
-          <div class="inventory-item">
+          <div class="inventory-item${item.equipado ? ' equipado' : ''}">
             <div class="inventory-item-top">
-              <span class="inventory-item-name">${item.equipado ? '🛡️ ' : ''}${item.nombre} <span class="inventory-item-meta">x${item.cantidad}${catLabel ? ' · ' + catLabel : ''}${acInfo}</span></span>
+              <span class="inventory-item-name">${item.equipado ? (item.categoria === 'arma' ? '⚔️ ' : '🛡️ ') : ''}${item.nombre} <span class="inventory-item-meta">x${item.cantidad}${catLabel ? ' · ' + catLabel : ''}${acInfo}</span></span>
               <div class="inventory-item-actions">
+                ${equipadoChk}
                 ${usarBtn}
                 <button onclick="FichaInventario.editor.mostrarFormulario(${idx})">✏️</button>
                 <button onclick="FichaInventario.editor.eliminar(${idx}, '¿Eliminar \\'${nombreEsc}\\' del inventario?')">🗑️</button>
@@ -1104,6 +1110,7 @@
             <option value="general" ${!item || item.categoria === 'general' || !item.categoria ? 'selected' : ''}>General</option>
             <option value="armadura" ${item && item.categoria === 'armadura' ? 'selected' : ''}>Armadura</option>
             <option value="escudo" ${item && item.categoria === 'escudo' ? 'selected' : ''}>Escudo (suma a la CA)</option>
+            <option value="arma" ${item && item.categoria === 'arma' ? 'selected' : ''}>Arma</option>
             <option value="municion" ${item && item.categoria === 'municion' ? 'selected' : ''}>Munición</option>
             <option value="bienes" ${item && item.categoria === 'bienes' ? 'selected' : ''}>Bienes comerciales</option>
           </select>
@@ -1167,7 +1174,13 @@
       emitirUso('inventario', `Usó ${item.nombre} (quedan ${item.cantidad})`);
     }
 
-    window.FichaInventario = { editor, guardarDesdeFormulario, alternarCamposArmadura, usar };
+    // Equipar / desequipar sin abrir el formulario (el cambio dispara 'ficha:inventario' y la CA se recalcula sola).
+    function alternarEquipado(idx, valor) {
+      if (modoLectura) return;
+      editor.mutar(idx, (it) => { it.equipado = !!valor; });
+    }
+
+    window.FichaInventario = { editor, guardarDesdeFormulario, alternarCamposArmadura, usar, alternarEquipado };
   }
 
   // ============================================================

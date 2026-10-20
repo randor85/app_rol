@@ -435,6 +435,8 @@ body {
 .inventory-item-desc { font-size: var(--fs-sm); color: var(--texto-suave); }
 .inventory-item-actions { display: flex; gap: var(--sp-1); align-items: center; }
 .inventory-item-actions button { min-height: 36px; min-width: 36px; background: transparent; color: var(--texto); border: 1px solid var(--borde); border-radius: var(--radio-sm); cursor: pointer; }
+.inventory-equip { display: inline-flex; align-items: center; gap: var(--sp-1); font-size: var(--fs-sm); cursor: pointer; padding: 0 var(--sp-2); min-height: 36px; }
+.inventory-equip input { width: 18px; height: 18px; }
 .inventory-item.equipado { border-left: 3px solid var(--acento); padding-left: var(--sp-3); }
 .inventory-empty, .reputacion-empty { color: var(--texto-suave); font-size: var(--fs-sm); }
 
