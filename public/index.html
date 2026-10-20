@@ -10,8 +10,8 @@
             --bg-color: #0f0f12;
             --card-bg: #1a1a24;
             --card-hover: #242433;
-            --accent-gold: #664d1b;
-            --accent-gold-bright: #7a6d23;
+            --accent-gold: #d4a63a;   /* v93.0: antes #664d1b (2,3:1 sobre el fondo oscuro, ilegible) */
+            --accent-gold-bright: #ecc766;
             --text-color: #e2e8f0;
             --text-muted: #94a3b8;
             --border-color: #2e2e3e;
@@ -139,6 +139,7 @@
             font-size: 0.85rem;
             font-weight: bold;
             color: var(--accent-gold-bright);
+            background: transparent;   /* v93.0: los <button> heredaban el gris claro del navegador */
             border: 1px solid var(--accent-gold);
             border-radius: 20px;
             text-transform: uppercase;
@@ -433,7 +434,7 @@
           if (user) {
             clearTimeout(temporizadorSinSesion); yaHuboSesionEnEstaPagina = true;
             miUidActual = user.uid;
-            welcomeText.innerText = `¡Hola, ${user.displayName || user.email}!`; // Muestra el correo si no hay nombre
+            welcomeText.innerText = `¡Hola, ${user.displayName || user.email || 'jugador'}!`; // Muestra el correo si no hay nombre
             btnLogin.style.display = 'none';
             loginEmailForm.style.display = 'none'; // <-- OCULTAR FORMULARIO AL LOGUEARSE
             btnLogout.style.display = 'inline-block';
