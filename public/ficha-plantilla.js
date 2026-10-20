@@ -62,7 +62,7 @@
     <div class="barra-dato"><small>HP</small><strong id="barra-hp">—</strong></div>
     <div class="barra-dato"><small>CA</small><strong id="barra-ca">—</strong></div>
     <div class="barra-dato"><small>Prof.</small><strong id="barra-prof">—</strong></div>
-    <label class="conc-casilla" id="barra-conc" hidden>🧠 <span id="barra-conc-nombre"></span></label>
+    <button type="button" class="conc-casilla" id="barra-conc" data-activa="false" title="Sin concentración"><span class="conc-icono" aria-hidden="true">🧠</span> <span id="barra-conc-nombre">Sin concentración</span></button>
     <span class="barra-sep"></span>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="corto">☕ Corto</button>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="largo">🌙 Largo</button>

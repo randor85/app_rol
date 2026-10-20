@@ -317,6 +317,12 @@ body {
 .cond-chip { background: color-mix(in srgb, var(--mal) 14%, var(--surface)); color: var(--texto); border: 1px solid var(--mal); }
 .conc-chip, .conc-casilla { background: color-mix(in srgb, var(--acento-2) 15%, var(--surface)); color: var(--texto); border: 1px solid var(--acento-2); cursor: pointer; }
 .conc-casilla input { width: 18px; height: 18px; }
+/* Chip de concentración de la barra fija: apagado (gris, borde punteado) o encendido (color de acento y nombre del hechizo). */
+#barra-conc { display: inline-flex; align-items: center; gap: var(--sp-1); font: inherit; font-size: var(--fs-sm); max-width: 46vw; min-height: 32px; }
+#barra-conc #barra-conc-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#barra-conc[data-activa="false"] { opacity: 0.55; border-style: dashed; cursor: default; }
+#barra-conc[data-activa="false"] .conc-icono { filter: grayscale(1); }
+#barra-conc[data-activa="true"] { font-weight: 700; box-shadow: 0 0 0 2px color-mix(in srgb, var(--acento-2) 45%, transparent); }
 .buffs-activos { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; font-size: var(--fs-sm); }
 .buffs-vacio { color: var(--texto-suave); }
 

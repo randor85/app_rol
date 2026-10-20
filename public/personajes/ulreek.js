@@ -29,7 +29,7 @@ window.PERSONAJES = window.PERSONAJES || {};
       const btn = tr.querySelector('button[onclick^="FichaHechizos.usar("]');
       const cell = tr.querySelector('.spell-item-actions');
       if (!btn || !cell) return;
-      const idx = parseInt(btn.getAttribute('onclick').match(/usar\((\d+)\)/)[1], 10);
+      const idx = parseInt(btn.getAttribute('onclick').match(/usar\((\d+)/)[1], 10);
       const h = items[idx];
       let sel = cell.querySelector('.pool-sel');
       if (!h || h.nivel === 0) { if (sel) sel.remove(); return; }

@@ -1,0 +1,107 @@
+<h3>Familiares Especiales (Pact of the Chain / Wild Companion)</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Familiar</th>
+<th>AC / HP / Speed</th>
+<th>Habilidades Clave</th>
+<th>Ataques &amp; Tiradas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Imp</strong> (Fiend)</td>
+<td>AC 13 / HP 10 / Fly 40ft</td>
+<td>Invisibility, Shapechanger, Devil's Sight. Infiltrador aéreo y scout principal.</td>
+<td>
+ Sting +5 (1d4+3 P + 3d6 Poison CON save DC 11)
+ <br/><button class="btn-roll" onclick="rollAttack(5, 'Imp Sting Atk')">🎯 +5</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 4, 3, 'Imp Sting Piercing')">💥 1d4+3</button>
+<button class="btn-roll" onclick="rollGenericDamage(3, 6, 0, 'Imp Poison Damage')">☣️ 3d6 Poison</button>
+</td>
+</tr>
+<tr>
+<td><strong>Pseudodragon</strong> (Dragon)</td>
+<td>AC 13 / HP 7 / Fly 60ft</td>
+<td>Blindsight 10ft, Magic Resistance, Keen Senses. Scout de percepción.</td>
+<td>
+ Sting +4 (1d4+2 P + Poison CON save DC 11 o Unconscious)
+ <br/><button class="btn-roll" onclick="rollAttack(4, 'Pseudodragon Sting')">🎯 +4</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 4, 2, 'Pseudodragon Damage')">💥 1d4+2</button>
+</td>
+</tr>
+<tr>
+<td><strong>Quasit</strong> (Fiend)</td>
+<td>AC 13 / HP 7 / Speed 40ft</td>
+<td>Invisibility, Scare (1/day WIS save DC 10), Shapechanger. Control y miedo.</td>
+<td>
+ Claws +4 (1d4+3 S + 2d6 Poison CON save DC 11)
+ <br/><button class="btn-roll" onclick="rollAttack(4, 'Quasit Claws Atk')">🎯 +4</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 4, 3, 'Quasit Damage')">💥 1d4+3</button>
+<button class="btn-roll" onclick="rollGenericDamage(2, 6, 0, 'Quasit Poison')">☣️ 2d6 Poison</button>
+</td>
+</tr>
+<tr>
+<td><strong>Sprite</strong> (Fey)</td>
+<td>AC 15 / HP 2 / Fly 40ft</td>
+<td>Invisibility, Stealth +8, Heart Sight (CHA save DC 10 revela alineamiento/emoción).</td>
+<td>
+ Shortbow +6 (1 P + Poison CON save DC 10 o Unconscious si falla por 5+)
+ <br/><button class="btn-roll" onclick="rollAttack(6, 'Sprite Shortbow')">🎯 +6</button>
+</td>
+</tr>
+</tbody>
+</table></div>
+<h3 style="margin-top:20px;">Formas de Wild Shape Recomendadas</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>CR / AC / HP</th>
+<th>Velocidad / Sentidos</th>
+<th>Ataques y Utilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Giant Spider</strong></td>
+<td>CR 1 / AC 14 / HP 26</td>
+<td>30 ft, Climb 30 ft / Darkvision 60ft</td>
+<td>
+ Bite +5 (1d8+3 P + 2d8 Poison DC 11). Web (Rango 30/60, Restrained, DC 12). Spider Climb.
+ <br/><button class="btn-roll" onclick="rollAttack(5, 'Giant Spider Bite')">🎯 +5</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 3, 'Spider Bite Piercing')">💥 1d8+3</button>
+<button class="btn-roll" onclick="rollGenericDamage(2, 8, 0, 'Spider Poison')">☣️ 2d8 Poison</button>
+</td>
+</tr>
+<tr>
+<td><strong>Brown Bear</strong></td>
+<td>CR 1 / AC 11 / HP 34</td>
+<td>40 ft, Climb 30 ft / Keen Smell</td>
+<td>
+ Multiattack (Bite + Claws). Bite +5 (1d8+4 P), Claws +5 (2d6+4 S). Tank/Damage.
+ <br/><button class="btn-roll" onclick="rollAttack(5, 'Brown Bear Atk')">🎯 +5</button>
+<button class="btn-roll" onclick="rollGenericDamage(1, 8, 4, 'Bear Bite')">💥 1d8+4</button>
+<button class="btn-roll" onclick="rollGenericDamage(2, 6, 4, 'Bear Claws')">🐾 2d6+4</button>
+</td>
+</tr>
+<tr>
+<td><strong>War Horse</strong></td>
+<td>CR 1/2 / AC 11 / HP 19</td>
+<td>60 ft / Normal</td>
+<td>Hooves +6 (2d6+4 B). Carga rápida y montura. <button class="btn-roll" onclick="rollGenericDamage(2, 6, 4, 'War Horse Hooves')">🐴 2d6+4</button></td>
+</tr>
+<tr>
+<td><strong>Owl / Lechuza</strong></td>
+<td>CR 0 / AC 11 / HP 1</td>
+<td>Fly 60 ft / Darkvision 120ft</td>
+<td>Flyby (no provoca ataques de oportunidad). Scout aéreo perfecto.</td>
+</tr>
+<tr>
+<td><strong>Cat / Rat</strong></td>
+<td>CR 0 / AC 10-12 / HP 1-2</td>
+<td>Stealth Urbano / Pasajes estrechos</td>
+<td>Infiltración sigilosa no sospechosa.</td>
+</tr>
+</tbody>
+</table></div>

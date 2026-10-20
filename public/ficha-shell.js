@@ -23,6 +23,9 @@
  *     ca:{ fija:17 } | { sinArmadura:() => 10 + FichaAtributos.modDe('DEX') + …, texto:'10 + DEX + WIS' },
  *     ataques:[{ nombre, habilidad:'STR', competente:true, bonoExtra:0, dano:{count,sides,mod:'STR'|n|{hab,prof,fijo}}, textoDano, notas, extras:[{nombre,dado}],
  *                soloDano:true (fila sin tirada de ataque; dano.count y textoDano pueden ser funciones (ctx) => …) }],
+ *     danoExtra:[{ nombre, icono, dado:{count,sides,mod?}, texto, grupos:['ataques','wild-shape',…] }]   daño que se suma a los golpes (p. ej. Elemental Fury, Sneak Attack):
+ *        'ataques' = botón extra en cada fila de la tabla de ataques; cualquier otro grupo = botón extra junto a cada botón de daño (rollGenericDamage)
+ *        dentro de las secciones propias marcadas con data-danoextra="<grupo>" (p. ej. la tabla de formas de Wild Shape).
  *     velocidadNota:'/ 🦇30 vuelo', badgeAtaque:{ extra:4, alternativo:-5 }   (el badge de ataque suma `extra` y muestra "+12/+7"),
  *     espaciosModo:'casillas'   (espacios como casillas chk-slotN-M, ☑ = usado, con espejo slot-N-cur: ver renderEspacios),
  *     hechizos:[…], inventario:[…], reputacion:[…],                      (semillas; mismo formato que FICHA_CONFIG)
@@ -113,6 +116,7 @@
     if (!ABIL_VALIDAS.includes(d.habilidadAtaque)) d.habilidadAtaque = 'STR';
     if (d.habilidadConjuro && !ABIL_VALIDAS.includes(d.habilidadConjuro)) d.habilidadConjuro = null;
     d.salvaciones = (d.salvaciones || []).filter(k => ABIL_VALIDAS.includes(k));
+    d.danoExtra = aLista(d.danoExtra).filter(x => x && x.dado).map(x => ({ nombre: String(x.nombre || 'Daño extra'), icono: x.icono ? String(x.icono).slice(0, 4) : undefined, texto: x.texto ? String(x.texto) : undefined, dado: { count: parseInt(x.dado.count, 10) || 1, sides: parseInt(x.dado.sides, 10) || 6, mod: parseInt(x.dado.mod, 10) || 0 }, grupos: aLista(x.grupos).map(String).filter(g => /^[a-z0-9_-]+$/i.test(g)) }));
     d.recursos = (d.recursos || []).map(r => {
       const x = Object.assign({}, r);
       x.id = idSeguro(x.id, 'recurso'); if (x.prefijo) x.prefijo = idSeguro(x.prefijo, x.id + '-use-'); if (x.campo) x.campo = idSeguro(x.campo, x.id + '-cur');
@@ -182,6 +186,38 @@
     window.CONFIG_NIVEL = { clases: P.clases.map(c => Object.assign({}, c)) };
   }
 
+  /* ---------- daño extra (P.danoExtra): motor común, sin código por ficha ---------- */
+  function formulaDe(d) { return `${d.count}d${d.sides}${d.mod ? (d.mod > 0 ? '+' : '') + d.mod : ''}`; }
+  // 'ataques': se agrega como extra de cada fila de la tabla de ataques (antes de dibujar la ficha).
+  function danoExtraEnAtaques() {
+    (P.danoExtra || []).filter(x => x && x.dado && (x.grupos || []).indexOf('ataques') >= 0).forEach(x => {
+      (P.ataques || []).forEach(a => {
+        if (a.soloDano && !a.dano) return;
+        a.extras = a.extras || [];
+        if (!a.extras.some(e => e.nombre === x.nombre)) a.extras.push({ nombre: x.nombre, icono: x.icono, dado: x.dado });
+      });
+    });
+  }
+  // Otros grupos: un botón junto a cada grupo de botones de daño de los bloques marcados con data-danoextra (después de cargar los fragmentos).
+  function danoExtraEnSecciones() {
+    (P.danoExtra || []).forEach(x => {
+      if (!x || !x.dado) return;
+      (x.grupos || []).filter(g => g !== 'ataques' && /^[a-z0-9_-]+$/i.test(g)).forEach(g => {
+        document.querySelectorAll(`[data-danoextra~="${g}"]`).forEach(cont => {
+          const botones = Array.from(cont.querySelectorAll('button[onclick*="rollGenericDamage"]'));
+          new Set(botones.map(b => b.parentElement)).forEach(pad => {
+            if (Array.from(pad.querySelectorAll('[data-dano-extra-de]')).some(e => e.dataset.danoExtraDe === x.nombre)) return;
+            const ult = botones.filter(b => b.parentElement === pad).pop();
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'btn-roll btn-roll-sm'; b.dataset.roll = formulaDe(x.dado); b.dataset.etiqueta = x.nombre; b.dataset.danoExtraDe = x.nombre;
+            b.title = x.texto || x.nombre; b.textContent = `${x.icono || '➕'} +${formulaDe(x.dado)} ${x.nombre}`;
+            ult.after(' ', b);
+          });
+        });
+      });
+    });
+  }
+
   /* ---------- fragmentos de secciones propias ---------- */
   async function cargarFragmentos() {
     const nodos = Array.from(document.querySelectorAll('.seccion-propia[data-fragmento]')).filter(n => n.dataset.fragmento);
@@ -244,7 +280,8 @@
   function instalarPuenteCasillas() {
     if (!window.FichaHechizos || FichaHechizos.__puente) return;
     const usarOriginal = FichaHechizos.usar;
-    FichaHechizos.usar = function (idx) {
+    FichaHechizos.usar = function (idx, modo) {
+      if (modo === 'tirar') { usarOriginal(idx, modo); return; }   // solo tira: no gasta espacio, no hay nada que reflejar en las casillas
       const h = FichaHechizos.editor.items()[idx];
       let n = h && h.slotCost;
       if (h && h.upcast) { const sel = $(`upcast-sel-${idx}`); n = sel ? parseInt(sel.value, 10) : h.upcast.nivelBase; }
@@ -252,7 +289,7 @@
       const el = n ? $(`slot-${n}-cur`) : null;
       const antes = el ? parseInt(el.textContent, 10) : NaN;
       enUsarHechizo = true;
-      try { usarOriginal(idx); } finally { enUsarHechizo = false; }
+      try { usarOriginal(idx, modo); } finally { enUsarHechizo = false; }
       if (el && !isNaN(antes) && parseInt(el.textContent, 10) === antes - 1) {
         const cb = slotCasillas(n).find(c => !c.checked);
         if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); }
@@ -650,10 +687,12 @@
 
     SKILLS_CFG = Object.keys(FichaPlantilla.SKILL_HAB).map(n => ({ clave: n, contenedorId: FichaPlantilla.skillId(n), habilidad: FichaPlantilla.SKILL_HAB[n], competente: !!(P.habilidades || {})[n], expertise: (P.habilidades || {})[n] === 'exp' }));
     armarConfig();
+    danoExtraEnAtaques();
     raiz().innerHTML = FichaPlantilla.ficha(P, { codigoCampana });
     document.title = P.nombre + ' — Ficha';
     if (window.FichaPaleta) FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: P.paleta, clave: P.id });
     await cargarFragmentos();
+    danoExtraEnSecciones();
 
     try { await cargarScript('clases-custom.js'); } catch (e) { /* módulo opcional */ }
     for (const s of ['ficha-common.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);

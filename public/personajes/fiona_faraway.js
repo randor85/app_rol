@@ -23,12 +23,13 @@ PERSONAJES.fiona_faraway = {
   salvaciones: ['INT', 'WIS'],
   habilidades: { 'Animal Handling': 'comp', 'Insight': 'comp', 'Medicine': 'comp', 'Nature': 'comp', 'Perception': 'comp', 'Religion': 'comp', 'Survival': 'comp' },
   competencias: "• <strong>Armaduras:</strong> Ligera, Media, Escudos. <br>• <strong>Armas:</strong> Armas Simples, Armas Marciales. <br>• <strong>Herramientas:</strong> Herbalism Kit, Healer's Kit. <br>• <strong>Idiomas:</strong> Common, Druidic, Goblin, Orc.",
+  // Elemental Fury: +1d6 de fuego o frío, una vez por turno, con ataques de arma y de Wild Shape (el motor agrega el botón a cada ataque y a cada forma marcada).
+  danoExtra: [{ nombre: 'Elemental Fury', icono: '🔥❄️', dado: { count: 1, sides: 6 }, texto: 'Una vez por turno al impactar: +1d6 de daño de fuego o de frío (elige el tipo antes de tirar).', grupos: ['ataques', 'wild-shape'] }],
   ca: { fija: 17 },              // CA fija mientras no haya armadura/escudo equipados; al equipar se calcula sola
 
   ataques: [
     { nombre: 'Quarterstaff', habilidad: 'STR', dano: { count: 1, sides: 6, mod: 'STR' }, textoDano: '1d6 + STR contundente', notas: 'Melee, Versátil (1d8)' },
-    { nombre: 'Shillelagh (Bastón Mágico)', habilidad: 'WIS', dano: { count: 1, sides: 8, mod: 'WIS' }, textoDano: '1d8 + WIS contundente (+1d6 Fire/Cold)', notas: 'Acción adicional; usa WIS. +1d6 elemental por Elemental Fury 1/turno',
-      extras: [{ nombre: 'Elemental Fury (+1d6)', icono: '🔥', dado: { count: 1, sides: 6 } }] },
+    { nombre: 'Shillelagh (Bastón Mágico)', habilidad: 'WIS', dano: { count: 1, sides: 8, mod: 'WIS' }, textoDano: '1d8 + WIS contundente (+1d6 Fire/Cold)', notas: 'Acción adicional; usa WIS. +1d6 elemental por Elemental Fury 1/turno' },
     { nombre: 'Light Crossbow', habilidad: 'DEX', dano: { count: 1, sides: 8, mod: 'DEX' }, textoDano: '1d8 + DEX perforante', notas: 'Rango 80/320 ft, Cargando, 2H' },
     { nombre: 'Heavy Crossbow', habilidad: 'DEX', dano: { count: 1, sides: 10, mod: 'DEX' }, textoDano: '1d10 + DEX perforante', notas: 'Rango 100/400 ft, Cargando, Pesada, 2H' },
     { nombre: 'Splinter Arrows', habilidad: 'DEX', dano: { count: 1, sides: 6, mod: { hab: 'DEX', prof: true } }, textoDano: '1d6 + Competencia + DEX perforante', notas: 'Cono 60 ft, elige hasta 4 criaturas y realiza ataques a distancia. Poco común.' },

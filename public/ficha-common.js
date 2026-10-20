@@ -513,6 +513,14 @@
     const actual = concentracionActual();
     if (cb) cb.checked = !!actual;
     if (nombre) nombre.textContent = actual || 'ninguna';
+    // Chip de la barra fija (ficha única): apagado o encendido con el nombre del hechizo; tocarlo suelta la concentración.
+    const chip = document.getElementById('barra-conc'), chipNombre = document.getElementById('barra-conc-nombre');
+    if (chip) {
+      chip.dataset.activa = actual ? 'true' : 'false';
+      chip.title = actual ? `Concentrando en ${actual}. Toca para soltar la concentración.` : 'Sin concentración';
+      if (chipNombre) chipNombre.textContent = actual || 'Sin concentración';
+      chip.setAttribute('aria-label', actual ? `Concentrando en ${actual}. Toca para soltarla.` : 'Sin concentración');
+    }
   }
   function fijarConcentracion(nombre) {
     if (modoLectura) return;
@@ -546,6 +554,8 @@
       else fijarConcentracion('');
     });
     document.addEventListener('ficha:datos-sincronizados', renderConcentracion);
+    const chipBarra = document.getElementById('barra-conc');
+    if (chipBarra && !chipBarra.dataset.ligado) { chipBarra.dataset.ligado = '1'; chipBarra.addEventListener('click', () => { if (concentracionActual()) fijarConcentracion(''); }); }
     renderConcentracion();
     window.FichaConcentracion = { actual: concentracionActual, fijar: fijarConcentracion, esConcentracion };
   }
@@ -622,6 +632,22 @@
     return e.valor !== 0;
   }
 
+  // Hechizos cuyo efecto se puede repetir muchas veces mientras dura (daño cada turno, ataques de criaturas invocadas…):
+  // se lanzan UNA vez (gasta el espacio y concentra) y el daño se tira aparte tantas veces como haga falta. Se puede
+  // forzar en cada hechizo con el campo `repetible` (true/false); si no está, se decide por el nombre.
+  const HECHIZOS_REPETIBLES = new Set(['Insect Plague', 'Moonbeam', 'Spirit Guardians', 'Call Lightning', 'Flaming Sphere', 'Flame Blade', 'Heat Metal',
+    'Cloud of Daggers', 'Cloudkill', 'Wall of Fire', 'Wall of Thorns', 'Wall of Ice', 'Blade Barrier', 'Black Tentacles', "Evard's Black Tentacles", 'Storm of Vengeance',
+    'Incendiary Cloud', 'Sunbeam', 'Sickening Radiance', 'Spiritual Weapon', 'Spirit Shroud', 'Vampiric Touch', 'Witch Bolt', "Dragon's Breath", 'Arcane Sword',
+    'Arcane Hand', 'Create Bonfire', 'Dawn', 'Spike Growth', 'Hunger of Hadar', 'Hex', "Hunter's Mark", 'Divine Favor', 'Ensnaring Strike',
+    'Conjure Animals', 'Conjure Woodland Beings', 'Conjure Minor Elementals', 'Conjure Elemental', 'Conjure Fey', 'Conjure Celestial', 'Giant Insect', 'Animate Objects']);
+  const esRepetible = (h) => {
+    if (!h) return false;
+    if (h.repetible === true) return true;
+    if (h.repetible === false) return false;
+    const base = String(h.nombre || '').replace(/\s*\(2024\)\s*$/, '').trim();
+    return HECHIZOS_REPETIBLES.has(base) || /^Summon /.test(base);
+  };
+
   function iniciarEditorHechizos() {
     // Nivel de espacio elegido en el selector de upcast de cada fila: se recuerda
     // para que un re-render (sincronización, DC automáticos) no lo resetee al base.
@@ -650,8 +676,10 @@
           const selectHtml = `<select id="upcast-sel-${idx}" style="width:auto;display:inline-block;" onchange="FichaHechizos.recordarUpcast(${idx}, this.value)">${opciones.map(n => `<option value="${n}" ${n === elegido ? 'selected' : ''}>Nvl ${n}</option>`).join('')}</select>`;
           const etiquetaBtn = h.upcast.tipo === 'tabla' ? '📜 Usar' : '🎲 Tirar';
           accionBtn = `${selectHtml} <button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">${etiquetaBtn}</button>`;
+          if (esRepetible(h) && (h.formula || h.upcast.tipo === 'dado')) accionBtn = `${selectHtml} <button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx}, 'lanzar')" title="Gasta el espacio y empieza la concentración, sin tirar daño">✨ Lanzar</button> <button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx}, 'tirar')" title="Tira el daño o efecto sin gastar otro espacio (puedes repetirlo mientras dure)">🎲 Daño</button>`;
         } else if (h.formula) {
           accionBtn = `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">🎲 ${h.formula.count}d${h.formula.sides}${h.formula.mod ? (h.formula.mod > 0 ? '+' : '') + h.formula.mod : ''}</button>`;
+          if (esRepetible(h)) accionBtn = `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx}, 'lanzar')" title="Gasta el espacio y empieza la concentración, sin tirar daño">✨ Lanzar</button> <button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx}, 'tirar')" title="Tira el daño o efecto sin gastar otro espacio (puedes repetirlo mientras dure)">🎲 ${h.formula.count}d${h.formula.sides}${h.formula.mod ? (h.formula.mod > 0 ? '+' : '') + h.formula.mod : ''}</button>`;
         } else {
           accionBtn = `<button class="btn-roll btn-roll-sm" onclick="FichaHechizos.usar(${idx})">✅ Usar</button>`;
         }
@@ -739,6 +767,7 @@
           </div>
  <div class="spell-form-row-dado">
             <label><input type="checkbox" id="hf-concentracion" ${h ? (esConcentracion(h) ? 'checked' : '') : ''}> 🧠 Requiere concentración (marca la casilla de concentración al lanzarlo)</label>
+            <label><input type="checkbox" id="hf-repetible" ${h && esRepetible(h) ? 'checked' : ''}> 🔁 Efecto repetible mientras dura: botones «Lanzar» (gasta el espacio) y «Daño» (se tira las veces que haga falta)</label>
           </div>
           <div class="spell-form-row-dado">
             <label><input type="checkbox" id="hf-buff-on" onchange="FichaHechizos.alternarCamposBuff()" ${h && h.buff ? 'checked' : ''}> 🔆 Buff / aura que se puede prender y apagar</label>
@@ -856,6 +885,7 @@
         upcast,
         buff,
         concentracion: document.getElementById('hf-concentracion').checked,
+        repetible: document.getElementById('hf-repetible') ? document.getElementById('hf-repetible').checked : undefined,
         slotCost: nivel > 0 ? nivel : null,
       });
     }
@@ -864,9 +894,11 @@
     // el selector de upcast de esa fila) y resuelve el efecto: tirada de dados
     // (fija, o base+bono por nivel si es upcast tipo 'dado'), texto de una tabla
     // por nivel (upcast tipo 'tabla'), o un simple "usado" si no hay nada de eso.
-    function usar(idx) {
+    function usar(idx, modo) {
+      // modo: undefined = lanzar y tirar (lo de siempre) | 'lanzar' = gasta el espacio y concentra, sin tirar | 'tirar' = solo tira, sin gastar espacio
       const h = editor.items()[idx];
       if (!h || modoLectura) return;
+      const soloTirar = modo === 'tirar', soloLanzar = modo === 'lanzar';
 
       let nivelGastado = h.slotCost;
       if (h.upcast) {
@@ -876,7 +908,7 @@
 
       let quedan = null;
       let slotId = null;
-      if (nivelGastado) {
+      if (nivelGastado && !soloTirar) {
         // Id directo ('slot-N-cur'), no indexado por posición en FICHA_CONFIG.slotsIds
         // — esa indexación se rompía (undefined) para cualquier nivel más allá de
         // slotsIds.length, como pasó de verdad al probar contra los datos reales de Fiona.
@@ -898,21 +930,23 @@
       }
 
       // Registro de uso (historial del lanzador de dados, si está cargado).
-      emitirUso('hechizo', h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con ${FICHA_CONFIG.etiquetaEspacio ? 'espacio de ' + FICHA_CONFIG.etiquetaEspacio(slotId, nivelGastado) : 'espacio de nivel ' + nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`));
+      if (!soloTirar) emitirUso('hechizo', h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con ${FICHA_CONFIG.etiquetaEspacio ? 'espacio de ' + FICHA_CONFIG.etiquetaEspacio(slotId, nivelGastado) : 'espacio de nivel ' + nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`));
       const enDados = (window.FichaDados && FichaDados.mostrar) ? FichaDados.mostrar : null;
 
       // Hechizo de concentración: marca la casilla (y deja de concentrar en el anterior).
       let sufijoBuff = '';
-      if (esConcentracion(h) && window.FichaConcentracion) {
+      if (!soloTirar && esConcentracion(h) && window.FichaConcentracion) {
         const previa = FichaConcentracion.fijar(h.nombre);
         sufijoBuff += `\n🧠 Concentrando en "${h.nombre}"${previa && previa !== h.nombre ? ` (dejas de concentrarte en "${previa}")` : ''}.`;
       }
       // Lanzar un hechizo con buff lo activa (apagarlo es a mano o con la ✖ del panel).
-      if (h.buff && !h.buff.activo) {
+      if (!soloTirar && h.buff && !h.buff.activo) {
         editor.mutar(idx, (it) => { it.buff.activo = true; });
         sufijoBuff += `\n🔆 Buff "${h.nombre}" activado: ${resumenEfectos(h.buff.efectos)}.`;
         emitirUso('buff', `Buff "${h.nombre}" activado`, resumenEfectos(h.buff.efectos));
       }
+
+      if (soloLanzar) return;   // el efecto se tira después con «Daño» (tantas veces como haga falta)
 
       if (h.upcast && h.upcast.tipo === 'tabla') {
         const texto = h.upcast.tabla[nivelGastado] || h.upcast.tabla[h.upcast.nivelBase] || '(sin detalle para ese nivel)';
@@ -941,6 +975,7 @@
           const bb = FichaBuffs.bonoDeHechizo(obj, ctxB, soloCond);
           if (bb.partes.length) { total += bb.total; detalle += ' | ' + bb.partes.join(' | '); }
         });
+        if (soloTirar && esConcentracion(h) && window.FichaConcentracion && FichaConcentracion.actual() !== h.nombre) detalle += ' | ⚠️ no estás concentrado en este hechizo (lánzalo primero)';
         if (enDados) enDados(total, `${h.nombre}${etiquetaNivel}`, detalle);
         else alert(`🎲 ${h.nombre}${etiquetaNivel}: ${detalle} = ${total}${sufijoBuff}`);
       } else if (!enDados) {
@@ -961,7 +996,9 @@
       .filter(x => x.h.buff && x.h.buff.activo)
       .map(x => ({ nombre: x.h.nombre, efectos: x.h.buff.efectos || [], apagar: () => alternarBuff(x.idx) })));
 
-    window.FichaHechizos = { editor, usar, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast, recordarUpcast,
+    // Atajos: pasan por window.FichaHechizos.usar para que los envoltorios de la ficha (puente de casillas, etc.) también los vean.
+    const lanzar = (idx) => window.FichaHechizos.usar(idx, 'lanzar'), tirar = (idx) => window.FichaHechizos.usar(idx, 'tirar');
+    window.FichaHechizos = { editor, usar, lanzar, tirar, esRepetible, guardarDesdeFormulario, alternarCamposAtaque, alternarCamposUpcast, recordarUpcast,
       alternarCamposBuff, buffAgregarEfecto, buffQuitarEfecto, buffCambiarTipo, alternarBuff };
     notificarBuffs();
   }
