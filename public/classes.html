@@ -432,7 +432,7 @@ async function cargarCustomDeLaCampana() {
     firebase.auth().onAuthStateChanged((u) => fin(u || null), () => fin(null));
     setTimeout(() => fin(null), 8000);
   });
-  if (!user) { avisoCampana('Inicia sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver las clases y subclases custom de la campaña.'); return; }
+  if (!user) { avisoCampana('Inicia sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver tus subclases custom' + (CAMPANA ? ' y las clases custom de la campaña.' : '.')); return; }
   await ClasesCustom.cargar(firebase.database(), CAMPANA);
 }
 
@@ -440,9 +440,10 @@ async function iniciarCompendio() {
   if (CAMPANA) {
     const enl = document.getElementById('enlace-creador');
     if (enl) { enl.href = 'creador-clases.html?campana=' + encodeURIComponent(CAMPANA); enl.style.display = 'inline-block'; }
-    try { await cargarCustomDeLaCampana(); }
-    catch (e) { console.warn('Clases custom no disponibles:', e); avisoCampana('No se pudieron cargar las clases custom de la campaña; se muestran solo las oficiales.'); }
   }
+  // Las subclases custom son globales: se cargan también sin campaña (con campaña, además, las clases custom de esa campaña).
+  try { await cargarCustomDeLaCampana(); }
+  catch (e) { console.warn('Clases custom no disponibles:', e); if (CAMPANA) avisoCampana('No se pudieron cargar las clases custom de la campaña; se muestran solo las oficiales.'); }
   renderClassGrid('');
   // Deep-link desde las fichas de personaje: classes.html?clase=wizard abre directo el
   // detalle de esa clase (pestaña Progresión, que ya es la que arranca activa) y hace

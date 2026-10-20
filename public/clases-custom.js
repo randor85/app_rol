@@ -436,8 +436,10 @@
   }
   // La lectura global es tolerante: si las reglas todavía no la permiten, la ficha sigue funcionando con las de la campaña.
   const leerGlobal = (db) => db.ref(RUTA_SUBCLASES_GLOBAL).once('value').catch(() => null);
+  // Sin campaña (p. ej. el compendio abierto desde el menú) solo se leen las subclases de la biblioteca global.
   function leer(db, campana) {
-    if (!db || !campana) return Promise.reject(new Error('Falta la base de datos o la campaña.'));
+    if (!db) return Promise.reject(new Error('Falta la base de datos.'));
+    if (!campana) return leerGlobal(db).then((g) => convertir(null, null, g));
     return Promise.all([
       db.ref(rutaBase(campana) + '/clases_custom').once('value'),
       db.ref(rutaBase(campana) + '/subclases_custom').once('value'),
