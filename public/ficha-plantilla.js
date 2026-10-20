@@ -295,9 +295,12 @@
     sec('atributos', '📊', 'Atributos, salvaciones y habilidades', atributos(P), { abierta: true });
     sec('ataques', '⚔️', 'Ataques', ataques(P), { abierta: true });
     if (!P.sinConjuros) sec('conjuros', '✨', 'Conjuros', conjuros(P), { abierta: true });
-    if ((P.recursos || []).length) sec('recursos', '🔥', 'Recursos de clase', recursos(P), { abierta: true, nota: 'el máximo se calcula del nivel y se recargan con el descanso' });
+    // Recursos (de clase, raza y talentos) y rasgos en UNA sola tarjeta: lo que se gasta arriba y lo que dice cada rasgo debajo.
+    const hayRecursos = (P.recursos || []).length > 0;
+    sec('rasgos', '📜', hayRecursos ? 'Recursos y rasgos' : 'Rasgos y características',
+      (hayRecursos ? `<div class="subseccion-titulo">🔥 Recursos</div>${recursos(P)}<div class="subseccion-titulo">📜 Rasgos y características</div>` : '') + rasgos(P),
+      { abierta: true, nota: hayRecursos ? 'los máximos se calculan del nivel y se recargan con el descanso' : '' });
     sec('buffs', '🔆', 'Buffs personalizados', buffsPersonales(P), { abierta: true, nota: 'interruptores propios: suman o restan solo cuando se cumple su condición' });
-    sec('rasgos', '📜', 'Rasgos y características', rasgos(P));
     (P.secciones || []).forEach(s => sec(s.id, s.icono || '📄', esc(s.titulo), `<div class="seccion-propia" data-fragmento="${esc(s.fragmento || '')}">${s.html || '<p class="texto-suave">Cargando…</p>'}</div>`));
     sec('inventario', '🎒', 'Inventario y equipo', inventario(P));
     sec('reputacion', '🏅', 'Reputación y honor', reputacion());

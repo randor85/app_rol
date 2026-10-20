@@ -213,6 +213,8 @@ body {
 .seccion[open] > summary::after, .bitacora-section[open] > summary::after { transform: rotate(180deg); }
 .seccion[open] > summary, .bitacora-section[open] > summary { border-bottom: 1px solid var(--borde); border-radius: var(--radio) var(--radio) 0 0; }
 .seccion-cuerpo, .bitacora-section-content { padding: var(--sp-4); display: grid; gap: var(--sp-4); }
+.subseccion-titulo { margin: var(--sp-4) 0 var(--sp-2); padding-bottom: var(--sp-1); border-bottom: 1px solid var(--borde); font-weight: 800; color: var(--acento); font-size: var(--fs-md); }
+.seccion-cuerpo > .subseccion-titulo:first-child { margin-top: 0; }
 .seccion-icono { font-size: 1.1em; }
 .seccion-nota { font-family: var(--fuente-texto); font-size: var(--fs-sm); font-weight: 400; color: var(--texto-suave); }
 
