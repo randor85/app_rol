@@ -51,7 +51,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '102.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
+  const VERSION_APP = '103.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -132,6 +132,8 @@
     const db = firebase.database();
     const ruta = codigoCampana ? `campanas/${codigoCampana}/personajes/${pj}/definicion` : `usuarios/${user.uid}/personajes/${pj}/definicion`;
     const D = (await db.ref(ruta).once('value')).val();
+    // Un investigador de Call of Cthulhu creado en la app usa su propia ficha: se redirige conservando la dirección.
+    if (D && D.sistema === 'coc') { location.replace('ficha-coc.html' + location.search); return new Promise(() => {}); }
     return D ? normalizarDefinicion(D, pj) : null;
   }
 

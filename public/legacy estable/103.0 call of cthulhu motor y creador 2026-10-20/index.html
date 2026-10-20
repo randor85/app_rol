@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script>if (location.hostname === "personajes-rol.firebaseapp.com") { location.replace("https://personajes-rol.web.app" + location.pathname + location.search + location.hash); }</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Personaje - D&D</title>
+    <link rel="stylesheet" href="ficha-tema.css">
+    <script src="ficha-paleta.js"></script>
+    <script>try { FichaPaleta.aplicarGuardada({ porDefecto: 'obsidiana', clave: 'menu' }); } catch (e) { /* sin paleta */ }</script>
+    <style>
+        /* v99.0: el menú usa los tokens y las paletas de ficha-tema.css (selector de paleta arriba); los nombres de variable antiguos quedan como alias. */
+        :root {
+            --bg-color: var(--bg);
+            --card-bg: var(--surface);
+            --card-hover: var(--surface-2);
+            --accent-gold: var(--acento);
+            --accent-gold-bright: var(--acento-2);
+            --text-color: var(--texto);
+            --text-muted: var(--texto-suave);
+            --border-color: var(--borde);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 30%, var(--surface-2) 0%, var(--bg) 70%);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px color-mix(in srgb, var(--acento) 30%, transparent);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .character-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: var(--sombra);
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            border-color: var(--accent-gold);
+            box-shadow: 0 8px 25px color-mix(in srgb, var(--acento) 25%, transparent);
+        }
+
+        .character-card:hover::before {
+            opacity: 1;
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--accent-gold);
+        }
+
+        .character-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--texto);
+            margin-bottom: 8px;
+        }
+
+        .character-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .btn-open {
+            margin-top: auto;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-gold-bright);
+            background: transparent;   /* v93.0: los <button> heredaban el gris claro del navegador */
+            border: 1px solid var(--accent-gold);
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .character-card:hover .btn-open {
+            background: var(--accent-gold);
+            color: var(--sobre-acento);
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .seccion-campana {
+            margin: 20px auto 30px auto;
+            max-width: 450px;
+            background: color-mix(in srgb, var(--surface) 70%, transparent);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px dashed var(--accent-gold);
+        }
+        .campana-input {
+            width: 70%;
+            padding: 8px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--texto);
+            outline: none;
+            font-size: 0.9rem;
+            text-align-last: center;
+            cursor: pointer;
+        }
+        .campana-input:focus {
+            border-color: var(--accent-gold);
+        }
+
+        /* v99.0: campañas, diálogos y paneles de acceso */
+        .fila-acciones { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+        .btn-mini { padding: 6px 12px; font-size: 0.78rem; margin: 0; cursor: pointer; border-radius: 20px; font-weight: bold; background: transparent; color: var(--accent-gold-bright); border: 1px solid var(--accent-gold); min-height: 36px; }
+        .btn-mini:hover { background: var(--accent-gold); color: var(--sobre-acento); }
+        .btn-mini.peligro { color: var(--mal); border-color: var(--mal); }
+        .btn-mini.peligro:hover { background: var(--mal); color: var(--sobre-acento); }
+        .nota-menu { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
+        .msg-error { color: var(--mal); font-size: 0.85rem; margin-top: 8px; }
+        .msg-ok { color: var(--bien); font-size: 0.85rem; margin-top: 8px; }
+        .modal-velo .modal { text-align: left; }
+        .modal-velo .modal-cab h3 { margin: 0; }
+        .modal-velo .modal-cab button, .modal-velo .modal-pie button { cursor: pointer; }
+        .campo-menu { display: grid; gap: 4px; margin-bottom: 12px; }
+        .campo-menu > span { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+        .campo-menu input { padding: 10px 12px; background: var(--bg); color: var(--texto); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; width: 100%; min-height: 44px; }
+        .opcion-menu { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 4px; font-size: 0.85rem; color: var(--text-color); text-align: left; }
+        .opcion-menu input { width: 20px; height: 20px; margin-top: 2px; flex: none; }
+        .sep-menu { border: none; border-top: 1px solid var(--border-color); margin: 16px 0 12px; }
+        .res-jugador { padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .res-jugador > strong { display: block; margin-bottom: 4px; }
+        .res-camp { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0 4px 12px; font-size: 0.85rem; }
+        .rol-etiqueta { font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--accent-gold); color: var(--accent-gold-bright); margin-left: 6px; }
+        .campo-menu input:focus { outline: none; border-color: var(--accent-gold); }
+        .sistemas { border: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 0 0 8px; }
+        .sistemas legend { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+        .sistema-op { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; min-height: 44px; background: var(--bg); }
+        .sistema-op:has(input:checked) { border-color: var(--accent-gold); background: color-mix(in srgb, var(--acento) 12%, transparent); }
+        .sistema-op input { accent-color: var(--acento); width: 18px; height: 18px; }
+        .fila-gm { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+        .fila-gm small { color: var(--text-muted); }
+        .fila-gm .acciones { display: flex; gap: 6px; flex-wrap: wrap; }
+        .bloque-gm { margin-top: 25px; padding: 12px; border: 1px dashed var(--accent-gold); border-radius: 8px; }
+        .bloque-gm > p.titulo { color: var(--accent-gold); margin-bottom: 6px; }
+        .codigo-inv { font-family: monospace; font-size: 0.8rem; word-break: break-all; color: var(--texto); }
+        .etiqueta-rol { font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--accent-gold); color: var(--accent-gold-bright); margin-left: 6px; }
+        #selector-paleta { display: flex; justify-content: center; margin-top: 12px; }
+
+        /* PANEL GM */
+        .panel-gm-container {
+            display: none;
+            margin: 0 auto 30px auto;
+            max-width: 800px;
+            text-align: left;
+            background: color-mix(in srgb, var(--acento) 6%, transparent);
+            border: 2px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--sombra);
+        }
+        .panel-gm-title {
+            font-family: Georgia, serif;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ENCABEZADO Y CONTROL DE ACCESO -->
+        <header>
+            <h1>Fichas de Personaje</h1>
+            <p class="subtitle" id="user-welcome">Restaurando sesión…</p>
+            <div id="selector-paleta"></div>
+            <button id="btn-login" class="btn-open" style="display: none; margin-top: 15px; background: #db4437; color: var(--texto); border-color: #db4437; cursor: pointer;">🔐 Entrar con Google</button>
+            <button id="btn-perfil" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">✏️ Mi nombre</button>
+            <button id="btn-logout" class="btn-open" style="margin-top: 15px; display: none; cursor: pointer;">🚪 Cerrar Sesión</button>
+            
+            <!-- Formulario para ingreso con Correo dummy -->
+<div id="login-email-form" style="margin-top: 15px; display: none; flex-direction: column; gap: 8px; max-width: 250px; margin: 15px auto 0 auto;">
+    <input type="email" id="login-email" placeholder="Correo electrónico" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--texto); font-size: 0.9rem;">
+    <input type="password" id="login-password" placeholder="Contraseña" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--texto); font-size: 0.9rem;">
+    <button id="btn-login-email" class="btn-open" style="cursor: pointer; background: var(--accent-gold); color: var(--sobre-acento); font-size: 0.8rem;">✉️ Entrar con Correo</button>
+</div>
+        </header>
+
+        <div style="text-align:center; margin: 0 0 20px 0;">
+            <a href="spells.html" class="btn-open" style="text-decoration:none; display:inline-block;">📖 Compendio de Hechizos</a>
+            <a href="classes.html" class="btn-open" style="text-decoration:none; display:inline-block; margin-left:8px;">🛡️ Compendio de Clases</a>
+        </div>
+
+        <!-- 1. MIS CAMPAÑAS: elegir, crear o unirse -->
+        <div class="seccion-campana" id="campana-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase;">Mis campañas</p>
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                <select id="codigo-campana" class="campana-input" aria-label="Campaña"></select>
+                <button id="btn-reclamar-gm" class="btn-open" style="display: none;">👑 Modo GM</button>
+            </div>
+            <p id="badge-sistema-campana" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;"></p>
+            <p id="sin-campanas" class="nota-menu" style="display:none;">Todavía no estás en ninguna campaña: crea una o únete con el ID o una invitación.</p>
+            <div class="fila-acciones">
+                <button id="btn-nueva-campana" class="btn-mini">➕ Nueva campaña</button>
+                <button id="btn-unirme" class="btn-mini">🔑 Unirme a una campaña</button>
+                <button id="btn-salir-campana" class="btn-mini peligro" style="display:none;">🚪 Salir de esta campaña</button>
+            </div>
+            <div id="solicitudes-enviadas"></div>
+        </div>
+
+        <!-- 1.5 SISTEMA DE JUEGO DE LA CAMPAÑA (D&D / CoC) -->
+        <div class="seccion-campana" id="sistema-campana-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">⚠️ Esta campaña todavía no tiene un sistema de juego asignado. Elígelo una vez (queda guardado para siempre):</p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="btn-sistema-dnd" class="btn-open" style="cursor:pointer;">⚔️ D&D</button>
+                <button id="btn-sistema-coc" class="btn-open" style="cursor:pointer;">🐙 Call of Cthulhu</button>
+                <button id="btn-sistema-chicle" class="btn-open" style="cursor:pointer;">🍬 El Último Chicle</button>
+            </div>
+        </div>
+
+        <!-- 2. CREAR / ELEGIR PERSONAJE -->
+<div class="seccion-campana" id="crear-personaje-container" style="display: none;">
+    <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">Añadir Personaje a la Campaña</p>
+    <select id="select-template-personaje" class="campana-input"></select>
+    <div id="creadores-campana" style="display:none; margin-top:12px; display:none; gap:8px; flex-wrap:wrap; justify-content:center;">
+        <a id="link-crear-personaje" class="btn-open" style="text-decoration:none;" href="#">✨ Crear personaje nuevo</a>
+        <a id="link-importar-personaje" class="btn-open" style="text-decoration:none;" href="#">📥 Importar personaje (JSON de Alchemy)</a>
+    </div>
+</div>
+        
+
+        <!-- 3. PANTALLA DEL DIRECTOR (GM) -->
+        <div class="panel-gm-container" id="panel-gm" style="display: none;">
+            <h2 class="panel-gm-title">🧙‍♂️ Pantalla del Director (GM)</h2>
+            <div id="grid-vitales-gm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;"></div>
+            <!-- Notas exclusivas de GM -->
+            <div style="margin-top: 25px;">
+                <p style="color: var(--accent-gold);">📝 Notas Secretas GM:</p>
+                <textarea id="notas-gm-area" style="width: 100%; height: 100px; background: var(--bg); color: var(--texto); border-radius: 6px; padding: 8px; border: 1px solid var(--border-color);"></textarea>
+            </div>
+            <!-- Historial de Dados -->
+            <div style="margin-top: 25px; display: flex; justify-content: space-between;">
+                <p style="color: var(--accent-gold);">🎲 Historial de Tiradas:</p>
+                <button id="btn-limpiar-tiradas" class="btn-open">🗑️ Limpiar</button>
+            </div>
+            <div id="lista-tiradas-gm" style="max-height: 150px; overflow-y: auto; background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace;"></div>
+        </div>
+
+        <!-- 4. BITÁCORA DE SESIÓN -->
+        <div class="seccion-campana" id="bitacora-container" style="display: none;">
+            <p style="font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 10px;">📜 Bitácora e Historial</p>
+            <input type="text" id="titulo-entrada" style="width: 100%; margin-bottom: 8px; padding: 8px; background: var(--bg); color: var(--texto); border: 1px solid var(--border-color); border-radius: 6px;" placeholder="Título del suceso...">
+            <textarea id="nueva-entrada" style="width: 100%; height: 80px; background: var(--bg); color: var(--texto); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px;" placeholder="Escribe la historia..."></textarea>
+            <button id="btn-add-log" class="btn-open" style="margin-top: 8px;">Guardar Entrada</button>
+            <button id="btn-cancelar-log" class="btn-open" style="margin-top: 8px; display: none;">Cancelar</button>
+            <input type="text" id="buscar-bitacora" style="width: 100%; margin-top: 15px; padding: 8px; background: var(--bg); color: var(--texto); border-radius: 6px; border: 1px solid var(--border-color);" placeholder="🔍 Filtrar bitácora...">
+            <div id="lista-bitacora" style="margin-top: 15px; max-height: 180px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- 5. REJILLA DE PERSONAJES ACTIVOS -->
+        <div class="character-grid" style="display: none;"></div>
+
+        <!-- DIÁLOGOS: nueva campaña / unirse -->
+        <div class="modal-velo" id="dlg-nueva" role="dialog" aria-modal="true" aria-labelledby="dlg-nueva-t">
+            <div class="modal">
+                <div class="modal-cab"><h3 id="dlg-nueva-t">➕ Nueva campaña</h3><button type="button" class="btn-mini" data-cerrar="dlg-nueva" aria-label="Cerrar">✖</button></div>
+                <div class="modal-cuerpo">
+                    <label class="campo-menu"><span>Nombre de la campaña</span><input type="text" id="nc-nombre" maxlength="60" placeholder="p. ej. Las Minas de Etreum" autocomplete="off"></label>
+                    <label class="campo-menu"><span>ID de la campaña (con él te encuentran otras personas)</span><input type="text" id="nc-id" maxlength="40" placeholder="las-minas-de-etreum" autocomplete="off" autocapitalize="none"></label>
+                    <p class="nota-menu" style="margin-top:-6px; margin-bottom:12px;">De 3 a 40 caracteres: minúsculas, números, guion y guion bajo. No se puede cambiar después.</p>
+                    <fieldset class="sistemas">
+                        <legend>Sistema de juego</legend>
+                        <label class="sistema-op"><input type="radio" name="nc-sistema" value="dnd" checked> ⚔️ D&amp;D</label>
+                        <label class="sistema-op"><input type="radio" name="nc-sistema" value="coc"> 🐙 Call of Cthulhu</label>
+                        <label class="sistema-op"><input type="radio" name="nc-sistema" value="chicle"> 🍬 El Último Chicle</label>
+                    </fieldset>
+                    <label class="opcion-menu"><input type="checkbox" id="nc-privada"> <span>🔒 Campaña privada: solo se entra con invitación y no aparece en el buscador</span></label>
+                    <p class="nota-menu">Serás el GM titular. Después podrás invitar gente con un enlace o aprobar solicitudes, y nombrar GM de apoyo.</p>
+                    <p id="nc-msg" class="msg-error" role="alert" hidden></p>
+                </div>
+                <div class="modal-pie"><button type="button" class="btn-mini" data-cerrar="dlg-nueva">Cancelar</button><button type="button" class="btn-mini" id="nc-crear" style="background: var(--accent-gold); color: var(--sobre-acento);">Crear campaña</button></div>
+            </div>
+        </div>
+        <div class="modal-velo" id="dlg-perfil" role="dialog" aria-modal="true" aria-labelledby="dlg-perfil-t">
+            <div class="modal">
+                <div class="modal-cab"><h3 id="dlg-perfil-t">✏️ Mi nombre de usuario</h3><button type="button" class="btn-mini" data-cerrar="dlg-perfil" aria-label="Cerrar">✖</button></div>
+                <div class="modal-cuerpo">
+                    <label class="campo-menu"><span>Nombre con el que te ven en las campañas</span><input type="text" id="pf-nombre" maxlength="40" autocomplete="off"></label>
+                    <button type="button" class="btn-mini" id="pf-google">↩ Usar el de mi cuenta de Google</button>
+                    <label class="opcion-menu"><input type="checkbox" id="pf-visible"> <span>Aparecer en el buscador de campañas (otros jugadores podrán encontrar las campañas donde estás escribiendo tu nombre)</span></label>
+                    <p class="nota-menu">Se actualiza en todas tus campañas y en tus personajes.</p>
+                    <p id="pf-msg" class="msg-error" role="alert" hidden></p>
+                </div>
+                <div class="modal-pie"><button type="button" class="btn-mini" data-cerrar="dlg-perfil">Cancelar</button><button type="button" class="btn-mini" id="pf-guardar" style="background: var(--accent-gold); color: var(--sobre-acento);">Guardar</button></div>
+            </div>
+        </div>
+        <div class="modal-velo" id="dlg-unirme" role="dialog" aria-modal="true" aria-labelledby="dlg-unirme-t">
+            <div class="modal">
+                <div class="modal-cab"><h3 id="dlg-unirme-t">🔑 Unirme a una campaña</h3><button type="button" class="btn-mini" data-cerrar="dlg-unirme" aria-label="Cerrar">✖</button></div>
+                <div class="modal-cuerpo">
+                    <label class="campo-menu"><span>ID de la campaña, código de invitación o enlace</span><input type="text" id="un-codigo" placeholder="mi-mesa   ·   mi-mesa:CLAVE   ·   enlace de invitación" autocomplete="off" autocapitalize="none"></label>
+                    <p class="nota-menu">Con una <strong>invitación</strong> entras de inmediato. Solo con el <strong>ID</strong> se envía una solicitud que el GM debe aprobar.</p>
+                    <p id="un-info" class="nota-menu" hidden></p>
+                    <p id="un-msg" class="msg-error" role="alert" hidden></p>
+                    <hr class="sep-menu">
+                    <label class="campo-menu"><span>🔎 O busca por jugador (nombre de usuario)</span><input type="search" id="un-buscar" placeholder="Escribe al menos 2 letras del nombre" autocomplete="off"></label>
+                    <div id="un-resultados" aria-live="polite"></div>
+                </div>
+                <div class="modal-pie"><button type="button" class="btn-mini" data-cerrar="dlg-unirme">Cancelar</button><button type="button" class="btn-mini" id="un-continuar" style="background: var(--accent-gold); color: var(--sobre-acento);">Continuar</button></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Sincronización en tiempo real vía Firebase</p>
+        </footer>
+    </div>
+
+    <!-- SDKS DE FIREBASE (Compat v9) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="ficha-sesion.js?v=77.0"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN E INSTANCIAS DE FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaCAA748xac6HcrQnY-p1jHRp8_CtgtbU",
+            authDomain: "personajes-rol.firebaseapp.com",
+            databaseURL: "https://personajes-rol-default-rtdb.firebaseio.com",
+            projectId: "personajes-rol"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ==========================================
+        // SESIÓN PERSISTENTE EN EL DISPOSITIVO
+        // ==========================================
+        // La sesión se guarda en el dispositivo (LOCAL) y sobrevive al cerrar la pestaña o el navegador. Si el navegador no
+        // permite guardar de forma duradera, se cae a SESSION y, como último recurso, a NONE (siempre sin romper el login).
+        // También se pide al navegador que no borre el almacenamiento del sitio (navigator.storage.persist) y se anota un
+        // registro mínimo de los cambios de sesión (localStorage 'rol-auth-diag') para poder ver cuándo se pierde: index.html?diag=1.
+        (function () {
+            try {
+                const P = firebase.auth.Auth.Persistence, au = firebase.auth();
+                au.setPersistence(P.LOCAL).catch(() => au.setPersistence(P.SESSION)).catch(() => au.setPersistence(P.NONE)).catch(() => {});
+            } catch (e) { console.warn('No se pudo fijar la persistencia de la sesión:', e); }
+            try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* sin soporte */ }
+        })();
+        if (window.FichaSesion) FichaSesion.vigilar();
+        function registrarAuthDiag(texto) {
+            if (window.FichaSesion) { FichaSesion.diag(texto); return; }
+            try {
+                const l = JSON.parse(localStorage.getItem('rol-auth-diag') || '[]');
+                l.push(new Date().toISOString().slice(0, 19) + ' ' + location.pathname.split('/').pop() + ' ' + texto);
+                localStorage.setItem('rol-auth-diag', JSON.stringify(l.slice(-25)));
+            } catch (e) { /* sin almacenamiento */ }
+        }
+
+        // Selector de paleta (ficha-paleta.js): el menú usa los mismos colores que las fichas
+        try { FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: 'obsidiana', clave: 'menu' }); } catch (e) { /* sin paleta */ }
+
+        // ELEMENTOS DOM
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const btnPerfil = document.getElementById('btn-perfil');
+        const welcomeText = document.getElementById('user-welcome');
+        const campanaContainer = document.getElementById('campana-container');
+        const selectCampana = document.getElementById('codigo-campana');
+        const gridPersonajes = document.querySelector('.character-grid');
+        const crearPersonajeContainer = document.getElementById('crear-personaje-container');
+        const selectTemplatePersonaje = document.getElementById('select-template-personaje');
+        const btnReclamarGM = document.getElementById('btn-reclamar-gm');
+        const panelGm = document.getElementById('panel-gm');
+        const gridVitalesGm = document.getElementById('grid-vitales-gm');
+        const textareaNotasGM = document.getElementById('notas-gm-area');
+        const bitacoraContainer = document.getElementById('bitacora-container');
+        const nuevaEntrada = document.getElementById('nueva-entrada');
+        const btnAddLog = document.getElementById('btn-add-log');
+        const btnCancelarLog = document.getElementById('btn-cancelar-log');
+        const listaBitacora = document.getElementById('lista-bitacora');
+        const buscarBitacora = document.getElementById('buscar-bitacora');
+        const loginEmailForm = document.getElementById('login-email-form');
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const btnLoginEmail = document.getElementById('btn-login-email');
+        const sistemaCampanaContainer = document.getElementById('sistema-campana-container');
+        const badgeSistemaCampana = document.getElementById('badge-sistema-campana');
+        const btnSistemaDnd = document.getElementById('btn-sistema-dnd');
+        const btnSistemaCoc = document.getElementById('btn-sistema-coc');
+        const btnSistemaChicle = document.getElementById('btn-sistema-chicle');
+
+
+        let miUidActual = null;
+        let esDirector = false;
+        let editandoKeyLog = null; // key de Firebase de la entrada de bitácora en edición (null = agregando una nueva)
+        let personajesListener = null, notasGmListener = null, bitacoraListener = null, tiradasListener = null, sistemaCampanaListener = null;
+        // Estado de sistema de juego (D&D / CoC) de la campaña abierta, y último snapshot de
+        // personajes recibido — se guardan aquí para poder re-renderizar la grilla tanto cuando
+        // cambian los personajes como cuando cambia (o recién llega) el sistema de la campaña.
+        let sistemaCampanaActual = null;
+        // Los nombres/clases de personajes ahora los escriben los jugadores (creador de personajes): siempre escapados al pintar.
+        const escHtml = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        let ultimoPersonajesSnap = null;
+        let miembrosListener = null, invListener = null, solListener = null;
+        let ultimosMiembros = {}, ultimasInvitaciones = {}, ultimasSolicitudes = {};
+        let partyActual = {}, partyListener = null;
+        let soyElGMActual = false;
+        let soyTitularActual = false;
+        let miNombreActual = '';   // nombre visible de esta cuenta (se guarda como ownerNombre en los personajes que reclama)
+
+        // Sistema de juego al que pertenece cada personaje (independiente de en qué campaña
+        // termine cargado). Se usa para que una campaña de D&D no pueda sumar personajes de
+        // Call of Cthulhu y viceversa. Actualizar aquí al sumar un personaje nuevo.
+        const SISTEMA_PERSONAJE = {
+            fiona_faraway: 'dnd',
+            nevada_jones: 'coc',
+            myrklogi_mangarisonn: 'dnd',
+            dane: 'dnd',
+            eldur: 'dnd',
+            ulreek: 'dnd',
+            hannoghar: 'dnd',
+            chicle1: 'chicle',
+            chicle2: 'chicle',
+            chicle3: 'chicle',
+            chicle4: 'chicle',
+            chicle5: 'chicle',
+            chicle6: 'chicle'
+        };
+        const NOMBRE_SISTEMA = { dnd: 'D&D', coc: 'Call of Cthulhu', chicle: 'El Último Chicle' };
+
+        // PLANTILLAS POR DEFECTO
+        const plantillasPersonajes = {
+            fiona_faraway: { nombre: "Fiona Faraway", clase: "Druida Shepherd 8", datos: { "hp-cur": 59, "hp-max": 70 } },
+            nevada_jones: { nombre: "Nevada Jones", clase: "Arqueólogo", datos: { "hp-cur": 50, "hp-max": 50 } },
+            myrklogi_mangarisonn: { nombre: "Myrklogi Mangarisonn", clase: "Wizard 9", datos: { "hp-cur": 70, "hp-max": 70 } },
+            dane: { nombre: "Dane", clase: "Ranger / Rogue", datos: { "hp-cur": 70, "hp-max": 70 } },
+            eldur: { nombre: "Eldur Redmane", clase: "Monje / Clérigo", datos: { "hp-cur": 52, "hp-max": 70 } },
+            ulreek: { nombre: "Ulreek", clase: "Hechicero", datos: { "hp-cur": 70, "hp-max": 70 } },
+            hannoghar: { nombre: "Hannoghar", clase: "Paladín", datos: { "hp-cur": 66, "hp-max": 66 } },
+            // Las 6 fichas de "El Último Chicle" no tienen nombre propio: el jugador lo elige
+            // recién al reclamar la ficha (ver chicle.html). "nombre" aquí es solo el valor
+            // provisorio que se ve en el selector y en la grilla hasta que lo cambien.
+            chicle1: { nombre: "Superviviente 1 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle2: { nombre: "Superviviente 2 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle3: { nombre: "Superviviente 3 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle4: { nombre: "Superviviente 4 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle5: { nombre: "Superviviente 5 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } },
+            chicle6: { nombre: "Superviviente 6 (sin nombre)", clase: "Superviviente", datos: { "gum-cur": 8, "chicle-mode": "normal" } }
+        };
+
+        // ==========================================
+        // CONTROL DE SESIÓN (AUTH STATE CHANGED) [1]
+        // ==========================================
+        let temporizadorSinSesion = null, cierreManualDeSesion = false, yaHuboSesionEnEstaPagina = false;
+        firebase.auth().onAuthStateChanged((user) => {
+          registrarAuthDiag(user ? 'sesión activa (' + user.uid.slice(0, 6) + ')' : 'sin sesión');
+          if (user) {
+            clearTimeout(temporizadorSinSesion); yaHuboSesionEnEstaPagina = true;
+            miUidActual = user.uid;
+            miNombreActual = nombreDeGoogle(user);
+            welcomeText.innerText = `¡Hola, ${miNombreActual || 'jugador'}!`;
+            btnLogin.style.display = 'none';
+            btnPerfil.style.display = 'inline-block';
+            loginEmailForm.style.display = 'none'; // <-- OCULTAR FORMULARIO AL LOGUEARSE
+            btnLogout.style.display = 'inline-block';
+            campanaContainer.style.display = 'block';
+            // el nombre de usuario guardado manda sobre el de Google; después se cargan las campañas
+            cargarPerfil(user).catch(() => {}).then(() => { if (miUidActual === user.uid) cargarCampanas(); });
+          } else {
+            // Un «sin sesión» al cargar puede ser pasajero: se espera unos segundos antes de mostrar el acceso (salvo cierre manual).
+            if (!cierreManualDeSesion && !yaHuboSesionEnEstaPagina) {
+              welcomeText.innerText = 'Restaurando sesión…';
+              clearTimeout(temporizadorSinSesion);
+              temporizadorSinSesion = setTimeout(() => { if (!firebase.auth().currentUser) { registrarAuthDiag('sin sesión tras la espera → se muestra el acceso'); mostrarAcceso(); } }, 4000);
+              return;
+            }
+            mostrarAcceso();
+          }
+        });
+        function mostrarAcceso() {
+            miUidActual = null;
+            welcomeText.innerText = "Inicia sesión para jugar";
+            btnLogin.style.display = 'inline-block';
+            loginEmailForm.style.display = 'flex'; // <-- MOSTRAR FORMULARIO AL DESLOGUEARSE
+            btnLogout.style.display = 'none';
+            btnPerfil.style.display = 'none';
+            ocultarModulos();
+        }
+
+
+        if (new URLSearchParams(location.search).get('diag') === '1') {
+            const pre = document.createElement('pre');
+            pre.style.cssText = 'font-size:0.7rem; white-space:pre-wrap; background:var(--bg); color:var(--texto-suave); padding:8px; border-radius:6px; margin:10px';
+            try { pre.textContent = 'Diagnóstico de sesión (más reciente al final):\n' + JSON.parse(localStorage.getItem('rol-auth-diag') || '[]').join('\n'); } catch (e) { pre.textContent = 'Sin registro.'; }
+            document.body.appendChild(pre);
+        }
+
+        btnLogin.onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
+
+        btnLogout.onclick = () => { cierreManualDeSesion = true; firebase.auth().signOut(); };
+
+        // Login con Correo y Contraseña
+btnLoginEmail.onclick = () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || !password) return alert('Por favor, completa todos los campos.');
+
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(() => {
+      // Limpia los campos tras un login exitoso
+      emailInput.value = '';
+      passwordInput.value = '';
+    })
+    .catch(error => alert('Error al iniciar sesión: ' + error.message));
+};
+
+
+        // ==========================================
+        // GESTIÓN DE CAMPAÑAS
+        // ==========================================
+        // Mis campañas: el menú ya no lista TODAS las campañas; muestra solo las del índice propio (usuarios/<uid>/campanas) y, para entrar a otra,
+        // hay que crearla, unirse con una invitación o enviar una solicitud por su ID (el GM la aprueba). Ver «acceso/» en database.rules.json.
+        let campanasIdxListener = null, solicitudesEnviadasListener = null, campanaParaAbrir = null, urlCampanaYaAbierta = false;
+        const slugCampana = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+        const idCampanaValido = (id) => /^[a-z0-9_-]{3,40}$/.test(id);
+        const mostrar = (el, txt, ok) => { if (!el) return; el.hidden = !txt; el.className = ok ? 'msg-ok' : 'msg-error'; el.textContent = txt || ''; };
+        const abrirDlg = (id) => { const d = document.getElementById(id); if (d) { d.classList.add('abierto'); const i = d.querySelector('input[type=text]'); if (i) setTimeout(() => i.focus(), 0); } };
+        const cerrarDlg = (id) => { const d = document.getElementById(id); if (d) d.classList.remove('abierto'); };
+        document.querySelectorAll('[data-cerrar]').forEach((b) => b.addEventListener('click', () => cerrarDlg(b.dataset.cerrar)));
+        document.querySelectorAll('.modal-velo').forEach((v) => v.addEventListener('click', (e) => { if (e.target === v) v.classList.remove('abierto'); }));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal-velo.abierto').forEach((v) => v.classList.remove('abierto')); });
+
+        function cargarCampanas() {
+            if (campanasIdxListener) campanasIdxListener.off();
+            campanasIdxListener = db.ref(`usuarios/${miUidActual}/campanas`);
+            campanasIdxListener.on('value', async (snap) => {
+                const ids = Object.keys(snap.val() || {});
+                idsCampanasActuales = ids;
+                sincronizarDirectorio(ids);
+                const info = {};
+                await Promise.all(ids.map(async (id) => { try { info[id] = (await db.ref(`lista_campanas/${id}`).once('value')).val() || {}; } catch (e) { info[id] = {}; } }));
+                const previo = selectCampana.value;
+                selectCampana.innerHTML = '<option value="">-- Selecciona campaña --</option>' + ids.map((id) => `<option value="${escHtml(id)}">${info[id].privada === true ? '🔒 ' : ''}${escHtml(info[id].nombre || id)}</option>`).join('');
+                document.getElementById('sin-campanas').style.display = ids.length ? 'none' : 'block';
+                // qué campaña dejar abierta: la que se acaba de crear o aceptar, la que ya estaba, o la de la URL (una sola vez)
+                const urlCampana = new URLSearchParams(window.location.search).get('campana');
+                const quiero = (campanaParaAbrir && ids.includes(campanaParaAbrir)) ? campanaParaAbrir
+                    : (previo && ids.includes(previo)) ? previo
+                    : (!urlCampanaYaAbierta && urlCampana && ids.includes(urlCampana)) ? urlCampana : '';
+                if (campanaParaAbrir && ids.includes(campanaParaAbrir)) campanaParaAbrir = null;
+                if (urlCampana && ids.includes(urlCampana)) urlCampanaYaAbierta = true;
+                if (quiero) {
+                    selectCampana.value = quiero;
+                    if (quiero !== previo) selectCampana.dispatchEvent(new Event('change'));
+                } else if (previo) {
+                    // la campaña abierta ya no está en mi índice (salí o me quitaron): se cierra
+                    selectCampana.value = '';
+                    selectCampana.dispatchEvent(new Event('change'));
+                }
+            }, (err) => { console.warn('No se pudo leer el índice de campañas:', err); });
+
+            // solicitudes enviadas por ID que aún esperan respuesta
+            if (solicitudesEnviadasListener) solicitudesEnviadasListener.off();
+            solicitudesEnviadasListener = db.ref(`usuarios/${miUidActual}/solicitudes`);
+            solicitudesEnviadasListener.on('value', (snap) => {
+                const sol = snap.val() || {}, cont = document.getElementById('solicitudes-enviadas');
+                misSolicitudesPendientes = sol;
+                cont.innerHTML = Object.keys(sol).map((id) => `<div class="fila-gm"><span>⏳ Solicitud enviada a <strong>${escHtml(sol[id].nombre || id)}</strong> <small>(espera al GM)</small></span><button type="button" class="btn-mini peligro" data-cancelar-solicitud="${escHtml(id)}">Cancelar</button></div>`).join('');
+                cont.querySelectorAll('[data-cancelar-solicitud]').forEach((b) => b.onclick = async () => {
+                    const id = b.dataset.cancelarSolicitud;
+                    try { await db.ref(`acceso/${id}/solicitudes/${miUidActual}`).remove(); } catch (e) { /* ya no estaba */ }
+                    db.ref(`usuarios/${miUidActual}/solicitudes/${id}`).remove();
+                });
+            });
+            procesarInvitacionDeLaUrl();
+        }
+
+        // ---------- crear campaña ----------
+        document.getElementById('btn-nueva-campana').onclick = () => { mostrar(document.getElementById('nc-msg'), ''); document.getElementById('nc-nombre').value = ''; document.getElementById('nc-id').value = ''; document.getElementById('nc-privada').checked = false; abrirDlg('dlg-nueva'); };
+        let idEditadoAMano = false;
+        document.getElementById('nc-nombre').addEventListener('input', (e) => { if (!idEditadoAMano) document.getElementById('nc-id').value = slugCampana(e.target.value); });
+        document.getElementById('nc-id').addEventListener('input', (e) => { idEditadoAMano = true; e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''); });
+        document.getElementById('nc-crear').onclick = async () => {
+            const msg = document.getElementById('nc-msg'), btn = document.getElementById('nc-crear');
+            const nombre = document.getElementById('nc-nombre').value.trim(), id = document.getElementById('nc-id').value.trim();
+            const sistema = (document.querySelector('input[name="nc-sistema"]:checked') || {}).value || 'dnd';
+            if (!nombre) return mostrar(msg, 'Escribe un nombre para la campaña.');
+            if (!idCampanaValido(id)) return mostrar(msg, 'El ID tiene que tener entre 3 y 40 caracteres: minúsculas, números, guion o guion bajo.');
+            btn.disabled = true; mostrar(msg, '');
+            try {
+                if ((await db.ref(`lista_campanas/${id}/creador`).once('value')).exists()) { btn.disabled = false; return mostrar(msg, 'Ese ID ya lo usa otra campaña. Prueba con otro.'); }
+                // en orden: el id queda a tu nombre, luego sistema y nombre, luego eres la primera integrante y el GM titular
+                await db.ref(`lista_campanas/${id}/creador`).set(miUidActual);
+                await db.ref(`lista_campanas/${id}/sistema`).set(sistema);
+                await db.ref(`lista_campanas/${id}/nombre`).set(nombre);
+                if (document.getElementById('nc-privada').checked) await db.ref(`lista_campanas/${id}/privada`).set(true);
+                await db.ref(`campanas/${id}/miembros/${miUidActual}`).set({ nombre: miNombreActual || 'GM', desde: Date.now() });
+                await db.ref(`campanas/${id}/gm`).set(miUidActual);
+                await db.ref(`usuarios/${miUidActual}/campanas/${id}`).set(true);
+                campanaParaAbrir = id; cerrarDlg('dlg-nueva'); idEditadoAMano = false;
+            } catch (e) { console.error(e); mostrar(msg, 'No se pudo crear la campaña: ' + e.message); }
+            btn.disabled = false;
+        };
+
+        // ---------- unirse por ID o por invitación ----------
+        // Formatos aceptados: «id», «id:clave», o un enlace con ?unirse=id&inv=clave.
+        function interpretarCodigo(txt) {
+            const t = String(txt || '').trim();
+            if (!t) return null;
+            try { const u = new URL(t); const id = u.searchParams.get('unirse'), inv = u.searchParams.get('inv'); if (id) return { id: id.trim().toLowerCase(), token: (inv || '').trim() }; } catch (e) { /* no es un enlace */ }
+            if (t.includes(':')) { const [id, ...r] = t.split(':'); return { id: id.trim().toLowerCase(), token: r.join(':').trim() }; }
+            return { id: t.toLowerCase(), token: '' };
+        }
+        async function unirseACampana(id, token) {
+            if (!idCampanaValido(id)) throw new Error('El ID de la campaña no es válido.');
+            const info = (await db.ref(`lista_campanas/${id}`).once('value')).val();
+            if (!info) throw new Error('No existe ninguna campaña con ese ID.');
+            const yaIdx = (await db.ref(`usuarios/${miUidActual}/campanas/${id}`).once('value')).val();
+            if (yaIdx) return { ya: true, nombre: info.nombre || id };
+            if (!token && info.privada === true) throw new Error('Esta campaña es privada: solo se entra con una invitación del GM.');
+            if (token) {
+                try {
+                    await db.ref(`acceso/${id}/canjes/${miUidActual}`).set(token);
+                    await db.ref(`campanas/${id}/miembros/${miUidActual}`).set({ nombre: miNombreActual || 'Jugador', desde: Date.now() });
+                } catch (e) { throw new Error('La invitación no es válida o ya venció. Pide una nueva al GM.'); }
+                await db.ref(`usuarios/${miUidActual}/campanas/${id}`).set(true);
+                db.ref(`usuarios/${miUidActual}/solicitudes/${id}`).remove();
+                campanaParaAbrir = id;
+                return { entro: true, nombre: info.nombre || id };
+            }
+            await db.ref(`acceso/${id}/solicitudes/${miUidActual}`).set({ nombre: miNombreActual || 'Jugador', ts: Date.now() });
+            await db.ref(`usuarios/${miUidActual}/solicitudes/${id}`).set({ nombre: info.nombre || id, ts: Date.now() });
+            return { solicitud: true, nombre: info.nombre || id };
+        }
+        document.getElementById('btn-unirme').onclick = () => { mostrar(document.getElementById('un-msg'), ''); mostrar(document.getElementById('un-info'), ''); document.getElementById('un-codigo').value = ''; document.getElementById('un-buscar').value = ''; document.getElementById('un-resultados').innerHTML = ''; abrirDlg('dlg-unirme'); };
+        document.getElementById('un-continuar').onclick = async () => {
+            const msg = document.getElementById('un-msg'), info = document.getElementById('un-info'), btn = document.getElementById('un-continuar');
+            const c = interpretarCodigo(document.getElementById('un-codigo').value);
+            if (!c) return mostrar(msg, 'Escribe el ID, el código o el enlace de invitación.');
+            btn.disabled = true; mostrar(msg, ''); mostrar(info, '');
+            try {
+                const r = await unirseACampana(c.id, c.token);
+                if (r.ya) { mostrar(info, `Ya estás en «${r.nombre}».`, true); campanaParaAbrir = c.id; cargarCampanas(); }
+                else if (r.entro) { cerrarDlg('dlg-unirme'); }
+                else { cerrarDlg('dlg-unirme'); }   // la solicitud queda a la vista bajo «Mis campañas» («⏳ Solicitud enviada…») hasta que el GM responda
+            } catch (e) { mostrar(msg, e.message || String(e)); }
+            btn.disabled = false;
+        };
+        // Enlace de invitación: index.html?unirse=<id>&inv=<clave> → muestra a qué campaña te invitan y entras al confirmar.
+        let invitacionUrlProcesada = false;
+        async function procesarInvitacionDeLaUrl() {
+            if (invitacionUrlProcesada) return;
+            const q = new URLSearchParams(window.location.search), id = (q.get('unirse') || '').trim().toLowerCase(), inv = (q.get('inv') || '').trim();
+            if (!id) return;
+            invitacionUrlProcesada = true;
+            document.getElementById('un-codigo').value = inv ? `${id}:${inv}` : id;
+            mostrar(document.getElementById('un-msg'), '');
+            try {
+                const info = (await db.ref(`lista_campanas/${id}`).once('value')).val();
+                const i = document.getElementById('un-info'); i.hidden = false; i.className = 'msg-ok';
+                i.textContent = info ? `Te invitaron a «${info.nombre || id}» (${NOMBRE_SISTEMA[info.sistema] || info.sistema || 'sistema sin definir'}). Pulsa Continuar para entrar.` : 'No existe ninguna campaña con ese ID.';
+            } catch (e) { /* se mostrará al continuar */ }
+            history.replaceState(null, '', location.pathname + (q.get('campana') ? '?campana=' + encodeURIComponent(q.get('campana')) : ''));
+            abrirDlg('dlg-unirme');
+        }
+
+
+        // ---------- perfil: nombre de usuario (v100.0) ----------
+        // Por defecto el nombre de la cuenta de Google (si no hay, la parte del correo antes de la @); se puede cambiar. Vive en
+        // usuarios/<uid>/perfil y se copia al nombre de integrante de cada campaña y al directorio del buscador.
+        let miPerfil = { nombre: '', visible: true, deGoogle: '' };
+        let idsCampanasActuales = [], misSolicitudesPendientes = {};
+        let campanaPrivadaActual = false, privadaListener = null;
+        const normalizarBusqueda = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim().slice(0, 40);
+        function nombreDeGoogle(user) { return String(user.displayName || (user.email ? String(user.email).split('@')[0] : '') || 'Jugador').trim().slice(0, 40); }
+        async function cargarPerfil(user) {
+            let p = null;
+            try { p = (await db.ref(`usuarios/${user.uid}/perfil`).once('value')).val(); } catch (e) { /* se usa el de Google */ }
+            const deGoogle = nombreDeGoogle(user);
+            const nombre = (p && typeof p.nombre === 'string' && p.nombre.trim()) ? p.nombre.trim().slice(0, 40) : deGoogle;
+            miPerfil = { nombre, visible: !(p && p.visible === false), deGoogle };
+            miNombreActual = nombre;
+            welcomeText.innerText = `¡Hola, ${nombre}!`;
+            if (!p || !p.nombre) db.ref(`usuarios/${user.uid}/perfil`).update({ nombre, visible: miPerfil.visible }).catch(() => {});
+        }
+        async function rolEnCampana(id) {
+            const gm = (await db.ref(`campanas/${id}/gm`).once('value')).val();
+            if (gm === miUidActual) return 'gm';
+            const apoyo = (await db.ref(`campanas/${id}/gm_apoyo/${miUidActual}`).once('value')).val() === true;
+            return apoyo ? 'gm' : 'jugador';
+        }
+        // Mantiene al día mi nombre como integrante de cada campaña y mi ficha del directorio (nombre y campañas con mi rol).
+        async function sincronizarDirectorio(ids) {
+            const uid = miUidActual; if (!uid) return;
+            for (const id of ids) {
+                try {
+                    const ref = db.ref(`campanas/${id}/miembros/${uid}/nombre`);
+                    if ((await ref.once('value')).val() !== miPerfil.nombre) await ref.set(miPerfil.nombre);
+                } catch (e) { /* ya no soy integrante o sin permiso */ }
+            }
+            const dir = db.ref(`directorio/${uid}`);
+            try {
+                if (!miPerfil.visible) { await dir.remove(); return; }
+                await dir.update({ nombre: miPerfil.nombre, nombre_lc: normalizarBusqueda(miPerfil.nombre) });
+                const actuales = (await dir.child('campanas').once('value')).val() || {};
+                const publicas = [];
+                for (const id of ids) {
+                    try {
+                        // una campaña privada no aparece en el buscador
+                        if ((await db.ref(`lista_campanas/${id}/privada`).once('value')).val() === true) continue;
+                        publicas.push(id);
+                        const rol = await rolEnCampana(id); if (actuales[id] !== rol) await dir.child('campanas/' + id).set(rol);
+                    } catch (e) { /* sin permiso: se reintenta la próxima vez */ }
+                }
+                for (const id of Object.keys(actuales)) if (!publicas.includes(id)) await dir.child('campanas/' + id).remove().catch(() => {});
+            } catch (e) { console.warn('No se pudo actualizar el directorio:', e); }
+        }
+        btnPerfil.onclick = () => {
+            document.getElementById('pf-nombre').value = miPerfil.nombre; document.getElementById('pf-visible').checked = miPerfil.visible; mostrar(document.getElementById('pf-msg'), '');
+            abrirDlg('dlg-perfil');
+        };
+        document.getElementById('pf-google').onclick = () => { document.getElementById('pf-nombre').value = miPerfil.deGoogle; };
+        document.getElementById('pf-guardar').onclick = async () => {
+            const msg = document.getElementById('pf-msg'), btn = document.getElementById('pf-guardar');
+            const nombre = document.getElementById('pf-nombre').value.trim().replace(/\s+/g, ' '), visible = document.getElementById('pf-visible').checked;
+            if (!nombre) return mostrar(msg, 'Escribe un nombre.');
+            if (nombre.length > 40) return mostrar(msg, 'El nombre puede tener hasta 40 caracteres.');
+            btn.disabled = true; mostrar(msg, '');
+            try {
+                await db.ref(`usuarios/${miUidActual}/perfil`).set({ nombre, visible });
+                miPerfil.nombre = nombre; miPerfil.visible = visible; miNombreActual = nombre;
+                welcomeText.innerText = `¡Hola, ${nombre}!`;
+                cerrarDlg('dlg-perfil');
+                await sincronizarDirectorio(idsCampanasActuales);
+                // los personajes que reclamé en la campaña abierta se actualizan al volver a dibujar la lista
+                if (selectCampana.value) selectCampana.dispatchEvent(new Event('change'));
+            } catch (e) { console.error(e); mostrar(msg, 'No se pudo guardar: ' + e.message); }
+            btn.disabled = false;
+        };
+
+        // ---------- buscar campañas por jugador ----------
+        let busquedaSeq = 0, busquedaTimer = null; const infoCampanasCache = {};
+        async function infoCampana(id) { if (!infoCampanasCache[id]) { try { infoCampanasCache[id] = (await db.ref(`lista_campanas/${id}`).once('value')).val() || {}; } catch (e) { infoCampanasCache[id] = {}; } } return infoCampanasCache[id]; }
+        async function buscarJugadores() {
+            const cont = document.getElementById('un-resultados'), q = normalizarBusqueda(document.getElementById('un-buscar').value), seq = ++busquedaSeq;
+            if (q.length < 2) { cont.innerHTML = q.length ? '<p class="nota-menu">Escribe al menos 2 letras.</p>' : ''; return; }
+            cont.innerHTML = '<p class="nota-menu">Buscando…</p>';
+            let usuarios = [];
+            try {
+                const snap = await db.ref('directorio').orderByChild('nombre_lc').startAt(q).endAt(q + '').limitToFirst(15).once('value');
+                snap.forEach((ch) => { if (ch.key !== miUidActual) usuarios.push(Object.assign({ uid: ch.key }, ch.val())); });
+            } catch (e) { if (seq === busquedaSeq) cont.innerHTML = '<p class="msg-error">No se pudo buscar: ' + escHtml(e.message) + '</p>'; return; }
+            if (seq !== busquedaSeq) return;
+            if (!usuarios.length) { cont.innerHTML = '<p class="nota-menu">Nadie con ese nombre. Solo aparecen quienes lo permiten, y la búsqueda es por el comienzo del nombre.</p>'; return; }
+            const filas = [];
+            for (const u of usuarios) {
+                const ids = Object.keys(u.campanas || {});
+                const infos = await Promise.all(ids.map(infoCampana));
+                if (seq !== busquedaSeq) return;
+                const camp = ids.map((id, i) => {
+                    const rol = u.campanas[id] === 'gm' ? 'GM' : 'Jugador', info = infos[i];
+                    if ((!info.sistema && !info.nombre) || info.privada === true) return '';   // ya no existe o es privada
+                    const estado = idsCampanasActuales.includes(id) ? '<small>✔ Ya estás</small>'
+                        : misSolicitudesPendientes[id] ? '<small>⏳ Solicitud enviada</small>'
+                        : `<button type="button" class="btn-mini" data-pedir="${escHtml(id)}">Pedir acceso</button>`;
+                    return `<div class="res-camp"><span>${escHtml(info.nombre || id)} <small>(${escHtml(NOMBRE_SISTEMA[info.sistema] || info.sistema || '')})</small><span class="rol-etiqueta">${rol}</span></span>${estado}</div>`;
+                }).join('');
+                filas.push(`<div class="res-jugador"><strong>${escHtml(u.nombre || 'Jugador')}</strong>${camp || '<div class="res-camp"><small>Sin campañas visibles.</small></div>'}</div>`);
+            }
+            cont.innerHTML = filas.join('');
+            cont.querySelectorAll('[data-pedir]').forEach((b) => b.onclick = async () => {
+                const id = b.dataset.pedir, msg = document.getElementById('un-msg'); b.disabled = true; mostrar(msg, '');
+                try { const r = await unirseACampana(id, ''); b.replaceWith(Object.assign(document.createElement('small'), { textContent: r.ya ? '✔ Ya estás' : '⏳ Solicitud enviada' })); }
+                catch (e) { b.disabled = false; mostrar(msg, e.message || String(e)); }
+            });
+        }
+        document.getElementById('un-buscar').addEventListener('input', () => { clearTimeout(busquedaTimer); busquedaTimer = setTimeout(buscarJugadores, 300); });
+
+        // ---------- salir de una campaña ----------
+        document.getElementById('btn-salir-campana').onclick = async () => {
+            const id = selectCampana.value; if (!id) return;
+            if (!confirm('¿Salir de esta campaña? Dejarás de verla; tus personajes quedan en ella y el GM puede reasignarlos. Para volver necesitarás una invitación.')) return;
+            try {
+                await db.ref(`campanas/${id}/gm_apoyo/${miUidActual}`).remove().catch(() => {});
+                await db.ref(`campanas/${id}/miembros/${miUidActual}`).remove();
+                await db.ref(`usuarios/${miUidActual}/campanas/${id}`).remove();
+                db.ref(`directorio/${miUidActual}/campanas/${id}`).remove().catch(() => {});
+            } catch (e) { alert('No se pudo salir de la campaña: ' + e.message); }
+        };
+
+        selectCampana.addEventListener('change', (e) => {
+            const campanaId = e.target.value;
+
+            // Remover listeners previos para optimizar performance [2]
+            if (personajesListener) personajesListener.off();
+            if (notasGmListener) notasGmListener.off();
+            if (bitacoraListener) bitacoraListener.off();
+            if (tiradasListener) tiradasListener.off();
+            if (sistemaCampanaListener) sistemaCampanaListener.off();
+            if (privadaListener) { privadaListener.off(); privadaListener = null; }
+            campanaPrivadaActual = false;
+            if (partyListener) { partyListener.off(); partyListener = null; }
+            partyActual = {};
+            [miembrosListener, invListener, solListener].forEach((l) => { if (l) l.off(); });
+            miembrosListener = invListener = solListener = null; ultimosMiembros = {}; ultimasInvitaciones = {}; ultimasSolicitudes = {};
+            document.getElementById('btn-salir-campana').style.display = 'none';
+
+            panelGm.style.display = 'none';
+            esDirector = false;
+            btnReclamarGM.innerText = '👑 Modo GM';
+
+            // Reset del estado de sistema/personajes al cambiar de campaña, para no arrastrar
+            // el badge o los datos de la campaña anterior mientras carga la nueva.
+            sistemaCampanaActual = null;
+            ultimoPersonajesSnap = null;
+            soyElGMActual = false;
+            sistemaCampanaContainer.style.display = 'none';
+            badgeSistemaCampana.innerText = '';
+
+            if (campanaId) {
+                activarSincronizacionCampana(campanaId);
+            } else {
+                ocultarModulos();
+                campanaContainer.style.display = 'block';   // sin campaña elegida se siguen viendo la lista y los botones de crear / unirse
+            }
+        });
+
+        // ==========================================
+        // SINCRONIZACIÓN EN TIEMPO REAL (RTDB) [2]
+        // ==========================================
+        // ==========================================
+        // RENDERIZADO DE LA GRILLA DE PERSONAJES
+        // ==========================================
+        // Extraído a función aparte (antes vivía inline dentro del listener de personajes) para
+        // poder volver a pintar la grilla tanto cuando cambian los personajes como cuando llega
+        // o cambia el sistema de juego de la campaña (sistemaCampanaActual) — ambos listeners
+        // llaman a esta misma función.
+        function renderizarGrid(campanaId) {
+            const personajes = ultimoPersonajesSnap;
+            const soyElGM = soyElGMActual;
+            gridPersonajes.innerHTML = '';
+            gridVitalesGm.innerHTML = '';
+            actualizarSelectorPlantillas(personajes);
+
+            if (!personajes) return;
+
+            Object.keys(personajes).forEach(id => {
+    const p = personajes[id];
+    // Antes esto solo ocultaba cuando 'activo' era exactamente false. Un personaje con
+    // datos pero SIN el campo 'activo' (dato suelto/manual) pasaba el filtro igual.
+    if (!p.activo) return;
+
+    // Separación por sistema de juego (D&D / CoC): si la campaña ya tiene un sistema
+    // asignado y este personaje pertenece a otro, no se muestra. Si además soy su dueño
+    // o el GM, se aprovecha para autocorregir el dato desactivándolo (owner:null,
+    // activo:false, publico:false) — esto limpia casos legacy donde un personaje quedó
+    // cargado en la campaña equivocada (p.ej. por el bug que permitía elegirlo desde el
+    // selector sin importar el sistema).
+    const sistemaPersonaje = SISTEMA_PERSONAJE[id];
+    if (sistemaCampanaActual && sistemaPersonaje && sistemaPersonaje !== sistemaCampanaActual) {
+        if (soyElGM || p.owner === miUidActual) {
+            db.ref(`campanas/${campanaId}/personajes/${id}`).update({ owner: null, activo: false, publico: false });
+        }
+        return;
+    }
+
+    const esMio = p.owner === miUidActual;
+    // El nombre del dueño permite al GM titular elegir a quién darle el rol de apoyo.
+    if (esMio && miNombreActual && p.ownerNombre !== miNombreActual) db.ref(`campanas/${campanaId}/personajes/${id}/ownerNombre`).set(miNombreActual).catch(() => {});
+    const tieneDueño = !!p.owner;
+    const esPublico = p.publico === true;
+
+    // Regla de Visibilidad (para quien no es dueño ni GM):
+    //  - Si tiene dueño y no es público, se oculta (ficha privada de otro jugador).
+    //  - Si NO tiene dueño, también se oculta: es un personaje "huérfano" (activo pero
+    //    sin owner asignado, típicamente dato legacy) — solo el GM debe verlo y decidir
+    //    qué hacer, para que ningún jugador lo reclame por accidente con solo mirarlo.
+    if (!esMio && !soyElGM) {
+        if (tieneDueño && !esPublico) return;
+        if (!tieneDueño) return;
+    }
+
+    // Identificar si entro como invitado (es de otro pero es público)
+    const esInvitado = tieneDueño && !esMio && !soyElGM && esPublico;
+
+    const card = document.createElement('div');
+    card.className = 'character-card';
+    card.innerHTML = `
+        <div class="avatar-placeholder">🛡️</div>
+        <div class="character-name">${escHtml(p.nombre || 'Héroe')}</div>
+        <div class="character-title">
+            ${escHtml(p.clase || '')}
+            ${esInvitado ? '<br><span style="font-size:0.75rem; background:var(--surface-2); padding:2px 6px; border-radius:4px; color:var(--texto);">👁️ Invitado</span>' : ''}
+        </div>
+
+        ${esInvitado ? `<div style="margin: 6px 0; font-size:0.7rem; color:var(--text-muted);">👁️ Viendo en modo lectura</div>` : ''}
+
+        <button class="btn-open btn-ficha" style="margin-bottom:8px;">📂 Ficha</button>
+        <button class="btn-open btn-tirar" style="margin-bottom:8px; background: color-mix(in srgb, var(--acento) 12%, transparent);">🎲 Tirar d20</button>
+        ${(esMio || soyElGM) ? `<button class="btn-quitar" style="background:transparent; border:none; color:var(--mal); cursor:pointer; margin-top:8px;">❌ Quitar de mi lista</button>` : ''}
+    `;
+
+                    const btnFicha = card.querySelector('.btn-ficha');
+    if (btnFicha) {
+        btnFicha.onclick = () => {
+            // Ruteo por id de personaje (no por substring del nombre): el nombre de las
+            // fichas de "El Último Chicle" lo elige cada jugador, así que no se puede
+            // seguir adivinando el archivo de destino a partir del texto de p.nombre.
+            const IDS_DND = ['dane', 'eldur', 'hannoghar', 'fiona_faraway', 'myrklogi_mangarisonn', 'ulreek'];
+            let destino = (IDS_DND.includes(id) || /^pc_/.test(id)) ? `ficha.html?pj=${id}` : `${id}.html`;
+            if (SISTEMA_PERSONAJE[id] === 'chicle') {
+                const numeroJugador = id.replace('chicle', '');
+                destino = `chicle.html?jugador=${numeroJugador}`;
+            }
+            const separador = destino.includes('?') ? '&' : '?';
+            window.location.href = `${destino}${separador}campana=${campanaId}`;
+        };
+                    }
+
+                    card.querySelector('.btn-tirar').onclick = () => {
+                        const result = Math.floor(Math.random() * 20) + 1;
+                        db.ref(`campanas/${campanaId}/tiradas`).push({
+                            personaje: p.nombre || "Héroe Misterioso",
+                            resultado: `sacó un 🎲 ${result}`,
+                            tipo: '(D20 rápido)',
+                            fecha: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    };
+
+                    const quiBtn = card.querySelector('.btn-quitar');
+                    if (quiBtn) {
+                        quiBtn.onclick = () => {
+                            if (confirm(`¿Quitar a ${p.nombre} de tu lista? Quedará libre para que cualquiera lo tome de nuevo.`)) {
+                                db.ref(`campanas/${campanaId}/personajes/${id}`).update({
+                                    owner: null,
+                                    activo: false,
+                                    publico: false
+                                });
+                            }
+                        };
+                    }
+
+                    gridPersonajes.appendChild(card);
+
+                    if (soyElGM) {
+    const vital = document.createElement('div');
+    vital.style = "background: color-mix(in srgb, var(--bg) 40%, transparent); padding: 10px; border-radius:6px; border:1px solid var(--border-color);";
+
+    if (SISTEMA_PERSONAJE[id] === 'chicle') {
+        // "El Último Chicle" no tiene HP: el recurso a mostrar es la cantidad de chicles (0-8).
+        // gum-cur puede llegar como string (viene de un <input type="hidden">, cuyo .value
+        // siempre es texto) o como number (semilla de la plantilla al reclamar) -> parseInt
+        // cubre los dos casos, Number.isInteger solo cubría el segundo.
+        const gumCurParsed = parseInt(p.datos?.['gum-cur'], 10);
+        const gum = Number.isInteger(gumCurParsed) ? Math.max(0, Math.min(8, gumCurParsed)) : 8;
+        const pctGum = (gum / 8) * 100;
+        vital.innerHTML = `
+        <p style="font-weight:bold; color:var(--accent-gold);">${escHtml(p.nombre || "Superviviente")}</p>
+        <div style="background:var(--bg); height:8px; border-radius:4px; overflow:hidden;">
+            <div style="background:${gum === 0 ? 'var(--mal)' : 'var(--bien)'}; width:${pctGum}%; height:100%;"></div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">🍬 Chicles: ${gum}/8</p>
+        `;
+        gridVitalesGm.appendChild(vital);
+        return;
+    }
+
+    // Resumen publicado por la propia ficha (campanas/<c>/party/<id>): PG reales, PG temporales, CA, iniciativa,
+    // velocidad, percepción pasiva, concentración y condiciones. Si la ficha todavía no lo publicó, se usan los
+    // campos sueltos de datos/ (hp-cur, hp-max).
+    const pa = (partyActual && partyActual[id]) || {};
+    const datos = p.datos || {};
+    const entero = (v, def) => { const n = parseInt(v, 10); return isNaN(n) ? def : n; };
+    const hpCur = pa.hp != null ? pa.hp : entero(datos['hp-cur'], 0);
+    const hpMax = pa.hpMax || entero(datos['hp-max'], 0);
+    const hpTemp = pa.hpTemp || 0;
+    const pct = hpMax ? Math.max(0, Math.min((hpCur / hpMax) * 100, 100)) : 0;
+    const signo = (n) => (n >= 0 ? '+' : '') + n;
+    const stat = (icono, etiqueta, valor) => valor == null || valor === '' ? '' : `<span title="${etiqueta}" style="background:var(--surface); border:1px solid var(--borde); border-radius:4px; padding:2px 6px; font-size:0.78rem;">${icono} ${valor}</span>`;
+    const stats = [
+        stat('🛡️', 'Clase de armadura', pa.ca || null),
+        stat('⚡', 'Iniciativa', pa.iniciativa != null ? signo(pa.iniciativa) : null),
+        stat('🏃', 'Velocidad (ft)', pa.velocidad || null),
+        stat('👁️', 'Percepción pasiva', pa.pasiva || null),
+    ].join('');
+
+    // Condiciones: las que publica la ficha (ids del SRD) + las casillas cond-/buff-/debuff- guardadas en datos/.
+    const NOMBRES_COND = { blinded: 'Cegado', charmed: 'Hechizado', deafened: 'Ensordecido', frightened: 'Asustado', grappled: 'Agarrado', incapacitated: 'Incapacitado', invisible: 'Invisible', paralyzed: 'Paralizado', petrified: 'Petrificado', poisoned: 'Envenenado', prone: 'Derribado', restrained: 'Apresado', stunned: 'Aturdido', unconscious: 'Inconsciente' };
+    const bonito = (k) => NOMBRES_COND[k] || k.replace(/-/g, ' ');
+    const condiciones = new Set((pa.condiciones || []).map(k => '🛑 ' + bonito(k)));
+    Object.keys(datos)
+        .filter(key => (key.startsWith('cond-') || key.startsWith('buff-') || key.startsWith('debuff-')) && datos[key] === true)
+        .forEach(key => condiciones.add(key.startsWith('cond-') ? '🛑 ' + bonito(key.slice(5)) : key.startsWith('buff-') ? '✨ ' + key.slice(5) : '⚡ ' + key.slice(7)));
+    if (pa.agotamiento) condiciones.add('🥱 Agotamiento ' + pa.agotamiento);
+    const sub = [pa.clase, pa.nivel ? 'nivel ' + pa.nivel : ''].filter(Boolean).join(' · ');
+    const esc = (t) => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    vital.innerHTML = `
+        <p style="font-weight:bold; color:var(--accent-gold);">${esc(p.nombre || "Héroe")}</p>
+        ${sub ? `<p style="font-size:0.7rem; color:var(--text-muted); margin-top:-2px;">${esc(sub)}</p>` : ''}
+        <div style="background:var(--bg); height:8px; border-radius:4px; overflow:hidden;">
+            <div style="background:${pct < 30 ? '#c94a4a' : 'var(--accent-gold)'}; width:${pct}%; height:100%;"></div>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">HP: <strong style="color:#fff;">${hpCur}${hpMax ? '/' + hpMax : ''}</strong>${hpTemp ? ` <span title="PG temporales">(+${hpTemp} temp.)</span>` : ''}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">${stats}</div>
+        ${pa.concentracion ? `<p style="font-size:0.75rem; margin-top:6px;">🧠 ${esc(pa.concentracion)}</p>` : ''}
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
+            ${[...condiciones].map(cond => `<span style="font-size:0.7rem; background:var(--surface-2); padding:2px 6px; border-radius:4px; color:var(--texto); border:1px solid var(--borde-fuerte);">${esc(cond)}</span>`).join('')}
+        </div>
+    `;
+    gridVitalesGm.appendChild(vital);
+}
+
+                });
+        }
+
+        function activarSincronizacionCampana(campanaId) {
+    crearPersonajeContainer.style.display = 'block';
+    const cc = document.getElementById('creadores-campana');
+    if (cc) {
+        cc.style.display = 'flex';
+        document.getElementById('link-crear-personaje').href = `crear-personaje.html?campana=${encodeURIComponent(campanaId)}`;
+        document.getElementById('link-importar-personaje').href = `importar-personaje.html?campana=${encodeURIComponent(campanaId)}`;
+    }
+    bitacoraContainer.style.display = 'block';
+    gridPersonajes.style.display = 'grid';
+    btnReclamarGM.style.display = 'inline-block';
+
+    // ==========================================
+    // SISTEMA DE JUEGO DE LA CAMPAÑA (D&D / CoC)
+    // ==========================================
+    // Se guarda en lista_campanas/{campanaId}/sistema. Mientras no esté asignado, se muestra
+    // el selector para que el primer usuario que abra esta campaña lo defina una sola vez
+    // (después, según las reglas de Firebase, solo el GM puede cambiarlo). Cada vez que este
+    // valor cambia (o llega por primera vez) se vuelve a pintar la grilla de personajes, para
+    // que el filtro por sistema se aplique apenas se conoce el dato.
+    if (privadaListener) privadaListener.off();
+    campanaPrivadaActual = false;
+    privadaListener = db.ref(`lista_campanas/${campanaId}/privada`);
+    privadaListener.on('value', (pv) => {
+        campanaPrivadaActual = pv.val() === true;
+        if (sistemaCampanaActual) badgeSistemaCampana.innerText = `Sistema: ${NOMBRE_SISTEMA[sistemaCampanaActual] || sistemaCampanaActual}${campanaPrivadaActual ? ' · 🔒 Privada' : ''}`;
+        if (soyElGMActual && typeof renderAccesoPanel === 'function') renderAccesoPanel(campanaId);
+    });
+    sistemaCampanaListener = db.ref(`lista_campanas/${campanaId}/sistema`);
+    sistemaCampanaListener.on('value', sysSnap => {
+        sistemaCampanaActual = sysSnap.val() || null;
+        const ccSis = document.getElementById('creadores-campana');
+        if (ccSis) ccSis.style.display = (!sistemaCampanaActual || sistemaCampanaActual === 'dnd') ? 'flex' : 'none';
+
+        if (sistemaCampanaActual) {
+            sistemaCampanaContainer.style.display = 'none';
+            badgeSistemaCampana.innerText = `Sistema: ${NOMBRE_SISTEMA[sistemaCampanaActual] || sistemaCampanaActual}${campanaPrivadaActual ? ' · 🔒 Privada' : ''}`;
+        } else {
+            sistemaCampanaContainer.style.display = 'block';
+            badgeSistemaCampana.innerText = '';
+        }
+
+        renderizarGrid(campanaId);
+    });
+
+    // Si esto falla (ej. porque las reglas de Firebase publicadas todavía no incluyen el
+    // permiso de escritura para 'sistema'), se avisa explícitamente en vez de fallar en
+    // silencio — antes un error de permisos aquí dejaba el selector reapareciendo para
+    // siempre sin ninguna pista de qué estaba pasando.
+    btnSistemaDnd.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('dnd')
+        .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
+    btnSistemaCoc.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('coc')
+        .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
+    btnSistemaChicle.onclick = () => db.ref(`lista_campanas/${campanaId}/sistema`).set('chicle')
+        .catch(err => alert('No se pudo guardar el sistema de la campaña: ' + err.message + '\n\n¿Están publicadas las reglas de Firebase actualizadas (db_rules.txt)?'));
+
+    // ---- Clave de GM: PBKDF2-SHA256 (200 000 vueltas) con sal aleatoria; el mismo cálculo se usa al definirla y al reclamar. ----
+    function saltAleatoria() { return Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join(''); }
+    async function hashClaveGM(clave, salt) {
+        const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(clave), 'PBKDF2', false, ['deriveBits']);
+        const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(salt), iterations: 200000 }, base, 256);
+        return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Dos jerarquías (v98.0): GM titular (nodo gm; puede compartir/quitar el rol) y GM de apoyo (gm_apoyo/<uid>: mismas facultades,
+    // salvo compartir o quitar el rol; puede dejarlo cuando quiera).
+    let ultimoGmUid = null, ultimoApoyo = {};
+    const aplicarRolGM = () => {
+        const campanaGmUid = ultimoGmUid;
+        const soyElTitular = miUidActual === campanaGmUid;
+        const soyApoyo = !soyElTitular && ultimoApoyo[miUidActual] === true;
+        const soyElGM = soyElTitular || soyApoyo;
+        soyElGMActual = soyElGM;
+        soyTitularActual = soyElTitular;
+        if (miPerfil.visible && !campanaPrivadaActual) db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).once('value').then((sn) => { const rol = soyElGM ? 'gm' : 'jugador'; if (sn.val() !== rol && ultimosMiembros[miUidActual]) return db.ref(`directorio/${miUidActual}/campanas/${campanaId}`).set(rol); }).catch(() => {});
+        const tieneGM = !!campanaGmUid;
+        console.log("TU UID ACTUAL:", miUidActual, "UID DEL GM EN DB:", campanaGmUid, soyApoyo ? "(GM de apoyo)" : "");
+        document.getElementById('btn-salir-campana').style.display = soyElTitular ? 'none' : 'inline-block';
+        // integrantes (los leen todos los integrantes); invitaciones y solicitudes solo las leen el GM y su apoyo
+        if (!miembrosListener) { miembrosListener = db.ref(`campanas/${campanaId}/miembros`); miembrosListener.on('value', (m) => { ultimosMiembros = m.val() || {}; if (soyElGMActual) renderGmApoyo(campanaId); }); }
+        if (soyElGM && !notasGmListener) {
+            // Notas secretas del GM: se guardan en acceso/<id>/notas_gm (solo el GM y su apoyo las leen)
+            notasGmListener = db.ref(`acceso/${campanaId}/notas_gm`);
+            notasGmListener.on('value', (n) => { if (document.activeElement !== textareaNotasGM) textareaNotasGM.value = n.val() || ''; }, () => {});
+            let tNotas = null;
+            textareaNotasGM.oninput = () => { clearTimeout(tNotas); tNotas = setTimeout(() => db.ref(`acceso/${campanaId}/notas_gm`).set(textareaNotasGM.value).catch((e) => console.warn('No se pudieron guardar las notas:', e)), 700); };
+        }
+        if (soyElGM && !invListener) {
+            invListener = db.ref(`acceso/${campanaId}/invitaciones`); invListener.on('value', (m) => { ultimasInvitaciones = m.val() || {}; renderGmApoyo(campanaId); }, () => { ultimasInvitaciones = {}; });
+            solListener = db.ref(`acceso/${campanaId}/solicitudes`); solListener.on('value', (m) => { ultimasSolicitudes = m.val() || {}; renderGmApoyo(campanaId); }, () => { ultimasSolicitudes = {}; });
+        }
+
+        const prevBtn = document.getElementById('btn-liberar-gm');
+        if (prevBtn) prevBtn.remove();
+
+        if (!tieneGM) {
+            btnReclamarGM.style.display = 'inline-block';
+            btnReclamarGM.innerText = '👑 Reclamar Puesto GM';
+            // Clave de GM (v95.0): ya no se guarda en texto plano. Se guarda una sal pública (gm_salt) y el hash PBKDF2 de la clave (gm_hash,
+            // que nadie puede leer); para reclamar, cada quien escribe su propio hash en gm_claim/<uid> y las reglas lo comparan con gm_hash.
+            db.ref(`campanas/${campanaId}/gm_salt`).once('value', (saltSnap) => {
+                const salt = saltSnap.val();
+                const claim = db.ref(`acceso/${campanaId}/gm_claim/${miUidActual}`);
+                const limpiarClaim = () => claim.remove().catch(() => {});
+
+                if (!salt) {
+                    btnReclamarGM.innerText = '👑 Definir Clave y ser GM';
+                    btnReclamarGM.onclick = async () => {
+                        const nuevaClave = prompt("Crea una contraseña para proteger el puesto de GM:");
+                        if (!nuevaClave) return;
+                        try {
+                            const nuevaSal = saltAleatoria();
+                            const hash = await hashClaveGM(nuevaClave, nuevaSal);
+                            await db.ref(`campanas/${campanaId}/gm_salt`).set(nuevaSal);
+                            await db.ref(`acceso/${campanaId}/gm_hash`).set(hash);
+                            await claim.set(hash);
+                            await db.ref(`campanas/${campanaId}/gm`).set(miUidActual);
+                            limpiarClaim();
+                            console.log("Puesto de GM y clave guardados con éxito.");
+                        } catch (error) {
+                            console.error("Error al reclamar puesto inicialmente:", error);
+                            alert("No se pudo reclamar el puesto de GM: " + error.message);
+                        }
+                    };
+                } else {
+                    btnReclamarGM.innerText = '🔑 Reclamar GM (Vacante)';
+                    btnReclamarGM.onclick = async () => {
+                        const pass = prompt("Introduce la contraseña de GM para reclamar el puesto:");
+                        if (pass === null) return;
+                        try {
+                            await claim.set(await hashClaveGM(pass, salt));
+                            await db.ref(`campanas/${campanaId}/gm`).set(miUidActual);
+                        } catch (error) {
+                            alert("Contraseña incorrecta.");
+                        } finally {
+                            limpiarClaim();
+                        }
+                    };
+                }
+            });
+
+        } else if (soyElTitular) {
+            btnReclamarGM.style.display = 'inline-block';
+            btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '👑 Modo GM';
+            
+            btnReclamarGM.onclick = () => {
+                esDirector = !esDirector;
+                panelGm.style.display = esDirector ? 'block' : 'none';
+                btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '👑 Modo GM';
+            };
+
+            const prevBtnGm = document.getElementById('btn-liberar-gm');
+            if (prevBtnGm) prevBtnGm.remove();
+
+            const btnLiberarGM = document.createElement('button');
+            btnLiberarGM.id = 'btn-liberar-gm';
+            btnLiberarGM.innerText = '⚠️ Dejar puesto de GM (Resetea Clave)';
+            btnLiberarGM.style = "background:var(--mal); color:var(--sobre-acento); border:none; padding:8px 12px; border-radius:4px; cursor:pointer; margin-top:15px; width:100%; font-weight:bold;";
+            btnLiberarGM.onclick = () => {
+                if (confirm("¿Estás seguro de que quieres dejar de ser GM? Se borrará el puesto y la contraseña.")) {
+                    db.ref(`campanas/${campanaId}/gm_apoyo`).set(null)   // al soltar el puesto también se acaban los GM de apoyo
+                        .then(() => db.ref(`acceso/${campanaId}/gm_hash`).set(null))
+                        .then(() => db.ref(`campanas/${campanaId}/gm_salt`).set(null))
+                        .then(() => db.ref(`campanas/${campanaId}/gm_password`).set(null).catch(() => {}))   // restos de la clave en texto plano (versiones antiguas)
+                        .then(() => {
+                            return db.ref(`campanas/${campanaId}/gm`).set(null);
+                        })
+                        .then(() => {
+                            panelGm.style.display = 'none';
+                            esDirector = false;
+                            console.log("GM y contraseña reseteados exitosamente.");
+                        })
+                        .catch(error => {
+                            console.error("Error al liberar puesto secuencialmente:", error);
+                        });
+                }
+            };
+            panelGm.appendChild(btnLiberarGM);
+            renderGmApoyo(campanaId);
+
+        } else if (soyApoyo) {
+            // GM de apoyo: mismo panel, sin compartir ni quitar el rol; solo puede dejar el suyo.
+            btnReclamarGM.style.display = 'inline-block';
+            btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '🤝 Modo GM (apoyo)';
+            btnReclamarGM.onclick = () => {
+                esDirector = !esDirector;
+                panelGm.style.display = esDirector ? 'block' : 'none';
+                btnReclamarGM.innerText = esDirector ? '🧙‍♂️ Cerrar GM' : '🤝 Modo GM (apoyo)';
+            };
+            const prevBtnGm2 = document.getElementById('btn-liberar-gm');
+            if (prevBtnGm2) prevBtnGm2.remove();
+            renderGmApoyo(campanaId);
+        } else {
+            btnReclamarGM.style.display = 'none';
+            panelGm.style.display = 'none';
+            esDirector = false;
+        }
+
+        if (personajesListener) personajesListener.off();
+
+        personajesListener = db.ref(`campanas/${campanaId}/personajes`);
+        personajesListener.on('value', snap => {
+            ultimoPersonajesSnap = snap.val();
+            renderizarGrid(campanaId);
+            if (soyElGMActual && typeof renderGmApoyo === 'function') renderGmApoyo(campanaId);
+        });
+
+        // El resumen que publica cada ficha (PG reales, CA, iniciativa…) llega por su propio nodo: repinta la grilla al cambiar.
+        if (partyListener) partyListener.off();
+        partyListener = db.ref(`campanas/${campanaId}/party`);
+        partyListener.on('value', snap => {
+            partyActual = snap.val() || {};
+            if (ultimoPersonajesSnap) renderizarGrid(campanaId);
+        }, () => { partyActual = {}; });
+    };
+    db.ref(`campanas/${campanaId}/gm`).on('value', (s) => { ultimoGmUid = s.val(); aplicarRolGM(); });
+    db.ref(`campanas/${campanaId}/gm_apoyo`).on('value', (s) => { ultimoApoyo = s.val() || {}; aplicarRolGM(); }, () => { ultimoApoyo = {}; });
+
+    // ---- Panel «GM de apoyo» (dentro de la pantalla del director) ----
+    function renderGmApoyo(campanaId) {
+        renderApoyoPanel(campanaId);
+        renderAccesoPanel(campanaId);
+    }
+    // ---- Panel «GM de apoyo» ----
+    function renderApoyoPanel(campanaId) {
+        const previo = document.getElementById('gm-apoyo-panel'); if (previo) previo.remove();
+        const cont = document.createElement('div');
+        cont.id = 'gm-apoyo-panel';
+        cont.className = 'bloque-gm';
+        const refApoyo = (uid) => db.ref(`campanas/${campanaId}/gm_apoyo/${uid}`);
+        if (soyTitularActual) {
+            // candidatos: integrantes de la campaña (con el nombre con el que entraron), menos el titular
+            const filas = Object.keys(ultimosMiembros).filter((uid) => uid !== miUidActual).map((uid) => {
+                const nombre = (ultimosMiembros[uid] && ultimosMiembros[uid].nombre) || ('Jugador ' + uid.slice(0, 6));
+                const es = ultimoApoyo[uid] === true;
+                const personajes = Object.keys(ultimoPersonajesSnap || {}).filter((id) => ultimoPersonajesSnap[id] && ultimoPersonajesSnap[id].activo && ultimoPersonajesSnap[id].owner === uid).map((id) => ultimoPersonajesSnap[id].nombre || id);
+                return `<div class="fila-gm">
+                    <span><strong>${escHtml(nombre)}</strong>${personajes.length ? ` <small>· ${escHtml(personajes.join(', '))}</small>` : ''}${es ? '<span class="etiqueta-rol">🤝 GM de apoyo</span>' : ''}</span>
+                    <button type="button" class="btn-mini" data-apoyo="${escHtml(uid)}" data-es="${es ? '1' : ''}">${es ? 'Quitar apoyo' : 'Dar GM de apoyo'}</button></div>`;
+            }).join('');
+            cont.innerHTML = `<p class="titulo">🤝 GM de apoyo</p>
+                <p class="nota-menu" style="margin-top:0">Un GM de apoyo tiene las facultades de GM (fichas, grupo, sistema, invitaciones) pero no puede compartir ni quitar el rol de GM, ni cambiar la clave. Puede dejar de ser GM cuando quiera.</p>
+                ${filas || '<p class="nota-menu">Aún no hay otras personas en esta campaña.</p>'}`;
+            cont.querySelectorAll('[data-apoyo]').forEach((b) => {
+                b.onclick = () => {
+                    const uid = b.dataset.apoyo;
+                    (b.dataset.es ? refApoyo(uid).remove() : refApoyo(uid).set(true)).catch((e) => alert('No se pudo cambiar el GM de apoyo: ' + e.message));
+                };
+            });
+        } else {
+            cont.innerHTML = `<p class="titulo">🤝 Eres GM de apoyo</p>
+                <p class="nota-menu" style="margin-top:0">Tienes las facultades de GM, salvo compartir o quitar el rol. Puedes dejarlo cuando quieras; el GM titular puede volver a dártelo.</p>
+                <button type="button" id="btn-dejar-apoyo" class="btn-mini peligro" style="width:100%">⚠️ Dejar de ser GM de apoyo</button>`;
+            cont.querySelector('#btn-dejar-apoyo').onclick = () => {
+                if (confirm('¿Dejar de ser GM de apoyo? El GM titular tendrá que volver a darte el rol.')) {
+                    refApoyo(miUidActual).remove().then(() => { panelGm.style.display = 'none'; esDirector = false; }).catch((e) => alert('No se pudo dejar el rol: ' + e.message));
+                }
+            };
+        }
+        panelGm.appendChild(cont);
+    }
+    // ---- Panel «Acceso a la campaña»: invitaciones, solicitudes e integrantes (GM y GM de apoyo) ----
+    const tokenAleatorio = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'; return Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => a[b % a.length]).join(''); };
+    const fechaCorta = (ts) => { try { return new Date(ts).toLocaleString('es-419', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return ''; } };
+    function renderAccesoPanel(campanaId) {
+        const previo = document.getElementById('gm-acceso-panel'); if (previo) previo.remove();
+        const cont = document.createElement('div');
+        cont.id = 'gm-acceso-panel';
+        cont.className = 'bloque-gm';
+        const base = location.origin + location.pathname.replace(/[^/]*$/, 'index.html');
+        const invs = Object.keys(ultimasInvitaciones).sort((a, b) => (ultimasInvitaciones[b].expira || 0) - (ultimasInvitaciones[a].expira || 0));
+        const sols = Object.keys(ultimasSolicitudes);
+        const filasInv = invs.map((t) => {
+            const inv = ultimasInvitaciones[t], vencida = (inv.expira || 0) < Date.now();
+            return `<div class="fila-gm"><span><span class="codigo-inv">${escHtml(campanaId)}:${escHtml(t)}</span><br><small>${vencida ? '⌛ vencida' : 'vence ' + escHtml(fechaCorta(inv.expira))}</small></span>
+                <span class="acciones"><button type="button" class="btn-mini" data-inv-enlace="${escHtml(t)}">Copiar enlace</button><button type="button" class="btn-mini" data-inv-codigo="${escHtml(t)}">Copiar código</button><button type="button" class="btn-mini peligro" data-inv-revocar="${escHtml(t)}">Revocar</button></span></div>`;
+        }).join('');
+        const filasSol = sols.map((u) => `<div class="fila-gm"><span><strong>${escHtml(ultimasSolicitudes[u].nombre || ('Jugador ' + u.slice(0, 6)))}</strong> <small>${escHtml(fechaCorta(ultimasSolicitudes[u].ts))}</small></span>
+            <span class="acciones"><button type="button" class="btn-mini" data-sol-ok="${escHtml(u)}">Aprobar</button><button type="button" class="btn-mini peligro" data-sol-no="${escHtml(u)}">Rechazar</button></span></div>`).join('');
+        const filasMiembros = Object.keys(ultimosMiembros).map((u) => {
+            const titular = u === ultimoGmUid, apoyo = ultimoApoyo[u] === true, yo = u === miUidActual;
+            const nombre = (ultimosMiembros[u] && ultimosMiembros[u].nombre) || ('Jugador ' + u.slice(0, 6));
+            return `<div class="fila-gm"><span><strong>${escHtml(nombre)}</strong>${yo ? ' <small>(tú)</small>' : ''}${titular ? '<span class="etiqueta-rol">👑 GM</span>' : apoyo ? '<span class="etiqueta-rol">🤝 apoyo</span>' : ''}</span>
+                ${(titular || yo) ? '' : `<button type="button" class="btn-mini peligro" data-quitar-miembro="${escHtml(u)}">Quitar de la campaña</button>`}</div>`;
+        }).join('');
+        cont.innerHTML = `<p class="titulo">📨 Invitar y administrar el acceso</p>
+            <label class="opcion-menu" style="margin-top:0"><input type="checkbox" id="chk-privada" ${campanaPrivadaActual ? 'checked' : ''}> <span>🔒 Campaña privada: solo se entra con invitación y no aparece en el buscador</span></label>
+            <p class="nota-menu" style="margin-top:0">Comparte un enlace o un código de invitación para que alguien entre de inmediato (vence a los 7 días y puedes revocarlo). ${campanaPrivadaActual ? 'Al ser privada, nadie puede pedir entrar solo con el ID.' : `También pueden pedir entrar con el ID <strong>${escHtml(campanaId)}</strong> o encontrarte en el buscador: verás la solicitud aquí.`}</p>
+            <div class="fila-acciones" style="justify-content:flex-start; margin:8px 0;"><button type="button" class="btn-mini" id="btn-crear-invitacion">➕ Crear invitación</button></div>
+            ${filasInv || '<p class="nota-menu">No hay invitaciones activas.</p>'}
+            <p class="titulo" style="margin-top:16px">🙋 Solicitudes pendientes (${sols.length})</p>
+            ${filasSol || '<p class="nota-menu">Nadie ha pedido entrar.</p>'}
+            <p class="titulo" style="margin-top:16px">👥 Integrantes (${Object.keys(ultimosMiembros).length})</p>
+            ${filasMiembros || '<p class="nota-menu">—</p>'}
+            <p id="acceso-msg" class="nota-menu" role="status"></p>`;
+        const aviso = (t, ok) => { const e = cont.querySelector('#acceso-msg'); if (e) { e.className = ok ? 'msg-ok' : 'msg-error'; e.textContent = t; } };
+        const copiar = async (txt) => { try { await navigator.clipboard.writeText(txt); aviso('Copiado al portapapeles.', true); } catch (e) { aviso('No se pudo copiar; selecciona el texto a mano: ' + txt); } };
+        cont.querySelector('#chk-privada').onchange = async (ev) => {
+            const privada = ev.target.checked;
+            try {
+                await db.ref(`lista_campanas/${campanaId}/privada`).set(privada);
+                if (privada) {
+                    // sale del buscador de inmediato: se borra la campaña del directorio de cada integrante (lo permiten las reglas al GM)
+                    await Promise.all(Object.keys(ultimosMiembros).map((u) => db.ref(`directorio/${u}/campanas/${campanaId}`).remove().catch(() => {})));
+                } else {
+                    sincronizarDirectorio(idsCampanasActuales);   // el resto reaparece cuando cada integrante abre su menú
+                }
+            } catch (e) { ev.target.checked = !privada; aviso('No se pudo cambiar: ' + e.message); }
+        };
+        cont.querySelector('#btn-crear-invitacion').onclick = () => {
+            const t = tokenAleatorio();
+            db.ref(`acceso/${campanaId}/invitaciones/${t}`).set({ expira: Date.now() + 7 * 86400000, por: miUidActual }).catch((e) => aviso('No se pudo crear la invitación: ' + e.message));
+        };
+        cont.querySelectorAll('[data-inv-enlace]').forEach((b) => b.onclick = () => copiar(`${base}?unirse=${encodeURIComponent(campanaId)}&inv=${b.dataset.invEnlace}`));
+        cont.querySelectorAll('[data-inv-codigo]').forEach((b) => b.onclick = () => copiar(`${campanaId}:${b.dataset.invCodigo}`));
+        cont.querySelectorAll('[data-inv-revocar]').forEach((b) => b.onclick = () => db.ref(`acceso/${campanaId}/invitaciones/${b.dataset.invRevocar}`).remove().catch((e) => aviso('No se pudo revocar: ' + e.message)));
+        cont.querySelectorAll('[data-sol-ok]').forEach((b) => b.onclick = async () => {
+            const u = b.dataset.solOk, nombre = (ultimasSolicitudes[u] && ultimasSolicitudes[u].nombre) || 'Jugador';
+            try {
+                await db.ref(`campanas/${campanaId}/miembros/${u}`).set({ nombre, desde: Date.now() });
+                await db.ref(`usuarios/${u}/campanas/${campanaId}`).set(true);
+                await db.ref(`acceso/${campanaId}/solicitudes/${u}`).remove();
+                aviso(`${nombre} ya es parte de la campaña.`, true);
+            } catch (e) { aviso('No se pudo aprobar: ' + e.message); }
+        });
+        cont.querySelectorAll('[data-sol-no]').forEach((b) => b.onclick = () => db.ref(`acceso/${campanaId}/solicitudes/${b.dataset.solNo}`).remove().catch((e) => aviso('No se pudo rechazar: ' + e.message)));
+        cont.querySelectorAll('[data-quitar-miembro]').forEach((b) => b.onclick = async () => {
+            const u = b.dataset.quitarMiembro, nombre = (ultimosMiembros[u] && ultimosMiembros[u].nombre) || 'esta persona';
+            if (!confirm(`¿Quitar a ${nombre} de la campaña? Dejará de verla; sus personajes quedan en ella.`)) return;
+            try {
+                await db.ref(`campanas/${campanaId}/gm_apoyo/${u}`).remove().catch(() => {});
+                await db.ref(`campanas/${campanaId}/miembros/${u}`).remove();
+                await db.ref(`usuarios/${u}/campanas/${campanaId}`).remove();
+                db.ref(`directorio/${u}/campanas/${campanaId}`).remove().catch(() => {});
+            } catch (e) { aviso('No se pudo quitar: ' + e.message); }
+        });
+        panelGm.appendChild(cont);
+    }
+
+    bitacoraListener = db.ref(`campanas/${campanaId}/bitacora`);
+    bitacoraListener.on('value', snap => {
+        const logs = snap.val() || {};
+        renderizarLogs(logs, campanaId);
+    });
+
+    tiradasListener = db.ref(`campanas/${campanaId}/tiradas`);
+    tiradasListener.on('value', snap => {
+        const tiradas = snap.val() || {};
+        const listaTiradas = document.getElementById('lista-tiradas-gm');
+        if (!listaTiradas) return;
+
+        listaTiradas.innerHTML = '';
+        Object.keys(tiradas).reverse().forEach(key => {
+            const t = tiradas[key];
+            const fecha = new Date(t.fecha).toLocaleTimeString();
+            const div = document.createElement('div');
+            div.style = "border-bottom: 1px solid var(--border-color); padding: 6px 0; font-size: 0.85rem; color: var(--texto);";
+            // El texto ya viene armado desde cada ficha (p.ej. "sacó un 🎲 15" o "usó").
+            // Se mantiene compatibilidad con entradas viejas del historial (resultado numérico u "Usado" sueltos).
+            let texto;
+            if (typeof t.resultado === 'number') {
+                texto = `sacó un 🎲 <strong>${escHtml(t.resultado)}</strong> ${escHtml(t.tipo || '')}`;
+            } else if (t.resultado === 'Usado') {
+                texto = `usó ${escHtml(t.tipo || '')}`;
+            } else {
+                texto = `${escHtml(t.resultado)} ${escHtml(t.tipo || '')}`;
+            }
+            div.innerHTML = `<strong>[${fecha}] ${escHtml(t.personaje)}:</strong> ${texto}`;
+            listaTiradas.appendChild(div);
+        });
+    });
+
+    // === BOTÓN DE LIMPIAR HISTORIAL ANIDADO DENTRO DE LA FUNCIÓN === [1.1.2]
+    const btnLimpiarTiradas = document.getElementById('btn-limpiar-tiradas');
+    if (btnLimpiarTiradas) {
+        btnLimpiarTiradas.onclick = () => {
+            if (confirm("¿Estás seguro de que deseas vaciar el historial de tiradas de esta campaña?")) {
+                db.ref(`campanas/${campanaId}/tiradas`).remove();
+            }
+        };
+    }
+} // <--- LLAVE QUE CIERRA CORRECTAMENTE LA FUNCIÓN activarSincronizacionCampana [1.1.2]
+
+
+        // ==========================================
+        // FUNCIONES AUXILIARES Y RENDERIZADO
+        // ==========================================
+        function actualizarSelectorPlantillas(personajesActivos) {
+            selectTemplatePersonaje.innerHTML = '<option value="">-- Elige un Héroe --</option>';
+            Object.keys(plantillasPersonajes).forEach(id => {
+                const estaActivo = personajesActivos && personajesActivos[id] && personajesActivos[id].activo;
+                if (estaActivo) return;
+                // Si la campaña ya tiene un sistema de juego asignado, solo se puede sumar
+                // personajes de ese mismo sistema (evita mezclar D&D con Call of Cthulhu).
+                const sistemaPersonaje = SISTEMA_PERSONAJE[id];
+                if (sistemaCampanaActual && sistemaPersonaje && sistemaPersonaje !== sistemaCampanaActual) return;
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.innerText = plantillasPersonajes[id].nombre;
+                selectTemplatePersonaje.appendChild(opt);
+            });
+        }
+
+                selectTemplatePersonaje.addEventListener('change', () => {
+    const campanaId = selectCampana.value;
+    const plantillaId = selectTemplatePersonaje.value;
+    if (!campanaId || !plantillaId) return;
+
+    const ref = db.ref(`campanas/${campanaId}/personajes/${plantillaId}`);
+
+    // Transacción: solo asigna el personaje si sigue libre en ese instante.
+    // Esto evita que dos jugadores tomen el mismo personaje al mismo tiempo.
+    ref.transaction((actual) => {
+        if (actual && actual.activo) {
+            return; // ya lo tomó otro usuario justo antes -> abortamos
+        }
+        return {
+            ...plantillasPersonajes[plantillaId],
+            owner: miUidActual,
+            ownerNombre: miNombreActual || null,
+            activo: true,
+            publico: false // Privado por defecto al asignarse
+        };
+    }, (error, committed) => {
+        selectTemplatePersonaje.value = ''; // Resetea el selector siempre
+        if (error) {
+            console.error('Error al asignar personaje:', error);
+            alert('Ocurrió un error al asignar el personaje. Intenta de nuevo.');
+        } else if (!committed) {
+            alert('Ese personaje acaba de ser tomado por otro jugador. Elige otro.');
+        }
+    });
+});
+
+
+
+        btnAddLog.onclick = () => {
+            const campanaId = selectCampana.value;
+            const tit = document.getElementById('titulo-entrada').value.trim();
+            const txt = nuevaEntrada.value.trim();
+            if (!campanaId || !txt) return;
+
+            if (editandoKeyLog) {
+                db.ref(`campanas/${campanaId}/bitacora/${editandoKeyLog}`).update({
+                    titulo: tit,
+                    texto: txt
+                }).then(() => {
+                    cancelarEdicionLog();
+                });
+                return;
+            }
+
+            db.ref(`campanas/${campanaId}/bitacora`).push({
+                titulo: tit,
+                texto: txt,
+                fecha: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                document.getElementById('titulo-entrada').value = '';
+                nuevaEntrada.value = '';
+            });
+        };
+
+        function editarLog(key, log) {
+            editandoKeyLog = key;
+            document.getElementById('titulo-entrada').value = log.titulo || '';
+            nuevaEntrada.value = log.texto || '';
+            btnAddLog.textContent = '💾 Guardar Cambios';
+            if (btnCancelarLog) btnCancelarLog.style.display = 'inline-block';
+            nuevaEntrada.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function cancelarEdicionLog() {
+            editandoKeyLog = null;
+            document.getElementById('titulo-entrada').value = '';
+            nuevaEntrada.value = '';
+            btnAddLog.textContent = 'Guardar Entrada';
+            if (btnCancelarLog) btnCancelarLog.style.display = 'none';
+        }
+        if (btnCancelarLog) btnCancelarLog.onclick = cancelarEdicionLog;
+
+        function renderizarLogs(logs, campanaId) {
+            listaBitacora.innerHTML = '';
+            const filtro = buscarBitacora.value.toLowerCase().trim();
+            
+            Object.keys(logs).reverse().forEach(key => {
+                const log = logs[key];
+                const fecha = new Date(log.fecha).toLocaleString();
+                
+                if (filtro && !log.texto.toLowerCase().includes(filtro) && !log.titulo.toLowerCase().includes(filtro)) return;
+
+                const div = document.createElement('div');
+                div.style = "border-bottom: 1px solid var(--border-color); padding: 8px 0; display: flex; justify-content: space-between;";
+                div.innerHTML = `
+                    <div>
+                        <small style="color:var(--accent-gold);">${fecha}</small>${log.personaje ? ` <small style="color:var(--text-muted);">· ${escHtml(log.personaje)}</small>` : ''}
+                        ${log.titulo ? `<h4>${escHtml(log.titulo)}</h4>` : ''}
+                        <p style="white-space: pre-wrap; font-size:0.85rem; margin-top:4px;">${escHtml(log.texto)}</p>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button class="btn-editar-log" style="background:none; border:none; color:var(--accent-gold); cursor:pointer;">✏️</button>
+                        <button class="btn-borrar-log" style="background:none; border:none; color:var(--mal); cursor:pointer;">❌</button>
+                    </div>
+                `;
+
+                div.querySelector('.btn-editar-log').onclick = () => editarLog(key, log);
+                div.querySelector('.btn-borrar-log').onclick = () => {
+                    if (confirm('¿Eliminar registro?')) db.ref(`campanas/${campanaId}/bitacora/${key}`).remove();
+                };
+                listaBitacora.appendChild(div);
+            });
+        }
+
+        buscarBitacora.oninput = () => {
+            const campanaId = selectCampana.value;
+            if (campanaId) {
+                db.ref(`campanas/${campanaId}/bitacora`).once('value', snap => renderizarLogs(snap.val() || {}, campanaId));
+            }
+        };
+
+                function ocultarModulos() {
+            campanaContainer.style.display = 'none';
+            crearPersonajeContainer.style.display = 'none';
+            bitacoraContainer.style.display = 'none';
+            gridPersonajes.style.display = 'none';
+            panelGm.style.display = 'none';
+            btnReclamarGM.style.display = 'none';
+            sistemaCampanaContainer.style.display = 'none';
+            badgeSistemaCampana.innerText = '';
+        }
+    </script>
+</body>
+</html>

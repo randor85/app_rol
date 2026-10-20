@@ -22,7 +22,8 @@ pjs/app/                        ← raíz del proyecto Firebase
     ├── fiona_faraway.html, eldur.html, hannoghar.html, myrklogi_mangarisonn.html,
     │   ulreek.html, dane.html   ← desde la v66.0 son REDIRECCIONES a ficha.html?pj=<id> (conservan ?campana=)
     ├── <id>_clasico.html       ← la versión anterior de cada una (respaldo para volver atrás; no se enlaza desde ningún lado)
-    ├── nevada_jones.html       ← 1 ficha de Call of Cthulhu (arquitectura de juego distinta, ver abajo)
+    ├── ficha-coc.html (+ ficha-coc-shell.js, ficha-coc-plantilla.js, ficha-coc.js, personajes-coc/<id>.js)   ← ficha única de Call of Cthulhu (ver «Call of Cthulhu»)
+    ├── nevada_jones.html       ← redirección a ficha-coc.html?pj=nevada_jones (la ficha anterior: nevada_jones_clasico.html)
     ├── legacy estable/         ← respaldos versionados (ver "Respaldos e historial")
     ├── estable provisorio/     ← snapshots puntuales más antiguos, menos relevantes
     └── trabajo en progreso/    ← borradores viejos descartados, no tocar salvo que el usuario lo pida
@@ -118,9 +119,15 @@ Lo único que sigue siendo distinto, a propósito y de forma disclosed: **el sis
 
 Desde la pasada 48.0 (29 ago 2026) tiene botones de Descanso Corto/Largo (☕/🌙) en la barra sticky, igual que el resto de la flota — ya no es un gap.
 
-## Nevada Jones: Call of Cthulhu, mecánica completamente distinta
+## Call of Cthulhu: motor propio (desde la v103.0)
 
-No comparte nada del sistema de D&D (sin spell slots, sin clases/razas, sin HP por dado de golpe). Usa su propio motor de tiradas (`rollSkill`, `logRoll`, `updateStats`), Cordura (SAN) en vez de maná, y botones "⚡ Usar"/"🔹 Usar" por habilidad. `SISTEMA_PERSONAJE_PROPIO = 'coc'` es lo que impide mezclarlo con una campaña de D&D.
+Mecánica distinta a D&D (d100 con éxito regular/difícil/extremo, Cordura, Suerte, PV/PM, habilidades en %), así que tiene su propio juego de módulos sobre la misma infraestructura (`ficha-common.js`, `ficha-dados.js`, `ficha-party.js`, `ficha-tema.css`, sesión, membresía):
+- `ficha-coc-reglas.js` — reglas puras (niveles de éxito, d100 con dados de bonificación/penalización, derivados, daño de armas, fase de desarrollo, chequeo de Cordura, heridas). **Cambios de reglas se hacen aquí** y se prueban con `unit_coc`.
+- `coc_data.js` — características, 46 habilidades con valor base, fórmulas de puntos de ocupación, bandas de edad, armas de ejemplo (valores de referencia; no texto del manual).
+- `ficha-coc.html?pj=<id>[&campana=<c>]` → `ficha-coc-shell.js` (carga datos: `personajes-coc/<id>.js` → `window.PERSONAJES_COC[id]`, o la definición `pc_*` con `sistema:'coc'`), `ficha-coc-plantilla.js` (HTML con los ids de siempre: `str…edu`, `luck-curr`, `hp/mp/san-curr|max`, `info-*`, `trasfondo-*`, `equipamiento`, `finanzas`, `notas-personaje`) y `ficha-coc.js` (motor). Listas editables que guarda en `datos/`: `habilidades-json`, `armas-json`, `capacidades-json` (hechizos, dones, objetos con costo PM/Cordura/PV). Un personaje de la ficha anterior declara `legado:{habilidades,armas}` para sembrar esas listas una sola vez desde `skill-val-<n>` / `arma-<n>-*` sin borrar nada.
+- Creación: `crear-investigador.html?campana=<c>` + `ficha-coc-generador.js` (puntos de ocupación e interés con topes) → `campanas/<c>/personajes/pc_*` con `sistema:'coc'`. `ficha.html` redirige un `pc_*` de CoC a `ficha-coc.html`; el menú ofrece «Crear investigador» en campañas CoC.
+- Biblioteca global `biblioteca/capacidades_custom/<cap_…>` (📤/📚 en la ficha; solo el autor edita o borra; reglas: hay que desplegarlas).
+- Nevada Jones: `personajes-coc/nevada_jones.js` (generado desde su HTML; paridad comprobada en la v103.0); `nevada_jones.html` es una redirección y la ficha vieja quedó como `nevada_jones_clasico.html`. `SISTEMA_PERSONAJE_PROPIO = 'coc'` / la campaña con `sistema:'coc'` impide mezclarla con una campaña de D&D. Los valores sugeridos (PV, PM, Cordura, MOV) son solo sugerencias: `hp-max`, `mp-max` y `san-max` son campos manuales (regla de mesa).
 
 ## Estándar visual/mecánico unificado (las 6 fichas D&D)
 
@@ -171,4 +178,4 @@ Desde el 27 ago 2026 el entorno de Claude Code tiene `firebase-tools` instalado 
 ## Personajes activos
 
 D&D: Fiona Faraway (Druid 8, Circle of Shepherd), Eldur Redmane (Monk 5/Cleric 2, Light), Hannoghar (Paladin 7, Oath of Watchers), Myrklogi Mangarisonn (Wizard 9, Chronurgy — raza custom "Human like", sin raciales, con feat inicial en su lugar), Ulreek (Sorcerer 7/Warlock 1), Dane (Ranger 5/Rogue 4, Gloom Stalker/Assassin).
-Call of Cthulhu: Nevada Jones (Profesor de Arqueología), campaña "the society".
+Call of Cthulhu: Nevada Jones (Profesor de Arqueología), campaña "the society" (ficha `ficha-coc.html?pj=nevada_jones`).

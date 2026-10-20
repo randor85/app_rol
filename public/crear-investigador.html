@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script>if (location.hostname === "personajes-rol.firebaseapp.com") { location.replace("https://personajes-rol.web.app" + location.pathname + location.search + location.hash); }</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crear investigador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ficha-tema.css">
+<script src="ficha-paleta.js"></script>
+<script>FichaPaleta.aplicarGuardada({ porDefecto: 'ascua' });</script>
+<style>
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--texto); font-family: var(--fuente-texto); }
+  .asistente { max-width: 940px; padding-top: var(--sp-4); }
+  .asis-cab { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-3) 0 var(--sp-2); }
+  .asis-cab h1 { font-size: clamp(1.5rem, 5vw, 2.1rem); color: var(--acento); }
+  .asis-cab p { margin: var(--sp-1) 0 0; color: var(--texto-suave); font-size: var(--fs-sm); }
+  .asistente .campo { display: grid; gap: var(--sp-1); min-width: 0; }
+  .asistente .campo > span { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-suave); }
+  .asistente input[type=text], .asistente input[type=number], .asistente select, .asistente textarea, .asistente input[type=search] { min-height: var(--toque); padding: 0 var(--sp-2); background: var(--bg); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font: inherit; min-width: 0; width: 100%; box-sizing: border-box; }
+  .asistente textarea { padding: var(--sp-2); }
+  .bloque { background: var(--surface); border: 1px solid var(--borde); border-radius: var(--radio); padding: var(--sp-4); box-shadow: var(--sombra); display: grid; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+  .bloque h2 { font-size: var(--fs-xl); color: var(--acento); margin: 0; }
+  .bloque p { margin: 0; }
+  .grid-car { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+  .car-caja { display: grid; gap: var(--sp-1); justify-items: center; text-align: center; padding: var(--sp-2); background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+  .car-caja input { text-align: center; font-weight: 800; }
+  .car-caja small { color: var(--texto-suave); }
+  .puntos-barra { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+  .punto { padding: var(--sp-2) var(--sp-3); border: 1px solid var(--borde); border-radius: 999px; background: var(--surface-2); font-weight: 700; }
+  .punto.mal { border-color: var(--mal); color: var(--mal); }
+  .punto.bien { border-color: var(--bien); }
+  .tabla-hab { width: 100%; border-collapse: collapse; }
+  .tabla-hab th { text-align: left; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--texto-suave); padding: var(--sp-1); }
+  .tabla-hab td { padding: 2px var(--sp-1); border-top: 1px solid var(--borde); }
+  .tabla-hab td input { width: 4.2rem; text-align: center; min-height: 34px; }
+  .tabla-hab .total { font-weight: 800; text-align: center; }
+  .tabla-hab tr.con-puntos .nom { font-weight: 800; color: var(--acento); }
+  .tabla-scroll { overflow-x: auto; max-height: 34rem; overflow-y: auto; }
+  .exito { text-align: center; display: grid; gap: var(--sp-3); justify-items: center; padding: var(--sp-5) var(--sp-2); }
+  #errores { display: block; } #errores ul { margin: 0; padding-left: var(--sp-5); }
+</style>
+</head>
+<body>
+<main class="ficha asistente" id="asistente">
+  <header class="asis-cab">
+    <div><h1>Crear investigador</h1><p id="sub-campana">Asistente para armar tu ficha de Call of Cthulhu.</p></div>
+    <div class="fila"><a class="btn btn-fantasma btn-sm" id="enlace-volver" href="index.html">← Volver al menú</a></div>
+  </header>
+  <div id="aviso-global" role="alert" hidden></div>
+  <div id="cuerpo" hidden>
+    <section class="bloque"><h2>1. Quién es</h2>
+      <div class="form-grid">
+        <label class="campo"><span>Nombre</span><input type="text" id="c-nombre" maxlength="60" autocomplete="off"></label>
+        <label class="campo"><span>Jugador</span><input type="text" id="c-jugador" maxlength="60"></label>
+        <label class="campo"><span>Ocupación</span><input type="text" id="c-ocupacion" maxlength="60" placeholder="Profesor de Arqueología"></label>
+        <label class="campo"><span>Edad (15–89)</span><input type="number" id="c-edad" min="15" max="89" value="30"></label>
+        <label class="campo"><span>Residencia</span><input type="text" id="c-residencia" maxlength="60"></label>
+        <label class="campo"><span>Lugar de nacimiento</span><input type="text" id="c-nacimiento" maxlength="60"></label>
+        <label class="campo"><span>Género</span><input type="text" id="c-genero" maxlength="30"></label>
+      </div>
+      <label class="campo"><span>Descripción física</span><input type="text" id="c-descripcion" maxlength="300"></label>
+    </section>
+    <section class="bloque"><h2>2. Características</h2>
+      <p class="texto-suave">Tira al azar o escribe tus valores. Los números van de 1 a 99.</p>
+      <div class="fila"><button type="button" class="btn btn-roll" id="b-tirar">🎲 Tirar todas al azar</button></div>
+      <div class="grid-car" id="grid-car"></div>
+      <div id="edad-info" class="aviso"></div>
+      <div class="fila"><button type="button" class="btn btn-fantasma btn-sm" id="b-edad-ajustes">Aplicar ajustes de edad (APP y EDU)</button><button type="button" class="btn btn-fantasma btn-sm" id="b-edad-mejoras">📈 Tirar las mejoras de EDU por edad</button></div>
+      <div id="derivados" class="puntos-barra"></div>
+    </section>
+    <section class="bloque"><h2>3. Habilidades</h2>
+      <p class="texto-suave">Reparte los puntos de ocupación y de interés personal. El valor de cada habilidad es su base más lo que le pongas.</p>
+      <label class="campo"><span>Puntos de ocupación según tu ocupación</span><select id="c-formula"></select></label>
+      <div class="puntos-barra" id="puntos"></div>
+      <div class="fila"><label class="campo" style="flex:1 1 14rem"><span>Buscar habilidad</span><input type="search" id="c-buscar" placeholder="Arqueología, Sigilo…" autocomplete="off"></label>
+        <label class="campo" style="flex:1 1 14rem"><span>Agregar con especialidad o propia</span><input type="text" id="c-nueva" maxlength="60" placeholder="Ciencia (Biología)"></label><button type="button" class="btn btn-fantasma btn-sm" id="b-nueva">➕ Agregar</button></div>
+      <div class="tabla-scroll"><table class="tabla-hab"><thead><tr><th>Habilidad</th><th>Base</th><th>Ocupación</th><th>Interés</th><th>Total</th></tr></thead><tbody id="tbody-hab"></tbody></table></div>
+    </section>
+    <section class="bloque"><h2>4. Armas</h2><p class="texto-suave">Valores de referencia; los puedes ajustar después en la ficha.</p><div id="lista-armas" class="grid-car" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))"></div></section>
+    <section class="bloque"><h2>5. Trasfondo y equipo</h2>
+      <div class="form-grid" id="trasfondo-campos"></div>
+      <div class="form-grid"><label class="campo"><span>Equipamiento</span><textarea id="c-equipo" rows="3"></textarea></label><label class="campo"><span>Finanzas</span><textarea id="c-finanzas" rows="3"></textarea></label></div>
+    </section>
+    <div id="errores" class="aviso aviso-mal" role="alert" tabindex="-1" hidden></div>
+    <div id="estado" class="aviso" hidden></div>
+    <div class="fila"><button type="button" class="btn btn-primario" id="b-crear">✅ Crear investigador</button></div>
+  </div>
+  <p id="cargando" class="texto-suave" role="status">Cargando el asistente…</p>
+</main>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="ficha-sesion.js?v=103.0"></script>
+<script src="coc_data.js"></script>
+<script src="ficha-coc-reglas.js"></script>
+<script src="ficha-coc-generador.js"></script>
+<script src="crear-investigador.js"></script>
+</body>
+</html>

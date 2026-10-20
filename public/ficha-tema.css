@@ -706,3 +706,60 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ============================================================
+   Call of Cthulhu (ficha-coc.html, v103.0): características, habilidades, resultado de la tirada
+   ============================================================ */
+.coc-caracs { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--sp-3); margin-bottom: var(--sp-4); }
+.coc-carac { display: grid; gap: var(--sp-1); justify-items: center; text-align: center; padding: var(--sp-3); background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+.coc-carac label { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-suave); }
+.coc-carac input[type=number] { width: 4.5rem; min-height: var(--toque); text-align: center; font-size: var(--fs-lg); font-weight: 800; background: var(--bg); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); }
+.coc-mitades { font-size: var(--fs-sm); color: var(--texto-suave); }
+.coc-valor { font-size: var(--fs-lg); font-weight: 800; color: var(--acento-2); }
+.coc-par { display: flex; align-items: center; gap: var(--sp-1); }
+.coc-par input[type=number] { width: 3.6rem; }
+.coc-vitales { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.coc-max { width: 3.6rem; min-height: 32px; text-align: center; background: var(--bg); color: var(--texto); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+.coc-vital .contador-valor { width: 4rem; text-align: center; }
+.coc-herramientas { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: var(--sp-3); }
+.coc-estados { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-3); }
+.coc-estado { display: inline-flex; align-items: center; gap: var(--sp-1); min-height: var(--toque); padding: 0 var(--sp-3); border: 1px solid var(--borde); border-radius: 999px; background: var(--surface-2); }
+.coc-estado:has(input:checked) { border-color: var(--mal); background: color-mix(in srgb, var(--mal) 18%, var(--surface)); }
+.coc-ajustes { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: var(--sp-3) 0; }
+.coc-resultado { margin: var(--sp-3) 0; padding: var(--sp-3) var(--sp-4); display: grid; gap: var(--sp-2); background: var(--surface); border: 1px solid var(--borde-fuerte); border-left: 6px solid var(--acento); border-radius: var(--radio-sm); }
+.coc-resultado[data-nivel="critico"], .coc-resultado[data-nivel="extremo"] { border-left-color: var(--bien); }
+.coc-resultado[data-nivel="dificil"], .coc-resultado[data-nivel="regular"] { border-left-color: var(--acento-2); }
+.coc-resultado[data-nivel="fallo"], .coc-resultado[data-nivel="pifia"], .coc-resultado[data-nivel="dano"] { border-left-color: var(--mal); }
+.coc-res-fila { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-3); }
+.coc-res-num { font-size: var(--fs-2xl); font-weight: 800; }
+.coc-res-nivel { font-weight: 800; }
+.coc-res-dano { font-weight: 700; }
+.log-critical { color: var(--bien); } .log-extreme { color: var(--bien); } .log-hard { color: var(--acento-2); } .log-success { color: var(--acento); } .log-fail { color: var(--mal); } .log-fumble { color: var(--mal); text-decoration: underline; }
+.coc-habilidades { display: grid; gap: 2px; }
+.coc-hab { display: grid; grid-template-columns: auto 1fr auto 4.2rem auto auto; align-items: center; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2); border-bottom: 1px solid var(--borde); }
+.coc-hab[hidden] { display: none; }
+.coc-hab.ocup .coc-hab-nombre { font-weight: 800; }
+.coc-hab-nombre { min-width: 0; overflow-wrap: anywhere; }
+.coc-hab-nombre small { color: var(--texto-suave); }
+.coc-hab-val { width: 4.2rem; min-height: 36px; text-align: center; background: var(--bg); color: var(--texto); border: 1px solid var(--borde); border-radius: var(--radio-sm); font: inherit; font-weight: 800; }
+.coc-hab-calc { color: var(--texto-suave); font-size: var(--fs-sm); min-width: 3.4rem; }
+.coc-hab-acc { display: inline-flex; gap: var(--sp-1); }
+.coc-hab-acc button { min-width: 32px; min-height: 32px; background: transparent; border: 1px solid var(--borde); border-radius: var(--radio-sm); color: var(--texto); cursor: pointer; }
+.coc-marca { display: inline-flex; align-items: center; gap: 2px; cursor: pointer; color: var(--texto-suave); }
+.coc-marca input { width: 18px; height: 18px; }
+.coc-marca:has(input:checked) { color: var(--bien); font-weight: 800; }
+.coc-barra-hab { align-items: end; }
+.coc-buscar { flex: 1 1 14rem; }
+.coc-tabla-scroll { overflow-x: auto; }
+.usar-form-container:empty { display: none; }
+.usar-form { display: grid; gap: var(--sp-2); padding: var(--sp-3); background: var(--surface); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+.usar-form-row { display: grid; gap: var(--sp-2); grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+.usar-form-row label { display: grid; gap: 2px; font-size: var(--fs-sm); font-weight: 700; color: var(--texto-suave); }
+.usar-form-row input { min-height: 36px; padding: 0 var(--sp-2); background: var(--bg); color: var(--texto); border: 1px solid var(--borde); border-radius: var(--radio-sm); font: inherit; min-width: 0; }
+.usar-form-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: flex-end; }
+@media (max-width: 560px) {
+  .coc-hab { grid-template-columns: auto 1fr auto auto; grid-template-areas: "dado nombre nombre nombre" "marca val calc acc"; row-gap: var(--sp-1); }
+  .coc-hab > :nth-child(1) { grid-area: dado; } .coc-hab > :nth-child(2) { grid-area: nombre; } .coc-hab > :nth-child(3) { grid-area: marca; }
+  .coc-hab > :nth-child(4) { grid-area: val; } .coc-hab > :nth-child(5) { grid-area: calc; } .coc-hab > :nth-child(6) { grid-area: acc; justify-self: end; }
+}
+.aviso[hidden], .coc-resultado[hidden] { display: none; }

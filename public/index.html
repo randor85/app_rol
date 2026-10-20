@@ -308,6 +308,9 @@
         <a id="link-crear-personaje" class="btn-open" style="text-decoration:none;" href="#">✨ Crear personaje nuevo</a>
         <a id="link-importar-personaje" class="btn-open" style="text-decoration:none;" href="#">📥 Importar personaje (JSON de Alchemy)</a>
     </div>
+    <div id="creadores-campana-coc" style="display:none; margin-top:12px; gap:8px; flex-wrap:wrap; justify-content:center;">
+        <a id="link-crear-investigador" class="btn-open" style="text-decoration:none;" href="#">🕵️ Crear investigador nuevo</a>
+    </div>
 </div>
         
 
@@ -992,6 +995,8 @@ btnLoginEmail.onclick = () => {
             // seguir adivinando el archivo de destino a partir del texto de p.nombre.
             const IDS_DND = ['dane', 'eldur', 'hannoghar', 'fiona_faraway', 'myrklogi_mangarisonn', 'ulreek'];
             let destino = (IDS_DND.includes(id) || /^pc_/.test(id)) ? `ficha.html?pj=${id}` : `${id}.html`;
+            // Investigadores de Call of Cthulhu creados en la app (sistema:'coc'): ficha propia del sistema.
+            if ((/^pc_/.test(id) && p && p.sistema === 'coc') || id === 'nevada_jones') destino = `ficha-coc.html?pj=${id}`;
             if (SISTEMA_PERSONAJE[id] === 'chicle') {
                 const numeroJugador = id.replace('chicle', '');
                 destino = `chicle.html?jugador=${numeroJugador}`;
@@ -1066,6 +1071,9 @@ btnLoginEmail.onclick = () => {
         stat('⚡', 'Iniciativa', pa.iniciativa != null ? signo(pa.iniciativa) : null),
         stat('🏃', 'Velocidad (ft)', pa.velocidad || null),
         stat('👁️', 'Percepción pasiva', pa.pasiva || null),
+        pa.san != null ? stat('🧠', 'Cordura', pa.san + (pa.sanMax ? '/' + pa.sanMax : '')) : '',
+        pa.pm != null ? stat('✨', 'Puntos de magia', pa.pm + (pa.pmMax ? '/' + pa.pmMax : '')) : '',
+        pa.suerte != null ? stat('🍀', 'Suerte', pa.suerte) : '',
     ].join('');
 
     // Condiciones: las que publica la ficha (ids del SRD) + las casillas cond-/buff-/debuff- guardadas en datos/.
@@ -1106,6 +1114,7 @@ btnLoginEmail.onclick = () => {
         document.getElementById('link-crear-personaje').href = `crear-personaje.html?campana=${encodeURIComponent(campanaId)}`;
         document.getElementById('link-importar-personaje').href = `importar-personaje.html?campana=${encodeURIComponent(campanaId)}`;
     }
+    const lci = document.getElementById('link-crear-investigador'); if (lci) lci.href = `crear-investigador.html?campana=${encodeURIComponent(campanaId)}`;
     bitacoraContainer.style.display = 'block';
     gridPersonajes.style.display = 'grid';
     btnReclamarGM.style.display = 'inline-block';
@@ -1131,6 +1140,8 @@ btnLoginEmail.onclick = () => {
         sistemaCampanaActual = sysSnap.val() || null;
         const ccSis = document.getElementById('creadores-campana');
         if (ccSis) ccSis.style.display = (!sistemaCampanaActual || sistemaCampanaActual === 'dnd') ? 'flex' : 'none';
+        const ccCoc = document.getElementById('creadores-campana-coc');
+        if (ccCoc) ccCoc.style.display = sistemaCampanaActual === 'coc' ? 'flex' : 'none';
 
         if (sistemaCampanaActual) {
             sistemaCampanaContainer.style.display = 'none';

@@ -7,6 +7,7 @@
       "**/node_modules/**",
       "**/*_draft.html",
       "**/personajes/_*",
+      "**/personajes-coc/_*",
       "legacy estable/**",
       "estable provisorio/**",
       "trabajo en progreso/**",

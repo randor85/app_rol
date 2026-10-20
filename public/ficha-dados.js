@@ -437,6 +437,7 @@
     chip.addEventListener('click', () => { adv.value = ROT[adv.value in ROT ? adv.value : 'normal'][1]; adv.dispatchEvent(new Event('change', { bubbles: true })); });
     adv.addEventListener('change', pintarChip);
     pintarChip();
+    if (estado.sinVentaja) { chip.style.display = 'none'; filaAdv.style.display = 'none'; }
 
     Object.assign(u, { raiz, fab, badge, panel, total, etiqueta, detalle, error, adv, formula: inp, lista, tabs: tb });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && abierto()) { e.preventDefault(); cerrar(); } });
@@ -449,6 +450,7 @@
     estado.codigoCampana = o.codigoCampana || null;
     estado.max = o.maxHistorial || 60;
     estado.publicarUsos = !!o.publicarUsos;
+    estado.sinVentaja = !!o.sinVentaja;   // sistemas sin ventaja/desventaja (Call of Cthulhu): se ocultan el chip y el selector
     if (estado.iniciado) return FichaDados;
     estado.items = cargar();
     construir();
