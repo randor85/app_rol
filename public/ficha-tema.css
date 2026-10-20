@@ -609,6 +609,20 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 .bp-acciones button { min-height: var(--toque); padding: 0 var(--sp-4); border-radius: var(--radio-sm); border: 1px solid var(--borde-fuerte); background: var(--surface); color: var(--texto); font: inherit; font-weight: 800; cursor: pointer; }
 .bp-acciones .bp-guardar { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
 
+/* ---- rasgos propios y biblioteca de rasgos (v102.0) ---- */
+.bp-form textarea, .bp-form input[type=search] { padding: var(--sp-2); background: var(--bg); color: var(--texto); border: 1px solid var(--borde-fuerte); border-radius: var(--radio-sm); font: inherit; min-width: 0; width: 100%; box-sizing: border-box; }
+.bp-form input[type=search] { min-height: var(--toque); }
+.rg-accion { display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.rg-accion input { min-width: 0; }
+.rg-marcadores { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); }
+.rasgo-botones { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.rasgo-botones button { min-height: 36px; padding: 0 var(--sp-3); background: transparent; border: 1px solid var(--borde); border-radius: var(--radio-sm); color: var(--texto); cursor: pointer; font: inherit; font-size: var(--fs-sm); }
+.rasgo-texto { font-size: var(--fs-sm); color: var(--texto-suave); overflow-wrap: anywhere; }
+.rasgo-resumen { font-style: italic; }
+.rg-biblioteca { display: grid; gap: var(--sp-3); margin-top: var(--sp-3); padding: var(--sp-3); background: var(--surface-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+#rgb-lista { display: grid; gap: var(--sp-2); max-height: 28rem; overflow-y: auto; }
+.readonly-mode .rasgo-gestion { display: none; }
+
 /* ============================================================
    LANZADOR DE DADOS + HISTORIAL (ficha-dados.js) — solo tokens
    ============================================================ */

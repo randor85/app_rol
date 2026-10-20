@@ -128,6 +128,29 @@
           ".validate": "newData.hasChildren(['id', 'name', 'hitDie', 'autor']) && newData.child('id').val() == $claseId && $claseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && (newData.child('hitDie').val() == 6 || newData.child('hitDie').val() == 8 || newData.child('hitDie').val() == 10 || newData.child('hitDie').val() == 12) && (!newData.child('casterType').exists() || newData.child('casterType').val() == 'full' || newData.child('casterType').val() == 'half' || newData.child('casterType').val() == 'pact') && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
         }
       },
+      "rasgos_custom": {
+        // v102.0: rasgos, recursos y efectos que los jugadores publican desde su ficha para reutilizarlos en otras builds. Los lee cualquier cuenta con
+        // sesión; se puede CREAR uno nuevo y solo su autor (campo 'autor') puede EDITARLO o BORRARLO. El contenido es solo datos (nada se ejecuta).
+        ".read": "auth != null",
+        "$rasgoId": {
+          ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid )",
+          ".validate": "newData.hasChildren(['id', 'nombre', 'autor']) && newData.child('id').val() == $rasgoId && $rasgoId.matches(/^rg_[a-z0-9_]{1,50}$/) && newData.child('nombre').isString() && newData.child('nombre').val().length > 0 && newData.child('nombre').val().length <= 80 && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )",
+          "icono": { ".validate": "newData.isString() && newData.val().length <= 8" },
+          "texto": { ".validate": "newData.isString() && newData.val().length <= 4000" },
+          "autorNombre": { ".validate": "newData.isString() && newData.val().length <= 60" },
+          "nivel": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 20" },
+          "origen": {
+            "tipo": { ".validate": "newData.isString() && newData.val().length <= 20" },
+            "nombre": { ".validate": "newData.isString() && newData.val().length <= 80" },
+            "$otro": { ".validate": false }
+          },
+          "efectos": { "$i": { ".validate": "$i.matches(/^([0-9]|1[01])$/) && newData.hasChildren(['tipo', 'objetivo']) && newData.child('tipo').isString() && newData.child('objetivo').isString()" } },
+          "acciones": { "$i": { ".validate": "$i.matches(/^[0-7]$/) && newData.hasChildren(['texto', 'roll']) && newData.child('texto').isString() && newData.child('texto').val().length <= 60 && newData.child('roll').isString() && newData.child('roll').val().length <= 40" } },
+          "recurso": { ".validate": "newData.hasChildren(['tipo', 'max'])" },
+          "id": {}, "nombre": {}, "autor": {}, "actualizado": { ".validate": "newData.isNumber()" },
+          "$otro": { ".validate": false }
+        }
+      },
       "subclases_custom": {
         ".read": "auth != null",
         "$subclaseId": {

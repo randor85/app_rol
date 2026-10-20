@@ -197,6 +197,30 @@
     return out.map((r) => JSON.parse(JSON.stringify(r)));
   }
 
+  /* ---------- rasgos de la biblioteca integrada (rasgos_data.js): recursos y efectos de la clase, la subclase y la especie ---------- */
+  const ESPECIE_ALIAS = { orco: 'orc', draconido: 'dragonborn', dragonborn: 'dragonborn', orc: 'orc' };
+  const normTxt = (t) => String(t == null ? '' : t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  function rasgosBaseDe(form) {
+    const base = typeof RASGOS_BASE !== 'undefined' ? RASGOS_BASE : [];
+    if (!base.length) return [];
+    const nTotal = nivelTotal(form), salida = [], vistos = {};
+    const tomar = (tipo, nombre, nivel) => base.filter((r) => r.origen && r.origen.tipo === tipo && normTxt(r.origen.nombre) === normTxt(nombre) && (r.nivel || 0) <= nivel).forEach((r) => {
+      if (vistos[r.id]) return; vistos[r.id] = true;
+      const c = JSON.parse(JSON.stringify(r));
+      c.id = 'rg_' + slug(r.nombre) + '_' + Math.random().toString(36).slice(2, 6);
+      c.desde = { tipo: 'base', id: r.id };
+      salida.push(c);
+    });
+    (form.clases || []).forEach((c) => {
+      const d = datosClase(c.id); if (!d) return;
+      const niv = parseInt(c.nivel, 10) || 0;
+      tomar('clase', d.name, niv);
+      if (c.subclase) tomar('subclase', c.subclase, niv);
+    });
+    if (form.especie) tomar('especie', ESPECIE_ALIAS[normTxt(form.especie)] || form.especie, nTotal);
+    return salida;
+  }
+
   /* ---------- ataques e inventario ---------- */
   function ataquesDe(form) {
     const at = form.atributos || {};
@@ -303,6 +327,7 @@
       hechizos, inventario: inventarioDe(form),
       recursos: recursosDe(form),
       rasgos: rasgosDe(form).concat(rasgosExtraDe(form, rasgosDe(form).length)),
+      rasgosPropios: rasgosBaseDe(form),
       monedas: [{ id: 'gp-val', etiqueta: 'Oro (po)' }],
     };
     if (form.historia && String(form.historia).trim()) definicion.trasfondo = { texto: String(form.historia).trim() };
@@ -316,7 +341,7 @@
   }
 
   global.FichaGenerador = {
-    generar, validar, limitesHechizos, pgBase, hechizoDeCompendio, maxNivelHechizo, slug,
+    generar, validar, limitesHechizos, pgBase, hechizoDeCompendio, maxNivelHechizo, slug, rasgosBaseDe,
     HABILIDADES_CLASE, COMPETENCIAS_CLASE, ARMADURAS, ARMAS, ATRIBUTOS, ATRIBUTO_ES, HABILIDADES, ARRAY_ESTANDAR, COSTO_PUNTOS, XP_POR_NIVEL, LISTA_HECHIZOS, HABILIDAD_CONJURO,
   };
 })(typeof window !== 'undefined' ? window : globalThis);

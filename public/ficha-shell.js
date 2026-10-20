@@ -51,7 +51,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '99.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
+  const VERSION_APP = '102.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -78,21 +78,8 @@
   }
 
   /* ---------- definiciones dinámicas (solo datos) ---------- */
-  function escalonado(tabla, niv) {
-    let v = null, mejor = -1;
-    Object.keys(tabla || {}).forEach(k => { const n = parseInt(k, 10); if (!isNaN(n) && n <= niv && n > mejor) { mejor = n; v = tabla[k]; } });
-    return v;
-  }
-  function declarativo(m) {
-    if (m == null || typeof m === 'function' || typeof m !== 'object') return m;
-    return (c) => {
-      const niv = m.clase ? c.clase(m.clase) : c.nivel;
-      if (m.tabla) { const v = escalonado(m.tabla, niv); return v == null ? 0 : v; }
-      if (m.por != null) return m.por * niv;
-      if (m.modificador) return Math.max(m.min != null ? m.min : 0, c.mod(m.modificador));
-      return m.fijo != null ? m.fijo : 0;
-    };
-  }
+  // Máximos declarativos ({ por, tabla, modificador, competencia… }): ver ficha-rasgos.js.
+  const declarativo = (m) => window.FichaRasgos.declarativo(m);
   function aLista(v) { return Array.isArray(v) ? v.filter(x => x != null) : (v && typeof v === 'object' ? Object.keys(v).map(k => v[k]) : []); }
   // Una definición dinámica la escribe un jugador: NADA de lo que trae se interpreta como HTML ni como código.
   const escTxt = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -102,7 +89,7 @@
   function normalizarDefinicion(D, id) {
     const d = Object.assign({}, D, { id });
     delete d.ganchos; delete d.iniciar; delete d.calculos; delete d.secciones; delete d.auras; delete d.nivel; delete d.badgeAtaque; delete d.espaciosModo;
-    ['clases', 'chips', 'salvaciones', 'ataques', 'hechizos', 'inventario', 'reputacion', 'recursos', 'rasgos', 'secciones', 'monedas', 'buffs', 'auras'].forEach(k => { if (d[k] != null) d[k] = aLista(d[k]); });
+    ['clases', 'chips', 'salvaciones', 'ataques', 'hechizos', 'inventario', 'reputacion', 'recursos', 'rasgos', 'rasgosPropios', 'secciones', 'monedas', 'buffs', 'auras'].forEach(k => { if (d[k] != null) d[k] = aLista(d[k]); });
     d.clases = (d.clases || []).map(c => Object.assign({}, c));
     d.competencias = d.competencias ? aHtmlSeguro(d.competencias) : '';
     d.trasfondo = (d.trasfondo && (d.trasfondo.texto || d.trasfondo.html)) ? { html: aHtmlSeguro(d.trasfondo.texto || d.trasfondo.html) } : undefined;
@@ -227,7 +214,7 @@
       try {
         const r = await fetch(n.dataset.fragmento, { cache: 'no-cache' });
         if (!r.ok) throw new Error(r.status);
-        n.innerHTML = await r.text();
+        n.innerHTML = window.FichaRasgos ? FichaRasgos.marcadores(await r.text()) : await r.text();
       } catch (e) { n.innerHTML = '<p class="texto-suave">No se pudo cargar esta sección.</p>'; }
     }));
   }
@@ -552,6 +539,10 @@
         case 'modsig': t = f(FichaAtributos.modDe(hab)); break;
         case 'atqConjuro': t = f(FichaAtributos.modDe(P.habilidadConjuro) + prof); break;
         case 'ini': t = f(iniciativaBase()); break;
+        case 'cdHab': t = String(8 + FichaAtributos.modDe(hab) + prof); break;
+        case 'atqHab': t = f(FichaAtributos.modDe(hab) + prof); break;
+        case 'nivelTotal': t = String(FichaVitales.nivelTotal()); break;
+        case 'nivelClase': t = String(Math.ceil(FichaVitales.nivelClase(el.dataset.clase) * (parseInt(el.dataset.mult, 10) || 1) / (parseInt(el.dataset.div, 10) || 1))); break;
         default: if (P.calculos && P.calculos[el.dataset.calc]) t = String(P.calculos[el.dataset.calc]());
       }
       if (t !== undefined && el.textContent !== t) el.textContent = t;
@@ -615,6 +606,8 @@
     if (window.FichaAtaques) FichaAtaques.iniciar(P);   // tabla de ataques editable (semilla: P.ataques)
     if (window.FichaTablas && (P.tablas || []).length) FichaTablas.iniciar(P);   // tablas aleatorias (Wild Magic Surge, etc.)
     FichaComun.iniciarBuffsPersonales();
+    // Rasgos propios del personaje (recursos y efectos incluidos) y biblioteca de rasgos: antes de FichaVitales para que sus recursos entren en P.recursos.
+    if (window.FichaRasgos) FichaRasgos.iniciar({ db, charRef, codigoCampana, uid: user.uid, user, P, toast });
 
     FichaVitales.iniciar({
       hpBase: P.hpBase || 1, idHpTemp: P.idHpTemp, clases: window.CONFIG_NIVEL.clases, recursos: P.recursos || [],
@@ -734,6 +727,7 @@
     danoExtraEnSecciones();
 
     try { await cargarScript('clases-custom.js'); } catch (e) { /* módulo opcional */ }
+    try { await cargarScript('rasgos_data.js'); } catch (e) { /* biblioteca integrada opcional */ }
     for (const s of ['ficha-common.js', 'ficha-ataques.js', 'ficha-tablas.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
     bindClicks();
 
@@ -744,6 +738,6 @@
     else firebase.auth().onAuthStateChanged((user) => { if (!user) { location.href = 'index.html'; return; } iniciarConUsuario(user); });
   }
 
-  window.FichaShell = { arrancar, toast, renderEspacios, refrescarDerivados, get personaje() { return P; } };
+  window.FichaShell = { arrancar, toast, renderEspacios, refrescarDerivados, aplicarJsCalc, get personaje() { return P; } };
   arrancar();
 })();

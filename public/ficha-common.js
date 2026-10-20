@@ -346,7 +346,7 @@
       let n = 0;
       if (v.de === 'nivelClase') n = nivelDeClase(v.clase);
       else if (v.de === 'nivelTotal') n = window.FichaVitales ? FichaVitales.nivelTotal() : 0;
-      else if (v.de === 'modificador') n = window.FichaAtributos ? FichaAtributos.modDe(v.hab) : 0;
+      else if (v.de === 'modificador') { n = window.FichaAtributos ? FichaAtributos.modDe(v.hab) : 0; if (v.min != null) n = Math.max(v.min, n); }
       else if (v.de === 'competencia') n = window.FichaAtributos ? FichaAtributos.profBonusActual() : 0;
       return n * (v.mult || 1) * (v.signo || 1);
     }
@@ -1592,7 +1592,10 @@
   //     avisarGrupo: al encender o apagar manda una NOTIFICACIÓN al resto del grupo (FichaDados.avisarGrupo);
   //     no modifica ninguna otra ficha.
   // ============================================================
-  function iniciarBuffsPersonales() {
+  // Editor de efectos (suma/resta/dado/ventaja + a qué se aplica + cuándo) reutilizable: lo usan los buffs personalizados (prefijo 'bp')
+  // y los rasgos propios (prefijo 'rg'). Pinta en #<pref>-efectos y la frase de resumen en #<pref>-frase.
+  function crearEditorEfectos(pref, opciones) {
+    opciones = opciones || {};
     const ACCIONES = [['sumar', 'Suma'], ['restar', 'Resta'], ['dado', 'Suma un dado'], ['ventaja', 'Da ventaja'], ['desventaja', 'Da desventaja']];
     const VALORES = [['fijo', 'Número fijo'], ['nivelClase', 'Tu nivel de una clase'], ['modificador', 'Un modificador'], ['competencia', 'Tu bono de competencia']];
     const OBJ_ADV = [['ataque', 'Tiradas de ataque'], ['salvaciones', 'Salvaciones'], ['pruebas', 'Pruebas y habilidades']];
@@ -1643,12 +1646,12 @@
       const objetivos = esVent ? OBJ_ADV : (esDado ? OBJETIVOS_DADO : OBJETIVOS_PLANO);
       const objSel = objetivos.some(o => o[0] === f.objetivo) ? f.objetivo : objetivos[0][0];
       const claseOpts = (typeof CONFIG_NIVEL !== 'undefined' && CONFIG_NIVEL ? CONFIG_NIVEL.clases : []).map(c => `<option value="${esc(c.nombre)}"${c.nombre === f.clase ? ' selected' : ''}>${esc(c.nombre)}</option>`).join('');
-      const cvCampo = (f.cond === 'etiqueta') ? `<input type="text" class="bp-cv" list="bp-etiquetas" value="${esc(f.cv)}" placeholder="p. ej. curación">`
+      const cvCampo = (f.cond === 'etiqueta') ? `<input type="text" class="bp-cv" list="${pref}-etiquetas" value="${esc(f.cv)}" placeholder="p. ej. curación">`
         : (f.cond === 'nombre') ? `<input type="text" class="bp-cv" value="${esc(f.cv)}" placeholder="parte del nombre">`
         : (f.cond === 'nivel') ? `<input type="number" class="bp-cv" min="0" max="9" value="${esc(f.cv)}">`
         : (f.cond === 'estado') ? `<input type="text" class="bp-cv" value="${esc(f.cv)}" placeholder="p. ej. Envenenado">` : '';
       return `<div class="bp-efecto" data-i="${i}">
-        <div class="bp-efecto-cab"><strong>Efecto ${i + 1}</strong><button type="button" class="btn-clear" onclick="FichaBuffsPersonales.quitarEfecto(${i})" aria-label="Quitar el efecto ${i + 1}">✖</button></div>
+        <div class="bp-efecto-cab"><strong>Efecto ${i + 1}</strong><button type="button" class="btn-clear" onclick="FichaEfectosEditor.${pref}.quitar(${i})" aria-label="Quitar el efecto ${i + 1}">✖</button></div>
         <div class="bp-partes">
           <div class="bp-parte"><span class="bp-et">Qué hace</span>
             <select class="bp-accion" data-i="${i}">${opts(ACCIONES, f.accion)}</select>
@@ -1669,12 +1672,12 @@
       </div>`;
     }
     function pintarEfectosForm() {
-      const cont = document.getElementById('bp-efectos'); if (!cont) return;
+      const cont = document.getElementById(pref + '-efectos'); if (!cont) return;
       cont.innerHTML = filasForm.map(htmlFila).join('') || '<p class="bp-vacio">Sin efectos todavía.</p>';
       actualizarFrase();
     }
     function leerFilasDelDOM() {
-      document.querySelectorAll('#bp-efectos .bp-efecto').forEach((el) => {
+      document.querySelectorAll('#' + pref + '-efectos .bp-efecto').forEach((el) => {
         const i = parseInt(el.dataset.i, 10), f = filasForm[i]; if (!f) return;
         const v = (sel) => { const e = el.querySelector(sel); return e ? e.value : undefined; };
         f.accion = v('.bp-accion') || f.accion; f.objetivo = v('.bp-objetivo') || f.objetivo;
@@ -1689,11 +1692,54 @@
       });
     }
     function actualizarFrase() {
-      const el = document.getElementById('bp-frase'); if (!el) return;
+      const el = document.getElementById(pref + '-frase'); if (!el) return;
       const ef = filasForm.map(filaAEfecto);
-      el.textContent = ef.length ? 'Encendido: ' + resumenEfectos(ef) + '.' : '';
+      el.textContent = ef.length ? (opciones.fraseInicio || 'Encendido: ') + resumenEfectos(ef) + '.' : '';
     }
 
+
+    function cargar(efectos, sinPorDefecto) {
+      filasForm = (efectos || []).map(efectoAFila);
+      if (!filasForm.length && !sinPorDefecto) filasForm.push(efectoAFila({ tipo: 'plano', objetivo: 'ca', valor: 1 }));
+      setTimeout(pintarEfectosForm, 0);
+    }
+    function leer() { leerFilasDelDOM(); return filasForm.map(filaAEfecto); }
+    function agregar() { leerFilasDelDOM(); filasForm.push(efectoAFila({ tipo: 'plano', objetivo: 'ca', valor: 1 })); pintarEfectosForm(); }
+    function quitar(i) { leerFilasDelDOM(); filasForm.splice(i, 1); pintarEfectosForm(); }
+    // Marcado que el formulario del que forma parte debe incluir.
+    function html() {
+      return `<datalist id="${pref}-etiquetas">${ETIQUETAS.map(t => `<option value="${t}">`).join('')}</datalist>
+          <div id="${pref}-efectos"></div>
+          <div class="bp-frase" id="${pref}-frase" aria-live="polite"></div>`;
+    }
+
+    // Cambios en el formulario: rearmar la fila (campos que dependen de la acción o de la condición) y la frase de resumen.
+    document.addEventListener('change', (e) => {
+      const t = e.target;
+      if (!t || !t.closest || !t.closest('#' + pref + '-efectos')) return;
+      leerFilasDelDOM();
+      if (t.classList.contains('bp-accion') || t.classList.contains('bp-valor-tipo') || t.classList.contains('bp-cond')) {
+        const i = parseInt(t.dataset.i, 10), f = filasForm[i];
+        if (t.classList.contains('bp-accion')) {   // el objetivo válido depende de la acción
+          const esVent = f.accion === 'ventaja' || f.accion === 'desventaja';
+          const lista = esVent ? OBJ_ADV : (f.accion === 'dado' ? OBJETIVOS_DADO : OBJETIVOS_PLANO);
+          if (!lista.some(o => o[0] === f.objetivo)) f.objetivo = lista[0][0];
+        }
+        if (t.classList.contains('bp-cond')) f.cv = '';
+        pintarEfectosForm();
+      } else actualizarFrase();
+    });
+    document.addEventListener('input', (e) => { if (e.target && e.target.closest && e.target.closest('#' + pref + '-efectos')) { leerFilasDelDOM(); actualizarFrase(); } });
+
+    const api = { cargar, leer, agregar, quitar, pintar: pintarEfectosForm, html, cuenta: () => filasForm.length };
+    window.FichaEfectosEditor = window.FichaEfectosEditor || {};
+    window.FichaEfectosEditor[pref] = api;
+    return api;
+  }
+
+  function iniciarBuffsPersonales() {
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const EE = crearEditorEfectos('bp');
     const editor = crearEditorDeLista({
       storageKey: 'buffs-personales-json',
       datosIniciales: FICHA_CONFIG.buffsIniciales || [],
@@ -1707,22 +1753,18 @@
         <span class="buff-personal-acciones"><button type="button" onclick="FichaBuffsPersonales.editor.mostrarFormulario(${idx})" title="Editar" aria-label="Editar ${esc(b.nombre)}">✏️</button><button type="button" onclick="FichaBuffsPersonales.editor.eliminar(${idx}, '¿Quitar el buff «${esc(b.nombre).replace(/'/g, "\\'")}»?')" title="Quitar" aria-label="Quitar ${esc(b.nombre)}">🗑️</button></span>
       </div>`,
       renderFormulario: (b) => {
-        filasForm = ((b && b.efectos) || []).map(efectoAFila);
-        if (!filasForm.length) filasForm.push(efectoAFila({ tipo: 'plano', objetivo: 'ca', valor: 1 }));
-        setTimeout(pintarEfectosForm, 0);
+        EE.cargar(b && b.efectos);
         return `<div class="bp-form">
-          <datalist id="bp-etiquetas">${ETIQUETAS.map(t => `<option value="${t}">`).join('')}</datalist>
           <div class="bp-grid">
             <label class="bp-campo"><span>Nombre</span><input type="text" id="bp-nombre" value="${esc(b ? b.nombre : '')}" placeholder="p. ej. Tótem de Unicornio"></label>
             <label class="bp-campo"><span>Ícono</span><input type="text" id="bp-icono" maxlength="4" value="${esc(b ? b.icono || '🔆' : '🔆')}"></label>
             <label class="bp-campo bp-ancho"><span>Nota (opcional)</span><input type="text" id="bp-desc" value="${esc(b ? b.descripcion || '' : '')}" placeholder="Para recordar qué es"></label>
           </div>
-          <div id="bp-efectos"></div>
-          <div class="bp-frase" id="bp-frase" aria-live="polite"></div>
+          ${EE.html()}
           <label class="bp-check"><input type="checkbox" id="bp-grupo"${b && b.avisarGrupo ? ' checked' : ''}> 📣 Avisar al grupo al encenderlo o apagarlo <small>(solo una notificación: no cambia ninguna otra ficha)</small></label>
           <input type="text" id="bp-grupo-texto" value="${esc(b && b.avisarGrupo ? b.avisarGrupo.texto : '')}" placeholder="Mensaje para el grupo (opcional)">
           <div class="bp-acciones">
-            <button type="button" onclick="FichaBuffsPersonales.agregarEfecto()">➕ Agregar efecto</button>
+            <button type="button" onclick="FichaEfectosEditor.bp.agregar()">➕ Agregar efecto</button>
             <button type="button" onclick="FichaBuffsPersonales.editor.cerrarFormulario()">Cancelar</button>
             <button type="button" class="bp-guardar" onclick="FichaBuffsPersonales.guardarDesdeFormulario()">💾 Guardar buff</button>
           </div>
@@ -1730,13 +1772,11 @@
       },
     });
 
-    function agregarEfecto() { leerFilasDelDOM(); filasForm.push(efectoAFila({ tipo: 'plano', objetivo: 'ca', valor: 1 })); pintarEfectosForm(); }
-    function quitarEfecto(i) { leerFilasDelDOM(); filasForm.splice(i, 1); pintarEfectosForm(); }
     function guardarDesdeFormulario() {
-      leerFilasDelDOM();
+      const efectosForm = EE.leer();
       const nombre = (document.getElementById('bp-nombre').value || '').trim();
       if (!nombre) { alert('El buff necesita un nombre.'); return; }
-      if (!filasForm.length) { alert('Agrega al menos un efecto.'); return; }
+      if (!efectosForm.length) { alert('Agrega al menos un efecto.'); return; }
       const idx = editor.editandoIdx();
       const previo = idx !== null ? editor.items()[idx] : null;
       const grupoOn = document.getElementById('bp-grupo').checked;
@@ -1745,7 +1785,7 @@
         descripcion: (document.getElementById('bp-desc').value || '').trim(),
         activo: previo ? !!previo.activo : false,
         avisarGrupo: grupoOn ? { texto: (document.getElementById('bp-grupo-texto').value || '').trim() } : null,
-        efectos: filasForm.map(filaAEfecto),
+        efectos: efectosForm,
       });
     }
     function alternar(idx) {
@@ -1758,30 +1798,12 @@
       if (b.avisarGrupo && window.FichaDados && FichaDados.avisarGrupo) FichaDados.avisarGrupo(etiqueta, `${activo ? 'activo' : 'terminó'}${b.avisarGrupo.texto ? ' — ' + b.avisarGrupo.texto : ''}`);
     }
 
-    // Cambios en el formulario: rearmar la fila (campos que dependen de la acción o de la condición) y la frase de resumen.
-    document.addEventListener('change', (e) => {
-      const t = e.target;
-      if (!t || !t.closest || !t.closest('#bp-efectos')) return;
-      leerFilasDelDOM();
-      if (t.classList.contains('bp-accion') || t.classList.contains('bp-valor-tipo') || t.classList.contains('bp-cond')) {
-        const i = parseInt(t.dataset.i, 10), f = filasForm[i];
-        if (t.classList.contains('bp-accion')) {   // el objetivo válido depende de la acción
-          const esVent = f.accion === 'ventaja' || f.accion === 'desventaja';
-          const lista = esVent ? OBJ_ADV : (f.accion === 'dado' ? OBJETIVOS_DADO : OBJETIVOS_PLANO);
-          if (!lista.some(o => o[0] === f.objetivo)) f.objetivo = lista[0][0];
-        }
-        if (t.classList.contains('bp-cond')) f.cv = '';
-        pintarEfectosForm();
-      } else actualizarFrase();
-    });
-    document.addEventListener('input', (e) => { if (e.target && e.target.closest && e.target.closest('#bp-efectos')) { leerFilasDelDOM(); actualizarFrase(); } });
-
     registrarFuenteBuffs(() => editor.items()
       .map((b, idx) => ({ b, idx }))
       .filter(x => x.b.activo)
       .map(x => ({ nombre: x.b.nombre, icono: x.b.icono || '🔆', efectos: x.b.efectos || [], apagar: () => alternar(x.idx) })));
 
-    window.FichaBuffsPersonales = { editor, alternar, agregarEfecto, quitarEfecto, guardarDesdeFormulario };
+    window.FichaBuffsPersonales = { editor, alternar, agregarEfecto: EE.agregar, quitarEfecto: EE.quitar, guardarDesdeFormulario };
     notificarBuffs();
     return window.FichaBuffsPersonales;
   }
@@ -1792,6 +1814,6 @@
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,
     iniciarAtributos, iniciarEstadisticaConBuff, iniciarEditorReputacion,
-    registrarFuenteBuffs, notificarBuffs, iniciarBuffsPersonales, iniciarCA, iniciarConcentracion, esCampoEfimero, emitirUso,
+    registrarFuenteBuffs, notificarBuffs, iniciarBuffsPersonales, crearEditorEfectos, resumenEfectos, resolverValor, iniciarCA, iniciarConcentracion, esCampoEfimero, emitirUso,
   };
 })();

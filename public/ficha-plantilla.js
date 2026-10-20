@@ -194,26 +194,27 @@
   }
 
   /* ---------- recursos de clase ---------- */
-  function recursos(P) {
-    const lista = (P.recursos || []).map(r => {
-      const recarga = r.recarga === 'corto' ? '↻ Descanso corto' : r.recarga === 'largo' ? '↻ Descanso largo' : r.recarga === 'ambos' ? '↻ Corto o largo' : 'Informativo';
-      let cuerpo;
-      if (r.tipo === 'pool') {
-        const b = (r.pasos || [-5, -1, 1, 5]).map(p => `<button type="button" class="${Math.abs(p) > 1 ? 'contador-paso' : ''}" data-pool="${esc(r.campo)}" data-delta="${p}" aria-label="${p < 0 ? 'Gastar ' + (-p) : 'Recuperar ' + p}">${p < 0 ? '−' + (-p) : '+' + p}</button>`);
-        const neg = b.filter((_, i) => (r.pasos || [-5, -1, 1, 5])[i] < 0).join(''), pos = b.filter((_, i) => (r.pasos || [-5, -1, 1, 5])[i] > 0).join('');
-        cuerpo = `<div class="progreso gruesa bien"><span style="width:100%"></span></div>
-          <div class="recurso-valor"><div class="contador" role="group" aria-label="${esc(r.nombre)}">${neg}<div><span class="contador-valor" id="${esc(r.campo)}">${r.inicial != null ? r.inicial : 0}</span><span class="contador-max"> / <span id="${esc(r.campo)}-max">0</span></span></div>${pos}</div></div>`;
-      } else if (r.tipo === 'info') {
-        cuerpo = `<div class="recurso-valor"><span class="recurso-info" id="recurso-valor-${esc(r.id)}">—</span>${r.formula ? `<button type="button" class="btn-roll" data-recurso-formula="${esc(r.id)}">🎲 Tirar</button>` : ''}</div>`;
-      } else {
-        cuerpo = `<div class="recurso-valor"></div><span class="recurso-cuenta texto-suave"></span>`;
-      }
-      return `<div class="recurso" id="recurso-${esc(r.id)}">
+  function recursoHtml(r) {
+    const recarga = r.recarga === 'corto' ? '↻ Descanso corto' : r.recarga === 'largo' ? '↻ Descanso largo' : r.recarga === 'ambos' ? '↻ Corto o largo' : 'Informativo';
+    let cuerpo;
+    if (r.tipo === 'pool') {
+      const b = (r.pasos || [-5, -1, 1, 5]).map(p => `<button type="button" class="${Math.abs(p) > 1 ? 'contador-paso' : ''}" data-pool="${esc(r.campo)}" data-delta="${p}" aria-label="${p < 0 ? 'Gastar ' + (-p) : 'Recuperar ' + p}">${p < 0 ? '−' + (-p) : '+' + p}</button>`);
+      const neg = b.filter((_, i) => (r.pasos || [-5, -1, 1, 5])[i] < 0).join(''), pos = b.filter((_, i) => (r.pasos || [-5, -1, 1, 5])[i] > 0).join('');
+      cuerpo = `<div class="progreso gruesa bien"><span style="width:100%"></span></div>
+        <div class="recurso-valor"><div class="contador" role="group" aria-label="${esc(r.nombre)}">${neg}<div><span class="contador-valor" id="${esc(r.campo)}">${r.inicial != null ? r.inicial : 0}</span><span class="contador-max"> / <span id="${esc(r.campo)}-max">0</span></span></div>${pos}</div></div>`;
+    } else if (r.tipo === 'info') {
+      cuerpo = `<div class="recurso-valor"><span class="recurso-info" id="recurso-valor-${esc(r.id)}">—</span>${r.formula ? `<button type="button" class="btn-roll" data-recurso-formula="${esc(r.id)}">🎲 Tirar</button>` : ''}</div>`;
+    } else {
+      cuerpo = `<div class="recurso-valor"></div><span class="recurso-cuenta texto-suave"></span>`;
+    }
+    return `<div class="recurso" id="recurso-${esc(r.id)}">
         <div class="recurso-cab"><span class="recurso-nombre">${esc(r.icono || '🔹')} ${esc(r.nombre)}</span><span class="recurso-recarga">${recarga}</span></div>
         ${cuerpo}
         ${r.desc ? `<p class="recurso-desc">${esc(r.desc)}</p>` : ''}
       </div>`;
-    }).join('');
+  }
+  function recursos(P) {
+    const lista = (P.recursos || []).map(recursoHtml).join('');
     return lista ? `<div class="recursos-grid">${lista}</div>` : '<p class="texto-suave">Este personaje no tiene recursos de clase con contador.</p>';
   }
 
@@ -245,10 +246,22 @@
       <div id="buffs-personales-form"></div>`;
   }
 
+  // {{mod:WIS}}, {{cd:CON}}… → números que se recalculan solos (ver ficha-rasgos.js); si el módulo no está, el texto queda igual.
+  const marcadores = (t) => (window.FichaRasgos ? window.FichaRasgos.marcadores(t) : t);
+
   /* ---------- rasgos ---------- */
   function rasgos(P) {
-    const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${r.html || ''}</div>${(r.acciones || []).map(a => `<button type="button" class="btn-roll btn-roll-sm" ${a.uso ? `data-uso="${esc(a.uso)}"` : `data-roll="${esc(a.roll)}"`} data-etiqueta="${esc(a.etiqueta || a.texto)}">${esc(a.texto)}</button>`).join('')}</div>`).join('');
+    const cards = (P.rasgos || []).map(r => `<div class="feature-card"><div class="fila"><h4>${esc(r.titulo)}</h4><span class="tag">${esc(r.tag || '')}</span></div><div class="editable-text" contenteditable="true" id="${esc(r.id)}">${marcadores(r.html || '')}</div>${(r.acciones || []).map(a => `<button type="button" class="btn-roll btn-roll-sm" ${a.uso ? `data-uso="${esc(a.uso)}"` : `data-roll="${esc(a.roll)}"`} data-etiqueta="${esc(a.etiqueta || a.texto)}">${esc(a.texto)}</button>`).join('')}</div>`).join('');
     return `<div class="feature-grid">${cards}</div>`;
+  }
+  // Recursos y rasgos propios del personaje (los dibuja ficha-rasgos.js): se agregan, editan y comparten desde la ficha.
+  function rasgosPropios() {
+    return `<div id="recursos-propios-wrap" hidden><div class="subseccion-titulo">🔥 Recursos propios</div><div class="recursos-grid" id="recursos-propios"></div></div>
+      <div class="subseccion-titulo">🧩 Rasgos propios</div>
+      <p class="texto-suave">Agrega o edita rasgos, recursos y efectos de tu personaje. Los que publiques quedan en la biblioteca global para futuras builds.</p>
+      <div id="rasgos-propios-lista" class="feature-grid"></div>
+      <div class="fila rasgo-gestion"><button type="button" class="btn btn-fantasma btn-sm" onclick="FichaRasgos.editor.mostrarFormulario()">➕ Crear rasgo</button><button type="button" class="btn btn-fantasma btn-sm" onclick="FichaRasgos.abrirBiblioteca()">📚 Biblioteca</button></div>
+      <div id="rasgos-propios-form"></div><div id="rasgos-biblioteca"></div>`;
   }
 
   /* ---------- inventario ---------- */
@@ -314,7 +327,7 @@
     // Recursos (de clase, raza y talentos) y rasgos en UNA sola tarjeta: lo que se gasta arriba y lo que dice cada rasgo debajo.
     const hayRecursos = (P.recursos || []).length > 0;
     sec('rasgos', '📜', hayRecursos ? 'Recursos y rasgos' : 'Rasgos y características',
-      (hayRecursos ? `<div class="subseccion-titulo">🔥 Recursos</div>${recursos(P)}<div class="subseccion-titulo">📜 Rasgos y características</div>` : '') + rasgos(P),
+      (hayRecursos ? `<div class="subseccion-titulo">🔥 Recursos</div>${recursos(P)}<div class="subseccion-titulo">📜 Rasgos y características</div>` : '') + rasgos(P) + rasgosPropios(),
       { abierta: true, nota: hayRecursos ? 'los máximos se calculan del nivel y se recargan con el descanso' : '' });
     sec('buffs', '🔆', 'Buffs personalizados', buffsPersonales(P), { abierta: true, nota: 'interruptores propios: suman o restan solo cuando se cumple su condición' });
     (P.tablas || []).forEach(t => sec('tabla-' + t.id, t.icono || '🎲', esc(t.nombre), tablaAleatoria(t)));
@@ -340,5 +353,5 @@
     window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
   });
 
-  window.FichaPlantilla = { ficha, ABIL, SKILL_HAB, skillId, esc, fmt };
+  window.FichaPlantilla = { ficha, ABIL, SKILL_HAB, skillId, esc, fmt, recursoHtml, marcadores };
 })();

@@ -275,7 +275,7 @@
   function descansoCorto() {
     if (soloLectura()) return;
     cfg.recursos.forEach(r => {
-      if (r.recarga !== 'corto') return;
+      if (r.recarga !== 'corto' && r.recarga !== 'ambos') return;
       if (r.tipo === 'pips') document.querySelectorAll('input[data-recurso="' + r.id + '"]').forEach(cb => { if (cb.checked) { cb.checked = false; disparar(cb, 'change'); } });
       else if (r.tipo === 'pool') { const el = $(r.campo); if (el) { el.textContent = String(maxDe(r)); guardar(r.campo, maxDe(r)); } }
     });
@@ -296,7 +296,7 @@
     ['s', 'f'].forEach(p => [1, 2, 3].forEach(n => { const e = $('ds-' + p + n); if (e && e.checked) { e.checked = false; disparar(e, 'change'); } }));
     // Recursos (corto y largo)
     cfg.recursos.forEach(r => {
-      if (r.recarga !== 'corto' && r.recarga !== 'largo') return;
+      if (r.recarga !== 'corto' && r.recarga !== 'largo' && r.recarga !== 'ambos') return;
       if (r.tipo === 'pips') document.querySelectorAll('input[data-recurso="' + r.id + '"]').forEach(cb => { if (cb.checked) { cb.checked = false; disparar(cb, 'change'); } });
       else if (r.tipo === 'pool') { const el = $(r.campo); if (el) { el.textContent = String(maxDe(r)); guardar(r.campo, maxDe(r)); } }
     });
