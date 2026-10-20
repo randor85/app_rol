@@ -140,6 +140,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="ficha-sesion.js?v=77.0"></script>
 <script src="spells_data.js"></script>
 <script src="classes_data.js"></script>
 <script src="clases-custom.js"></script>
@@ -754,7 +755,8 @@
     if (/[.$#\[\]\/]/.test(CAMP)) { $('cc-sub').textContent = ''; aviso('mal', 'El código de campaña no es válido.'); return; }
     if (!(window.firebase && firebase.auth)) { $('cc-sub').textContent = ''; aviso('mal', 'No se pudo cargar Firebase. Revisa tu conexión y recarga la página.'); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
-    firebase.auth().onAuthStateChanged((user) => {
+    if (window.FichaSesion) FichaSesion.alUsuario((user) => { if (!db) arrancar(user); }, () => { location.href = 'index.html'; });
+    else firebase.auth().onAuthStateChanged((user) => {
       if (!user) { location.href = 'index.html'; return; }
       if (!db) arrancar(user);
     });

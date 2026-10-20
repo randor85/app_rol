@@ -780,6 +780,7 @@
   function cargarScript(src) { return new Promise((ok, mal) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar ' + src)); document.head.appendChild(s); }); }
   function esperarUsuario() {
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
+    if (window.FichaSesion) return FichaSesion.esperarUsuario();
     return new Promise((ok) => {
       let hecho = false;
       const fin = (u) => { if (!hecho) { hecho = true; ok(u || null); } };

@@ -51,6 +51,7 @@
 (function () {
   'use strict';
 
+  const VERSION_APP = '77.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -71,7 +72,7 @@
   function cargarScript(src) {
     return new Promise((ok, mal) => {
       const s = document.createElement('script');
-      s.src = src; s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar ' + src));
+      s.src = src + (/^https?:/.test(src) || src.indexOf('?') >= 0 ? '' : '?v=' + VERSION_APP); s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar ' + src));
       document.head.appendChild(s);
     });
   }
@@ -132,6 +133,7 @@
   }
   function esperarUsuario() {
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
+    if (window.FichaSesion) return FichaSesion.esperarUsuario();
     return new Promise((ok) => {
       let hecho = false, off = null;
       off = firebase.auth().onAuthStateChanged((u) => { if (hecho) return; hecho = true; ok(u); if (typeof off === 'function') off(); });
@@ -699,11 +701,10 @@
     bindClicks();
 
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
-    firebase.auth().onAuthStateChanged((user) => {
-      try { const l = JSON.parse(localStorage.getItem('rol-auth-diag') || '[]'); l.push(new Date().toISOString().slice(0, 19) + ' ficha.html ' + (user ? 'sesión activa (' + user.uid.slice(0, 6) + ')' : 'sin sesión → vuelve al menú')); localStorage.setItem('rol-auth-diag', JSON.stringify(l.slice(-25))); } catch (e) { /* sin almacenamiento */ }
-      if (!user) { location.href = 'index.html'; return; }
-      arrancarMotores(user).catch((e) => { console.error(e); mensaje('Ocurrió un error al iniciar la ficha: ' + (e && e.message ? e.message : e)); });
-    });
+    // Sesión con tiempo de gracia (ficha-sesion.js): un «sin sesión» pasajero al cargar ya no expulsa al menú.
+    const iniciarConUsuario = (user) => arrancarMotores(user).catch((e) => { console.error(e); mensaje('Ocurrió un error al iniciar la ficha: ' + (e && e.message ? e.message : e)); });
+    if (window.FichaSesion) FichaSesion.alUsuario(iniciarConUsuario, () => { location.href = 'index.html'; });
+    else firebase.auth().onAuthStateChanged((user) => { if (!user) { location.href = 'index.html'; return; } iniciarConUsuario(user); });
   }
 
   window.FichaShell = { arrancar, toast, renderEspacios, refrescarDerivados, get personaje() { return P; } };

@@ -300,6 +300,7 @@
     <!-- SDKS DE FIREBASE (Compat v9) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="ficha-sesion.js?v=77.0"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
@@ -329,7 +330,9 @@
             } catch (e) { console.warn('No se pudo fijar la persistencia de la sesión:', e); }
             try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* sin soporte */ }
         })();
+        if (window.FichaSesion) FichaSesion.vigilar();
         function registrarAuthDiag(texto) {
+            if (window.FichaSesion) { FichaSesion.diag(texto); return; }
             try {
                 const l = JSON.parse(localStorage.getItem('rol-auth-diag') || '[]');
                 l.push(new Date().toISOString().slice(0, 19) + ' ' + location.pathname.split('/').pop() + ' ' + texto);
@@ -424,9 +427,11 @@
         // ==========================================
         // CONTROL DE SESIÓN (AUTH STATE CHANGED) [1]
         // ==========================================
+        let temporizadorSinSesion = null, cierreManualDeSesion = false, yaHuboSesionEnEstaPagina = false;
         firebase.auth().onAuthStateChanged((user) => {
           registrarAuthDiag(user ? 'sesión activa (' + user.uid.slice(0, 6) + ')' : 'sin sesión');
           if (user) {
+            clearTimeout(temporizadorSinSesion); yaHuboSesionEnEstaPagina = true;
             miUidActual = user.uid;
             welcomeText.innerText = `¡Hola, ${user.displayName || user.email}!`; // Muestra el correo si no hay nombre
             btnLogin.style.display = 'none';
@@ -435,14 +440,24 @@
             campanaContainer.style.display = 'block';
             cargarCampanas();
           } else {
+            // Un «sin sesión» al cargar puede ser pasajero: se espera unos segundos antes de mostrar el acceso (salvo cierre manual).
+            if (!cierreManualDeSesion && !yaHuboSesionEnEstaPagina) {
+              welcomeText.innerText = 'Restaurando sesión…';
+              clearTimeout(temporizadorSinSesion);
+              temporizadorSinSesion = setTimeout(() => { if (!firebase.auth().currentUser) { registrarAuthDiag('sin sesión tras la espera → se muestra el acceso'); mostrarAcceso(); } }, 4000);
+              return;
+            }
+            mostrarAcceso();
+          }
+        });
+        function mostrarAcceso() {
             miUidActual = null;
             welcomeText.innerText = "Inicia sesión para jugar";
             btnLogin.style.display = 'inline-block';
             loginEmailForm.style.display = 'flex'; // <-- MOSTRAR FORMULARIO AL DESLOGUEARSE
             btnLogout.style.display = 'none';
             ocultarModulos();
-          }
-        });
+        }
 
 
         if (new URLSearchParams(location.search).get('diag') === '1') {
@@ -454,7 +469,7 @@
 
         btnLogin.onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
 
-        btnLogout.onclick = () => firebase.auth().signOut();
+        btnLogout.onclick = () => { cierreManualDeSesion = true; firebase.auth().signOut(); };
 
         // Login con Correo y Contraseña
 btnLoginEmail.onclick = () => {

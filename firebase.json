@@ -7,6 +7,17 @@
       "**/node_modules/**",
       "**/*_draft.html",
       "**/personajes/_*"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(html|js|css|json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
     ]
   },
   "database": {
