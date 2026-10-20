@@ -56,7 +56,7 @@ PERSONAJES.fiona_faraway = {
     { id: 'kit', tipo: 'pool', nombre: "Healer's Kit (usos restantes)", icono: '🩹', max: 10, campo: 'healer-kit-cur', recarga: null, pasos: [-1, 1], inicial: 10, desc: 'No se repone con el descanso: se compra o se repone a mano.' },
     { id: 'adr', tipo: 'pips', nombre: 'Adrenaline Rush (Orc)', icono: '💢', max: 3, prefijo: 'adr-use-', recarga: 'largo', desc: '3 usos por descanso largo.' },
     { id: 'relentless', tipo: 'pips', nombre: 'Relentless Endurance (Orc)', icono: '🛡️', max: 1, prefijo: 'relentless-use-', recarga: 'largo', desc: '1 uso por descanso largo.' },
-    { id: 'fey', tipo: 'pips', nombre: 'Fey-Touched (lanzamientos gratis)', icono: '✨', ids: ['fey-misty', 'fey-command'], etiquetas: ['Misty Step', 'Command'], recarga: 'largo', desc: 'Una vez cada uno por descanso largo.' },
+    { id: 'fey', tipo: 'pips', nombre: 'Fey-Touched (lanzamientos gratis)', icono: '✨', ids: ['fey-misty', 'fey-command'], etiquetas: ['Misty Step', 'Command'], hechizos: ['Misty Step', 'Command'], recarga: 'largo', desc: 'Una vez cada uno por descanso largo.' },
   ],
 
   hechizos: [

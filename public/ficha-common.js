@@ -648,6 +648,14 @@
     return HECHIZOS_REPETIBLES.has(base) || /^Summon /.test(base);
   };
 
+  // Etiqueta «✨ Fey-Touched 1/1» junto a los hechizos que usan cargas propias en vez de espacios.
+  function cargasTag(h) {
+    const cg = (window.FichaVitales && FichaVitales.cargasDeHechizo && h.nivel > 0) ? FichaVitales.cargasDeHechizo(h) : null;
+    if (!cg) return '';
+    const nom = String(cg.recurso.nombre || 'Cargas').replace(/\s*\(.*\)\s*$/, '');
+    return ` <span class="tag" title="Lanzarlo gasta una carga de ${nom} y no un espacio de conjuro (si no quedan, usa el espacio)">${cg.recurso.icono || '✨'} ${nom} ${cg.quedan}/${cg.total}</span>`;
+  }
+
   function iniciarEditorHechizos() {
     // Nivel de espacio elegido en el selector de upcast de cada fila: se recuerda
     // para que un re-render (sincronización, DC automáticos) no lo resetee al base.
@@ -696,7 +704,7 @@
         return `
           <tr>
             <td><span class="tag">${h.especial ? '⭐ ' : ''}${etiquetaNivelConjuro(h.nivel)}</span></td>
-            <td><strong>${h.nombre}</strong>${ataqueBadge ? ' ' + ataqueBadge : ''}</td>
+            <td><strong>${h.nombre}</strong>${ataqueBadge ? ' ' + ataqueBadge : ''}${cargasTag(h)}</td>
             <td>${h.tiempo} / ${h.alcance}${areaTxt}</td>
             <td>${h.resumen}${upcastTxt}${buffTxt} <em>(${h.duracion})</em></td>
             <td class="spell-item-actions">
@@ -908,7 +916,13 @@
 
       let quedan = null;
       let slotId = null;
-      if (nivelGastado && !soloTirar) {
+      // Hechizos con cargas propias (Fey-Touched…): si quedan cargas, gasta una y NO el espacio de conjuro; si no, usa el espacio como cualquier hechizo.
+      let cargaUsada = null, sinCargas = null;
+      if (!soloTirar && h.nivel > 0 && window.FichaVitales && FichaVitales.cargasDeHechizo) {
+        const cg = FichaVitales.cargasDeHechizo(h);
+        if (cg) { if (cg.quedan > 0) cargaUsada = FichaVitales.gastarCarga(h); else sinCargas = cg.recurso; }
+      }
+      if (nivelGastado && !soloTirar && !cargaUsada) {
         // Id directo ('slot-N-cur'), no indexado por posición en FICHA_CONFIG.slotsIds
         // — esa indexación se rompía (undefined) para cualquier nivel más allá de
         // slotsIds.length, como pasó de verdad al probar contra los datos reales de Fiona.
@@ -930,7 +944,8 @@
       }
 
       // Registro de uso (historial del lanzador de dados, si está cargado).
-      if (!soloTirar) emitirUso('hechizo', h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con ${FICHA_CONFIG.etiquetaEspacio ? 'espacio de ' + FICHA_CONFIG.etiquetaEspacio(slotId, nivelGastado) : 'espacio de nivel ' + nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`));
+      if (!soloTirar && cargaUsada) emitirUso('hechizo', `Lanzó ${h.nombre} con ${cargaUsada.recurso.nombre} (quedan ${cargaUsada.quedan}/${cargaUsada.total}; no gastó espacio)`);
+      else if (!soloTirar) emitirUso('hechizo', (sinCargas ? `[sin cargas de ${sinCargas.nombre}] ` : '') + (h.nivel === 0 ? `Lanzó ${h.nombre} (truco)` : (nivelGastado ? `Lanzó ${h.nombre} con ${FICHA_CONFIG.etiquetaEspacio ? 'espacio de ' + FICHA_CONFIG.etiquetaEspacio(slotId, nivelGastado) : 'espacio de nivel ' + nivelGastado}${quedan !== null ? ` (quedan ${quedan})` : ''}` : `Lanzó ${h.nombre}`)));
       const enDados = (window.FichaDados && FichaDados.mostrar) ? FichaDados.mostrar : null;
 
       // Hechizo de concentración: marca la casilla (y deja de concentrar en el anterior).
@@ -985,6 +1000,10 @@
 
     // Re-renderiza al recalcular atributos solo si algún hechizo tiene valores automáticos
     // (evita resetear los selectores de upcast en cada sincronización si no hace falta).
+    // Las etiquetas de cargas se actualizan al marcar/desmarcar una casilla de recurso, al descansar y al terminar de cargar la ficha.
+    const hayCargas = () => window.FichaVitales && FichaVitales.cargasDeHechizo && editor.items().some(h => h.nivel > 0 && FichaVitales.cargasDeHechizo(h));
+    document.addEventListener('change', (e) => { if (e.target && e.target.dataset && e.target.dataset.recurso && hayCargas()) editor.renderizar(); });
+    document.addEventListener('ficha:lista', () => { if (hayCargas()) editor.renderizar(); });
     document.addEventListener('ficha:atributos', () => {
       if (editor.items().some(h => h.ataque && (h.ataque.dcAuto || h.ataque.bonusAuto))) editor.renderizar();
     });

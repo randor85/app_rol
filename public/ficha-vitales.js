@@ -215,6 +215,36 @@
     }
   }
   function pintarRecursos() { cfg.recursos.forEach(renderRecurso); }
+
+  /* ---------- hechizos con cargas propias (Fey-Touched, Magic Initiate, rasgos de especie…) ----------
+     Un recurso de tipo 'pips' puede declarar `hechizos: ['Misty Step', 'Command']` (en el mismo orden que sus `ids`, si los tiene):
+     lanzar esos hechizos gasta una carga del recurso y NO un espacio de conjuro. Un hechizo suelto también puede traer `recurso: '<id>'`. */
+  const nombreHechizo = (n) => String(n || '').replace(/\s*\(2024\)\s*$/, '').trim().toLowerCase();
+  function recursoDeHechizo(h) {
+    if (!h) return null;
+    const nm = nombreHechizo(h.nombre);
+    return cfg.recursos.find(r => r.tipo === 'pips' && (h.recurso === r.id || (r.hechizos || []).some(x => nombreHechizo(x) === nm))) || null;
+  }
+  function casillasDeCarga(r, h) {
+    const todas = Array.from(document.querySelectorAll('input[data-recurso="' + r.id + '"]'));
+    const i = r.ids && r.hechizos ? r.hechizos.findIndex(x => nombreHechizo(x) === nombreHechizo(h.nombre)) : -1;
+    return i >= 0 && r.ids[i] ? todas.filter(c => c.id === r.ids[i]) : todas;
+  }
+  // { recurso, quedan, total } o null si el hechizo no usa cargas propias.
+  function cargasDeHechizo(h) {
+    const r = recursoDeHechizo(h); if (!r) return null;
+    const cas = casillasDeCarga(r, h);
+    return { recurso: r, total: cas.length, quedan: cas.filter(c => !c.checked).length };
+  }
+  // Marca una carga como usada (la persiste por el cambio de la casilla). Devuelve { recurso, quedan, total } o null si no había.
+  function gastarCarga(h) {
+    if (soloLectura()) return null;
+    const r = recursoDeHechizo(h); if (!r) return null;
+    const cas = casillasDeCarga(r, h), libre = cas.find(c => !c.checked);
+    if (!libre) return null;
+    libre.checked = true; disparar(libre, 'change');
+    return { recurso: r, total: cas.length, quedan: cas.filter(c => !c.checked).length };
+  }
   function cambiarPool(campo, delta, nombre) {
     if (soloLectura()) return;
     const el = $(campo); if (!el) return;
@@ -354,6 +384,6 @@
     return API;
   }
 
-  const API = { iniciar, hpMaxActual, cambiarHP, fijarHP, recibirDano, curar, tirarHitDie, salvacionDeMuerte, descansoCorto, descansoLargo, cambiarPool, cambiarContador, nivelTotal, nivelClase, registro, pintarHP, pintarHD, pintarRecursos, pintarEstados, ctx, listaHD };
+  const API = { iniciar, recursoDeHechizo, cargasDeHechizo, gastarCarga, hpMaxActual, cambiarHP, fijarHP, recibirDano, curar, tirarHitDie, salvacionDeMuerte, descansoCorto, descansoLargo, cambiarPool, cambiarContador, nivelTotal, nivelClase, registro, pintarHP, pintarHD, pintarRecursos, pintarEstados, ctx, listaHD };
   window.FichaVitales = API;
 })();
