@@ -272,7 +272,8 @@ body {
 }
 .ficha textarea { min-height: 88px; resize: vertical; line-height: 1.45; }
 .ficha input::placeholder, .ficha textarea::placeholder { color: var(--texto-suave); opacity: 0.8; }
-.ficha input[type="checkbox"], .ficha input[type="radio"] { accent-color: var(--acento); width: 20px; height: 20px; flex: none; }
+.ficha input[type="checkbox"], .ficha input[type="radio"] { accent-color: var(--acento); width: 24px; height: 24px; flex: none; }   /* v96.0: 20 → 24 px (mínimo WCAG 2.2) */
+.ficha input[type="file"] { min-height: var(--toque); padding: var(--sp-2); }
 .ficha label { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); color: var(--texto-suave); }
 .campo { display: grid; gap: var(--sp-1); }
 .campo > span { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--texto-suave); }
@@ -280,7 +281,7 @@ body {
 
 /* ---------- contadores y pips ---------- */
 .contador { display: inline-flex; align-items: center; gap: var(--sp-2); }
-.contador button {
+.contador button { flex: none; min-width: var(--toque);
   width: var(--toque); height: var(--toque); border-radius: 50%; border: 1px solid var(--borde-fuerte); background: var(--surface-2);
   color: var(--texto); font-size: 1.3rem; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0;
 }
@@ -669,6 +670,14 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 .dados-vacio { color: var(--texto-suave); font-size: var(--fs-sm); text-align: center; padding: var(--sp-3); }
 .dados-pie { display: flex; justify-content: flex-end; }
 @media (max-width: 600px) {
+  /* v96.0: los widgets flotantes en una sola fila al pie (chip de ventaja junto al botón de dados) en vez de apilados, un degradado que
+     los separa del contenido y espacio al final de la ficha para que nada quede tapado. */
+  .dados:not([data-abierto="true"]) { display: flex; flex-direction: row; align-items: center; gap: var(--sp-2); }
+  .dados:not([data-abierto="true"]) .dados-adv { margin: 0; }
+  .dados-fab { width: 48px; height: 48px; }
+  .dados-avisos { bottom: calc(var(--gutter) + 64px); }
+  .ficha { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  body:has(.dados)::after { content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: calc(64px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 35%, transparent); pointer-events: none; z-index: 90; }
   .dados { right: var(--sp-3); bottom: var(--sp-3); }
   .dados[data-abierto="true"] { right: 0; bottom: 0; left: 0; }
   .dados[data-abierto="true"] .dados-fab { display: none; }

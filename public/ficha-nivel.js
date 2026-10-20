@@ -918,7 +918,7 @@
 .fn-tabla{width:100%;border-collapse:collapse;font-size:.82rem}
 .fn-tabla th{text-align:left;color:var(--accent-gold,#d4af37);padding:5px 8px 5px 0;vertical-align:top;white-space:nowrap}
 .fn-tabla td{padding:5px 0;border-bottom:1px solid var(--border-color,#3a2f22)}
-.fn-aviso-nivel{background:var(--accent-gold,#d4af37);color:#000;border:none;border-radius:12px;padding:3px 10px;font-weight:700;font-size:.74rem;cursor:pointer;margin-left:6px}
+.fn-aviso-nivel{background:var(--accent-gold,#d4af37);color:#000;border:none;border-radius:12px;padding:6px 14px;min-height:36px;font-weight:700;font-size:.8rem;cursor:pointer;margin-left:6px}
 @media (max-width:520px){.fn-modal{max-height:96vh;border-radius:10px}.fn-pie .fn-btn{flex:1}}
 `;
     document.head.appendChild(s);
