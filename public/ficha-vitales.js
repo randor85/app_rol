@@ -103,6 +103,12 @@
     if (t) { const temp = num(t.value, 0), usados = Math.min(temp, resto); if (usados) { t.value = String(temp - usados); disparar(t, 'input'); resto -= usados; } }
     const antes = leer('hp-cur', 0);
     fijarHP(antes - resto);
+    // Último daño recibido: da la CD del save de concentración (mitad del daño, mínimo 10). Cuenta el daño completo, también el que absorben los PG temporales.
+    const ud = $('ultimo-dano'); if (ud) { ud.value = String(n); disparar(ud, 'input'); }
+    try {
+      const conc = window.FichaConcentracion && FichaConcentracion.actual();
+      if (conc) aviso('🧠 Concentrando en ' + conc + ': tira el save de CON, CD ' + Math.max(10, Math.floor(n / 2)) + ' (mitad de ' + n + ' de daño)', 'hp');
+    } catch (e) { /* noop */ }
     aviso('Recibió ' + n + ' de daño' + (resto !== n ? ' (' + (n - resto) + ' absorbido por PG temporales)' : '') + ': ' + antes + ' → ' + leer('hp-cur', 0) + ' PG', 'hp');
   }
   function curar(n) {

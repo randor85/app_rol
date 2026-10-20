@@ -51,7 +51,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '96.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
+  const VERSION_APP = '97.0';   // sube con cada cambio de código: evita que el navegador mezcle archivos viejos y nuevos
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');
@@ -404,7 +404,7 @@
           return FichaDados.d20({ mod: m, etiqueta: 'Iniciativa', categoria: 'pruebas' });
         }
       }
-      if (t.dataset.tirar === 'concentracion') return FichaDados.d20({ mod: num(($('ab-con') && $('ab-con').querySelector('.btn-save') || {}).dataset && $('ab-con').querySelector('.btn-save').dataset.bonus, 0), etiqueta: 'CON Save (concentración)', categoria: 'salvaciones' });
+      if (t.dataset.tirar === 'concentracion') return tirarConcentracion();
       if (t.dataset.ataque !== undefined) return tirarAtaque(t);
       if (t.dataset.contador) return FichaVitales.cambiarContador(t.dataset.contador, num(t.dataset.delta, 0), t.closest('.panel') ? t.closest('.panel').querySelector('h3').textContent.trim() : t.dataset.contador);
       if (t.dataset.uso) return FichaDados.registrarUso(t.dataset.uso, 'recurso');
@@ -454,6 +454,35 @@
     if (typeof m === 'number') return m;
     if (typeof m === 'string') return FichaAtributos.modDe(m);
     return (m.hab ? FichaAtributos.modDe(m.hab) : 0) + (m.prof ? FichaAtributos.profBonusActual() : 0) + (m.clase ? FichaVitales.nivelClase(m.clase) * (m.mult || 1) : 0) + (m.fijo || 0);
+  }
+
+  // Save de concentración: CD = la mayor entre 10 y la mitad del último daño recibido; si se falla se suelta la concentración.
+  function cdConcentracion() {
+    const ud = num(($('ultimo-dano') || {}).value, 0);
+    return { ultimo: ud, cd: Math.max(10, Math.floor(ud / 2)) };
+  }
+  function pintarCDConcentracion() {
+    const e = $('conc-save-cd'); if (!e) return;
+    const c = cdConcentracion();
+    e.textContent = c.ultimo ? ` · CD ${c.cd}` : '';
+    e.title = c.ultimo ? `Mitad de ${c.ultimo} de daño (mínimo 10)` : '';
+  }
+  function tirarConcentracion() {
+    const b = $('ab-con') && $('ab-con').querySelector('.btn-save');
+    const { ultimo, cd } = cdConcentracion();
+    const r = FichaDados.d20({
+      mod: num(b && b.dataset && b.dataset.bonus, 0), etiqueta: 'CON Save (concentración)', categoria: 'salvaciones', cd,
+      notas: [ultimo ? `CD = mitad de ${ultimo} de daño (mínimo 10)` : 'CD 10 (no hay daño reciente registrado)'],
+    });
+    // el daño ya se resolvió: la próxima tirada parte de cero hasta que se reciba más
+    const ud = $('ultimo-dano'); if (ud && ud.value) { ud.value = ''; ud.dispatchEvent(new Event('input', { bubbles: true })); }
+    const conc = window.FichaConcentracion && FichaConcentracion.actual();
+    if (r && r.exito === false && conc) {
+      FichaConcentracion.fijar('');
+      toast(`💔 Fallaste el save: pierdes la concentración en ${conc}.`);
+    } else if (r && r.exito === true && conc) toast(`🧠 Mantienes la concentración en ${conc}.`);
+    pintarCDConcentracion();
+    return r;
   }
 
   function tirarAtaque(btn) {
@@ -529,6 +558,7 @@
     });
     const cb = $('conc-save-bonus'), b = $('ab-con') && $('ab-con').querySelector('.btn-save');
     if (cb && b) cb.textContent = f(num(b.dataset.bonus, 0));
+    pintarCDConcentracion();
   }
 
   // Elegir el nivel de upcast autoguarda el <select> (tiene id); el eco dispara 'ficha:atributos' y la tabla de hechizos
@@ -577,6 +607,7 @@
     FichaComun.iniciarEditorInventario();
     FichaComun.iniciarEditorReputacion();
     if (window.FichaAtaques) FichaAtaques.iniciar(P);   // tabla de ataques editable (semilla: P.ataques)
+    if (window.FichaTablas && (P.tablas || []).length) FichaTablas.iniciar(P);   // tablas aleatorias (Wild Magic Surge, etc.)
     FichaComun.iniciarBuffsPersonales();
 
     FichaVitales.iniciar({
@@ -647,7 +678,9 @@
     }
     instalarCompat(); protegerSelectoresUpcast();
     document.addEventListener('ficha:atributos', () => { refrescarDerivados(); aplicarJsCalc(); });
-    document.addEventListener('ficha:ataques', () => { aplicarJsCalc(); });   // filas de ataques dibujadas o cambiadas
+    document.addEventListener('ficha:ataques', () => { aplicarJsCalc(); });
+    document.addEventListener('input', (e) => { if (e.target && e.target.id === 'ultimo-dano') pintarCDConcentracion(); });
+    document.addEventListener('ficha:datos-sincronizados', () => pintarCDConcentracion());   // filas de ataques dibujadas o cambiadas
     document.addEventListener('ficha:datos-sincronizados', () => { refrescarDerivados(); pintarXP(); });
 
     FichaComun.iniciarBitacora({ db, codigoCampana });
@@ -695,7 +728,7 @@
     danoExtraEnSecciones();
 
     try { await cargarScript('clases-custom.js'); } catch (e) { /* módulo opcional */ }
-    for (const s of ['ficha-common.js', 'ficha-ataques.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
+    for (const s of ['ficha-common.js', 'ficha-ataques.js', 'ficha-tablas.js', 'ficha-dados.js', 'ficha-vitales.js', 'ficha-party.js', 'ficha-nivel.js', 'ficha-compendio.js']) await cargarScript(s);
     bindClicks();
 
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);

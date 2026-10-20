@@ -134,7 +134,7 @@
           <div class="estados-linea" id="estados-activos"></div>
           <p class="texto-suave" id="estados-efectos"></p>
           <details class="selector-estados"><summary class="btn btn-fantasma btn-sm">+ Estado</summary><div id="conditions-dropdown" class="estados-lista">${efectosManuales(P)}</div></details>
-          ${P.sinConjuros ? '' : '<button type="button" class="btn btn-roll" data-tirar="concentracion">🧘 Save de concentración (CON <span id="conc-save-bonus">+0</span>)</button>'}
+          ${P.sinConjuros ? '' : '<button type="button" class="btn btn-roll" data-tirar="concentracion">🧘 Save de concentración (CON <span id="conc-save-bonus">+0</span><span id="conc-save-cd"></span>)</button>'}
         </div>
 
         <div class="vitales-stats stats-grid">
@@ -217,6 +217,22 @@
     return lista ? `<div class="recursos-grid">${lista}</div>` : '<p class="texto-suave">Este personaje no tiene recursos de clase con contador.</p>';
   }
 
+  /* ---------- tablas aleatorias (P.tablas; las filas las dibuja ficha-tablas.js) ---------- */
+  function tablaAleatoria(t) {
+    const id = esc(t.id), dado = t.dado || 100;
+    return `${t.nota ? `<p class="texto-suave">${esc(t.nota)}</p>` : ''}
+      <div class="fila">
+        <button type="button" class="btn btn-primario" data-tabla-tirar="${id}">🎲 Tirar en la tabla (d${dado})</button>
+        ${t.previo ? `<button type="button" class="btn btn-fantasma" data-tabla-previo="${id}" title="${esc(t.previo.texto || '')}">🎯 d${t.previo.dado || 20}: ${esc(t.previo.etiqueta || '¿se tira la tabla?')}</button>` : ''}
+        <button type="button" class="btn btn-fantasma" onclick="FichaTablas.agregar('${id}')">➕ Agregar entrada</button>
+      </div>
+      <div class="aviso tabla-resultado" id="tabla-${id}-resultado" role="status" aria-live="polite" hidden></div>
+      <details class="tabla-detalle"><summary>Ver la tabla completa (<span id="tabla-${id}-cuenta">0</span> entradas)</summary>
+        <div class="tabla-scroll"><table class="tabla tabla-resp"><thead><tr><th>d${dado}</th><th>Efecto</th><th>Editar</th></tr></thead><tbody id="tabla-${id}-lista"></tbody></table></div>
+        <div id="tabla-${id}-form"></div>
+      </details>`;
+  }
+
   /* ---------- buffs personalizados ---------- */
   function buffsPersonales() {
     return `<p class="texto-suave">Se encienden y apagan a mano. Mientras están activos aparecen junto a los estados.</p>
@@ -297,6 +313,7 @@
       (hayRecursos ? `<div class="subseccion-titulo">🔥 Recursos</div>${recursos(P)}<div class="subseccion-titulo">📜 Rasgos y características</div>` : '') + rasgos(P),
       { abierta: true, nota: hayRecursos ? 'los máximos se calculan del nivel y se recargan con el descanso' : '' });
     sec('buffs', '🔆', 'Buffs personalizados', buffsPersonales(P), { abierta: true, nota: 'interruptores propios: suman o restan solo cuando se cumple su condición' });
+    (P.tablas || []).forEach(t => sec('tabla-' + t.id, t.icono || '🎲', esc(t.nombre), tablaAleatoria(t)));
     (P.secciones || []).forEach(s => sec(s.id, s.icono || '📄', esc(s.titulo), `<div class="seccion-propia" data-fragmento="${esc(s.fragmento || '')}">${s.html || '<p class="texto-suave">Cargando…</p>'}</div>`));
     sec('inventario', '🎒', 'Inventario y equipo', inventario(P));
     sec('reputacion', '🏅', 'Reputación y honor', reputacion());
@@ -304,7 +321,7 @@
     partes.push(barraFija(secs));
     secs.forEach(x => partes.push(x.html));
     // Campos ocultos que algún módulo del personaje guarda en datos/ (p. ej. un mapa JSON de preferencias).
-    const ocultos = (P.camposOcultos || []).map(id => `<input type="hidden" id="${esc(id)}" value="">`).join('');
+    const ocultos = ['ultimo-dano'].concat(P.camposOcultos || []).map(id => `<input type="hidden" id="${esc(id)}" value="">`).join('');   // ultimo-dano: último daño recibido (CD del save de concentración)
     return `<div class="ficha sheet" data-personaje="${esc(P.id)}">${ocultos}${partes.join('\n  ')}</div><div class="toast-zona" id="toast-zona" aria-live="polite"></div>`;
   }
 

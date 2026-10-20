@@ -213,6 +213,10 @@ body {
 .seccion[open] > summary::after, .bitacora-section[open] > summary::after { transform: rotate(180deg); }
 .seccion[open] > summary, .bitacora-section[open] > summary { border-bottom: 1px solid var(--borde); border-radius: var(--radio) var(--radio) 0 0; }
 .seccion-cuerpo, .bitacora-section-content { padding: var(--sp-4); display: grid; gap: var(--sp-4); }
+.tabla-resultado { margin-top: var(--sp-3); font-size: var(--fs-md); }
+.tabla-detalle { margin-top: var(--sp-3); }
+.tabla-detalle > summary { cursor: pointer; font-weight: 700; color: var(--acento); min-height: var(--toque); display: flex; align-items: center; }
+tr.tabla-resaltada td { background: color-mix(in srgb, var(--acento) 22%, transparent); }
 .subseccion-titulo { margin: var(--sp-4) 0 var(--sp-2); padding-bottom: var(--sp-1); border-bottom: 1px solid var(--borde); font-weight: 800; color: var(--acento); font-size: var(--fs-md); }
 .seccion-cuerpo > .subseccion-titulo:first-child { margin-top: 0; }
 .seccion-icono { font-size: 1.1em; }

@@ -297,8 +297,11 @@
     (o.notas || []).forEach(n => partes.push(n));
     // Gancho propio del personaje: FICHA_CONFIG.notasD20({ categoria, etiqueta }) → [texto, …] (p. ej. un aura activa).
     if (typeof FICHA_CONFIG !== 'undefined' && FICHA_CONFIG.notasD20) { try { (FICHA_CONFIG.notasD20({ categoria: cat0, etiqueta }) || []).forEach(n => partes.push(n)); } catch (e) { /* sin notas */ } }
+    // CD opcional (p. ej. el save de concentración): anota éxito o fallo.
+    let exito;
+    if (o.cd != null) { exito = !autoFalla && total >= o.cd; partes.push(`CD ${o.cd}: ${exito ? '✅ éxito' : '❌ fallo'}`); }
     mostrar(total, etiqueta + nota, partes.join(' | '));
-    return { total, d20: elegido, adv, detalle: partes.join(' | ') };
+    return { total, d20: elegido, adv, detalle: partes.join(' | '), exito };
   }
 
   /* ---------- interfaz ---------- */
