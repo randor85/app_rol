@@ -113,6 +113,13 @@ header p { color: var(--accent-light); font-size: 0.95rem; }
 @media (max-width: 480px) { body { padding: 12px; } header h1 { font-size: 1.4rem; } .class-grid { grid-template-columns: 1fr; } }
 footer { text-align:center; margin-top: 30px; font-size: 0.75rem; color: var(--text-muted); }
 footer a { color: var(--accent-light); }
+
+.creador-velo { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; padding: 3vh 2vw; background: rgba(10, 6, 20, 0.72); }
+.creador-velo.abierto { display: flex; }
+.creador-caja { width: min(1100px, 100%); height: 100%; display: flex; flex-direction: column; background: var(--bg-card, #fff); border: 1px solid var(--accent-gold); border-radius: 12px; overflow: hidden; }
+.creador-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--accent-gold); }
+.creador-cab button { background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 700; }
+.creador-caja iframe { flex: 1; width: 100%; border: 0; background: transparent; }
 </style>
 <script src="spells_data.js"></script>
 <script src="classes_data.js"></script>
@@ -130,9 +137,15 @@ footer a { color: var(--accent-light); }
 <div class="top-actions">
   <a href="index.html" class="btn-nav">⬅ Volver al Menú</a>
   <span style="display:flex;gap:8px;flex-wrap:wrap;">
-    <a href="creador-clases.html" class="btn-nav" id="enlace-creador" style="display:none;">➕ Crear clase o subclase</a>
+    <button type="button" class="btn-nav" id="enlace-creador" onclick="abrirCreador()">✍️ Crear clase o subclase</button>
     <button class="btn-nav" id="theme-toggle" onclick="toggleTheme()">🌙 Modo Noche</button>
   </span>
+</div>
+<div class="creador-velo" id="creador-velo" role="dialog" aria-modal="true" aria-label="Creador de clases y subclases">
+  <div class="creador-caja">
+    <div class="creador-cab"><span>🛠️ Creador de clases y subclases</span><button type="button" onclick="cerrarCreador()" aria-label="Cerrar el creador">✖ Cerrar</button></div>
+    <iframe id="creador-frame" title="Creador de clases y subclases" src="about:blank"></iframe>
+  </div>
 </div>
 <div class="aviso-campana" id="aviso-campana" role="status" style="display:none;"></div>
 
@@ -432,16 +445,27 @@ async function cargarCustomDeLaCampana() {
     firebase.auth().onAuthStateChanged((u) => fin(u || null), () => fin(null));
     setTimeout(() => fin(null), 8000);
   });
-  if (!user) { avisoCampana('Inicia sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver tus subclases custom' + (CAMPANA ? ' y las clases custom de la campaña.' : '.')); return; }
+  if (!user) { avisoCampana('Inicia sesión desde el <a href="index.html" style="color:var(--accent-light)">menú principal</a> para ver tus clases y subclases custom.'); return; }
   await ClasesCustom.cargar(firebase.database(), CAMPANA);
 }
 
+// ==== CREADOR INTEGRADO: se abre sobre el compendio y, al cerrarlo, se vuelve a leer lo custom y se redibuja ====
+function abrirCreador() {
+  const fr = document.getElementById('creador-frame');
+  fr.src = 'creador-clases.html?embed=1' + (CAMPANA ? '&campana=' + encodeURIComponent(CAMPANA) : '');
+  document.getElementById('creador-velo').classList.add('abierto');
+}
+async function cerrarCreador() {
+  document.getElementById('creador-velo').classList.remove('abierto');
+  document.getElementById('creador-frame').src = 'about:blank';
+  try { await cargarCustomDeLaCampana(); } catch (e) { console.warn('Clases custom no disponibles:', e); }
+  renderClassGrid(document.getElementById('search-input').value);
+  if (claseAbiertaId) renderClassDetail(claseAbiertaId);
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.getElementById('creador-velo').classList.contains('abierto')) cerrarCreador(); });
+
 async function iniciarCompendio() {
-  if (CAMPANA) {
-    const enl = document.getElementById('enlace-creador');
-    if (enl) { enl.href = 'creador-clases.html?campana=' + encodeURIComponent(CAMPANA); enl.style.display = 'inline-block'; }
-  }
-  // Las subclases custom son globales: se cargan también sin campaña (con campaña, además, las clases custom de esa campaña).
+  // Las clases y subclases custom son globales: se cargan siempre (con campaña, además, lo antiguo de esa campaña).
   try { await cargarCustomDeLaCampana(); }
   catch (e) { console.warn('Clases custom no disponibles:', e); if (CAMPANA) avisoCampana('No se pudieron cargar las clases custom de la campaña; se muestran solo las oficiales.'); }
   renderClassGrid('');

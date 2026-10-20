@@ -6,9 +6,10 @@
  * parámetro. Lo usan classes.html, creador-clases.html y (a través de los globales ya fusionados)
  * ficha-nivel.js y el futuro creador de personajes.
  *
- * Datos en Firebase. Las CLASES custom son por campaña; las SUBCLASES custom están en una biblioteca GLOBAL
- * (`biblioteca/subclases_custom/<id>`, v85.0) para reutilizarlas en campañas futuras. Las subclases que ya estaban dentro de una
- * campaña se siguen leyendo y se mezclan (la global gana por id); `migrarSubclasesALaBiblioteca` las pasa a la global.
+ * Datos en Firebase. Las clases y subclases custom viven en una biblioteca GLOBAL (`biblioteca/clases_custom/<id>` y
+ * `biblioteca/subclases_custom/<id>`, v85.0/v89.0) para reutilizarlas en todas las campañas. Lo que ya estaba dentro de una
+ * campaña se sigue leyendo y se mezcla (la global gana por id); `migrarALaBiblioteca` lo pasa a la global. Las funciones aceptan
+ * una campaña vacía (compendio abierto desde el menú): entonces solo se usa la biblioteca global.
  * Por campaña:
  *   campanas/<c>/clases_custom/<id>     = objeto con la forma de un elemento de CLASSES + `prog` (la entrada
  *                                         de PROGRESION_CLASES) + autor, autorNombre, creada.
@@ -423,12 +424,17 @@
   // Las CLASES custom viven por campaña. Las SUBCLASES custom viven en una biblioteca GLOBAL (se crean una vez y sirven
   // en todas las campañas); las que se crearon antes dentro de una campaña se siguen leyendo de ahí y se mezclan (la global gana por id).
   const RUTA_SUBCLASES_GLOBAL = 'biblioteca/subclases_custom';
+  const RUTA_CLASES_GLOBAL = 'biblioteca/clases_custom';
   function rutaBase(campana) { return 'campanas/' + campana; }
-  function convertir(snapC, snapS, snapG) {
+  function convertir(snapC, snapS, snapG, snapCG) {
     const vc = (snapC && snapC.val && snapC.val()) || {};
     const vs = (snapS && snapS.val && snapS.val()) || {};
     const vg = (snapG && snapG.val && snapG.val()) || {};
-    const clases = Object.keys(esObj(vc) ? vc : {}).map((k) => normalizarClase(vc[k], k));
+    const vcg = (snapCG && snapCG.val && snapCG.val()) || {};
+    const clasesPorId = {};
+    Object.keys(esObj(vc) ? vc : {}).forEach((k) => { clasesPorId[k] = normalizarClase(vc[k], k); });
+    Object.keys(esObj(vcg) ? vcg : {}).forEach((k) => { const n = normalizarClase(vcg[k], k); n.global = true; clasesPorId[k] = n; });
+    const clases = Object.keys(clasesPorId).map((k) => clasesPorId[k]);
     const porId = {};
     Object.keys(esObj(vs) ? vs : {}).forEach((k) => { porId[k] = normalizarSubclase(vs[k], k); });
     Object.keys(esObj(vg) ? vg : {}).forEach((k) => { const n = normalizarSubclase(vg[k], k); n.global = true; porId[k] = n; });
@@ -436,39 +442,46 @@
   }
   // La lectura global es tolerante: si las reglas todavía no la permiten, la ficha sigue funcionando con las de la campaña.
   const leerGlobal = (db) => db.ref(RUTA_SUBCLASES_GLOBAL).once('value').catch(() => null);
+  const leerClasesGlobal = (db) => db.ref(RUTA_CLASES_GLOBAL).once('value').catch(() => null);
   // Sin campaña (p. ej. el compendio abierto desde el menú) solo se leen las subclases de la biblioteca global.
   function leer(db, campana) {
     if (!db) return Promise.reject(new Error('Falta la base de datos.'));
-    if (!campana) return leerGlobal(db).then((g) => convertir(null, null, g));
+    if (!campana) return Promise.all([leerGlobal(db), leerClasesGlobal(db)]).then((g) => convertir(null, null, g[0], g[1]));
     return Promise.all([
       db.ref(rutaBase(campana) + '/clases_custom').once('value'),
       db.ref(rutaBase(campana) + '/subclases_custom').once('value'),
       leerGlobal(db),
-    ]).then((r) => convertir(r[0], r[1], r[2]));
+      leerClasesGlobal(db),
+    ]).then((r) => convertir(r[0], r[1], r[2], r[3]));
   }
   function cargar(db, campana) {
     return leer(db, campana).then((d) => { fusionar(d.clases, d.subclases); return d; });
   }
   function escuchar(db, campana, cb) {
-    if (!db || !campana) return function () {};
-    let sc = null, ss = null, sg = null, activo = true;
-    const refC = db.ref(rutaBase(campana) + '/clases_custom');
-    const refS = db.ref(rutaBase(campana) + '/subclases_custom');
+    if (!db) return function () {};
+    const vacio = { val: () => ({}) };
+    // Sin campaña solo existen los nodos globales; con campaña también los (antiguos) de la campaña.
+    let sc = campana ? null : vacio, ss = campana ? null : vacio, sg = null, scg = null, activo = true;
+    const refC = campana ? db.ref(rutaBase(campana) + '/clases_custom') : null;
+    const refS = campana ? db.ref(rutaBase(campana) + '/subclases_custom') : null;
     const refG = db.ref(RUTA_SUBCLASES_GLOBAL);
+    const refCG = db.ref(RUTA_CLASES_GLOBAL);
     const aplicar = () => {
-      if (!activo || sc === null || ss === null || sg === null) return;
-      const d = convertir(sc, ss, sg);
+      if (!activo || sc === null || ss === null || sg === null || scg === null) return;
+      const d = convertir(sc, ss, sg, scg);
       fusionar(d.clases, d.subclases);
       if (typeof cb === 'function') cb(d);
     };
     const fc = (s) => { sc = s; aplicar(); };
     const fs = (s) => { ss = s; aplicar(); };
-    const err = (e) => { if (typeof cb === 'function' && activo) { try { cb({ clases: ultimo.clases, subclases: ultimo.subclases, error: e }); } catch (x) { /* nada */ } } };
     const fg = (s) => { sg = s; aplicar(); };
-    refC.on('value', fc, err);
-    refS.on('value', fs, err);
-    refG.on('value', fg, () => { sg = { val: () => ({}) }; aplicar(); });   // sin permiso de lectura global (reglas aún sin publicar): se sigue con las de la campaña
-    return function () { activo = false; try { refC.off('value', fc); refS.off('value', fs); refG.off('value', fg); } catch (e) { /* nada */ } };
+    const fcg = (s) => { scg = s; aplicar(); };
+    const err = (e) => { if (typeof cb === 'function' && activo) { try { cb({ clases: ultimo.clases, subclases: ultimo.subclases, error: e }); } catch (x) { /* nada */ } } };
+    if (refC) { refC.on('value', fc, err); refS.on('value', fs, err); }
+    // sin permiso de lectura global (reglas aún sin publicar): se sigue con lo de la campaña
+    refG.on('value', fg, () => { sg = vacio; aplicar(); });
+    refCG.on('value', fcg, () => { scg = vacio; aplicar(); });
+    return function () { activo = false; try { if (refC) { refC.off('value', fc); refS.off('value', fs); } refG.off('value', fg); refCG.off('value', fcg); } catch (e) { /* nada */ } };
   }
 
   function errorValidacion(errores) {
@@ -477,7 +490,7 @@
     return err;
   }
   function guardarClase(db, campana, uid, nombreAutor, clase) {
-    if (!db || !campana || !uid) return Promise.reject(new Error('Falta la base de datos, la campaña o la sesión.'));
+    if (!db || !uid) return Promise.reject(new Error('Falta la base de datos o la sesión.'));
     const c = clonar(clase) || {};
     const edicion = !!str(c.autor);
     if (!str(c.id)) c.id = slug(c.name);
@@ -486,8 +499,14 @@
     const n = normalizarClase(c, c.id);
     if (!edicion) { n.autor = uid; n.autorNombre = str(nombreAutor) || 'Anónimo'; n.creada = Date.now(); }
     else if (!n.creada) n.creada = Date.now();
-    const ref = db.ref(rutaBase(campana) + '/clases_custom/' + n.id);
-    const guardar = () => ref.set(paraGuardarClase(n)).then(() => n);
+    // Un GM que corrige una clase ANTIGUA de otra persona (aún en la campaña) la guarda donde está; todo lo demás va a la biblioteca global.
+    const enCampana = edicion && !c.global && campana && c.autor !== uid;
+    const ref = db.ref(enCampana ? rutaBase(campana) + '/clases_custom/' + n.id : RUTA_CLASES_GLOBAL + '/' + n.id);
+    // Al guardar en la biblioteca global se retira la copia antigua de la campaña (si era del propio autor; si no hay permiso, queda y la global gana).
+    const guardar = () => ref.set(paraGuardarClase(n)).then(() => {
+      if (campana && !enCampana) db.ref(rutaBase(campana) + '/clases_custom/' + n.id).remove().catch(() => {});
+      return n;
+    });
     if (edicion) return guardar();
     return ref.once('value').then((s) => {
       if (s && s.exists && s.exists()) { const er = new Error('Ya existe una clase con el identificador «' + n.id + '». Cambia el nombre.'); er.errores = [er.message]; throw er; }
@@ -504,10 +523,11 @@
     const n = normalizarSubclase(s, s.id);
     if (!edicion) { n.autor = uid; n.autorNombre = str(nombreAutor) || 'Anónimo'; n.creada = Date.now(); }
     else if (!n.creada) n.creada = Date.now();
-    const ref = db.ref(RUTA_SUBCLASES_GLOBAL + '/' + n.id);
+    const enCampana = edicion && !s.global && campana && s.autor !== uid;   // GM corrigiendo una subclase antigua ajena: se guarda donde está
+    const ref = db.ref(enCampana ? rutaBase(campana) + '/subclases_custom/' + n.id : RUTA_SUBCLASES_GLOBAL + '/' + n.id);
     // Al guardar en la biblioteca global se retira la copia antigua de la campaña (si era del propio autor; si no hay permiso, queda y la global gana).
     const guardar = () => ref.set(paraGuardarSubclase(n)).then(() => {
-      if (campana) db.ref(rutaBase(campana) + '/subclases_custom/' + n.id).remove().catch(() => {});
+      if (campana && !enCampana) db.ref(rutaBase(campana) + '/subclases_custom/' + n.id).remove().catch(() => {});
       return n;
     });
     if (edicion) return guardar();
@@ -517,26 +537,28 @@
     });
   }
   function borrarClase(db, campana, id) {
-    if (!db || !campana || !RE_ID.test(String(id))) return Promise.reject(new Error('Identificador de clase inválido.'));
-    return db.ref(rutaBase(campana) + '/clases_custom/' + id).remove();
+    if (!db || !RE_ID.test(String(id))) return Promise.reject(new Error('Identificador de clase inválido.'));
+    const antigua = campana ? db.ref(rutaBase(campana) + '/clases_custom/' + id).remove().catch(() => {}) : Promise.resolve();
+    return db.ref(RUTA_CLASES_GLOBAL + '/' + id).remove().then(() => antigua);
   }
   function borrarSubclase(db, campana, id) {
     if (!db || !RE_ID.test(String(id))) return Promise.reject(new Error('Identificador de subclase inválido.'));
     const antigua = campana ? db.ref(rutaBase(campana) + '/subclases_custom/' + id).remove().catch(() => {}) : Promise.resolve();
     return db.ref(RUTA_SUBCLASES_GLOBAL + '/' + id).remove().then(() => antigua);
   }
-  // Pasa a la biblioteca global las subclases que ESTE usuario creó dentro de una campaña (las de otros las migra quien las creó).
-  function migrarSubclasesALaBiblioteca(db, campana, uid) {
+  // Pasa a la biblioteca global las clases y subclases que ESTE usuario creó dentro de una campaña (las de otros las migra quien las creó).
+  function migrarALaBiblioteca(db, campana, uid) {
     if (!db || !campana || !uid) return Promise.resolve(0);
-    return Promise.all([db.ref(rutaBase(campana) + '/subclases_custom').once('value'), leerGlobal(db)]).then((r) => {
+    const pasar = (rutaCampana, rutaGlobal, leerG) => Promise.all([db.ref(rutaBase(campana) + rutaCampana).once('value'), leerG(db)]).then((r) => {
       const vs = (r[0] && r[0].val && r[0].val()) || {}, vg = (r[1] && r[1].val && r[1].val()) || {};
       const propias = Object.keys(esObj(vs) ? vs : {}).filter((k) => vs[k] && vs[k].autor === uid && !(esObj(vg) && vg[k]));
-      return Promise.all(propias.map((k) => db.ref(RUTA_SUBCLASES_GLOBAL + '/' + k).set(vs[k]).then(() => 1).catch(() => 0))).then((x) => x.reduce((a, b) => a + b, 0));
+      return Promise.all(propias.map((k) => db.ref(rutaGlobal + '/' + k).set(vs[k]).then(() => 1).catch(() => 0))).then((x) => x.reduce((a, b) => a + b, 0));
     }).catch(() => 0);
+    return Promise.all([pasar('/subclases_custom', RUTA_SUBCLASES_GLOBAL, leerGlobal), pasar('/clases_custom', RUTA_CLASES_GLOBAL, leerClasesGlobal)]).then((x) => x[0] + x[1]);
   }
 
   window.ClasesCustom = {
-    cargar, escuchar, leer, guardarClase, guardarSubclase, borrarClase, borrarSubclase, migrarSubclasesALaBiblioteca,
+    cargar, escuchar, leer, guardarClase, guardarSubclase, borrarClase, borrarSubclase, migrarALaBiblioteca, migrarSubclasesALaBiblioteca: migrarALaBiblioteca,
     validarClase, validarSubclase, slug, plantillaClase, normalizarClase, normalizarSubclase, fusionar,
     estado: () => ({ clases: ultimo.clases.slice(), subclases: ultimo.subclases.slice() }),
     esId, RASGOS_TIPICOS, paraGuardarClase, paraGuardarSubclase,

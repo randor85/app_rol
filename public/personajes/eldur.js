@@ -14,7 +14,7 @@ PERSONAJES.eldur = {
   paleta: 'ascua',
   subtitulo: 'Eldur (Firelord Redmane) — Monk 5 / Cleric 2 (Light Domain) | Fire Genasi | Legal Bueno',
   xp: 49000,
-  clases: [{nombre: 'Monk', dado: 8, nivelInicial: 5, caster: null, subclase: 'Way of the Sun Soul'}, {nombre: 'Cleric', dado: 8, nivelInicial: 2, caster: 'full'}],
+  clases: [{nombre: 'Monk', dado: 8, nivelInicial: 5, caster: null, subclase: 'Way of the Sun Soul'}, {nombre: 'Cleric', dado: 8, nivelInicial: 2, caster: 'full', subclase: 'Light Domain'}],
   hpBase: 52,                    // PG máximos a Monk 5 / Cleric 2; cada subida registrada suma su hpGanado
   velocidad: 40,                 // 30 ft + Unarmored Movement (+10 ft)
   habilidadAtaque: 'DEX',        // Martial Arts
@@ -705,12 +705,6 @@ PERSONAJES.eldur = {
       "descripcion": "Puedes usar Channel Divinity una vez más entre descansos (total de usos según nivel de clérigo). ⚠️ Verificar si en PHB2024 el salto de usos ocurre en este nivel exacto (en 2014 era nivel 6; PHB2024 pudo adelantarlo)."
     },
     {
-      "nivel": 6,
-      "clase": "Cleric",
-      "nombre": "Light Domain: Improved Warding Flare",
-      "descripcion": "Warding Flare ya no requiere que puedas ver al atacante, y ahora también puedes usarlo para imponer desventaja en un ataque dirigido a un aliado a 30 pies. ⚠️ Confirmar nombre/nivel exacto en PHB2024 (Light Domain)."
-    },
-    {
       "nivel": 7,
       "clase": "Cleric",
       "nombre": "Blessed Strikes (eliges Divine Strike o Potent Spellcasting)",
@@ -751,12 +745,6 @@ PERSONAJES.eldur = {
       "clase": "Cleric",
       "nombre": "Mejora de Característica (ASI/Feat)",
       "descripcion": "Aumentas una puntuación de característica en 2, o dos en +1 cada una (o un Talento), sin exceder 20. ⚠️ Confirmar que PHB2024 mantenga una mejora de característica en este nivel para Cleric."
-    },
-    {
-      "nivel": 17,
-      "clase": "Cleric",
-      "nombre": "Light Domain: Corona of Light",
-      "descripcion": "Como acción bonus, emanas luz brillante en 60 pies (y tenue 30 pies más) por 1 minuto; las criaturas hostiles dentro de la luz brillante tienen desventaja en salvaciones contra conjuros que hagan daño de fuego o radiante que tú lances."
     },
     {
       "nivel": 18,

@@ -82,6 +82,8 @@
     .cc-tab { padding: 0 var(--sp-3); font-size: var(--fs-sm); flex: 1 1 auto; }
     .cc-mini.corto input, .cc-mini.corto select { width: 5.5rem; }
   }
+  .embebido .cc-top, .embebido h1 { display: none; }
+  .embebido .cc-wrap { padding-top: var(--sp-2); }
 </style>
 </head>
 <body>
@@ -390,7 +392,7 @@
       ${seccion('recursos', '🔧', 'Recursos con contador', recursos, 'opcional')}
       ${seccion('subclases', '🌟', 'Subclases de la clase', subclases, plural(m.subclasses.length, 'cargada', 'cargadas'))}
       <div id="errores-clase" class="cc-bloque-msg" aria-live="assertive"></div>
-      <div class="cc-acciones"><button type="button" class="btn btn-primario" data-act="guardar-clase">💾 ${m.autor ? 'Guardar cambios' : 'Guardar clase'}</button><span class="cc-nota">Se guarda en la campaña <strong>${esc(CAMP)}</strong>.</span></div>`;
+      <div class="cc-acciones"><button type="button" class="btn btn-primario" data-act="guardar-clase">💾 ${m.autor ? 'Guardar cambios' : 'Guardar clase'}</button><span class="cc-nota">Se guarda en tu biblioteca global: sirve en todas las campañas.</span></div>`;
   }
 
   function formSubHTML() {
@@ -413,7 +415,7 @@
       <label class="cc-campo"><span class="cc-etq">Resumen</span><textarea data-r="s" data-b="resumen" maxlength="2000" placeholder="En qué se especializa esta subclase">${esc(m.resumen)}</textarea></label>
       <div><h3 style="font-size:var(--fs-lg);color:var(--acento);margin-bottom:var(--sp-2)">Rasgos por nivel</h3>${rasgosHTML('s', 'features', m.features, 'Rasgo')}</div>
       <div id="errores-sub" class="cc-bloque-msg" aria-live="assertive"></div>
-      <div class="cc-acciones"><button type="button" class="btn btn-primario" data-act="guardar-sub">💾 ${m.autor ? 'Guardar cambios' : 'Guardar subclase'}</button><span class="cc-nota">Se guarda en la campaña <strong>${esc(CAMP)}</strong>.</span></div>`;
+      <div class="cc-acciones"><button type="button" class="btn btn-primario" data-act="guardar-sub">💾 ${m.autor ? 'Guardar cambios' : 'Guardar subclase'}</button><span class="cc-nota">Se guarda en tu biblioteca global: sirve en todas las campañas.</span></div>`;
   }
 
   // ------------------------------------------------------------------ vista previa
@@ -468,8 +470,10 @@
   }
 
   // ------------------------------------------------------------------ permisos y lista
-  // Las subclases globales las edita solo su autor (no hay GM global); lo demás, el autor o el GM de la campaña.
+  // Lo global lo edita solo su autor (no hay GM global); lo antiguo de una campaña, el autor o el GM de esa campaña.
   function puedeEditar(item) { return item.global ? (item.autor && item.autor === uid) : (esGM || (item.autor && item.autor === uid)); }
+  // Enlace al compendio: con campaña la conserva (clases de la campaña), sin ella abre el compendio tal cual.
+  const urlCompendio = (clase) => 'classes.html?' + (CAMP ? 'campana=' + encodeURIComponent(CAMP) + '&' : '') + 'clase=' + encodeURIComponent(clase);
   const plural = (n, uno, varios) => n + ' ' + (n === 1 ? uno : varios);
   function fecha(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString('es-419'); } catch (e) { return ''; } }
   function renderLista() {
@@ -483,13 +487,13 @@
       <article class="cc-item" data-item="${esc(c.id)}">
         <h4>${esc(c.nombre_es || c.name)} <span class="cc-nota">(${esc(c.name)})</span> <span class="cc-guia">✨ clase custom</span></h4>
         <div class="cc-meta">d${esc(c.hitDie)} · ${plural(c.features.length, 'rasgo', 'rasgos')} · ${plural(hijas(c.id) + c.subclasses.length, 'subclase', 'subclases')} · por ${esc(c.autorNombre || '¿?')} ${esc(fecha(c.creada))}</div>
-        <div class="cc-acciones"><a class="btn btn-sm" href="classes.html?campana=${encodeURIComponent(CAMP)}&clase=${encodeURIComponent(c.id)}">Ver en el compendio</a>${acciones('clase', c, c.name)}</div>
+        <div class="cc-acciones"><a class="btn btn-sm" href="${urlCompendio(c.id)}" target="_top">Ver en el compendio</a>${acciones('clase', c, c.name)}</div>
       </article>`).join('');
     const subsH = datos.subclases.map((s) => `
       <article class="cc-item" data-item="${esc(s.id)}">
         <h4>${esc(s.name)} <span class="cc-guia">✨ subclase custom</span></h4>
         <div class="cc-meta">de ${esc(nomClase(s.clase))} · ${plural(s.features.length, 'rasgo', 'rasgos')} · por ${esc(s.autorNombre || '¿?')} ${esc(fecha(s.creada))}</div>
-        <div class="cc-acciones"><a class="btn btn-sm" href="classes.html?campana=${encodeURIComponent(CAMP)}&clase=${encodeURIComponent(s.clase)}">Ver en el compendio</a>${acciones('sub', s, s.name)}</div>
+        <div class="cc-acciones"><a class="btn btn-sm" href="${urlCompendio(s.clase)}" target="_top">Ver en el compendio</a>${acciones('sub', s, s.name)}</div>
       </article>`).join('');
     $('cc-lista').innerHTML = `
       <h2 style="font-size:var(--fs-lg);color:var(--acento);margin-bottom:var(--sp-3)">Clases de la campaña</h2>
@@ -675,7 +679,7 @@
       E = editorDeClase(Object.assign({}, g, { prog: g.prog })); E._sucio = false;
       abrirPorDefecto(E);
       renderClase();
-      aviso('bien', `✅ Clase «${esc(g.name)}» guardada en la campaña. Ya aparece en el <a href="classes.html?campana=${encodeURIComponent(CAMP)}&clase=${encodeURIComponent(g.id)}">compendio de clases</a> y en el asistente de subida de nivel.`, true);
+      aviso('bien', `✅ Clase «${esc(g.name)}» guardada en tu biblioteca global (sirve en todas las campañas). Ya aparece en el <a href="${urlCompendio(g.id)}" target="_top">compendio de clases</a> y en el asistente de subida de nivel.`, true);
     }).catch((e) => {
       if (btn) btn.disabled = false;
       mostrarErrores('errores-clase', e && e.errores ? e.errores : [mensajeError(e)]);
@@ -692,7 +696,7 @@
     CC.guardarSubclase(db, CAMP, uid, autorNombre, s).then((g) => {
       S = subAEditor(g);
       renderSub();
-      aviso('bien', `✅ Subclase «${esc(g.name)}» guardada en tu biblioteca global (sirve en todas las campañas). Ya aparece entre las subclases de esa clase en el <a href="classes.html?campana=${encodeURIComponent(CAMP)}&clase=${encodeURIComponent(g.clase)}">compendio</a>.`, true);
+      aviso('bien', `✅ Subclase «${esc(g.name)}» guardada en tu biblioteca global (sirve en todas las campañas). Ya aparece entre las subclases de esa clase en el <a href="${urlCompendio(g.clase)}" target="_top">compendio</a>.`, true);
     }).catch((e) => {
       if (btn) btn.disabled = false;
       mostrarErrores('errores-sub', e && e.errores ? e.errores : [mensajeError(e)]);
@@ -730,15 +734,15 @@
     uid = user.uid;
     autorNombre = user.displayName || (user.email ? String(user.email).split('@')[0] : '') || 'Jugador';
     db = firebase.database();
-    $('cc-volver').href = 'classes.html?campana=' + encodeURIComponent(CAMP);
-    $('cc-sub').innerHTML = `Campaña <strong>${esc(CAMP)}</strong> · Sesión de <strong>${esc(autorNombre)}</strong>. Las clases quedan en esta campaña; las subclases quedan en tu biblioteca global y sirven en todas las campañas. Todo aparece junto a lo oficial en el compendio y en el asistente de subida de nivel.`;
+    $('cc-volver').href = 'classes.html' + (CAMP ? '?campana=' + encodeURIComponent(CAMP) : '');
+    $('cc-sub').innerHTML = `Sesión de <strong>${esc(autorNombre)}</strong>. Las clases y subclases que crees quedan en tu biblioteca global y sirven en todas las campañas. Todo aparece junto a lo oficial en el compendio y en el asistente de subida de nivel.`;
     E = claseVacia(); abrirPorDefecto(E); S = subVacia();
     conectarEventos();
     $('cc-app').hidden = false;
     renderClase(); renderSub(); renderCopiar(); renderLista();
-    db.ref('campanas/' + CAMP + '/gm').once('value').then((s) => { esGM = !!(s && s.val && s.val() === uid); renderLista(); }).catch(() => {});
-    // Las subclases que creaste antes dentro de una campaña pasan solas a la biblioteca global (sirve para campañas futuras).
-    if (CC.migrarSubclasesALaBiblioteca) CC.migrarSubclasesALaBiblioteca(db, CAMP, uid);
+    if (CAMP) db.ref('campanas/' + CAMP + '/gm').once('value').then((s) => { esGM = !!(s && s.val && s.val() === uid); renderLista(); }).catch(() => {});
+    // Lo que creaste antes dentro de una campaña pasa solo a la biblioteca global (sirve para campañas futuras).
+    if (CC.migrarALaBiblioteca && CAMP) CC.migrarALaBiblioteca(db, CAMP, uid);
     CC.escuchar(db, CAMP, (d) => {
       if (d.error) { aviso('mal', 'No se pudieron leer las clases de la campaña: ' + esc(mensajeError(d.error))); return; }
       datos = { clases: d.clases, subclases: d.subclases };
@@ -749,18 +753,14 @@
   }
 
   function iniciar() {
+    if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embebido');   // dentro del compendio: sin barra superior ni título
     if (window.FichaPaleta) FichaPaleta.iniciar({ contenedorId: 'selector-paleta', porDefecto: 'amatista', clave: 'creador-clases' });
-    if (!CAMP) {
-      $('cc-sub').textContent = '';
-      aviso('mal', 'Falta la campaña. Abre esta página desde el compendio de clases con una campaña elegida (<code>creador-clases.html?campana=&lt;código&gt;</code>) o vuelve al <a href="index.html">menú principal</a> y elige una.');
-      return;
-    }
-    if (/[.$#\[\]\/]/.test(CAMP)) { $('cc-sub').textContent = ''; aviso('mal', 'El código de campaña no es válido.'); return; }
+    if (CAMP && /[.$#\[\]\/]/.test(CAMP)) { $('cc-sub').textContent = ''; aviso('mal', 'El código de campaña no es válido.'); return; }
     if (!(window.firebase && firebase.auth)) { $('cc-sub').textContent = ''; aviso('mal', 'No se pudo cargar Firebase. Revisa tu conexión y recarga la página.'); return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE);
-    if (window.FichaSesion) FichaSesion.alUsuario((user) => { if (!db) arrancar(user); }, () => { location.href = 'index.html'; });
+    if (window.FichaSesion) FichaSesion.alUsuario((user) => { if (!db) arrancar(user); }, () => { (window.top || window).location.href = 'index.html'; });
     else firebase.auth().onAuthStateChanged((user) => {
-      if (!user) { location.href = 'index.html'; return; }
+      if (!user) { (window.top || window).location.href = 'index.html'; return; }
       if (!db) arrancar(user);
     });
   }

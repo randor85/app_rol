@@ -14,9 +14,17 @@
       }
     },
     "biblioteca": {
-      // Biblioteca GLOBAL (compartida entre campañas). Hoy: subclases custom (creador-clases.html / clases-custom.js), para
+      // Biblioteca GLOBAL (compartida entre campañas): clases y subclases custom (creador-clases.html / clases-custom.js), para
       // crearlas una vez y reutilizarlas en campañas futuras. Las lee cualquier usuario autenticado; cada subclase es un nodo
       // por id (slug 'c_...'): se puede CREAR una nueva y solo su autor (campo 'autor') puede EDITARLA o BORRARLA.
+      "clases_custom": {
+        // Clases homebrew GLOBALES (compartidas entre campañas). Se puede CREAR una nueva y solo su autor (campo 'autor') puede EDITARLA o BORRARLA.
+        ".read": "auth != null",
+        "$claseId": {
+          ".write": "auth != null && ( !data.exists() || data.child('autor').val() == auth.uid )",
+          ".validate": "newData.hasChildren(['id', 'name', 'hitDie', 'autor']) && newData.child('id').val() == $claseId && $claseId.matches(/^c_[a-z0-9_]{1,40}$/) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 60 && (newData.child('hitDie').val() == 6 || newData.child('hitDie').val() == 8 || newData.child('hitDie').val() == 10 || newData.child('hitDie').val() == 12) && (!newData.child('casterType').exists() || newData.child('casterType').val() == 'full' || newData.child('casterType').val() == 'half' || newData.child('casterType').val() == 'pact') && newData.child('autor').isString() && ( (data.exists() && data.child('autor').exists()) ? newData.child('autor').val() == data.child('autor').val() : newData.child('autor').val() == auth.uid )"
+        }
+      },
       "subclases_custom": {
         ".read": "auth != null",
         "$subclaseId": {
