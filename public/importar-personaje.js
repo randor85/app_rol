@@ -35,10 +35,10 @@
     if (!r.form) { S = null; $('revision').hidden = true; $('resultado').hidden = true; estadoArchivo(''); mostrarSoloAvisos(r.avisos); return; }
     S = {
       form: r.form, avisos: r.avisos, detalle: r.detalle,
-      usarRasgo: r.form.rasgosExtra.map(() => true), usarHechizo: r.form.hechizos.map(() => true), usarLibre: r.form.hechizosLibres.map(() => true), usarEquipo: r.form.equipoExtra.map(() => true),
+      usarRasgo: r.form.rasgosExtra.map((x) => !x.ya), usarInv: (r.form.inventarioExtra || []).map(() => true), usarHechizo: r.form.hechizos.map(() => true), usarLibre: r.form.hechizosLibres.map(() => true), usarEquipo: r.form.equipoExtra.map(() => true),
       exp: Object.assign({}, r.form.habilidades),
     };
-    estadoArchivo('Listo: revisá los datos de abajo.');
+    estadoArchivo('Listo' + (r.formato ? ' (' + r.formato + ')' : '') + ': revisá los datos de abajo.');
     pintarRevision();
   }
   function mostrarSoloAvisos(avisos) {
@@ -72,7 +72,7 @@
       const on = !!f.habilidades[h];
       return `<div class="hab"><label class="hab" style="min-height:0"><input type="checkbox" data-k="hab" data-h="${esc(h)}"${on ? ' checked' : ''}> ${esc(h)} <small>(${G.HABILIDADES[h]})</small></label><label class="exp"><input type="checkbox" data-k="exp" data-h="${esc(h)}"${f.habilidades[h] === 'exp' ? ' checked' : ''}${on ? '' : ' disabled'}> pericia</label></div>`;
     }).join('');
-    const itemRasgo = (r, i) => `<label class="item"><input type="checkbox" data-k="usar-rasgo" data-i="${i}"${S.usarRasgo[i] ? ' checked' : ''}><div><strong>${esc(r.titulo)}</strong> <span class="tag">${esc(r.tag)}</span><p>${esc(r.texto)}</p></div></label>`;
+    const itemRasgo = (r, i) => `<label class="item"><input type="checkbox" data-k="usar-rasgo" data-i="${i}"${S.usarRasgo[i] ? ' checked' : ''}><div><strong>${esc(r.titulo)}</strong> <span class="tag">${esc(r.tag)}</span>${r.ya ? ' <span class="tag">ya lo agrega la clase</span>' : ''}<p>${esc(String(r.texto || '').slice(0, 400))}${String(r.texto || '').length > 400 ? '…' : ''}</p></div></label>`;
     rev.hidden = false;
     rev.innerHTML = `
       <section class="bloque"><h2>2. Lo que encontré</h2>${avisosHtml(S.avisos) || '<p class="texto-suave">Todo se reconoció sin problemas.</p>'}</section>
@@ -102,6 +102,7 @@
       ${(f.hechizos.length || f.hechizosLibres.length) ? `<section class="bloque"><h2>Hechizos</h2>
         ${f.hechizos.map((h, i) => `<label class="item"><input type="checkbox" data-k="usar-hechizo" data-i="${i}"${S.usarHechizo[i] ? ' checked' : ''}><div><strong>${esc(h)}</strong> <span class="tag">compendio</span><p>${esc(((S.detalle.hechizosReconocidos[i] || {}).original) || '')}</p></div></label>`).join('')}
         ${f.hechizosLibres.map((h, i) => `<label class="item"><input type="checkbox" data-k="usar-libre" data-i="${i}"${S.usarLibre[i] ? ' checked' : ''}><div><strong>${esc(h.nombre)}</strong> <span class="tag">libre · nivel ${esc(h.nivel)}</span><p>${esc(h.resumen)}</p></div></label>`).join('')}</section>` : ''}
+      ${((f.inventarioExtra || []).length) ? `<section class="bloque"><h2>Inventario (${f.inventarioExtra.length})</h2>${f.inventarioExtra.map((e, i) => `<label class="item"><input type="checkbox" data-k="usar-inv" data-i="${i}"${S.usarInv[i] ? ' checked' : ''}><div><strong>${esc(e.nombre)}</strong> × ${esc(e.cantidad)}${e.equipado ? ' <span class="tag">equipado</span>' : ''}${e.categoria !== 'general' ? ` <span class="tag">${esc(e.categoria)}</span>` : ''}<p>${esc(e.descripcion)}</p></div></label>`).join('')}</section>` : ''}
       ${f.equipoExtra.length ? `<section class="bloque"><h2>Equipo (${f.equipoExtra.length})</h2>${f.equipoExtra.map((e, i) => `<label class="item"><input type="checkbox" data-k="usar-equipo" data-i="${i}"${S.usarEquipo[i] ? ' checked' : ''}><div><strong>${esc(e.nombre)}</strong> × ${esc(e.cantidad)}<p>${esc(e.descripcion)}</p></div></label>`).join('')}</section>` : ''}
       <section class="bloque"><h2>3. Crear</h2>
         <div id="errores" role="alert"></div>
@@ -120,6 +121,7 @@
     else if (k === 'usar-hechizo') S.usarHechizo[i] = t.checked;
     else if (k === 'usar-libre') S.usarLibre[i] = t.checked;
     else if (k === 'usar-equipo') S.usarEquipo[i] = t.checked;
+    else if (k === 'usar-inv') S.usarInv[i] = t.checked;
   }
   function onInput(e) {
     const t = e.target, k = t.dataset && t.dataset.k; if (!S || !k) return;
@@ -144,6 +146,7 @@
     f.hechizos = f.hechizos.filter((_, i) => S.usarHechizo[i]);
     f.hechizosLibres = f.hechizosLibres.filter((_, i) => S.usarLibre[i]);
     f.equipoExtra = f.equipoExtra.filter((_, i) => S.usarEquipo[i]);
+    f.inventarioExtra = (f.inventarioExtra || []).filter((_, i) => S.usarInv[i]);
     ['caFija', 'hpMax', 'hpActual', 'velocidad', 'xp'].forEach((k) => { if (f[k] === null || f[k] === '' || f[k] === undefined) delete f[k]; });
     f.clases = f.clases.map((c) => ({ id: c.id, nivel: entero(c.nivel) || 1, subclase: String(c.subclase || '').trim() }));
     f.nombre = String(f.nombre || '').trim();
@@ -203,7 +206,7 @@
     if (!CAMPANA) return avisoGlobal('<strong>Abrí esta página desde una campaña.</strong> Falta el código en la dirección (<code>importar-personaje.html?campana=&lt;código&gt;</code>). Entrá desde el <a href="index.html">menú principal</a>.');
     if (/[.#$\[\]\/]/.test(CAMPANA)) return avisoGlobal('El código de campaña de la dirección no es válido. Entrá desde el <a href="index.html">menú principal</a>.');
     if (!window.firebase) return avisoGlobal('No se pudo cargar Firebase. Revisá tu conexión y recargá la página.');
-    $('sub-campana').textContent = `Campaña ${CAMPANA} · cargá el JSON exportado de Alchemy RPG y revisá antes de crear.`;
+    $('sub-campana').textContent = `Campaña ${CAMPANA} · cargá el archivo exportado de Alchemy RPG (JSON) o de Fantasy Grounds Unity (XML) y revisá antes de crear.`;
     try { usuario = await esperarUsuario(); } catch (e) { usuario = null; }
     if (!usuario) { location.href = 'index.html'; return; }
     db = firebase.database();
@@ -219,7 +222,7 @@
       if (file.size > 2 * 1024 * 1024) { estadoArchivo('El archivo pesa demasiado para ser una ficha (más de 2 MB).'); return; }
       const txt = await file.text(); $('texto-json').value = txt; estadoArchivo(file.name); analizar(txt);
     });
-    $('btn-analizar').addEventListener('click', () => { const t = $('texto-json').value.trim(); if (!t) { estadoArchivo('Elegí un archivo o pegá el JSON.'); return; } analizar(t); });
+    $('btn-analizar').addEventListener('click', () => { const t = $('texto-json').value.trim(); if (!t) { estadoArchivo('Elegí un archivo o pegá el contenido.'); return; } analizar(t); });
     const rev = $('revision');
     rev.addEventListener('input', onInput); rev.addEventListener('change', onChange); rev.addEventListener('click', (e) => { onClick(e); if (e.target.closest('#btn-crear')) crear(); });
     document.title = 'Importar personaje — ' + CAMPANA;

@@ -20,7 +20,8 @@
  *   equipoExtra: [{ nombre, cantidad, descripcion }], oro,
  *   hechizos: ['Fire Bolt', …],                                       (nombres del compendio)
  *   Solo importaciones (ficha-importador.js): importado:true (no exige la cantidad de habilidades de la clase), salvaciones:['WIS',…],
- *   caFija:14, hpMax, hpActual, xp, rasgosExtra:[{tag,titulo,texto}], hechizosLibres:[{nombre,nivel,resumen}]
+ *   caFija:14, hpMax, hpActual, xp, rasgosExtra:[{tag,titulo,texto}], hechizosLibres:[{nombre,nivel,resumen,tiempo?,alcance?,duracion?}],
+ *   inventarioExtra:[{nombre,cantidad,descripcion,equipado,categoria:'armadura'|'escudo'|'arma'|'general',modAC?,dexCap?}]
  * }
  *
  * Los textos que escribe el usuario se guardan como TEXTO PLANO: la carcasa los escapa al leer la definición (normalizarDefinicion).
@@ -214,6 +215,15 @@
     if (ar) inv.push({ nombre: ar[0], cantidad: 1, descripcion: 'Armadura ' + ar[3], equipado: true, categoria: 'armadura', consumible: false, modAC: ar[1], dexCap: ar[2] });
     if (form.escudo) inv.push({ nombre: 'Shield', cantidad: 1, descripcion: '+2 CA', equipado: true, categoria: 'escudo', consumible: false, modAC: 2 });
     (form.armas || []).forEach((n) => { const a = ARMAS.find((x) => x[0] === n); if (a) inv.push({ nombre: a[0], cantidad: 1, descripcion: `${a[1]}d${a[2]} ${a[3]}${a[4] ? ' · ' + a[4] : ''}`, equipado: false, categoria: 'arma', consumible: false }); });
+    // Inventario ya armado por un importador (armaduras equipadas, escudo, objetos): se limpia el tipo de cada campo.
+    (form.inventarioExtra || []).forEach((x) => {
+      if (!x || !String(x.nombre || '').trim()) return;
+      const cat = ['armadura', 'escudo', 'arma', 'general'].indexOf(x.categoria) >= 0 ? x.categoria : 'general';
+      const o = { nombre: String(x.nombre).trim(), cantidad: Math.max(1, parseInt(x.cantidad, 10) || 1), descripcion: String(x.descripcion || ''), equipado: !!x.equipado, categoria: cat, consumible: false };
+      if (x.modAC != null && !isNaN(parseInt(x.modAC, 10))) o.modAC = parseInt(x.modAC, 10);
+      if (cat === 'armadura') o.dexCap = x.dexCap === null || x.dexCap === undefined ? null : parseInt(x.dexCap, 10);
+      inv.push(o);
+    });
     (form.equipoExtra || []).forEach((e) => { if (e && String(e.nombre || '').trim()) inv.push({ nombre: String(e.nombre).trim(), cantidad: Math.max(1, parseInt(e.cantidad, 10) || 1), descripcion: String(e.descripcion || ''), equipado: false, categoria: 'general', consumible: false }); });
     return inv;
   }

@@ -7,6 +7,9 @@
  *     detalle,     { acciones:[…], hechizosReconocidos:[…], hechizosLibres:[…], equipo:[…], competencias:{…} }  para mostrar
  *   }
  *
+ * También importa el XML de Fantasy Grounds Unity (<root><character>…): FichaImportador.analizar(texto) detecta el formato
+ * (JSON de Alchemy o XML de FGU) y devuelve lo mismo. El XML necesita DOMParser (navegador).
+ *
  * Formato visto (ejemplo real, Alchemy RPG): { name, alignment, armorClass, hitDice, challengeRating,
  *   classes:[{ class:'Druida (Círculo del Pastor)', level:8 }], abilityScores:[{ name:'Strength', value:14 }…],
  *   proficiencies:[{ name:'Manejo de Animales', type:'skill' }], actions:[{ name, description, sortOrder, steps }] }.
@@ -73,6 +76,7 @@
 
   function analizar(entrada) {
     const avisos = [], aviso = (tipo, t) => avisos.push({ tipo, texto: t });
+    if (typeof entrada === 'string' && /^\s*(<\?xml|<root|<character)/i.test(entrada.replace(/^\uFEFF/, ''))) return analizarFG(entrada);
     let crudo = entrada;
     if (typeof entrada === 'string') {
       try { crudo = JSON.parse(entrada.replace(/^﻿/, '')); } catch (e) { return { form: null, avisos: [{ tipo: 'error', texto: 'No es un JSON válido: ' + e.message }], detalle: {} }; }
@@ -210,8 +214,184 @@
     if (hechizoAviso) aviso('info', `${hechizoAviso} hechizo(s) no están en el compendio y se agregaron como hechizos libres (nivel ${form.hechizosLibres.map((h) => h.nivel).join(', ')}): revisá su texto.`);
     if (form.hechizos.length || form.hechizosLibres.length) { /* ok */ } else if (form.clases.some((c) => { const d = datosClases().find((x) => x.id === c.id); return d && d.casterType; })) aviso('info', 'El JSON no trae hechizos: agregalos desde la ficha con «Agregar del compendio».');
     if (!form.rasgosExtra.length && !detalle.acciones.length) aviso('info', 'El JSON no trae acciones ni rasgos propios; los rasgos de la clase se agregan solos hasta el nivel.');
+    marcarRasgosDeClase(form);
     return { form, avisos, detalle, crudo };
   }
 
-  global.FichaImportador = { analizar, buscarClase, separarClase, buscarSubclase, norm, HABILIDAD_ALIAS, ATRIBUTO_ALIAS, CLASES_ALIAS };
+  /* ---------- rasgos que la clase ya trae ---------- */
+  // Marca con `ya:true` los rasgos importados que coinciden con un rasgo de clase/subclase que la app agrega sola.
+  const sinParen = (t) => norm(String(t || '').replace(/\([^)]*\)/g, ' '));
+  const enParen = (t) => { const m = String(t || '').match(/\(([^)]+)\)/); return m ? norm(m[1]) : ''; };
+  function marcarRasgosDeClase(form) {
+    const nombres = new Set();
+    (form.clases || []).forEach((c) => {
+      const d = datosClases().find((x) => x.id === c.id); if (!d) return;
+      (d.features || []).forEach((f) => { nombres.add(sinParen(f.nombre)); const p = enParen(f.nombre); if (p) nombres.add(p); });
+      const sub = (d.subclasses || []).find((x) => x.name === c.subclase);
+      if (sub) (sub.features || []).forEach((f) => { nombres.add(sinParen(f.nombre)); const p = enParen(f.nombre); if (p) nombres.add(p); });
+    });
+    (form.rasgosExtra || []).forEach((r) => {
+      const a = sinParen(r.titulo), b = enParen(r.titulo);
+      const lanzador = (form.clases || []).some((c) => { const d = datosClases().find((x) => x.id === c.id); return d && d.casterType; });
+      if (r.tag !== 'Competencias' && (nombres.has(a) || (b && nombres.has(b)) || (lanzador && (a === 'spellcasting' || a === 'pact magic')))) r.ya = true;
+    });
+  }
+
+  /* ---------- Fantasy Grounds Unity (XML) ---------- */
+  // Texto plano de un nodo con HTML de FG (<p>, <h>, <b>, <list>/<li>, <table>/<tr>/<td>, <linklist>).
+  function fgTexto(el) {
+    let out = '';
+    const rec = (n) => {
+      if (n.nodeType === 3) { out += n.nodeValue; return; }
+      if (n.nodeType !== 1) return;
+      const t = n.nodeName.toLowerCase();
+      if (t === 'linklist' || t === 'link') return;
+      if (t === 'li') out += '• ';
+      Array.prototype.forEach.call(n.childNodes, rec);
+      if (t === 'td') out += ' | ';
+      if (t === 'p' || t === 'h' || t === 'li' || t === 'tr') out += '\n';
+    };
+    rec(el);
+    return out.replace(/ \| \n/g, '\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  const hijo = (el, tag) => { if (!el) return null; for (let i = 0; i < el.children.length; i++) if (el.children[i].nodeName === tag) return el.children[i]; return null; };
+  const val = (el, tag) => { const h = hijo(el, tag); return h ? (h.textContent || '').trim() : ''; };
+  const valN = (el, tag) => { const v = parseFloat(val(el, tag)); return isNaN(v) ? null : v; };
+  const hijos = (el) => (el ? Array.prototype.slice.call(el.children) : []);
+  const FG_ATRIBUTOS = { strength: 'STR', dexterity: 'DEX', constitution: 'CON', intelligence: 'INT', wisdom: 'WIS', charisma: 'CHA' };
+  const FG_ARMAS = { 'crossbow light': 'Light Crossbow', 'crossbow hand': 'Hand Crossbow', 'crossbow heavy': 'Heavy Crossbow' };
+
+  function analizarFG(xml) {
+    const avisos = [], aviso = (tipo, t) => avisos.push({ tipo, texto: t });
+    if (typeof DOMParser === 'undefined') return { form: null, avisos: [{ tipo: 'error', texto: 'Este navegador no puede leer XML.' }], detalle: {} };
+    const doc = new DOMParser().parseFromString(xml.replace(/^﻿/, ''), 'application/xml');
+    if (doc.getElementsByTagName('parsererror').length) return { form: null, avisos: [{ tipo: 'error', texto: 'No es un XML válido.' }], detalle: {} };
+    const ch = doc.getElementsByTagName('character')[0];
+    if (!ch) return { form: null, avisos: [{ tipo: 'error', texto: 'El XML no trae un <character> (tiene que ser la exportación de un personaje de Fantasy Grounds).' }], detalle: {} };
+    if (doc.getElementsByTagName('character').length > 1) aviso('info', 'El XML trae más de un personaje: se importó el primero.');
+
+    const reconocer = (txt) => (typeof global.nombreHechizoEs === 'function' ? global.nombreHechizoEs(txt) : null);
+    const form = { importado: true, origen: 'fantasy-grounds', nombre: val(ch, 'name'), clases: [], atributos: {}, habilidades: {}, armas: [], equipoExtra: [], inventarioExtra: [], rasgosExtra: [], hechizos: [], hechizosLibres: [] };
+    const detalle = { acciones: [], hechizosReconocidos: [], hechizosLibres: [], equipo: [], competencias: {} };
+    if (!form.nombre) aviso('aviso', 'El XML no trae nombre: escribilo antes de crear.');
+    form.especie = val(ch, 'racename') || val(ch, 'race');
+    form.trasfondoNombre = val(ch, 'background');
+    form.alineamiento = val(ch, 'alignment');
+
+    // ---- clases
+    hijos(hijo(ch, 'classes')).forEach((c) => {
+      const nombre = val(c, 'name'), nivel = valN(c, 'level') || 1, sub = val(c, 'specialization');
+      const d = buscarClase(nombre);
+      if (!d) { aviso('error', `No reconocí la clase «${nombre}». Elegí una de la lista (o creala en «Clases y subclases custom»).`); form.clases.push({ id: '', nivel, subclase: sub, original: nombre }); return; }
+      const s = buscarSubclase(d, sub);
+      if (sub && !s) aviso('info', `La subclase «${sub}» no tiene detalle cargado en la app: se guarda con ese nombre. Sus rasgos vienen del XML como tarjetas (revisalos abajo).`);
+      form.clases.push({ id: d.id, nivel, subclase: s ? s.name : sub, original: nombre });
+    });
+    if (!form.clases.length) { aviso('error', 'No encontré la clase del personaje.'); form.clases.push({ id: '', nivel: valN(ch, 'level') || 1, subclase: '' }); }
+    if (form.clases.reduce((a, c) => a + (parseInt(c.nivel, 10) || 0), 0) > 20) aviso('aviso', 'El nivel total pasa de 20: revisalo.');
+
+    // ---- atributos y salvaciones
+    const salv = [];
+    hijos(hijo(ch, 'abilities')).forEach((a) => {
+      const k = FG_ATRIBUTOS[a.nodeName]; if (!k) return;
+      const sc = valN(a, 'score'); if (sc != null) form.atributos[k] = sc;
+      if (valN(a, 'saveprof') === 1) salv.push(k);
+    });
+    ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].forEach((k) => { if (form.atributos[k] == null) { form.atributos[k] = 10; aviso('aviso', `Falta el atributo ${k}: se puso 10.`); } });
+    form.salvaciones = salv;
+
+    // ---- habilidades (prof 1 = competencia, 2 = pericia)
+    hijos(hijo(ch, 'skilllist')).forEach((s) => {
+      const h = HABILIDAD_ALIAS[norm(val(s, 'name'))], p = valN(s, 'prof');
+      if (h && p >= 1) form.habilidades[h] = p >= 2 ? 'exp' : 'comp';
+    });
+
+    // ---- competencias e idiomas
+    const comp = { Armaduras: [], Armas: [], Herramientas: [], Otras: [] };
+    hijos(hijo(ch, 'proficiencylist')).forEach((p) => {
+      const n = val(p, 'name'); if (!n) return;
+      const m = n.match(/^\s*(Armor|Weapon|Tool|Skill|Language)s?\s*:\s*(.+)$/i);
+      if (!m) { comp.Otras.push(n); return; }
+      const k = m[1].toLowerCase();
+      if (k === 'armor') comp.Armaduras.push(m[2]); else if (k === 'weapon') comp.Armas.push(m[2]); else if (k === 'tool') comp.Herramientas.push(m[2]); else comp.Otras.push(m[2]);
+    });
+    const comps = Object.keys(comp).filter((k) => comp[k].length).map((k) => `${k}: ${comp[k].join(', ')}.`);
+    const idiomas = []; hijos(hijo(ch, 'languagelist')).forEach((l) => { const n = val(l, 'name'); if (n && n !== 'Choice' && idiomas.indexOf(n) < 0) idiomas.push(n); });
+    if (idiomas.length) form.idiomas = idiomas.join(', ');
+    if (comps.length) form.rasgosExtra.push({ tag: 'Competencias', titulo: 'Competencias importadas', texto: comps.join(' ') });
+
+    // ---- vida, velocidad, experiencia, monedas
+    const hp = hijo(ch, 'hp');
+    const hpTot = valN(hp, 'total');
+    if (hpTot != null) { form.hpMax = hpTot; const heridas = valN(hp, 'wounds') || 0; form.hpActual = Math.max(0, hpTot - heridas); }
+    else aviso('info', 'No trae los puntos de golpe: se calculan con el dado de la clase y la Constitución.');
+    const vel = valN(hijo(ch, 'speed'), 'total'); if (vel) form.velocidad = vel;
+    const xp = valN(ch, 'exp'); if (xp != null) form.xp = xp;
+    const ac = valN(hijo(hijo(ch, 'defenses'), 'ac'), 'total'); if (ac != null) form.caFija = ac;
+    let oro = 0; const otras = [];
+    hijos(hijo(ch, 'coins')).forEach((c) => { const n = (val(c, 'name') || '').toUpperCase(), a = valN(c, 'amount') || 0; if (!a) return; if (n === 'GP') oro += a; else otras.push(`${a} ${n}`); });
+    if (oro) form.oro = oro;
+    if (otras.length) form.equipoExtra.push({ nombre: 'Otras monedas', cantidad: 1, descripcion: otras.join(', ') });
+
+    // ---- notas personales
+    const notas = [];
+    [['Edad', 'age'], ['Género', 'gender'], ['Altura', 'height'], ['Peso', 'weight'], ['Sentidos', 'senses'], ['Tamaño', 'size']].forEach((x) => { const v = val(ch, x[1]); if (v) notas.push(`${x[0]}: ${v}`); });
+    if (notas.length) form.historia = notas.join(' · ');
+
+    // ---- inventario y armas
+    const nombreArma = (n) => { const k = norm(n); if (FG_ARMAS[k]) return FG_ARMAS[k]; return (global.FichaGenerador ? global.FichaGenerador.ARMAS : []).map((a) => a[0]).find((a) => norm(a) === k) || null; };
+    const armasVistas = {};
+    hijos(hijo(ch, 'weaponlist')).forEach((w) => { const a = nombreArma(val(w, 'name')); if (a && !armasVistas[a]) { armasVistas[a] = true; form.armas.push(a); } });
+    hijos(hijo(ch, 'inventorylist')).forEach((it) => {
+      const nombre = val(it, 'name'); if (!nombre) return;
+      const tipo = norm(val(it, 'type')), sub = norm(val(it, 'subtype')), cant = valN(it, 'count') || 1, carried = valN(it, 'carried');
+      const desc = hijo(it, 'description') ? fgTexto(hijo(it, 'description')).replace(/\s+/g, ' ').slice(0, 240) : '';
+      if (tipo === 'weapon' && nombreArma(nombre)) return;   // ya entra como ataque del personaje
+      if (tipo === 'armor' && /shield|escudo/.test(sub + ' ' + norm(nombre))) { form.inventarioExtra.push({ nombre, cantidad: cant, descripcion: desc || '+2 CA', equipado: carried === 2, categoria: 'escudo', consumible: false, modAC: valN(it, 'ac') || 2 }); detalle.equipo.push({ nombre, cantidad: cant }); return; }
+      if (tipo === 'armor') {
+        const base = valN(it, 'ac');
+        const dexCap = /heavy|pesada/.test(sub) ? 0 : /medium|media/.test(sub) ? 2 : null;
+        form.inventarioExtra.push({ nombre, cantidad: cant, descripcion: desc || val(it, 'subtype'), equipado: carried === 2, categoria: 'armadura', consumible: false, modAC: base == null ? undefined : base, dexCap });
+        detalle.equipo.push({ nombre, cantidad: cant }); return;
+      }
+      const extra = [val(it, 'damage'), val(it, 'properties')].filter(Boolean).join(' · ');
+      form.inventarioExtra.push({ nombre, cantidad: cant, descripcion: (extra ? extra + (desc ? ' — ' : '') : '') + desc, equipado: false, categoria: tipo === 'weapon' ? 'arma' : 'general', consumible: false });
+      detalle.equipo.push({ nombre, cantidad: cant });
+    });
+
+    // ---- rasgos de especie y de clase
+    hijos(hijo(ch, 'traitlist')).forEach((t) => { const n = val(t, 'name'); if (n) { form.rasgosExtra.push({ tag: 'Especie', titulo: n, texto: fgTexto(hijo(t, 'text') || t) }); detalle.acciones.push({ titulo: n }); } });
+    hijos(hijo(ch, 'featurelist')).forEach((f) => {
+      const n = val(f, 'name'); if (!n) return;
+      if (/^(bard|cleric|druid|fighter|monk|paladin|ranger|rogue|sorcerer|warlock|wizard|barbarian)\s+subclass$/i.test(n)) return;
+      const niv = valN(f, 'level');
+      form.rasgosExtra.push({ tag: niv ? `FG · nivel ${niv}` : 'FG', titulo: n, texto: fgTexto(hijo(f, 'text') || f).slice(0, 1500) });
+      detalle.acciones.push({ titulo: n });
+    });
+
+    // ---- hechizos y poderes
+    const yaH = {};
+    hijos(hijo(ch, 'powers')).forEach((p) => {
+      const n = val(p, 'name'); if (!n) return;
+      const esConjuro = !!val(p, 'castingtime') || !!val(p, 'school') || /^spells?\b/i.test(val(p, 'group'));
+      const texto = hijo(p, 'description') ? fgTexto(hijo(p, 'description')) : '';
+      if (!esConjuro) {   // acción de clase o poder propio: tarjeta de rasgo
+        form.rasgosExtra.push({ tag: 'FG · ' + (val(p, 'group') || 'poder'), titulo: n, texto: texto.slice(0, 1500) });
+        detalle.acciones.push({ titulo: n }); return;
+      }
+      const eng = reconocer(n);
+      if (eng) { if (!yaH[eng]) { yaH[eng] = true; form.hechizos.push(eng); detalle.hechizosReconocidos.push({ original: n, nombre: eng }); } return; }
+      const nv = valN(p, 'level') || 0;
+      form.hechizosLibres.push({ nombre: n, nivel: nv, tiempo: val(p, 'castingtime'), alcance: val(p, 'range'), duracion: val(p, 'duration'), resumen: texto.replace(/\s+/g, ' ').slice(0, 700) || 'Importado de Fantasy Grounds.' });
+      detalle.hechizosLibres.push({ nombre: n, nivel: nv });
+    });
+    if (form.hechizosLibres.length) aviso('info', `${form.hechizosLibres.length} hechizo(s) no están en el compendio y se agregaron como hechizos libres: revisá su texto.`);
+
+    marcarRasgosDeClase(form);
+    const ya = form.rasgosExtra.filter((r) => r.ya).length;
+    if (ya) aviso('info', `${ya} rasgo(s) del XML ya los agrega la clase de la app solos: quedan desmarcados para no duplicarlos (marcalos si querés conservar el texto de Fantasy Grounds).`);
+    return { form, avisos, detalle, formato: 'Fantasy Grounds Unity (XML)' };
+  }
+
+  global.FichaImportador = { analizar, analizarFG, marcarRasgosDeClase, fgTexto, buscarClase, separarClase, buscarSubclase, norm, HABILIDAD_ALIAS, ATRIBUTO_ALIAS, CLASES_ALIAS };
 })(typeof window !== 'undefined' ? window : globalThis);
