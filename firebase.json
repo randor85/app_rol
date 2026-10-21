@@ -9,13 +9,7 @@
       "**/personajes/_*",
       "**/personajes-coc/_*",
       "legacy estable/**",
-      "estable provisorio/**",
-      "trabajo en progreso/**",
-      "**/desktop.ini",
-      "fiona_v2_test.html",
-      "fiona_v2_test_dados.html",
-      "nivel_test.html",
-      "prototipo_ficha.html"
+      "**/desktop.ini"
     ],
     "headers": [
       {

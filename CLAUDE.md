@@ -12,11 +12,8 @@ pjs/app/                        ← raíz del proyecto Firebase
 ├── firebase.json               ← hosting.public = "public"; database.rules = database.rules.json
 ├── database.rules.json         ← reglas de Firebase RTDB (con comentarios) — ⚠️ ver advertencia abajo
 ├── bugs-fixes-pendientes.md    ← lista VIVA de pendientes/bugs (el usuario la edita a mano)
-├── campanas.json, society.json, borrador   ← notas/plantillas sueltas, no productivas
 └── public/                     ← todo lo que se sirve en Firebase Hosting
     ├── index.html              ← menú principal: login, selector de campaña/sistema, listado de personajes, panel de GM
-    ├── db_rules.txt            ← reglas de Firebase RTDB — ⚠️ ver advertencia abajo
-    ├── db.json                 ← export de datos reales de Firebase (no es fuente de verdad, es un snapshot)
     ├── 404.html
     ├── ficha.html (+ ficha-shell.js, ficha-plantilla.js, personajes/<id>.js)   ← ficha única de los 6 personajes D&D (ver "Carcasa única")
     ├── fiona_faraway.html, eldur.html, hannoghar.html, myrklogi_mangarisonn.html,
@@ -24,9 +21,7 @@ pjs/app/                        ← raíz del proyecto Firebase
     ├── <id>_clasico.html       ← la versión anterior de cada una (respaldo para volver atrás; no se enlaza desde ningún lado)
     ├── ficha-coc.html (+ ficha-coc-shell.js, ficha-coc-plantilla.js, ficha-coc.js, personajes-coc/<id>.js)   ← ficha única de Call of Cthulhu (ver «Call of Cthulhu»)
     ├── nevada_jones.html       ← redirección a ficha-coc.html?pj=nevada_jones (la ficha anterior: nevada_jones_clasico.html)
-    ├── legacy estable/         ← respaldos versionados (ver "Respaldos e historial")
-    ├── estable provisorio/     ← snapshots puntuales más antiguos, menos relevantes
-    └── trabajo en progreso/    ← borradores viejos descartados, no tocar salvo que el usuario lo pida
+    └── legacy estable/         ← 10 respaldos de hitos (1.0–10.0) + log.md condensado (ver "Cómo se hacen los cambios")
 ```
 
 > **Estado desde la v66.0:** las 6 fichas D&D se ven y usan desde la carcasa única (`ficha.html?pj=<id>`, sección «Carcasa única»). Las secciones «Arquitectura actual», «Arquitectura de cada ficha D&D» y «Dane» describen el código de las fichas clásicas (`*_clasico.html`), que sigue siendo la base del motor compartido `ficha-common.js`.
@@ -70,7 +65,7 @@ Todos se cargan con `<script src>` (sin build). `FICHA_CONFIG` se define ANTES d
 
 ## Carcasa única: `ficha.html?pj=<id>[&campana=<código>]` (URL única elegida por el usuario)
 
-Una sola página para todos los personajes: `ficha-shell.js` (arranque y conexión de motores), `ficha-plantilla.js` (HTML de cada sección con los ids de siempre) y un archivo de datos por personaje `personajes/<id>.js` (forma documentada en la cabecera de `ficha-shell.js`), más fragmentos HTML en `personajes/<id>/*.html` para secciones propias grandes (stat blocks, etc.). Los datos guardados en Firebase siguen valiendo porque la carcasa usa las mismas claves `datos/<id>`. Lo propio de una clase o personaje (Pact Magic, Lay on Hands, criaturas invocadas…) va en `P.recursos`, `P.ganchos` y `P.iniciar(ctx)`, no en los archivos compartidos. `personajes/_*.js` (p. ej. `_demo.js`) son fixtures de prueba y no se publican (`firebase.json` → `ignore`). Desde la v66.0 las URLs viejas (`eldur.html`, …) son redirecciones a la carcasa y la ficha anterior de cada personaje quedó como `<id>_clasico.html` (más el respaldo en `legacy estable/66.0 …/`). Las conversiones se verificaron con una prueba de paridad contra la ficha clásica con datos reales de Firebase (0 diferencias sin explicar). Nevada Jones y chicle no pasaron por la carcasa.
+Una sola página para todos los personajes: `ficha-shell.js` (arranque y conexión de motores), `ficha-plantilla.js` (HTML de cada sección con los ids de siempre) y un archivo de datos por personaje `personajes/<id>.js` (forma documentada en la cabecera de `ficha-shell.js`), más fragmentos HTML en `personajes/<id>/*.html` para secciones propias grandes (stat blocks, etc.). Los datos guardados en Firebase siguen valiendo porque la carcasa usa las mismas claves `datos/<id>`. Lo propio de una clase o personaje (Pact Magic, Lay on Hands, criaturas invocadas…) va en `P.recursos`, `P.ganchos` y `P.iniciar(ctx)`, no en los archivos compartidos. `personajes/_*.js` (p. ej. `_demo.js`) son fixtures de prueba y no se publican (`firebase.json` → `ignore`). Desde la v66.0 las URLs viejas (`eldur.html`, …) son redirecciones a la carcasa y la ficha anterior de cada personaje quedó como `<id>_clasico.html` (más el respaldo en `legacy estable/66.0 …/`). Las conversiones se verificaron con una prueba de paridad contra la ficha clásica con datos reales de Firebase (0 diferencias sin explicar). Nevada Jones usa la carcasa de Call of Cthulhu (`ficha-coc.html`, ver su sección); chicle no pasó por ninguna carcasa.
 
 ## Arquitectura de cada ficha D&D (patrón compartido por las 6)
 
@@ -164,14 +159,14 @@ Desde el 27 ago 2026 el entorno de Claude Code tiene `firebase-tools` instalado 
 
 1. **Verificar antes de tocar nada**: para archivos grandes con `<script>` embebido, extraer el script y correr `node --check` sobre él; contar balance de tags (`<div>`, `<details>`, `<table>`, `<textarea>`, `<style>`) antes y después del cambio. El conteo de tags por regex puede no detectar anidados incorrectos (un navegador auto-cierra tags huérfanos) — para cambios que tocan estructura de `<div>` alrededor de contenido existente, conviene además parsear con algo como `lxml.html` y chequear que los elementos no queden anidados entre sí inesperadamente.
 2. **Editar con regex dirigido, no reparseo completo**: estos archivos son grandes y frágiles (HTML + CSS + JS todo junto). Prefirió siempre ediciones quirúrgicas (`sed`/regex Python apuntado, o `Edit` con contexto único) antes que reescribir el archivo entero con un parser HTML — reserializar todo el documento arriesga romper el `<script>` embebido.
-3. **Respaldar antes de desplegar**: copiar la versión previa a `public/legacy estable/N.0 <descripción> <fecha>/` (una carpeta nueva por cambio, numeración incremental, `N.1` si es una sub-pasada del mismo día).
+3. **Respaldar antes de desplegar**: copiar la versión previa a `public/legacy estable/N.0 <descripción> <fecha>/` (solo para cambios grandes o riesgosos; los hitos vigentes son 1.0–10.0, el siguiente es 11.0; los cambios menores se respaldan con git y no necesitan carpeta).
 4. **Desplegar**: sobrescribir el archivo directo en `public/`.
-5. **Documentar en `public/legacy estable/log.md`**: una entrada nueva por versión, con evidencia concreta (tamaño de archivo, qué cambió y por qué), siguiendo el mismo tono narrativo que las entradas existentes.
+5. **Documentar en `public/legacy estable/log.md`**: una entrada por hito o cambio relevante (qué cambió y por qué); los ajustes menores van como una línea en la tabla de «versiones intermedias». El detalle de las versiones 1.0–103.1 antes de la poda del 21 oct 2026 está en el historial de git (`git log -- "public/legacy estable/log.md"`).
 6. **Nunca "corregir" datos reales de un personaje sin confirmar con el usuario primero** (HP, stats, rasgos) — una diferencia de 1-2 puntos contra un cálculo teórico es variación normal de dados tirados a mano, no un bug.
 
 ## Dónde está el resto del historial
 
-- `public/legacy estable/log.md` — historial versión por versión (1.0 a la fecha), con evidencia de tamaño de archivo por carpeta de respaldo.
+- `public/legacy estable/log.md` — historial condensado: los 10 hitos con respaldo y una línea por cada versión de aplicación (`VERSION_APP`) intermedia.
 - `bugs-fixes-pendientes.md` (raíz del proyecto) — lista viva de pendientes que el usuario edita directamente; es la fuente de verdad de "qué falta" en el día a día.
 - Hay además un historial de trabajo mucho más detallado (decisiones, diagnósticos paso a paso, código exacto de cada cambio) guardado en un Proyecto de Claude del usuario ("app rol", doc `unificacion-codigo-fichas-2026-08-25.md`) — ese documento no es accesible desde Claude Code; si hace falta un dato puntual de una pasada vieja que no esté en `log.md`, preguntale al usuario o pedile que lo exporte.
 
