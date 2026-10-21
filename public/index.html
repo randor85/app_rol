@@ -268,7 +268,7 @@
 </div>
         </header>
 
-        <div style="text-align:center; margin: 0 0 20px 0;">
+        <div id="enlaces-compendio" style="text-align:center; margin: 0 0 20px 0;">
             <a href="spells.html" class="btn-open" style="text-decoration:none; display:inline-block;">📖 Compendio de Hechizos</a>
             <a href="classes.html" class="btn-open" style="text-decoration:none; display:inline-block; margin-left:8px;">🛡️ Compendio de Clases</a>
         </div>
@@ -899,6 +899,7 @@ btnLoginEmail.onclick = () => {
             // Reset del estado de sistema/personajes al cambiar de campaña, para no arrastrar
             // el badge o los datos de la campaña anterior mientras carga la nueva.
             sistemaCampanaActual = null;
+            { const encl = document.getElementById('enlaces-compendio'); if (encl) encl.style.display = ''; }
             ultimoPersonajesSnap = null;
             soyElGMActual = false;
             sistemaCampanaContainer.style.display = 'none';
@@ -1138,6 +1139,8 @@ btnLoginEmail.onclick = () => {
     sistemaCampanaListener = db.ref(`lista_campanas/${campanaId}/sistema`);
     sistemaCampanaListener.on('value', sysSnap => {
         sistemaCampanaActual = sysSnap.val() || null;
+        // Los compendios de hechizos y de clases son de D&D: solo se ofrecen sin campaña elegida o en campañas de D&D.
+        const encl = document.getElementById('enlaces-compendio'); if (encl) encl.style.display = (!sistemaCampanaActual || sistemaCampanaActual === 'dnd') ? '' : 'none';
         const ccSis = document.getElementById('creadores-campana');
         if (ccSis) ccSis.style.display = (!sistemaCampanaActual || sistemaCampanaActual === 'dnd') ? 'flex' : 'none';
         const ccCoc = document.getElementById('creadores-campana-coc');

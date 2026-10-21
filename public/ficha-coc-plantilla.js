@@ -77,12 +77,6 @@
         <div class="coc-mitades" id="${k}-calc" title="Mitad (difícil) / quinto (extremo)">— / —</div>
         <button type="button" class="btn btn-roll btn-sm" data-coc-tirar="carac" data-id="${k}" aria-label="Tirar ${esc(nom)}">🎲 Tirar</button>
       </div>`).join('');
-    const suerte = `<div class="coc-carac" id="carac-luck">
-        <label for="luck-curr">Suerte <small>(LUCK)</small></label>
-        <div class="coc-par"><input type="number" id="luck-curr" value="${esc(P.suerte != null ? P.suerte : 50)}" min="0" max="99" aria-label="Suerte actual"><span>/</span><input type="number" id="luck-max" value="${esc(P.suerteMax != null ? P.suerteMax : (P.suerte != null ? P.suerte : 50))}" min="0" max="99" aria-label="Suerte máxima"></div>
-        <div class="coc-mitades" id="luck-calc">— / —</div>
-        <button type="button" class="btn btn-roll btn-sm" data-coc-tirar="carac" data-id="luck-curr" aria-label="Tirar Suerte">🎲 Tirar</button>
-      </div>`;
     const bono = `<div class="coc-carac" id="carac-bono"><label>Bono de daño y corpulencia</label><div class="coc-valor" id="db-val">0</div><div class="coc-mitades" id="build-val">Corpulencia: 0</div><div class="coc-mitades" id="mov-sugerido"></div></div>`;
     const par = (id, et, icono, cur, max, extra) => `<div class="panel coc-vital" id="vital-${id}">
         <h3>${icono} ${et}</h3>
@@ -97,11 +91,12 @@
     const pv = P.pv || {}, pm = P.pm || {}, san = P.san || {};
     const estados = [['herida-grave', '🩸 Herida grave'], ['inconsciente', '😵 Inconsciente'], ['moribundo', '☠️ Moribundo'], ['locura-temporal', '🌀 Locura temporal'], ['locura-indefinida', '🕳️ Locura indefinida']]
       .map(([k, t]) => `<label class="coc-estado"><input type="checkbox" id="st-${k}"> ${t}</label>`).join('');
-    return `<div class="coc-caracs">${tarjetas}${suerte}${bono}</div>
+    return `<div class="coc-caracs">${tarjetas}${bono}</div>
       <div class="vitales coc-vitales">
         ${par('hp', 'Puntos de vida', '❤️', pv.actual != null ? pv.actual : pv.max || 10, pv.max || 10)}
         ${par('mp', 'Puntos de magia', '✨', pm.actual != null ? pm.actual : pm.max || 10, pm.max || 10)}
         ${par('san', 'Cordura', '🧠', san.actual != null ? san.actual : san.max || 50, san.max || 99, `<small class="texto-suave" id="san-info"></small>`)}
+        ${par('luck', 'Suerte', '🍀', P.suerte != null ? P.suerte : 50, P.suerteMax != null ? P.suerteMax : (P.suerte != null ? P.suerte : 50), `<div class="coc-mitades" id="luck-calc">— / —</div><button type="button" class="btn btn-roll btn-sm" data-coc-tirar="carac" data-id="luck-curr" aria-label="Tirar Suerte">🎲 Tirar Suerte</button>`)}
       </div>
       <input type="hidden" id="san-inicio-dia" value=""><input type="hidden" id="san-perdida-hoy" value="">
       <div class="coc-herramientas">

@@ -54,7 +54,7 @@
     sug('hp-sugerido', `Sugerido (CON+SIZ): ${d.pvMax}`); sug('mp-sugerido', `Sugerido (POW÷5): ${d.pmMax}`);
     sug('san-sugerido', `Inicial = POW: ${d.sanInicial} · máx. 99 − Mitos: ${d.sanMax}`);
     sug('mov-sugerido', `MOV sugerido: ${d.mov}`);
-    [['hp', 'hp'], ['mp', 'mp'], ['san', 'san']].forEach(([id]) => {
+    [['hp', 'hp'], ['mp', 'mp'], ['san', 'san'], ['luck', 'luck']].forEach(([id]) => {
       const cur = num(id + '-curr'), max = Math.max(1, num(id + '-max', 1)), b = $(id + '-barra');
       if (b && b.firstElementChild) { const p = acotar(Math.round(cur / max * 100), 0, 100); b.firstElementChild.style.width = p + '%'; b.setAttribute('aria-valuenow', String(p)); b.classList.toggle('bien', p > 50); b.classList.toggle('mal', p <= 25); }
     });
@@ -165,8 +165,8 @@
   }
   function cambiarDelta(id, delta) {
     if (soloLectura()) return;
-    const base = id.replace('-curr', ''), max = $(base + '-max') ? num(base + '-max') : 99;
-    const antes = num(id), nuevo = acotar(antes + delta, 0, base === 'luck' ? 99 : max);
+    const base = id.replace('-curr', ''), max = $(base + '-max') ? Math.min(99, num(base + '-max')) : 99;
+    const antes = num(id), nuevo = acotar(antes + delta, 0, max);
     if (nuevo === antes) return;
     setVal(id, nuevo);
     if (base === 'hp' && nuevo === 0) aviso('A 0 PV: inconsciente o moribundo.');
