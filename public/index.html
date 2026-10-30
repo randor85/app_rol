@@ -1479,7 +1479,8 @@ btnLoginEmail.onclick = () => {
             } else {
                 texto = `${escHtml(t.resultado)} ${escHtml(t.tipo || '')}`;
             }
-            div.innerHTML = `<strong>[${fecha}] ${escHtml(t.personaje)}:</strong> ${texto}`;
+            const detalle = t.detalle ? ` <small style="color: var(--texto-suave);">(${escHtml(t.detalle)})</small>` : '';
+            div.innerHTML = `<strong>[${fecha}] ${escHtml(t.personaje)}:</strong> ${texto}${detalle}`;
             listaTiradas.appendChild(div);
         });
     });
