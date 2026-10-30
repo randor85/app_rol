@@ -16,7 +16,7 @@
 (function () {
   'use strict';
 
-  const VERSION_APP = '103.0';
+  const VERSION_APP = '104.0';
   const params = new URLSearchParams(location.search);
   const pj = (params.get('pj') || '').replace(/[^a-z0-9_]/gi, '');
   const codigoCampana = params.get('campana');

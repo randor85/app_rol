@@ -1808,8 +1808,31 @@
     return window.FichaBuffsPersonales;
   }
 
+  /* ---------- colapsar / expandir todas las secciones (botón [data-colapsar-todo] de la barra fija) ---------- */
+  const SECCIONES_PLEGABLES = 'details.seccion, details.bitacora-section';
+  const SECCIONES_ABIERTAS = 'details.seccion[open], details.bitacora-section[open]';
+  function sincronizarBotonColapsar() {
+    const hayAbierta = !!document.querySelector(SECCIONES_ABIERTAS);
+    document.querySelectorAll('[data-colapsar-todo]').forEach((b) => {
+      b.textContent = hayAbierta ? '📁 Colapsar todo' : '📂 Expandir todo';
+      b.setAttribute('aria-pressed', String(!hayAbierta));
+    });
+  }
+  function alternarSecciones() {
+    const todas = document.querySelectorAll(SECCIONES_PLEGABLES);
+    const abrir = !document.querySelector(SECCIONES_ABIERTAS);   // con alguna abierta se cierran todas; con todas cerradas se abren
+    todas.forEach((d) => { d.open = abrir; });
+    sincronizarBotonColapsar();
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target.closest && e.target.closest('[data-colapsar-todo]')) alternarSecciones();
+  });
+  // 'toggle' no burbujea: se escucha en captura para mantener el rótulo al día cuando se abre o cierra una a mano.
+  document.addEventListener('toggle', (e) => { if (e.target.matches && e.target.matches(SECCIONES_PLEGABLES)) sincronizarBotonColapsar(); }, true);
+  sincronizarBotonColapsar();   // el motor se carga con la ficha ya dibujada
+
   window.FichaComun = {
-    setCharRef, guardarCampo, sincronizarDatosDesdeNube, reaplicarDatos, aplicarModoLectura,
+    alternarSecciones, setCharRef, guardarCampo, sincronizarDatosDesdeNube, reaplicarDatos, aplicarModoLectura,
     crearEditorDeLista, iniciarEditorHechizos, iniciarEditorInventario,
     iniciarBitacora, bloquearPorSistemaIncorrecto, iniciarPermisosYCompartir,
     calcularProfBonus, calcularModificador, formatearMod,

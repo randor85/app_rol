@@ -151,3 +151,4 @@ Cada línea es una versión de aplicación; el detalle está en git.
 | 102.0 | Rasgos propios en la ficha, biblioteca de rasgos (integrada y global) y rasgos automáticos al crear personajes (21 oct 2026) |
 | 103.0 | Motor de Call of Cthulhu: ficha, creador de investigadores y biblioteca de capacidades (21 oct 2026) |
 | 103.1 | Suerte como tracker en la ficha de Cthulhu y compendios solo para D&D (21 oct 2026) |
+| 104.0 | Botón «Colapsar todo / Expandir todo» en la barra fija (D&D y Cthulhu) y pestaña «👥 Grupo» en el panel de dados: log compartido de la campaña (`campanas/<c>/tiradas`, con detalle y aviso de las tiradas de otras personas) |

@@ -684,6 +684,9 @@ input.contador-valor::-webkit-outer-spin-button, input.contador-valor::-webkit-i
 .dados-texto { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); align-items: baseline; min-width: 0; }
 .dados-et { overflow-wrap: anywhere; }
 .dados-res { font-family: var(--fuente-titulo); font-weight: 800; color: var(--acento); }
+.dados-quien { font-weight: 800; color: var(--texto); }
+.dados-quien::after { content: ':'; }
+.dados-item[data-propio="true"] { background: color-mix(in srgb, var(--acento) 10%, var(--bg)); }   /* log del grupo: lo tirado por este personaje */
 .dados-det { flex-basis: 100%; color: var(--texto-suave); font-size: var(--fs-xs); overflow-wrap: anywhere; }
 .dados-vacio { color: var(--texto-suave); font-size: var(--fs-sm); text-align: center; padding: var(--sp-3); }
 .dados-pie { display: flex; justify-content: flex-end; }

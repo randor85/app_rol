@@ -67,6 +67,7 @@
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="corto">☕ Corto</button>
     <button type="button" class="btn btn-fantasma btn-sm" data-descanso="largo">🌙 Largo</button>
     <button type="button" class="btn btn-fantasma btn-sm" id="btn-compartir" style="display:none" title="Compartir esta ficha para que otros jugadores la vean en modo lectura">👁️ Compartir</button>
+    <button type="button" class="btn btn-fantasma btn-sm" data-colapsar-todo title="Cierra todas las secciones (o las abre si ya están cerradas)">📁 Colapsar todo</button>
     <nav class="barra-atajos" aria-label="Ir a una sección">${atajos}</nav>
   </div>`;
   }

@@ -25,6 +25,7 @@
   const estado = {
     personaje: 'personaje', db: null, codigoCampana: null, max: 60, publicarUsos: false,
     items: [], pendientes: [], iniciado: false, tab: 'todo',
+    grupo: [], escucha: null, ultimaClave: null,   // log compartido de la campaña (campanas/<c>/tiradas)
     ui: {},
   };
 
@@ -95,27 +96,30 @@
     setTimeout(quitar, it.grupo === 'tiradas' ? DURACION_AVISO.tirada : DURACION_AVISO.otro);
   }
 
-  function publicarTirada(etiqueta, total) {
+  function publicarTirada(etiqueta, total, detalle) {
     if (!estado.db || !estado.codigoCampana || typeof firebase === 'undefined') return;
     try {
-      const p = estado.db.ref(`campanas/${estado.codigoCampana}/tiradas`).push({
+      const reg = {
         personaje: estado.personaje,
         tipo: etiqueta,
         resultado: (typeof total === 'number') ? `sacó un 🎲 ${total}` : total,
         fecha: firebase.database.ServerValue.TIMESTAMP,
-      });
+      };
+      if (detalle) reg.detalle = String(detalle).slice(0, 300);
+      const p = estado.db.ref(`campanas/${estado.codigoCampana}/tiradas`).push(reg);
       if (p && p.catch) p.catch(() => {});
     } catch (e) { /* el historial local sigue valiendo */ }
   }
 
   const TIPOS_USO_PUBLICOS = { recurso: 1, hechizo: 1, inventario: 1, descanso: 1 };
   /** Opcional (iniciar({ publicarUsos: true })): los usos de recurso también salen a la pantalla del GM, como hacían las fichas. */
-  function publicarUso(tipo, texto) {
+  function publicarUso(tipo, texto, detalle) {
     if (!estado.publicarUsos || !TIPOS_USO_PUBLICOS[tipo]) return;
     if (!estado.db || !estado.codigoCampana || typeof firebase === 'undefined') return;
     try {
       const p = estado.db.ref(`campanas/${estado.codigoCampana}/tiradas`).push({
         personaje: estado.personaje, tipo: '🔧 ' + texto, resultado: 'usó', fecha: firebase.database.ServerValue.TIMESTAMP,
+        ...(detalle ? { detalle: String(detalle).slice(0, 300) } : {}),
       });
       if (p && p.catch) p.catch(() => {});
     } catch (e) { /* el historial local sigue valiendo */ }
@@ -144,7 +148,7 @@
   function mostrar(total, etiqueta, detalle) {
     mostrarResultado(total, etiqueta, detalle);
     agregar('tirada', etiqueta, total, detalle);
-    publicarTirada(etiqueta, total);
+    publicarTirada(etiqueta, total, detalle);
     return { total, etiqueta, detalle };
   }
 
@@ -152,7 +156,7 @@
   function registrarUso(texto, tipo, detalle) {
     const t = tipo || 'recurso';
     if (!estado.iniciado) { estado.pendientes.push({ texto, tipo: t, detalle }); return null; }
-    publicarUso(t, texto);
+    publicarUso(t, texto, detalle);
     return agregar(t, texto, '', detalle);
   }
 
@@ -304,14 +308,61 @@
     return { total, d20: elegido, adv, detalle: partes.join(' | '), exito };
   }
 
+  /* ---------- log compartido de la campaña ---------- */
+  const textoResultado = (r) => (typeof r === 'number' ? `sacó un 🎲 ${r}` : (r === 'Usado' ? 'usó' : String(r == null ? '' : r)));
+  function escucharGrupo() {
+    if (estado.escucha || !estado.db || !estado.codigoCampana || typeof firebase === 'undefined') return;
+    try {
+      estado.escucha = estado.db.ref(`campanas/${estado.codigoCampana}/tiradas`).orderByKey().limitToLast(estado.max);
+      estado.escucha.on('value', (snap) => {
+        const nuevos = [];
+        snap.forEach((h) => {
+          const t = h.val() || {};
+          nuevos.push({ id: h.key, ts: Number(t.fecha) || Date.now(), personaje: String(t.personaje || '?'), etiqueta: String(t.tipo || ''), resultado: textoResultado(t.resultado), detalle: t.detalle ? String(t.detalle) : '' });
+        });
+        const primera = estado.ultimaClave === null;
+        // Avisos emergentes de lo que tiran las demás personas. Los usos de recurso (🔧) no avisan y las notificaciones (🔔) ya las muestra ficha-party.js.
+        if (!primera) nuevos.filter((n) => n.id > estado.ultimaClave && n.personaje !== estado.personaje && !/^(🔧|🔔)/.test(n.etiqueta))
+          .forEach((n) => avisar({ tipo: 'tirada', grupo: 'tiradas', etiqueta: `${n.personaje}: ${n.etiqueta}`, resultado: n.resultado, detalle: n.detalle }));
+        estado.ultimaClave = nuevos.length ? nuevos[nuevos.length - 1].id : (estado.ultimaClave || '');
+        estado.grupo = nuevos;
+        pintarHistorial();
+      }, () => { /* sin permiso o sin red: queda el historial local */ });
+    } catch (e) { /* el historial local sigue valiendo */ }
+  }
+
   /* ---------- interfaz ---------- */
+  function pintarGrupo() {
+    const u = estado.ui;
+    const vistos = estado.grupo.slice().reverse();
+    if (!vistos.length) u.lista.appendChild(el('li', 'dados-vacio', 'Todavía no hay tiradas en la campaña.'));
+    vistos.forEach((it) => {
+      const li = el('li', 'dados-item');
+      const tipo = /^🔔/.test(it.etiqueta) ? 'aviso' : /^🔧/.test(it.etiqueta) ? 'recurso' : 'tirada';
+      li.dataset.grupo = tipo === 'tirada' ? 'tiradas' : 'recursos'; li.dataset.tipo = tipo;
+      if (it.personaje === estado.personaje) li.dataset.propio = 'true';
+      li.appendChild(el('span', 'dados-hora', hora(it.ts)));
+      li.appendChild(el('span', 'dados-ico', ICONOS[tipo] || '•'));
+      const cuerpo = el('span', 'dados-texto');
+      cuerpo.appendChild(el('strong', 'dados-quien', it.personaje));
+      cuerpo.appendChild(el('span', 'dados-et', it.etiqueta.replace(/^(🔔|🔧)\s*/, '')));
+      if (it.resultado !== '') cuerpo.appendChild(el('span', 'dados-res', it.resultado));
+      if (it.detalle) cuerpo.appendChild(el('small', 'dados-det', it.detalle));
+      li.appendChild(cuerpo);
+      u.lista.appendChild(li);
+    });
+  }
+
   function pintarHistorial() {
     const u = estado.ui;
     if (!u.lista) return;
     const filtro = estado.tab;
-    const vistos = estado.items.filter(it => filtro === 'todo' || it.grupo === filtro).slice().reverse();
+    const vistos = filtro === 'grupo' ? [] : estado.items.filter(it => filtro === 'todo' || it.grupo === filtro).slice().reverse();
     u.lista.textContent = '';
-    if (!vistos.length) {
+    if (u.limpiar) u.limpiar.style.display = filtro === 'grupo' ? 'none' : '';   // el log de la campaña lo vacía el GM desde el menú
+    if (u.tabs && u.tabs.grupo) u.tabs.grupo.textContent = `👥 Grupo (${estado.grupo.length})`;
+    if (filtro === 'grupo') pintarGrupo();
+    else if (!vistos.length) {
       u.lista.appendChild(el('li', 'dados-vacio', filtro === 'recursos' ? 'Todavía no se usó ningún recurso.' : filtro === 'tiradas' ? 'Todavía no hay tiradas.' : 'El historial está vacío.'));
     }
     vistos.forEach(it => {
@@ -417,7 +468,9 @@
 
     const tabs = el('div', 'dados-tabs'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', 'Filtrar el historial');
     const tb = {};
-    [['todo', 'Todo'], ['tiradas', 'Tiradas'], ['recursos', 'Recursos']].forEach(([k, t]) => {
+    const pestanas = [['todo', 'Todo'], ['tiradas', 'Tiradas'], ['recursos', 'Recursos']];
+    if (estado.db && estado.codigoCampana) pestanas.unshift(['grupo', '👥 Grupo']);   // con campaña: log compartido por todo el grupo
+    pestanas.forEach(([k, t]) => {
       const b = el('button', 'dados-tab', t); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === estado.tab));
       b.addEventListener('click', () => elegirTab(k)); tb[k] = b; tabs.appendChild(b);
     });
@@ -439,7 +492,7 @@
     pintarChip();
     if (estado.sinVentaja) { chip.style.display = 'none'; filaAdv.style.display = 'none'; }
 
-    Object.assign(u, { raiz, fab, badge, panel, total, etiqueta, detalle, error, adv, formula: inp, lista, tabs: tb });
+    Object.assign(u, { raiz, fab, badge, panel, total, etiqueta, detalle, error, adv, formula: inp, lista, tabs: tb, limpiar });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && abierto()) { e.preventDefault(); cerrar(); } });
   }
 
@@ -453,7 +506,9 @@
     estado.sinVentaja = !!o.sinVentaja;   // sistemas sin ventaja/desventaja (Call of Cthulhu): se ocultan el chip y el selector
     if (estado.iniciado) return FichaDados;
     estado.items = cargar();
+    if (estado.db && estado.codigoCampana) estado.tab = 'grupo';   // en una campaña el historial es el del grupo; lo propio queda en las otras pestañas
     construir();
+    escucharGrupo();
     estado.iniciado = true;
     const ultimaTirada = estado.items.slice().reverse().find(i => i.grupo === 'tiradas');
     if (ultimaTirada) mostrarResultado(ultimaTirada.resultado, ultimaTirada.etiqueta, ultimaTirada.detalle);
